@@ -1,0 +1,42 @@
+services:
+
+  salt-master:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: salt-master
+
+    restart: unless-stopped
+
+    ports:
+      - "4505:4505/tcp"   # Master pub
+      - "4506:4506/tcp"   # Minion ret
+
+    volumes:
+      - ./srv/pillar:/srv/pillar:ro  # srv/pillar for new structure
+      - ./srv/salt:/srv/salt:ro  # srv/salt for new structure
+      - ./srv/salt/keys:/etc/salt/pki/master/keys:ro  # Optional pre-shared keys
+      - salt-cache:/var/cache/salt
+      - salt-logs:/var/log/salt
+
+    environment:
+      - MINION_KEY_PATH=/etc/salt/pki/master/minions
+
+    networks:
+      - salt-net
+
+    depends_on: []
+
+
+volumes:
+
+  salt-cache:
+
+  salt-logs:
+
+
+networks:
+
+  salt-net:
+    driver: bridge

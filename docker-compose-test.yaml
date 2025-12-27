@@ -1,0 +1,60 @@
+services:
+  salt-master:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: salt-master
+    restart: unless-stopped
+    ports:
+      - "4505:4505/tcp"   # Master pub
+      - "4506:4506/tcp"   # Minion ret
+    volumes:
+      - ./srv/pillar:/srv/pillar:ro  # srv/pillar for new structure
+      - salt-cache:/var/cache/salt
+      - salt-logs:/var/log/salt
+      - ./srv/salt/keys:/etc/salt/pki/master/keys:ro  # Optional pre-shared keys
+    environment:
+      - MINION_KEY_PATH=/etc/salt/pki/master/minions
+    networks:
+      - salt-net
+    depends_on: []
+
+  # Linux minion tester (ubuntu + salt-minion; scale/replicate)
+  salt-minion-linux:
+    image: ubuntu:latest  # Build your own salt-minion:ubuntu if needed
+    container_name: salt-minion-linux-test
+    restart: "no"  # On-demand
+    volumes:
+      - salt-cache:/var/cache/salt-minion  # Shared? Or per-minion
+      - ./srv/salt/linux:/etc/salt/minion.d:ro  # Minion conf
+    environment:
+      - MASTER=salt-master  # DNS/resolvable
+      - MINION_NAME=linux-test
+    cap_add:
+      - SYS_ADMIN  # For systemd if needed
+    networks:
+      - salt-net
+    depends_on:
+      salt-master:
+        condition: service_healthy
+
+  salt-minion-win:
+    image: mcr.microsoft.com/windows/servercore:ltsc2022
+    platform: windows/amd64
+    volumes:
+      - ./scripts:/c:/scripts:ro  # PS1
+    environment:
+      - MINION_NAME=win-physical-test
+      - MASTER_IP=host.docker.internal
+    entrypoint: powershell.exe
+    command: -ExecutionPolicy Bypass -File /c/scripts/install-win-minion.ps1
+    depends_on:
+      - salt-master
+
+volumes:
+  salt-cache:
+  salt-logs:
+
+networks:
+  salt-net:
+    driver: bridge

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<packages>
+  <package id="cheatengine" />
+  <package id="chocolatey" />
+  <package id="chocolatey-compatibility.extension" />
+  <package id="chocolatey-core.extension" />
+  <package id="chocolatey-font-helpers.extension" />
+  <package id="colortool" />
+  <package id="Cygwin" />
+  <package id="dive" />
+  <package id="docker-cli" />
+  <package id="docker-compose" />
+  <package id="FiraCode" />
+  <package id="microsoft-ui-xaml-2-7" />
+  <package id="microsoft-vclibs-140-00" />
+  <package id="nerd-fonts-FiraCode" />
+  <package id="nerd-fonts-Hack" />
+  <package id="rsync" />
+  <package id="vim" />
+  <package id="winget" />
+  <package id="winget-cli" />
+</packages>
