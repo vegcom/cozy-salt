@@ -1,0 +1,47 @@
+{
+  "local": {
+    "pkg_|-vim_|-vim_|-installed": {
+      "name": "vim",
+      "changes": {
+        "vim": {
+          "new": "2:9.0.1000-1",
+          "old": ""
+        }
+      },
+      "result": true,
+      "comment": "The following packages were installed/updated: vim",
+      "duration": 2453.921,
+      "__sls__": "linux.base",
+      "__run_num__": 0,
+      "__id__": "vim"
+    },
+    "file_|-starship_config_|-/opt/cozy/.config/starship.toml_|-managed": {
+      "name": "/opt/cozy/.config/starship.toml",
+      "changes": {
+        "diff": "New file"
+      },
+      "result": true,
+      "comment": "File /opt/cozy/.config/starship.toml updated",
+      "duration": 12.456,
+      "__sls__": "linux.base",
+      "__run_num__": 1,
+      "__id__": "starship_config"
+    },
+    "service_|-docker_|-docker_|-running": {
+      "name": "docker",
+      "changes": {
+        "docker": {
+          "old": "dead",
+          "new": "running"
+        }
+      },
+      "result": true,
+      "comment": "Service docker has been enabled, and is now running",
+      "duration": 456.789,
+      "__sls__": "linux.base",
+      "__run_num__": 2,
+      "__id__": "docker"
+    },
+    "retcode": 0
+  }
+}

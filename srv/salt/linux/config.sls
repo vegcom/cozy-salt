@@ -33,3 +33,33 @@ sshd_hardening_config:
     - mode: 644
     - makedirs: True
 {% endif %}
+
+# Export git user config as environment variables for vim
+git_env_vars_linux:
+  cmd.run:
+    - name: |
+        GIT_NAME=$(git config --global user.name)
+        GIT_EMAIL=$(git config --global user.email)
+
+        BASHRC="$HOME/.bashrc"
+        MARKER_START="# START: Git environment variables (managed by Salt)"
+        MARKER_END="# END: Git environment variables"
+
+        if ! grep -q "$MARKER_START" "$BASHRC" 2>/dev/null; then
+          cat >> "$BASHRC" <<EOF
+
+        $MARKER_START
+        export GIT_NAME="$GIT_NAME"
+        export GIT_EMAIL="$GIT_EMAIL"
+        $MARKER_END
+        EOF
+        else
+          sed -i "/$MARKER_START/,/$MARKER_END/c\\
+        $MARKER_START\\
+        export GIT_NAME=\"$GIT_NAME\"\\
+        export GIT_EMAIL=\"$GIT_EMAIL\"\\
+        $MARKER_END" "$BASHRC"
+        fi
+    - runas: {{ salt['pillar.get']('user:name', 'admin') }}
+    - shell: /bin/bash
+    - onlyif: git config --global user.name

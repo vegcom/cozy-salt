@@ -1,5 +1,5 @@
-# win.ps1 - Windows provisioning bootstrap
-# Sets up Docker context to use WSL's Docker daemon
+# configure-docker-wsl-context.ps1 - Windows Docker WSL integration
+# Sets up Docker context to use WSL's Docker daemon via TCP proxy
 
 $ErrorActionPreference = "SilentlyContinue"
 

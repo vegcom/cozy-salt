@@ -178,8 +178,8 @@ cozy-salt/
 ├── tests/                       # Linting tests
 │   ├── test-shellscripts.sh
 │   └── test-psscripts.ps1
-├── Dockerfile.master
-├── Dockerfile.linux-minion
+├── Dockerfile.linux-master
+├── Dockerfile.ubuntu-minion
 └── docker-compose.yaml          # Use --profile test-linux for testing
 ```
 

@@ -1,13 +1,14 @@
 # Consolidated Package List for cozy-salt
 # Source preference: Chocolatey > Winget (when package exists in both)
 #
-# Usage in Salt states (import this file):
-#   import_yaml 'packages.sls' as packages
-#   Loop through packages.choco, packages.apt, etc.
+# This file is imported by Salt states using import_yaml.
+# See CONTRIBUTING.md for usage examples.
 #
-# Example state pattern:
-#   for pkg in packages.choco:
-#     pkg: chocolatey.installed
+# Package subsets:
+#   - apt / dnf: Core packages (always installed)
+#   - apt_kvm / dnf_kvm: Virtualization packages (only on test hosts)
+#   - choco / winget: Windows packages
+#   - npm_global: Global npm packages (via nvm)
 
 # =============================================================================
 # LINUX PACKAGES (APT/DNF)
@@ -26,6 +27,96 @@ apt:
   - tree
   - unzip
 
+  # --- Terminal & Shell ---
+  - tmux
+  - screen
+  - zsh
+  - bash-completion
+  - zsh-autosuggestions
+  - zsh-syntax-highlighting
+
+  # --- Build & Development ---
+  - build-essential
+  - cmake
+  - pkg-config
+  - autoconf
+  - automake
+
+  # --- Python (minimal - use miniforge for packages) ---
+  - python3
+  - python3-pip
+  - python3-venv
+  - pipx
+
+  # --- Docker & Containers ---
+  - docker.io
+  - docker-compose
+  - docker-buildx-plugin
+  - containerd
+
+  # --- Networking ---
+  - openssh-client
+  - openssh-server
+  - net-tools
+  - iputils-ping
+  - dnsutils
+  - netcat-openbsd
+  - socat
+  - traceroute
+  - tcpdump
+  - nmap
+
+  # --- Compression & Archives ---
+  - zip
+  - p7zip-full
+  - bzip2
+  - xz-utils
+
+  # --- Security & Certificates ---
+  - gnupg
+  - ca-certificates
+  - apt-transport-https
+
+  # --- System Utilities ---
+  - lsof
+  - strace
+  - ltrace
+  - sysstat
+
+  # --- Version Control Extras ---
+  - git-lfs
+  - tig
+  - gh
+
+  # --- Modern CLI Tools ---
+  - ripgrep
+  - fd-find
+  - bat
+  - fzf
+  - ncdu
+  - duf
+
+# =============================================================================
+# KVM/VIRTUALIZATION PACKAGES (Optional - for hosts running Windows tests)
+# =============================================================================
+# Required for Dockur Windows testing (https://github.com/dockur/windows)
+# Only install on hosts that will run test-windows profile
+
+apt_kvm:
+  # --- KVM Core ---
+  - qemu-system-x86             # x86 system emulation with KVM support
+  - qemu-utils                  # QEMU utilities
+  - cpu-checker                 # kvm-ok command
+
+  # --- Virtualization Libraries ---
+  - libvirt-daemon-system       # Libvirt daemon
+  - libvirt-clients             # virsh, etc.
+  - virtinst                    # virt-install command
+
+  # --- Optional Management Tools ---
+  # - virt-manager              # GUI (uncomment if needed)
+  # - virt-viewer               # VM console viewer
+
 dnf:
   # --- Base Utilities (RHEL/CentOS equivalents) ---
   - curl
@@ -37,6 +128,93 @@ dnf:
   - jq
   - tree
   - unzip
+
+  # --- Terminal & Shell ---
+  - tmux
+  - screen
+  - zsh
+  - bash-completion
+  - zsh-autosuggestions
+  - zsh-syntax-highlighting
+
+  # --- Build & Development ---
+  - gcc
+  - gcc-c++
+  - make
+  - cmake
+  - pkgconfig
+  - autoconf
+  - automake
+
+  # --- Python (minimal - use miniforge for packages) ---
+  - python3
+  - python3-pip
+  - python3-virtualenv
+  - pipx
+
+  # --- Docker & Containers ---
+  - docker
+  - docker-compose
+  - containerd
+
+  # --- Networking ---
+  - openssh-clients
+  - openssh-server
+  - net-tools
+  - iputils
+  - bind-utils
+  - nmap-ncat
+  - socat
+  - traceroute
+  - tcpdump
+  - nmap
+
+  # --- Compression & Archives ---
+  - zip
+  - unzip
+  - p7zip
+  - p7zip-plugins
+  - bzip2
+  - xz
+
+  # --- Security & Certificates ---
+  - gnupg2
+  - ca-certificates
+
+  # --- System Utilities ---
+  - lsof
+  - strace
+  - ltrace
+  - sysstat
+
+  # --- Version Control Extras ---
+  - git-lfs
+  - tig
+  - gh
+
+  # --- Modern CLI Tools ---
+  - ripgrep
+  - fd-find
+  - bat
+  - fzf
+  - ncdu
+
+dnf_kvm:
+  # --- KVM Core ---
+  - qemu-kvm
+  - qemu-img
+  - qemu-kvm-tools
+  - cpu-checker
+
+  # --- Virtualization Libraries ---
+  - libvirt
+  - libvirt-daemon
+  - libvirt-client
+  - virt-install
+
+  # --- Optional Management Tools ---
+  # - virt-manager              # GUI (uncomment if needed)
+  # - virt-viewer               # VM console viewer
 
 # =============================================================================
 # CHOCOLATEY PACKAGES (Primary)
@@ -197,7 +375,7 @@ winget:
   - restic.restic                 # Backup tool (deck)
 
   # --- Desktop Customization ---
-  - RamenSoftware.Windhawk        # Windows customizer
+  # - RamenSoftware.Windhawk      # Windows customizer ( using portable install presently )
   - AutoHotkey.AutoHotkey         # Automation
   - File-New-Project.EarTrumpet   # Volume mixer
   - Rainmeter.Rainmeter           # Desktop widgets (deck)
@@ -279,6 +457,23 @@ winget_runtimes:
   - Microsoft.WebDeploy                   # deck
   - Microsoft.CLRTypesSQLServer.2019      # deck
   - Microsoft.GameInput                   # deck
+
+
+# =============================================================================
+# NPM GLOBAL PACKAGES (via nvm)
+# =============================================================================
+# Installed globally via npm after nvm installs Node.js
+# Applied to both Windows and Linux
+
+npm_global:
+  - '@anthropic-ai/claude-code'
+  - 'pnpm'
+  - 'yarn'
+  - 'typescript'
+  - 'ts-node'
+  - '@types/node'
+  - 'prettier'
+  - 'eslint'
 
 
 # =============================================================================

@@ -55,3 +55,6 @@ pkgs/
 
 # Windows
 nul
+
+# Tests
+tests/output/*.json

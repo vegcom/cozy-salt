@@ -2,7 +2,8 @@
 # Includes all Windows state modules
 
 include:
-  - windows.packages
+  - windows.install
   - windows.config
+  - windows.nvm
   - windows.tasks
   - windows.services

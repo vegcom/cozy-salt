@@ -1,0 +1,35 @@
+{
+  "local": {
+    "pkg_|-vim_|-vim_|-installed": {
+      "name": "vim",
+      "changes": {},
+      "result": true,
+      "comment": "Package vim is already installed",
+      "duration": 123.45,
+      "__sls__": "linux.base",
+      "__run_num__": 0,
+      "__id__": "vim"
+    },
+    "file_|-bad_config_|-/etc/nonexistent/config.conf_|-managed": {
+      "name": "/etc/nonexistent/config.conf",
+      "changes": {},
+      "result": false,
+      "comment": "Parent directory /etc/nonexistent does not exist",
+      "duration": 5.678,
+      "__sls__": "linux.base",
+      "__run_num__": 1,
+      "__id__": "bad_config"
+    },
+    "service_|-invalid_service_|-fake-daemon_|-running": {
+      "name": "fake-daemon",
+      "changes": {},
+      "result": false,
+      "comment": "Service fake-daemon not found",
+      "duration": 234.56,
+      "__sls__": "linux.base",
+      "__run_num__": 2,
+      "__id__": "invalid_service"
+    },
+    "retcode": 2
+  }
+}

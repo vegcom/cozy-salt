@@ -2,7 +2,7 @@ services:
   salt-master:
     build:
       context: .
-      dockerfile: Dockerfile.master
+      dockerfile: Dockerfile.linux-master
     container_name: salt-master
     restart: unless-stopped
     environment:
@@ -38,16 +38,14 @@ services:
   salt-minion-linux:
     build:
       context: .
-      dockerfile: Dockerfile.linux-minion
+      dockerfile: Dockerfile.ubuntu-minion
     container_name: salt-minion-linux-test
     restart: "no"
-    volumes:
-      # Pre-shared keys (optional, for automated testing without auto-accept)
-      - ./srv/salt/keys/linux-test.pem:/etc/salt/pki/minion/minion.pem:ro
-      - ./srv/salt/keys/linux-test.pub:/etc/salt/pki/minion/minion.pub:ro
     environment:
       - SALT_MASTER=salt-master
       - MINION_ID=linux-test
+    volumes:
+      - salt-minion-linux-pki:/etc/salt/pki/minion
     networks:
       - salt-net
     depends_on:
@@ -60,34 +58,95 @@ services:
       retries: 3
       start_period: 90s
     profiles:
-      - test-linux
+      - test-ubuntu
 
-  # Windows test minion (requires Windows Docker host)
-  salt-minion-win:
-    image: mcr.microsoft.com/windows/servercore:ltsc2022
-    platform: windows/amd64
-    container_name: salt-minion-win-test
+  # RHEL test minion - auto-applies highstate on startup
+  salt-minion-rhel:
+    build:
+      context: .
+      dockerfile: Dockerfile.rhel-minion
+    container_name: salt-minion-rhel-test
     restart: "no"
-    volumes:
-      - ./scripts:/scripts:ro
-      # Pre-shared keys (optional, for automated testing without auto-accept)
-      - ./srv/salt/keys/win-test.pem:C:/salt/conf/pki/minion/minion.pem:ro
-      - ./srv/salt/keys/win-test.pub:C:/salt/conf/pki/minion/minion.pub:ro
     environment:
       - SALT_MASTER=salt-master
-      - MINION_ID=win-test
-    entrypoint: ["powershell", "-ExecutionPolicy", "Bypass", "-File", "/scripts/install-win-minion.ps1"]
+      - MINION_ID=rhel-test
+    volumes:
+      - salt-minion-rhel-pki:/etc/salt/pki/minion
     networks:
       - salt-net
     depends_on:
-      - salt-master
+      salt-master:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f 'tail -f /var/log/salt/minion' >/dev/null"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+    profiles:
+      - test-rhel
+
+  # Windows Desktop test minion via Dockur (requires KVM on Linux host)
+  # This runs actual Windows 11 Desktop in a VM-like container using QEMU+KVM
+  # Access via web interface at http://localhost:8006 (login: Docker/admin)
+  salt-minion-windows:
+    image: dockurr/windows
+    container_name: salt-minion-windows-test
+    restart: "no"
+    environment:
+      VERSION: "11"           # Windows 11 Pro
+      RAM_SIZE: "4G"          # 4GB RAM
+      CPU_CORES: "2"          # 2 vCPUs
+      DISK_SIZE: "64G"        # 64GB virtual disk
+      # MANUAL: "N"           # Unattended install (requires Autounattend.xml)
+    devices:
+      - /dev/kvm              # Requires KVM support (Linux only)
+      - /dev/net/tun          # Required for networking
+    cap_add:
+      - NET_ADMIN             # Required for network management
+    ports:
+      - 8006:8006             # Web VNC interface
+      - 3389:3389             # RDP (optional, for direct access)
+    volumes:
+      - ./windows-test:/storage                          # Persistent Windows storage
+      - ./scripts:/mnt/scripts:ro                        # Mount scripts for Salt install
+      - ./srv/salt/keys:/mnt/keys:ro                     # Pre-shared minion keys
+    networks:
+      - salt-net
+    depends_on:
+      salt-master:
+        condition: service_healthy
     profiles:
       - test-windows
+
+  # Legacy: Windows Server test minion (requires Windows Docker host)
+  # Commented out in favor of Dockur approach above
+  # salt-minion-win-server:
+  #   image: mcr.microsoft.com/windows/servercore:ltsc2022
+  #   platform: windows/amd64
+  #   container_name: salt-minion-win-server-test
+  #   restart: "no"
+  #   volumes:
+  #     - ./scripts:/scripts:ro
+  #     - ./srv/salt/keys/win-test.pem:C:/salt/conf/pki/minion/minion.pem:ro
+  #     - ./srv/salt/keys/win-test.pub:C:/salt/conf/pki/minion/minion.pub:ro
+  #   environment:
+  #     - SALT_MASTER=salt-master
+  #     - MINION_ID=win-server-test
+  #   entrypoint: ["powershell", "-ExecutionPolicy", "Bypass", "-File", "/scripts/enrollment/install-windows-minion.ps1"]
+  #   networks:
+  #     - salt-net
+  #   depends_on:
+  #     - salt-master
+  #   profiles:
+  #     - test-windows-server
 
 volumes:
   salt-cache:
   salt-logs:
   salt-pki:
+  salt-minion-linux-pki:
+  salt-minion-rhel-pki:
 
 networks:
   salt-net:

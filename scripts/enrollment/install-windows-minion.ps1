@@ -1,9 +1,9 @@
-# install-win-minion.ps1
+# install-windows-minion.ps1
 # Installs Salt Minion on Windows and configures it to connect to the Salt Master
 #
 # Usage:
-#   .\install-win-minion.ps1 -Master <master-ip-or-hostname>
-#   .\install-win-minion.ps1 -Master salt-master -MinionId my-windows-pc
+#   .\install-windows-minion.ps1 -Master <master-ip-or-hostname>
+#   .\install-windows-minion.ps1 -Master salt-master -MinionId my-windows-pc
 #
 # Requires: Administrator privileges
 
@@ -53,8 +53,8 @@ $saltExe = "C:\salt\salt-minion.exe"
 if (-NOT (Test-Path $saltExe)) {
     Write-Host "Downloading Salt Minion..." -ForegroundColor Green
 
-    # Salt download URL (Broadcom/VMware repo for 3007+)
-    $downloadUrl = "https://repo.saltproject.io/salt/py3/windows/minor/$SaltVersion/Salt-Minion-$SaltVersion-Py3-AMD64-Setup.exe"
+    # Salt download URL (Broadcom Artifactory for 3007+)
+    $downloadUrl = "https://packages.broadcom.com/artifactory/saltproject-generic/windows/Salt-Minion-$SaltVersion-Py3-AMD64-Setup.exe"
     $installerPath = "$env:TEMP\salt-minion-setup.exe"
 
     try {

@@ -1,0 +1,20 @@
+# Test RHEL Minion - Rocky Linux 9 with Salt Minion pre-installed
+FROM rockylinux:9
+
+# Install Salt Minion from Broadcom repo (3007+)
+RUN dnf install -y \
+      curl gnupg ca-certificates && \
+    rpm --import https://packages.broadcom.com/artifactory/api/security/keypair/SaltProjectKey/public && \
+    curl -fsSL https://packages.broadcom.com/artifactory/saltproject-rpm/el9/x86_64/latest.repo \
+      -o /etc/yum.repos.d/salt.repo && \
+    dnf install -y salt-minion && \
+    dnf clean all && rm -rf /var/cache/dnf /tmp/*
+
+# Pre-configure minion (master hostname will be set at runtime)
+RUN mkdir -p /etc/salt/minion.d
+
+# Copy entrypoint script (shared with debian minion)
+COPY scripts/docker/entrypoint-minion.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/entrypoint-minion.sh
+
+ENTRYPOINT ["/usr/local/bin/entrypoint-minion.sh"]

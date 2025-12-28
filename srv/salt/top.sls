@@ -1,4 +1,8 @@
 base:
+  # All minions get common states (dotfiles, nvm, etc.)
+  '*':
+    - common
+
   # All Windows systems (physical + WSL contexts)
   'os_family:Windows':
     - match: grain

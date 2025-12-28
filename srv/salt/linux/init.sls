@@ -2,6 +2,7 @@
 # Includes all Linux state modules
 
 include:
-  - linux.packages
+  - linux.install
   - linux.config
+  - linux.nvm
   - linux.services
