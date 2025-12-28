@@ -21,6 +21,9 @@ RUN apt-get update && \
 RUN mkdir -p /srv/salt/files /srv/pillar /var/cache/salt /var/log/salt && \
     chown -R salt:salt /srv /var/cache/salt /var/log/salt
 
+# Enable master.d config drop-in directory
+RUN sed -i 's/^#default_include: master.d\/\*.conf$/default_include: master.d\/*.conf/' /etc/salt/master
+
 # Healthcheck: verify Salt Master ports are listening
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD nc -z 127.0.0.1 4505 && nc -z 127.0.0.1 4506 || exit 1

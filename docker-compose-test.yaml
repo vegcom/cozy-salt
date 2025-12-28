@@ -2,47 +2,29 @@
 # Usage: docker compose -f docker-compose.yaml -f docker-compose-test.yaml up
 
 services:
-  # Linux test minion - installs salt-minion and connects to master
+  # Linux test minion - auto-applies highstate on startup
   salt-minion-linux:
-    image: ubuntu:24.04
+    build:
+      context: ./tests
+      dockerfile: Dockerfile.linux-minion
     container_name: salt-minion-linux-test
     restart: "no"
-    command: >
-      bash -c "
-        set -e
-        echo '=== Installing Salt Minion ===' &&
-        apt-get update &&
-        apt-get install -y curl gnupg ca-certificates &&
-        curl -fsSL https://packages.broadcom.com/artifactory/api/security/keypair/SaltProjectKey/public |
-          gpg --dearmor -o /usr/share/keyrings/salt.gpg &&
-        echo 'deb [signed-by=/usr/share/keyrings/salt.gpg arch=amd64] https://packages.broadcom.com/artifactory/saltproject-deb/ stable main' > /etc/apt/sources.list.d/salt.list &&
-        apt-get update &&
-        apt-get install -y salt-minion &&
-        mkdir -p /etc/salt/minion.d &&
-        echo 'master: salt-master' > /etc/salt/minion.d/master.conf &&
-        echo 'id: linux-test' > /etc/salt/minion.d/id.conf &&
-        echo '=== Starting Salt Minion ===' &&
-        salt-minion -d &&
-        echo '=== Waiting for key acceptance and connectivity ===' &&
-        timeout=60 &&
-        while [ \$$timeout -gt 0 ]; do
-          if salt-call test.ping --local 2>/dev/null | grep -q 'True'; then
-            echo '=== Minion connected! Running state.highstate ===' &&
-            salt-call state.highstate --state-output=mixed &&
-            echo '=== Highstate complete! Keeping container alive ===' &&
-            exec tail -f /var/log/salt/minion
-          fi
-          sleep 2
-          timeout=\$$((timeout-2))
-        done &&
-        echo '=== ERROR: Timeout waiting for minion connection ===' &&
-        exit 1
-      "
+    environment:
+      - SALT_MASTER=salt-master
+      - MINION_ID=linux-test
     networks:
       - salt-net
     depends_on:
       salt-master:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "salt-call --local state.show_highstate --out=json 2>/dev/null | grep -q '\"result\": true' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+    profiles:
+      - test
 
   # Windows test minion (requires Windows Docker host + --profile windows)
   salt-minion-win:
@@ -62,3 +44,4 @@ services:
       - salt-master
     profiles:
       - windows  # Only with: docker compose --profile windows up
+      - test

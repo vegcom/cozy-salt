@@ -1,0 +1,26 @@
+# Test Linux Minion - Ubuntu 24.04 with Salt Minion pre-installed
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install Salt Minion from Broadcom repo (3007+)
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+      curl gnupg ca-certificates && \
+    curl -fsSL https://packages.broadcom.com/artifactory/api/security/keypair/SaltProjectKey/public | \
+      gpg --dearmor -o /usr/share/keyrings/salt.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/salt.gpg arch=amd64] \
+      https://packages.broadcom.com/artifactory/saltproject-deb/ stable main" > \
+      /etc/apt/sources.list.d/salt.list && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends salt-minion && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/*
+
+# Pre-configure minion (master hostname will be set at runtime)
+RUN mkdir -p /etc/salt/minion.d
+
+# Copy entrypoint script
+COPY entrypoint-test-minion.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/entrypoint-test-minion.sh
+
+ENTRYPOINT ["/usr/local/bin/entrypoint-test-minion.sh"]
