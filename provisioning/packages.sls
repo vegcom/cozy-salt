@@ -1,12 +1,13 @@
 # Consolidated Package List for cozy-salt
 # Source preference: Chocolatey > Winget (when package exists in both)
 #
-# Usage in Salt states:
-#   {% import_yaml 'packages.sls' as packages %}
-#   {% for pkg in packages.choco %}
-#   {{ pkg }}:
-#     chocolatey.installed
-#   {% endfor %}
+# Usage in Salt states (import this file):
+#   import_yaml 'packages.sls' as packages
+#   Loop through packages.choco, packages.apt, etc.
+#
+# Example state pattern:
+#   for pkg in packages.choco:
+#     pkg: chocolatey.installed
 
 # =============================================================================
 # LINUX PACKAGES (APT/DNF)
