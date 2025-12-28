@@ -25,3 +25,10 @@ run_provision_script:
     - creates: C:\opt\cozy\.done.flag
     - require:
       - file: provision_script
+
+# Deploy hardened SSH configuration
+sshd_hardening_config:
+  file.managed:
+    - name: C:\ProgramData\ssh\sshd_config.d\99-hardening.conf
+    - source: salt://windows/files/ProgramData/ssh/sshd_config.d/99-hardening.conf
+    - makedirs: True

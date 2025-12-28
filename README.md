@@ -42,7 +42,7 @@ docker context create wsl --docker "host=tcp://localhost:2375"
 docker context use wsl
 
 # Install Salt Minion
-.\scripts\install-win-minion.ps1 -Master $(wsl hostname -I)
+.\scripts\enrollment\install-win-minion.ps1 -Master $(wsl hostname -I)
 ```
 
 **Step 3: Accept & Apply**
@@ -68,19 +68,28 @@ Then install minions and apply states as shown above.
 
 For automated OS install + Salt enrollment via network boot:
 
+**Windows:**
 ```
-provisioning/windows/pxe/
+scripts/pxe/windows/
 ├── autounattend.xml      # Unattended Windows install
 ├── SetupComplete.ps1     # Auto-enrolls with Salt Master
-└── README.md             # Detailed setup for WDS/FOG/netboot
+└── README.md             # Detailed setup
 ```
 
-1. Set up PXE server (WDS, FOG, or netboot.xyz)
-2. Add `autounattend.xml` to your Windows image
-3. Include `SetupComplete.ps1` at `C:\Windows\Setup\Scripts\`
-4. PXE boot new machines → auto-install → auto-enroll with Salt
+**Linux:**
+```
+scripts/pxe/linux/
+├── preseed.cfg           # Ubuntu/Debian automated install
+├── kickstart.cfg         # RHEL/Rocky automated install
+├── post-install.sh       # Auto-enrolls with Salt Master
+└── README.md             # Detailed setup
+```
 
-See [`provisioning/windows/pxe/README.md`](provisioning/windows/pxe/README.md) for details.
+1. Set up PXE server (WDS, FOG, netboot.xyz, or Cobbler)
+2. Configure automated install files (preseed/kickstart/autounattend)
+3. PXE boot new machines → auto-install → auto-enroll with Salt
+
+See [`scripts/pxe/`](scripts/pxe/) for platform-specific details.
 
 ## Architecture
 
@@ -132,30 +141,46 @@ See [`provisioning/windows/pxe/README.md`](provisioning/windows/pxe/README.md) f
 ```
 cozy-salt/
 ├── srv/
-│   ├── salt/                    # Salt states
+│   ├── salt/                    # Salt states (modular)
 │   │   ├── top.sls              # State targeting
-│   │   ├── windows/win.sls      # Windows provisioning
-│   │   └── linux/base.sls       # Linux provisioning
+│   │   ├── windows/             # Windows states
+│   │   │   ├── init.sls         # Orchestrator
+│   │   │   ├── packages.sls    # Packages
+│   │   │   ├── config.sls      # Configuration
+│   │   │   ├── tasks.sls       # Scheduled tasks
+│   │   │   └── services.sls    # Services
+│   │   └── linux/               # Linux states
+│   │       ├── init.sls         # Orchestrator
+│   │       ├── packages.sls    # Packages
+│   │       ├── config.sls      # Configuration
+│   │       └── services.sls    # Services
 │   └── pillar/                  # Configuration data
 │       ├── win/init.sls         # Windows config
 │       └── linux/init.sls       # Linux config
 ├── provisioning/
 │   ├── windows/
 │   │   ├── files/opt-cozy/      # PowerShell scripts
-│   │   ├── tasks/               # Scheduled tasks (XML)
-│   │   └── pxe/                 # PXE/WDS deployment
-│   │       ├── autounattend.xml # Unattended install
-│   │       └── SetupComplete.ps1 # Salt auto-enrollment
+│   │   └── tasks/               # Scheduled tasks (XML)
 │   ├── linux/                   # Shell scripts, dotfiles
-│   └── wsl/                     # WSL local dev setup
-│       └── files/opt-cozy/
-│           ├── bootstrap.sh     # One-shot setup
-│           ├── docker.sh        # Install Docker
-│           └── docker-proxy.yaml # Socket proxy
+│   ├── wsl/                     # WSL local dev setup
+│   │   └── files/opt-cozy/
+│   │       ├── bootstrap.sh     # One-shot setup
+│   │       ├── docker.sh        # Install Docker
+│   │       └── docker-proxy.yaml # Socket proxy
 │   └── packages.sls             # Consolidated package list
-├── scripts/install-win-minion.ps1
-├── Dockerfile
-└── docker-compose.yaml
+├── scripts/
+│   ├── docker/                  # Container entrypoints
+│   ├── enrollment/              # Manual minion installation
+│   │   └── install-win-minion.ps1
+│   └── pxe/                     # Automated bare-metal deployment
+│       ├── windows/             # Windows PXE
+│       └── linux/               # Linux PXE (preseed, kickstart)
+├── tests/                       # Linting tests
+│   ├── test-shellscripts.sh
+│   └── test-psscripts.ps1
+├── Dockerfile.master
+├── Dockerfile.linux-minion
+└── docker-compose.yaml          # Use --profile test-linux for testing
 ```
 
 ## Package Management
@@ -211,7 +236,7 @@ No other dependencies. SaltStack runs in the container.
 
 ## Security Notes
 
-- `provisioning/wsl/files/opt-cozy/docker.sh` exposes Docker on TCP 2375 (unencrypted) - use only in trusted networks
+- Hardened SSH configs deployed for all platforms (see SECURITY.md for production hardening)
 - Pillar data may contain sensitive config - control access appropriately
 - Review package lists before deploying to production
 
@@ -219,10 +244,10 @@ No other dependencies. SaltStack runs in the container.
 
 ```bash
 # Test environment with Linux minion
-docker compose -f docker-compose.yaml -f docker-compose-test.yaml up -d
+docker compose --profile test-linux up -d
 
 # Validate state syntax
-docker compose exec salt-master salt-call --local state.show_sls windows.win
+docker compose exec salt-master salt-call --local state.show_sls windows
 ```
 
 ## License

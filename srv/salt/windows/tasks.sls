@@ -3,29 +3,29 @@
 
 {% load_yaml as tasks %}
 wsl:
-  - tasks/wsl/wsl-autostart.xml
+  - tasks/wsl/wsl_autostart.xml
 kubernetes:
-  - tasks/kubernetes/docker-registry-port-forward.xml
-  - tasks/kubernetes/ollama-port-forward.xml
-  - tasks/kubernetes/open-webui-port-forward.xml
+  - tasks/kubernetes/docker_registry_port_forward.xml
+  - tasks/kubernetes/ollama_port_forward.xml
+  - tasks/kubernetes/open_webui_port_forward.xml
 {% endload %}
 
 {% for category, xmls in tasks.items() %}
 {% for xml in xmls %}
 {% set task_name = xml.split('/')[-1] | replace('.xml', '') %}
-{% set task_display_name = task_name | replace('-', ' ') | title %}
+{% set task_display_name = task_name | replace('_', ' ') | title %}
 # Deploy task XML file
-{{ task_name | replace(' ', '_') | replace('-', '_') }}_xml:
+{{ task_name }}_xml:
   file.managed:
     - name: C:\Windows\Temp\{{ task_name }}.xml
     - source: salt://windows/{{ xml }}
     - makedirs: True
 
 # Import task using schtasks
-{{ task_name | replace(' ', '_') | replace('-', '_') }}_task:
+{{ task_name }}_task:
   cmd.run:
     - name: schtasks /create /tn "\Cozy\{{ task_display_name }}" /xml "C:\Windows\Temp\{{ task_name }}.xml" /f
     - require:
-      - file: {{ task_name | replace(' ', '_') | replace('-', '_') }}_xml
+      - file: {{ task_name }}_xml
 {% endfor %}
 {% endfor %}

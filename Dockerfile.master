@@ -25,7 +25,7 @@ RUN mkdir -p /srv/salt/files /srv/pillar /var/cache/salt /var/log/salt && \
 RUN sed -i 's/^#default_include: master.d\/\*.conf$/default_include: master.d\/*.conf/' /etc/salt/master
 
 # Copy and set up entrypoint script
-COPY scripts/entrypoint-master.sh /usr/local/bin/
+COPY scripts/docker/entrypoint-master.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint-master.sh
 
 # Healthcheck: verify Salt Master ports are listening

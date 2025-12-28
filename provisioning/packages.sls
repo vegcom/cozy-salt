@@ -79,11 +79,6 @@ choco:
 # Chocolatey are listed here.
 
 winget:
-  # --- AI & ML ---
-  - Anthropic.Claude              # Claude desktop app
-  - Anthropic.ClaudeCode          # Claude Code CLI
-  - ElementLabs.LMStudio          # Local LLM runner
-
   # --- Development: Languages & Runtimes ---
   - CoreyButler.NVMforWindows     # Node Version Manager
   - DenoLand.Deno                 # Deno runtime

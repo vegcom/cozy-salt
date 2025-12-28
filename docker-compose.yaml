@@ -7,7 +7,7 @@ services:
     restart: unless-stopped
     environment:
       # Auto-accept minion keys: true (testing), false (production)
-      - SALT_AUTO_ACCEPT=true
+      - SALT_AUTO_ACCEPT=${SALT_AUTO_ACCEPT:-false}
     ports:
       - "4505:4505"  # Master pub (ZeroMQ)
       - "4506:4506"  # Minion ret (ZeroMQ)
