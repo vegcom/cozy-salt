@@ -128,7 +128,51 @@ boot
 
 ## Customization
 
-### 1. Set Salt Master Address
+### Automated Configuration (Recommended)
+
+Use the `configure-autounattend.ps1` script to configure all variables at once:
+
+```powershell
+cd provisioning\windows\pxe
+.\configure-autounattend.ps1 `
+    -Username "admin" `
+    -DisplayName "Admin User" `
+    -Password "YourSecureP@ssw0rd!" `
+    -SaltMaster "10.0.0.5"
+```
+
+This script will:
+- Replace `{{USERNAME}}` and `{{DISPLAYNAME}}` placeholders in autounattend.xml
+- Generate properly encoded passwords for all three password fields (Administrator, User, AutoLogon)
+- Update the Salt Master default in SetupComplete.ps1
+- Display a security checklist showing what was configured
+
+**Parameters:**
+- `-Username` - Local admin username (default: "cozy")
+- `-DisplayName` - Display name for user (default: "Cozy Admin")
+- `-Password` - Password for all accounts (default: "Admin@123" - **CHANGE THIS!**)
+- `-SaltMaster` - Salt Master IP or hostname (default: "salt.example.com")
+- `-InputFile` - Source XML file (default: "autounattend.xml")
+- `-OutputFile` - Output XML file (default: "autounattend.xml" - overwrites)
+
+**Example with all parameters:**
+```powershell
+.\configure-autounattend.ps1 `
+    -Username "sysadmin" `
+    -DisplayName "System Administrator" `
+    -Password "C0mpl3x!P@ssw0rd#2024" `
+    -SaltMaster "salt.example.com" `
+    -InputFile "autounattend.xml" `
+    -OutputFile "autounattend-customized.xml"
+```
+
+**Security Warning:** The default password is "Admin@123" - always set a strong custom password before deployment!
+
+### Manual Configuration (Advanced)
+
+If you need to manually configure individual settings:
+
+#### 1. Set Salt Master Address
 
 Edit `SetupComplete.ps1` or set via environment:
 
@@ -140,21 +184,31 @@ Edit `SetupComplete.ps1` or set via environment:
 $env:SALT_MASTER = "192.168.1.100"
 ```
 
-### 2. Change Admin Password
+#### 2. Change Admin Password
 
-In `autounattend.xml`, the password is Base64 encoded. Generate new:
+In `autounattend.xml`, the password is Base64 encoded with a suffix. Generate new:
 
 ```powershell
-# Plain password + "AdministratorPassword" or "Password" suffix
+# For Administrator account (uses "AdministratorPassword" suffix)
 $password = "YourSecurePassword"
 [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($password + "AdministratorPassword"))
+
+# For User/AutoLogon accounts (uses "Password" suffix)
+[Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($password + "Password"))
 ```
 
-### 3. Change Locale/Timezone
+**Note:** You must update three password fields in autounattend.xml:
+1. `<AdministratorPassword>` - Built-in Administrator account (uses "AdministratorPassword" suffix)
+2. `<LocalAccount><Password>` - Your custom user account (uses "Password" suffix)
+3. `<AutoLogon><Password>` - Auto-login password (uses "Password" suffix)
+
+The configure-autounattend.ps1 script handles all three automatically.
+
+#### 3. Change Locale/Timezone
 
 Edit the `Microsoft-Windows-International-Core-WinPE` and `TimeZone` sections.
 
-### 4. Disk Layout
+#### 4. Disk Layout
 
 The default is UEFI GPT with:
 - 512MB EFI partition

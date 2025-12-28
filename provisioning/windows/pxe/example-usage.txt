@@ -1,0 +1,61 @@
+# PXE Autounattend Configuration Example
+
+## Quick Start
+
+1. Customize autounattend.xml with your values:
+
+   powershell
+   cd provisioning\windows\pxe
+   .\configure-autounattend.ps1 `
+       -Username "admin" `
+       -DisplayName "Admin User" `
+       -Password "YourSecureP@ssw0rd!" `
+       -SaltMaster "10.0.0.5"
+
+2. Deploy to PXE server:
+   - Copy autounattend.xml to deployment share root
+   - Copy SetupComplete.ps1 to deployment share
+
+3. Boot machine via PXE - it will:
+   - Auto-install Windows
+   - Create user "admin"
+   - Auto-login once
+   - Install Salt Minion
+   - Connect to Salt Master at 10.0.0.5
+
+## Variables
+
+The configure script replaces these placeholders in autounattend.xml:
+
+- {{USERNAME}}     -> Your username (e.g., "admin")
+- {{DISPLAYNAME}}  -> Display name (e.g., "Admin User")
+
+And updates passwords (all three: Administrator, User, AutoLogon):
+- Uses Windows unattend Base64 encoding
+- Suffix: "AdministratorPassword" for admin, "Password" for user/autologon
+
+And updates SetupComplete.ps1 default Salt Master:
+- $env:SALT_MASTER -> Your Salt Master IP (e.g., "10.0.0.5")
+
+## Default Values
+
+If you don't run the configure script (or omit parameters):
+- Username: cozy
+- Display Name: Cozy Admin
+- Password: Admin@123 (⚠️ WEAK - always set custom password!)
+- Salt Master: salt.example.com
+
+## Security Notes
+
+**IMPORTANT:**
+1. Always set a strong password with -Password parameter
+2. The default "Admin@123" is for testing only
+3. Passwords are Base64 encoded (not encrypted) in autounattend.xml
+4. Store autounattend.xml securely after configuration
+5. Consider using WDS/MDT variables instead of static passwords for production
+
+## See Also
+
+- README.md - General PXE deployment guide
+- autounattend.xml - Main configuration file (header has full docs)
+- SetupComplete.ps1 - Post-install enrollment script

@@ -5,6 +5,9 @@ set -e
 echo "master: ${SALT_MASTER:-salt-master}" > /etc/salt/minion.d/master.conf
 echo "id: ${MINION_ID:-linux-test}" > /etc/salt/minion.d/id.conf
 
+# Remove cached master key to handle master restarts
+rm -f /etc/salt/pki/minion/minion_master.pub
+
 echo "=== Starting Salt Minion ==="
 salt-minion -d
 

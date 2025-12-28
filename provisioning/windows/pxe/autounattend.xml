@@ -1,14 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <unattend xmlns="urn:schemas-microsoft-com:unattend">
   <!--
+    ============================================================================
+    CONFIGURATION VARIABLES - Replace before deployment
+    ============================================================================
+
+    {{USERNAME}}       - Local admin username (default: cozy)
+    {{DISPLAYNAME}}    - Display name for user (default: Cozy Admin)
+    {{SALT_MASTER}}    - Salt Master IP or hostname (set in SetupComplete.ps1)
+
+    To customize - Use the configure script (RECOMMENDED):
+      .\configure-autounattend.ps1 -Username "admin" -DisplayName "Admin" -Password "SecureP@ss!" -SaltMaster "10.0.0.5"
+
+    Or manually replace:
+    1. Replace {{USERNAME}} with your desired username
+    2. Replace {{DISPLAYNAME}} with desired display name
+    3. Set {{SALT_MASTER}} in SetupComplete.ps1 environment variable
+    4. Update passwords: Generate Base64 encoded passwords (see configure script)
+
+    Manual PowerShell replacement:
+      (Get-Content autounattend.xml) -replace '{{USERNAME}}', 'myuser' | Set-Content autounattend.xml
+      (Get-Content autounattend.xml) -replace '{{DISPLAYNAME}}', 'My User' | Set-Content autounattend.xml
+
+    WARNING: Default password is "Admin@123" - CHANGE THIS before production deployment!
+
+    ============================================================================
     Windows Unattended Installation with Salt Minion Auto-Enrollment
 
     Usage:
-    1. Place this file as autounattend.xml in your WDS/MDT deployment share
-    2. Customize: disk layout, product key, admin password, Salt Master IP
-    3. The SetupComplete.cmd will install Salt Minion after first boot
+    1. Replace configuration variables above
+    2. Place this file as autounattend.xml in your WDS/MDT deployment share
+    3. Customize: disk layout, product key, admin password if needed
+    4. The SetupComplete.ps1 will install Salt Minion after first boot
 
     Compatible with: Windows 10/11, Windows Server 2019/2022
+    ============================================================================
   -->
 
   <!-- WinPE: Disk Configuration -->
@@ -144,9 +170,9 @@
               <Value>QQBkAG0AaQBuAEAAMQAyADMAUABhAHMAcwB3AG8AcgBkAA==</Value>
               <PlainText>false</PlainText>
             </Password>
-            <Name>cozy</Name>
+            <Name>{{USERNAME}}</Name>
             <Group>Administrators</Group>
-            <DisplayName>Cozy Admin</DisplayName>
+            <DisplayName>{{DISPLAYNAME}}</DisplayName>
           </LocalAccount>
         </LocalAccounts>
       </UserAccounts>
@@ -154,7 +180,7 @@
       <AutoLogon>
         <Enabled>true</Enabled>
         <LogonCount>1</LogonCount>
-        <Username>cozy</Username>
+        <Username>{{USERNAME}}</Username>
         <Password>
           <Value>QQBkAG0AaQBuAEAAMQAyADMAUABhAHMAcwB3AG8AcgBkAA==</Value>
           <PlainText>false</PlainText>

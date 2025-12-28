@@ -93,7 +93,7 @@ if (Test-Path $saltExe) {
 
             # Install Salt via Chocolatey
             Write-Log "Installing Salt Minion via Chocolatey..."
-            choco install saltminion -y --params="'/Master:$Master /MinionName:$MinionId'"
+            choco install saltminion -y --force --params="'/Master:$Master /MinionName:$MinionId'"
             $downloaded = $true
         } catch {
             Write-Log "Chocolatey installation failed: $_"
