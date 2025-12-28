@@ -18,7 +18,7 @@ while [ $elapsed -lt $timeout ]; do
   # Check if we can ping the master (without --local flag)
   if salt-call test.ping 2>&1 | grep -q 'True'; then
     echo "=== Minion connected to master! Running state.highstate ==="
-    salt-call state.highstate --state-output=mixed
+    salt-call state.highstate --state-output=mixed || true
     echo "=== Highstate complete! Keeping container alive ==="
     exec tail -f /var/log/salt/minion
   fi

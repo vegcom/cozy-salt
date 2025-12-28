@@ -14,6 +14,7 @@ starship_profile:
   file.managed:
     - name: /etc/profile.d/starship.sh
     - source: salt://linux/files/etc-profile.d/starship.sh
+    - template: jinja
     - mode: 755
 
 # Deploy hardened SSH configuration

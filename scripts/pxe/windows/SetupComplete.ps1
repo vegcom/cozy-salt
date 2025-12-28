@@ -33,18 +33,18 @@ Write-Log "Master: $Master"
 Write-Log "Minion ID: $MinionId"
 Write-Log "Salt Version: $SaltVersion"
 
-# Wait for network
-Write-Log "Waiting for network connectivity..."
+# Wait for Salt Master connectivity
+Write-Log "Waiting for Salt Master connectivity ($Master)..."
 $maxWait = 120
 $waited = 0
-while (-not (Test-Connection -ComputerName 8.8.8.8 -Count 1 -Quiet) -and $waited -lt $maxWait) {
+while (-not (Test-Connection -ComputerName $Master -Count 1 -Quiet) -and $waited -lt $maxWait) {
     Start-Sleep -Seconds 5
     $waited += 5
     Write-Log "  Waiting... ($waited seconds)"
 }
 
 if ($waited -ge $maxWait) {
-    Write-Log "ERROR: Network not available after $maxWait seconds"
+    Write-Log "ERROR: Salt Master ($Master) not reachable after $maxWait seconds"
     exit 1
 }
 Write-Log "Network is available"

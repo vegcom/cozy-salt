@@ -32,4 +32,4 @@ packages:
 
 # Node.js version management via nvm
 nvm:
-  default_version: 'lts'
+  default_version: 'lts/*'

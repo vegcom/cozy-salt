@@ -17,10 +17,14 @@ RUN apt-get update && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/*
 
 # Pre-configure minion (master hostname will be set at runtime)
-RUN mkdir -p /etc/salt/minion.d
+RUN mkdir -p /etc/salt/minion.d && \
+    chown -R salt:salt /etc/salt
 
 # Copy entrypoint script
 COPY scripts/docker/entrypoint-minion.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint-minion.sh
+
+# Run as unprivileged salt user
+USER salt
 
 ENTRYPOINT ["/usr/local/bin/entrypoint-minion.sh"]

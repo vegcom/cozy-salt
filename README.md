@@ -89,7 +89,9 @@ scripts/pxe/linux/
 2. Configure automated install files (preseed/kickstart/autounattend)
 3. PXE boot new machines → auto-install → auto-enroll with Salt
 
-See [`scripts/pxe/`](scripts/pxe/) for platform-specific details.
+See [docs/user-guides/](docs/user-guides/) for detailed setup guides:
+- [Windows PXE Deployment](docs/user-guides/windows-pxe-deployment.md)
+- [Linux PXE Deployment](docs/user-guides/linux-pxe-deployment.md)
 
 ## Architecture
 
@@ -236,7 +238,7 @@ No other dependencies. SaltStack runs in the container.
 
 ## Security Notes
 
-- Hardened SSH configs deployed for all platforms (see SECURITY.md for production hardening)
+- Hardened SSH configs deployed for all platforms (see [docs/security/SECURITY.md](docs/security/SECURITY.md) for production hardening)
 - Pillar data may contain sensitive config - control access appropriately
 - Review package lists before deploying to production
 
@@ -249,6 +251,15 @@ docker compose --profile test-linux up -d
 # Validate state syntax
 docker compose exec salt-master salt-call --local state.show_sls windows
 ```
+
+## Documentation
+
+For comprehensive documentation, see the [docs/README.md](docs/README.md) which includes:
+- Quick start guides
+- Deployment procedures
+- Development and testing guides
+- Security hardening
+- Architecture and operations
 
 ## License
 

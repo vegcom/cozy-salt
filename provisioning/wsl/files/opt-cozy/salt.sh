@@ -2,7 +2,12 @@
 # salt.sh - Clone cozy-salt and run Salt Master in Docker
 set -e
 
-REPO_URL="${COZY_SALT_REPO:-https://github.com/vegcom/cozy-salt.git}"
+REPO_URL="${COZY_SALT_REPO}"
+if [[ -z "$REPO_URL" ]]; then
+    echo "Error: COZY_SALT_REPO environment variable must be set"
+    echo "Example: export COZY_SALT_REPO=https://github.com/your-org/cozy-salt.git"
+    exit 1
+fi
 COZY_DIR="/opt/cozy/cozy-salt"
 
 echo "=== Salt Master Setup ==="

@@ -25,7 +25,9 @@ ssh:
 # Shell customization
 shell:
   prompt: starship
-  theme_url: 'https://raw.githubusercontent.com/vegcom/Starship-Twilite/main/starship.toml'
+  # Optional: Custom starship.toml URL (defaults to starship's default config if not set)
+  # Example: theme_url: 'https://raw.githubusercontent.com/your-user/your-theme/main/starship.toml'
+  theme_url: ''
 
 # Package management
 packages:
@@ -34,7 +36,7 @@ packages:
 
 # Node.js version management via nvm
 nvm:
-  default_version: 'lts'
+  default_version: 'lts/*'
 
 # Host capabilities (optional - enable specific features)
 # Uncomment the capabilities needed for this host:

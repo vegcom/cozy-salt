@@ -1,15 +1,23 @@
 #/etc/profile.d/starship.sh
+# Managed by Salt - DO NOT EDIT MANUALLY
 if ! which starship &>/dev/null ; then
     sh <(curl -sS https://starship.rs/install.sh) --force
 fi
 
 if [[ ! -f $HOME/.config/starship.toml ]]; then
-    # leverage the Twilite theme from my GitHub repo to make it look like a purple paradise
+    # Use custom theme if configured via Salt pillar, otherwise use Starship defaults
     mkdir -p $HOME/.config
-    # download the Twilite theme from my GitHub
-    # this is a custom starship.toml file that I've created and made available on GitHub
-    wget -O ~/.config/starship.toml https://raw.githubusercontent.com/vegcom/Starship-Twilite/main/starship.toml
 
+{% set theme_url = salt['pillar.get']('shell:theme_url', '') -%}
+{% if theme_url %}
+    # Custom theme configured in pillar
+    wget -O ~/.config/starship.toml "{{ theme_url }}" || {
+        echo "Warning: Failed to download custom starship theme from {{ theme_url }}, using defaults"
+    }
+{% else %}
+    # No custom theme configured, Starship will use its built-in defaults
+    true
+{% endif %}
 fi
 
 eval "$(starship init bash)"
