@@ -48,8 +48,10 @@ logs/
 *.temp
 *.bak
 
-# Package manager caches (keep the exports)
-# pkgs/choco/ and pkgs/winget/ are tracked
+# Package manager caches - DEPRECATED
+# The pkgs/ directory has been removed. Package list is now in:
+# provisioning/packages.sls
+pkgs/
 
 # Windows
 nul

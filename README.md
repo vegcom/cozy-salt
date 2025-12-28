@@ -152,7 +152,7 @@ cozy-salt/
 │           ├── bootstrap.sh     # One-shot setup
 │           ├── docker.sh        # Install Docker
 │           └── docker-proxy.yaml # Socket proxy
-├── pkgs/packages.sls            # Consolidated package list
+│   └── packages.sls             # Consolidated package list
 ├── scripts/install-win-minion.ps1
 ├── Dockerfile
 └── docker-compose.yaml
@@ -160,7 +160,7 @@ cozy-salt/
 
 ## Package Management
 
-Packages are consolidated in `pkgs/packages.sls`:
+Packages are consolidated in `provisioning/packages.sls`:
 
 - **Chocolatey** (preferred): vim, Cygwin, docker-cli, docker-compose, dive, fonts
 - **Winget**: Everything else (120+ packages categorized)

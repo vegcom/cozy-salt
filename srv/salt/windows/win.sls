@@ -1,5 +1,5 @@
 # Windows provisioning state
-# Orchestration only - packages defined in pkgs/packages.sls
+# Orchestration only - packages defined in provisioning/packages.sls
 
 {% import_yaml 'packages.sls' as packages %}
 
