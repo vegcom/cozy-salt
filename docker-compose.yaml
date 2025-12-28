@@ -1,42 +1,36 @@
 services:
-
   salt-master:
-    build:
-      context: .
-      dockerfile: Dockerfile
-
+    build: .
     container_name: salt-master
-
     restart: unless-stopped
-
     ports:
-      - "4505:4505/tcp"   # Master pub
-      - "4506:4506/tcp"   # Minion ret
-
+      - "4505:4505"  # Master pub (ZeroMQ)
+      - "4506:4506"  # Minion ret (ZeroMQ)
     volumes:
-      - ./srv/pillar:/srv/pillar:ro  # srv/pillar for new structure
-      - ./srv/salt:/srv/salt:ro  # srv/salt for new structure
-      - ./srv/salt/keys:/etc/salt/pki/master/keys:ro  # Optional pre-shared keys
+      # Salt file roots - use bind mount with subpath
+      - ./srv/salt:/srv/salt:ro
+      - ./srv/pillar:/srv/pillar:ro
+      # Provisioning files - mount to separate location, configure via file_roots
+      - ./provisioning:/srv/provisioning:ro
+      # Pre-shared minion keys (optional, uncomment if you have pre-accepted keys)
+      # - ./srv/salt/keys:/etc/salt/pki/master/minions_pre
+      # Persistent data
       - salt-cache:/var/cache/salt
       - salt-logs:/var/log/salt
-
-    environment:
-      - MINION_KEY_PATH=/etc/salt/pki/master/minions
-
+      # Master config to add provisioning to file_roots
+      - ./srv/master.d:/etc/salt/master.d:ro
     networks:
       - salt-net
-
-    depends_on: []
-
+    healthcheck:
+      test: ["CMD", "nc", "-z", "127.0.0.1", "4505"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
 volumes:
-
   salt-cache:
-
   salt-logs:
 
-
 networks:
-
   salt-net:
-    driver: bridge

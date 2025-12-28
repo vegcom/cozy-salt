@@ -1,0 +1,55 @@
+# Salt runtime
+salt-cache/
+salt-logs/
+*.pem
+*.key
+
+# Salt minion keys (generated, not tracked)
+srv/salt/keys/*.pem
+srv/salt/keys/*.pub
+
+# Environment & secrets
+.env
+.env.*
+*.secret
+secrets/
+credentials/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+*.egg-info/
+
+# IDE & editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.*.sw?
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Docker
+docker-compose.override.yml
+
+# Logs
+*.log
+logs/
+
+# Temp files
+*.tmp
+*.temp
+*.bak
+
+# Package manager caches (keep the exports)
+# pkgs/choco/ and pkgs/winget/ are tracked
+
+# Windows
+nul

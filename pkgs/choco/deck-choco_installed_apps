@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<packages>
+  <package id="chocolatey" />
+  <package id="chocolatey-compatibility.extension" />
+  <package id="chocolatey-core.extension" />
+  <package id="chocolatey-fastanswers.extension" />
+  <package id="choco-upgrade-all-at-startup" />
+  <package id="dive" />
+  <package id="docker-cli" />
+  <package id="msys2" />
+  <package id="nodejs" />
+  <package id="nodejs.install" />
+  <package id="vim" />
+  <package id="winbtrfs" />
+</packages>

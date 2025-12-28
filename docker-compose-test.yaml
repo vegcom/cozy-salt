@@ -1,60 +1,50 @@
-services:
-  salt-master:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: salt-master
-    restart: unless-stopped
-    ports:
-      - "4505:4505/tcp"   # Master pub
-      - "4506:4506/tcp"   # Minion ret
-    volumes:
-      - ./srv/pillar:/srv/pillar:ro  # srv/pillar for new structure
-      - salt-cache:/var/cache/salt
-      - salt-logs:/var/log/salt
-      - ./srv/salt/keys:/etc/salt/pki/master/keys:ro  # Optional pre-shared keys
-    environment:
-      - MINION_KEY_PATH=/etc/salt/pki/master/minions
-    networks:
-      - salt-net
-    depends_on: []
+# Test environment: extends base compose with test minions
+# Usage: docker compose -f docker-compose.yaml -f docker-compose-test.yaml up
 
-  # Linux minion tester (ubuntu + salt-minion; scale/replicate)
+services:
+  # Linux test minion - installs salt-minion and connects to master
   salt-minion-linux:
-    image: ubuntu:latest  # Build your own salt-minion:ubuntu if needed
+    image: ubuntu:24.04
     container_name: salt-minion-linux-test
-    restart: "no"  # On-demand
-    volumes:
-      - salt-cache:/var/cache/salt-minion  # Shared? Or per-minion
-      - ./srv/salt/linux:/etc/salt/minion.d:ro  # Minion conf
-    environment:
-      - MASTER=salt-master  # DNS/resolvable
-      - MINION_NAME=linux-test
-    cap_add:
-      - SYS_ADMIN  # For systemd if needed
+    restart: "no"
+    command: >
+      bash -c "
+        set -e
+        echo '=== Installing Salt Minion ===' &&
+        apt-get update &&
+        apt-get install -y curl gnupg ca-certificates &&
+        curl -fsSL https://packages.broadcom.com/artifactory/api/security/keypair/SaltProjectKey/public |
+          gpg --dearmor -o /usr/share/keyrings/salt.gpg &&
+        echo 'deb [signed-by=/usr/share/keyrings/salt.gpg arch=amd64] https://packages.broadcom.com/artifactory/saltproject-deb/ stable main' > /etc/apt/sources.list.d/salt.list &&
+        apt-get update &&
+        apt-get install -y salt-minion &&
+        mkdir -p /etc/salt/minion.d &&
+        echo 'master: salt-master' > /etc/salt/minion.d/master.conf &&
+        echo 'id: linux-test' > /etc/salt/minion.d/id.conf &&
+        echo '=== Starting Salt Minion ===' &&
+        exec salt-minion -l info
+      "
     networks:
       - salt-net
     depends_on:
       salt-master:
         condition: service_healthy
 
+  # Windows test minion (requires Windows Docker host + --profile windows)
   salt-minion-win:
     image: mcr.microsoft.com/windows/servercore:ltsc2022
     platform: windows/amd64
+    container_name: salt-minion-win-test
+    restart: "no"
     volumes:
-      - ./scripts:/c:/scripts:ro  # PS1
+      - ./scripts:/scripts:ro
     environment:
-      - MINION_NAME=win-physical-test
-      - MASTER_IP=host.docker.internal
-    entrypoint: powershell.exe
-    command: -ExecutionPolicy Bypass -File /c/scripts/install-win-minion.ps1
+      - SALT_MASTER=salt-master
+      - MINION_ID=win-test
+    entrypoint: ["powershell", "-ExecutionPolicy", "Bypass", "-File", "/scripts/install-win-minion.ps1"]
+    networks:
+      - salt-net
     depends_on:
       - salt-master
-
-volumes:
-  salt-cache:
-  salt-logs:
-
-networks:
-  salt-net:
-    driver: bridge
+    profiles:
+      - windows  # Only with: docker compose --profile windows up
