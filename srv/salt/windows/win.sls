@@ -1,5 +1,30 @@
 # Windows provisioning state
-# Applies to all Windows systems (physical and WSL-aware)
+# Orchestration only - packages defined in pkgs/packages.sls
+
+{% import_yaml 'packages.sls' as packages %}
+
+# =============================================================================
+# PACKAGE INSTALLATION
+# =============================================================================
+
+# Install Chocolatey packages
+{% for pkg in packages.choco %}
+choco_{{ pkg | replace('.', '_') | replace('-', '_') }}:
+  chocolatey.installed:
+    - name: {{ pkg }}
+{% endfor %}
+
+# Install Winget packages
+{% for pkg in packages.winget %}
+winget_{{ pkg | replace('.', '_') | replace('-', '_') }}:
+  cmd.run:
+    - name: winget install --id {{ pkg }} --accept-source-agreements --accept-package-agreements -h
+    - unless: winget list --id {{ pkg }} | findstr /C:"{{ pkg }}"
+{% endfor %}
+
+# =============================================================================
+# CONFIGURATION
+# =============================================================================
 
 # Detect if WSL is available and set grain for future targeting
 detect_wsl:
@@ -12,7 +37,7 @@ detect_wsl:
     - require:
       - cmd: detect_wsl
 
-# Bootstrap script deployment
+# Bootstrap script deployment (Docker context setup)
 provision_script:
   file.managed:
     - name: C:\opt\cozy\win.ps1
@@ -26,7 +51,10 @@ run_provision_script:
     - require:
       - file: provision_script
 
-# Scheduled Tasks from XML files
+# =============================================================================
+# SCHEDULED TASKS
+# =============================================================================
+
 {% load_yaml as tasks %}
 wsl:
   - tasks/wsl/WSL autostart.xml
@@ -46,6 +74,10 @@ kubernetes:
     - force: True
 {% endfor %}
 {% endfor %}
+
+# =============================================================================
+# SERVICES
+# =============================================================================
 
 # Ensure Salt Minion service is running
 salt_minion_service:

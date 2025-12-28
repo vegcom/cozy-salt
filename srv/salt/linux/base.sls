@@ -1,16 +1,21 @@
 # Linux Base State
-# Applies to all Linux systems (Debian/Ubuntu, RHEL/CentOS)
+# Orchestration only - packages defined in pkgs/packages.sls
 
-# Ensure base packages are installed
+{% import_yaml 'packages.sls' as packages %}
+
+# Install base packages from consolidated list
 base_packages:
   pkg.installed:
     - pkgs:
-      - curl
-      - wget
-      - git
-      - vim
-      - htop
-      - rsync
+{% if grains['os_family'] == 'Debian' %}
+{% for pkg in packages.apt %}
+      - {{ pkg }}
+{% endfor %}
+{% elif grains['os_family'] == 'RedHat' %}
+{% for pkg in packages.dnf %}
+      - {{ pkg }}
+{% endfor %}
+{% endif %}
 
 # Deploy skeleton files to /etc/skel for new users
 skel_files:
@@ -20,22 +25,14 @@ skel_files:
     - include_empty: True
     - clean: False
 
-# Install Starship prompt
-install_starship:
-  cmd.run:
-    - name: curl -sS https://starship.rs/install.sh | sh -s -- -y
-    - creates: /usr/local/bin/starship
-
-# Deploy starship profile script
+# Deploy starship profile script (installation handled by the script itself)
 starship_profile:
   file.managed:
     - name: /etc/profile.d/starship.sh
     - source: salt://linux/files/etc-profile.d/starship.sh
-    - mode: 644
-    - require:
-      - cmd: install_starship
+    - mode: 755
 
-# Ensure SSH is configured on alternate port (for WSL compatibility)
+# Ensure SSH is configured on alternate port (for WSL/containers)
 {% if grains.get('virtual', '') == 'container' or grains.get('is_wsl', False) %}
 sshd_config_port:
   file.replace:
@@ -51,4 +48,3 @@ sshd_service:
     - watch:
       - file: sshd_config_port
 {% endif %}
-

@@ -2,7 +2,7 @@
 # Source preference: Chocolatey > Winget (when package exists in both)
 #
 # Usage in Salt states:
-#   {% import_yaml 'pkgs/packages.sls' as packages %}
+#   {% import_yaml 'packages.sls' as packages %}
 #   {% for pkg in packages.choco %}
 #   {{ pkg }}:
 #     chocolatey.installed
