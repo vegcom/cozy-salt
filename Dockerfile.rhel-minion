@@ -12,11 +12,7 @@ RUN rm -f /etc/yum.repos.d/kali* /etc/yum.repos.d/debian* 2>/dev/null || true &&
     dnf clean all
 
 # Install Salt Minion from Broadcom repo (3007+)
-# Skip GPG verification for ephemeral containers (equivalent to trusted=yes for apt)
-RUN curl -fsSL https://packages.broadcom.com/artifactory/saltproject-rpm/el9/x86_64/latest.repo \
-      -o /etc/yum.repos.d/salt.repo && \
-    sed -i 's/gpgcheck=.*/gpgcheck=0/' /etc/yum.repos.d/salt.repo && \
-    dnf install -y ca-certificates && \
+RUN dnf install -y ca-certificates && printf '[saltproject]\nname=Salt Project Repository\nbaseurl=https://packages.broadcom.com/artifactory/saltproject-rpm/el9/x86_64\nenabled=1\ngpgcheck=0\n' > /etc/yum.repos.d/salt.repo && \
     dnf install -y salt-minion && \
     dnf clean all && rm -rf /var/cache/dnf /tmp/*
 
