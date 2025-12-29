@@ -109,7 +109,8 @@ parse_json_results() {
     fi
 
     # Extract JSON from file (skip error logs at beginning)
-    local json_content=$(sed -n '/^{/,$p' "$json_file" | head -1)
+    # sed outputs everything from first { to end; cat it all (don't truncate with head)
+    local json_content=$(sed -n '/^{/,$p' "$json_file")
     if [ -z "$json_content" ]; then
         echo -e "${RED}No valid JSON found in output${NC}"
         return 1
