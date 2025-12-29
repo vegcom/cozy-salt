@@ -160,7 +160,6 @@ dnf:
 
   # --- Compression & Archives ---
   - zip
-  - unzip
   - p7zip
   - p7zip-plugins
   - bzip2

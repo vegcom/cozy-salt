@@ -12,7 +12,8 @@ RUN rm -f /etc/yum.repos.d/kali* /etc/yum.repos.d/debian* 2>/dev/null || true &&
     dnf clean all
 
 # Install Salt Minion from Broadcom repo (3007+)
-RUN dnf install -y ca-certificates && printf '[saltproject]\nname=Salt Project Repository\nbaseurl=https://packages.broadcom.com/artifactory/saltproject-rpm/el9/x86_64\nenabled=1\ngpgcheck=0\n' > /etc/yum.repos.d/salt.repo && \
+# Use official Salt Project repo configuration (automatically handles platform-specific paths)
+RUN curl -fsSL https://github.com/saltstack/salt-install-guide/releases/latest/download/salt.repo -o /etc/yum.repos.d/salt.repo && \
     dnf install -y salt-minion && \
     dnf clean all && rm -rf /var/cache/dnf /tmp/*
 
