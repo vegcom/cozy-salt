@@ -108,14 +108,21 @@ parse_json_results() {
         return 1
     fi
 
+    # Extract JSON from file (skip error logs at beginning)
+    local json_content=$(sed -n '/^{/,$p' "$json_file" | head -1)
+    if [ -z "$json_content" ]; then
+        echo -e "${RED}No valid JSON found in output${NC}"
+        return 1
+    fi
+
     # Extract summary using jq
     local total_states
     local succeeded_states
     local failed_states
 
-    total_states=$(jq -r '[.local | to_entries[] | select(.key != "retcode")] | length' "$json_file" 2>/dev/null || echo "0")
-    succeeded_states=$(jq -r '[.local | to_entries[] | select(.key != "retcode") | select(.value.result == true)] | length' "$json_file" 2>/dev/null || echo "0")
-    failed_states=$(jq -r '[.local | to_entries[] | select(.key != "retcode") | select(.value.result == false)] | length' "$json_file" 2>/dev/null || echo "0")
+    total_states=$(echo "$json_content" | jq -r '[.local | to_entries[] | select(.key != "retcode")] | length' 2>/dev/null || echo "0")
+    succeeded_states=$(echo "$json_content" | jq -r '[.local | to_entries[] | select(.key != "retcode") | select(.value.result == true)] | length' 2>/dev/null || echo "0")
+    failed_states=$(echo "$json_content" | jq -r '[.local | to_entries[] | select(.key != "retcode") | select(.value.result == false)] | length' 2>/dev/null || echo "0")
 
     echo ""
     echo "=== Results for ${minion_type} ==="
@@ -126,7 +133,7 @@ parse_json_results() {
         echo -e "${RED}Failed: $failed_states${NC}"
         echo ""
         echo "Failed states:"
-        jq -r '.local | to_entries[] | select(.key != "retcode") | select(.value.result == false) | "\(.key): \(.value.comment)"' "$json_file" 2>/dev/null || echo "Unable to parse failed states"
+        echo "$json_content" | jq -r '.local | to_entries[] | select(.key != "retcode") | select(.value.result == false) | "\(.key): \(.value.comment)"' 2>/dev/null || echo "Unable to parse failed states"
         return 1
     else
         echo -e "${GREEN}Failed: 0${NC}"
