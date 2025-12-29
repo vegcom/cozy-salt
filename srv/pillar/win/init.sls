@@ -33,3 +33,7 @@ packages:
 # Node.js version management via nvm
 nvm:
   default_version: 'lts/*'
+
+# Miniforge package management
+miniforge:
+  enabled: True

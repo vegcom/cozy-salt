@@ -32,7 +32,8 @@
 [core]
   excludesfile = ~/.gitignore
   excludesfile = ~/.gitignore.local
-  autocrlf = input
+  autocrlf = true
+  eol = lf
 
 [merge]
   ff = only
@@ -59,4 +60,4 @@
   forceSignAnnotated = true
 
 [credential]
-  helper = store
+  helper = cache

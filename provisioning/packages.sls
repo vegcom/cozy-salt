@@ -42,12 +42,6 @@ apt:
   - autoconf
   - automake
 
-  # --- Python (minimal - use miniforge for packages) ---
-  - python3
-  - python3-pip
-  - python3-venv
-  - pipx
-
   # --- Docker & Containers ---
   - docker.io
   - docker-compose
@@ -82,6 +76,7 @@ apt:
   - strace
   - ltrace
   - sysstat
+  - acl
 
   # --- Version Control Extras ---
   - git-lfs
@@ -146,12 +141,6 @@ dnf:
   - autoconf
   - automake
 
-  # --- Python (minimal - use miniforge for packages) ---
-  - python3
-  - python3-pip
-  - python3-virtualenv
-  - pipx
-
   # --- Docker & Containers ---
   - docker
   - docker-compose
@@ -186,6 +175,7 @@ dnf:
   - strace
   - ltrace
   - sysstat
+  - acl
 
   # --- Version Control Extras ---
   - git-lfs
@@ -262,7 +252,6 @@ winget:
   - DenoLand.Deno                 # Deno runtime
   - GoLang.Go                     # Go language (deck only, add if needed)
   - Anaconda.Miniconda3           # Python via Miniconda
-  - CondaForge.Miniforge3         # Python via Miniforge
 
   # --- Development: Tools ---
   - Git.Git                       # Git

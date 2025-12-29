@@ -1,0 +1,365 @@
+================================================================================
+COZY-SALT DOCUMENTATION CATALOG & ORGANIZATION ANALYSIS
+Generated: 2025-12-28
+Status: All 13 files cataloged and stored to qdrant
+================================================================================
+
+CURRENT DOCUMENTATION INVENTORY (13 Files, ~3,600 Lines)
+================================================================================
+
+ROOT LEVEL (7 files - scattered, candidates for migration)
+────────────────────────────────────────────────────────
+  README.md (256 lines)
+    Purpose: Main project overview, quick start options, architecture
+    Audience: All users, new developers
+    Type: Main reference document
+    
+  SECURITY.md (188 lines)
+    Purpose: Security hardening, key management, incident response
+    Audience: DevOps engineers, security teams, production ops
+    Type: Security hardening guide
+    
+  CONTRIBUTING.md (347 lines)
+    Purpose: Developer setup, architecture philosophy, code style
+    Audience: Contributors, developers, maintainers
+    Type: Development guide
+    
+  CLAUDE.md (36 lines)
+    Purpose: AI assistant guide, core rules, troubleshooting
+    Audience: AI assistants, Claude-based tools
+    Type: AI guide
+    
+  DEPLOYMENT_SUMMARY.md (116 lines)
+    Purpose: RHEL test container implementation summary
+    Audience: DevOps, maintainers, reviewers
+    Type: Implementation summary
+    
+  TODO.md (367 lines)
+    Purpose: Implementation roadmap, prioritized refactoring plan
+    Audience: Maintainers, developers, project managers
+    Type: Project roadmap
+    
+  (MEMORY-USAGE.md - in docs/, not root)
+
+ALREADY ORGANIZED IN DOCS/ (2 files)
+────────────────────────────────────
+  docs/WINDOWS-TESTING-LOCAL.md (307 lines)
+    Purpose: Local Windows testing with Dockur containers
+    Audience: Windows developers, testing specialists
+    Type: Setup guide
+    Location: Good (docs/) but could be in docs/development/testing/
+    
+  docs/MEMORY-USAGE.md (294 lines)
+    Purpose: Memory MCP system guide
+    Audience: Developers, AI assistants, Claude users
+    Type: Tool guide
+    Location: Good (docs/) but could be in docs/development/
+
+SCATTERED IN SCRIPTS/PXE/ (2 files)
+────────────────────────────────────
+  scripts/pxe/windows/README.md (316 lines)
+    Purpose: Windows PXE deployment with Salt enrollment
+    Audience: DevOps engineers, system administrators
+    Type: Deployment guide
+    Problem: Hard to find, not in docs/ where users expect
+    
+  scripts/pxe/linux/README.md (115 lines)
+    Purpose: Linux PXE deployment with Salt enrollment
+    Audience: DevOps engineers, system administrators
+    Type: Deployment guide
+    Problem: Hard to find, not in docs/ where users expect
+
+SCATTERED IN TESTS/ (3 files)
+──────────────────────────────
+  tests/README.md (232 lines)
+    Purpose: Test infrastructure overview, CI/CD integration
+    Audience: Developers, CI/CD engineers, QA
+    Type: Testing guide
+    Problem: Buried in tests/ directory, not discoverable
+    
+  tests/QUICKSTART.md (186 lines)
+    Purpose: Quick reference for running tests
+    Audience: Developers testing states
+    Type: Quick reference
+    Problem: Buried in tests/ directory, not discoverable
+    
+  tests/IMPLEMENTATION.md (474 lines)
+    Purpose: Deep technical test implementation details
+    Audience: Maintainers, developers understanding architecture
+    Type: Technical implementation
+    Problem: Buried in tests/ directory, not discoverable
+
+================================================================================
+PROPOSED DOCUMENTATION STRUCTURE FOR @DOCS/
+================================================================================
+
+docs/
+├── README.md
+│   └─ New: Main documentation index and navigation
+│
+├── user-guides/
+│   ├── README.md (overview)
+│   ├── QUICKSTART.md (from root README, condensed)
+│   ├── windows-pxe-deployment.md (from scripts/pxe/windows/)
+│   └── linux-pxe-deployment.md (from scripts/pxe/linux/)
+│
+├── development/
+│   ├── README.md (overview)
+│   ├── CONTRIBUTING.md (from root)
+│   ├── CLAUDE.md (from root)
+│   ├── MEMORY-USAGE.md (from docs/)
+│   │
+│   └── testing/
+│       ├── README.md (overview)
+│       ├── QUICKSTART.md (from tests/)
+│       ├── IMPLEMENTATION.md (from tests/)
+│       ├── README.md (from tests/)
+│       └── WINDOWS-TESTING-LOCAL.md (from docs/)
+│
+├── security/
+│   ├── README.md (overview)
+│   └── SECURITY.md (from root)
+│
+├── architecture/
+│   ├── README.md (overview)
+│   ├── TODO.md (from root, implementation roadmap)
+│   └── MEMORY-USAGE.md (knowledge graph guide)
+│
+└── deployment/
+    ├── README.md (overview)
+    └── DEPLOYMENT_SUMMARY.md (from root)
+
+ROOT LEVEL (simplified):
+├── README.md (minimal, links to docs/)
+├── LICENSE
+├── .gitignore
+├── docker-compose.yaml
+├── Makefile
+└── (other project files)
+
+================================================================================
+MIGRATION BY PRIORITY
+================================================================================
+
+PRIORITY 1: CRITICAL (High Impact, Frequently Referenced)
+─────────────────────────────────────────────────────
+  README.md
+    From: Root (256 lines, mixed audience)
+    To: docs/user-guides/QUICKSTART.md
+    Risk: LOW - widely referenced but migration is straightforward
+    Impact: HIGH - main entry point for new users
+    
+  CONTRIBUTING.md
+    From: Root (347 lines)
+    To: docs/development/CONTRIBUTING.md
+    Risk: LOW
+    Impact: HIGH - clear separation of development docs
+    
+  SECURITY.md
+    From: Root (188 lines)
+    To: docs/security/SECURITY.md
+    Risk: LOW
+    Impact: HIGH - security deserves own prominent section
+
+PRIORITY 2: HIGH (Clear Topical Ownership)
+──────────────────────────────────────
+  scripts/pxe/windows/README.md → docs/user-guides/windows-pxe-deployment.md
+    Risk: MEDIUM - PXE files stay, just docs move
+    Impact: HIGH - consolidates deployment guides
+    
+  scripts/pxe/linux/README.md → docs/user-guides/linux-pxe-deployment.md
+    Risk: MEDIUM - PXE files stay, just docs move
+    Impact: HIGH - consolidates deployment guides
+    
+  tests/README.md → docs/development/testing/README.md
+    Risk: LOW - test code stays in tests/
+    Impact: MEDIUM-HIGH - better discoverability
+    
+  tests/QUICKSTART.md → docs/development/testing/QUICKSTART.md
+    Risk: LOW
+    Impact: MEDIUM-HIGH
+    
+  tests/IMPLEMENTATION.md → docs/development/testing/IMPLEMENTATION.md
+    Risk: LOW
+    Impact: MEDIUM
+
+PRIORITY 3: MEDIUM (Project-Specific, Appropriate for docs/)
+────────────────────────────────────────────────────────
+  TODO.md → docs/architecture/TODO.md
+    Risk: LOW
+    Impact: MEDIUM - roadmap appropriate for architecture section
+    
+  DEPLOYMENT_SUMMARY.md → docs/deployment/DEPLOYMENT_SUMMARY.md
+    Risk: LOW
+    Impact: MEDIUM - consolidates deployment-related docs
+
+PRIORITY 4: ALREADY ORGANIZED (Consider Consolidation)
+────────────────────────────────────────────────────
+  docs/MEMORY-USAGE.md → docs/development/MEMORY-USAGE.md
+    Risk: LOW - already in docs/, just reorganize
+    Impact: LOW - consistency with other dev docs
+    
+  docs/WINDOWS-TESTING-LOCAL.md → docs/development/testing/WINDOWS-TESTING-LOCAL.md
+    Risk: LOW - already in docs/, just reorganize
+    Impact: LOW - consolidates testing docs
+
+================================================================================
+DOCUMENTATION BY AUDIENCE
+================================================================================
+
+All Users
+  • README.md (256 lines) → docs/user-guides/QUICKSTART.md
+    
+Users - Windows PXE Deployment
+  • scripts/pxe/windows/README.md (316 lines) → docs/user-guides/windows-pxe-deployment.md
+    
+Users - Linux PXE Deployment
+  • scripts/pxe/linux/README.md (115 lines) → docs/user-guides/linux-pxe-deployment.md
+
+Developers
+  • CONTRIBUTING.md (347 lines) → docs/development/CONTRIBUTING.md
+  • CLAUDE.md (36 lines) → docs/development/CLAUDE.md
+  • tests/README.md (232 lines) → docs/development/testing/README.md
+  • tests/QUICKSTART.md (186 lines) → docs/development/testing/QUICKSTART.md
+  • tests/IMPLEMENTATION.md (474 lines) → docs/development/testing/IMPLEMENTATION.md
+  
+Developers - Windows Testing
+  • docs/WINDOWS-TESTING-LOCAL.md (307 lines) → docs/development/testing/WINDOWS-TESTING-LOCAL.md
+  
+Developers - Memory System
+  • docs/MEMORY-USAGE.md (294 lines) → docs/development/MEMORY-USAGE.md
+
+DevOps / Operations / Deployment
+  • scripts/pxe/windows/README.md → docs/user-guides/windows-pxe-deployment.md
+  • scripts/pxe/linux/README.md → docs/user-guides/linux-pxe-deployment.md
+  • DEPLOYMENT_SUMMARY.md → docs/deployment/DEPLOYMENT_SUMMARY.md
+
+Security / Hardening
+  • SECURITY.md (188 lines) → docs/security/SECURITY.md
+
+Maintainers / Architects
+  • TODO.md (367 lines) → docs/architecture/TODO.md
+  • docs/MEMORY-USAGE.md → docs/architecture/MEMORY-USAGE.md
+
+AI Assistants / Tools
+  • CLAUDE.md (36 lines) → docs/development/CLAUDE.md
+
+================================================================================
+IMPLEMENTATION PLAN
+================================================================================
+
+PHASE 1: Create Directory Structure (5 minutes)
+──────────────────────────────────────────────
+  mkdir -p docs/user-guides
+  mkdir -p docs/development/testing
+  mkdir -p docs/security
+  mkdir -p docs/architecture
+  mkdir -p docs/deployment
+
+PHASE 2: Create Index READMEs (15 minutes)
+──────────────────────────────────────────
+  Each new directory needs a README explaining its purpose
+
+PHASE 3: Find All References (5 minutes)
+────────────────────────────────────────
+  CRITICAL: Run this grep BEFORE moving ANY files
+  
+  grep -Hnr "CONTRIBUTING.md\|SECURITY.md\|CLAUDE.md\|TODO.md\
+  \|DEPLOYMENT_SUMMARY.md\|README.md\|tests/README.md\
+  \|tests/QUICKSTART.md\|tests/IMPLEMENTATION.md\
+  \|scripts/pxe/windows/README.md\|scripts/pxe/linux/README.md\
+  \|docs/WINDOWS-TESTING-LOCAL.md\|docs/MEMORY-USAGE.md" \
+  srv/salt/ srv/pillar/ provisioning/ scripts/ .github/ tests/ docs/ *.md Makefile
+
+PHASE 4: Move Files (20 minutes)
+────────────────────────────────
+  Use git mv or Desktop Commander move_file
+  Preserves git history if using git mv
+
+PHASE 5: Update All References (30 minutes)
+────────────────────────────────────────────
+  Update cross-references in markdown files
+  Update .github/ workflows if needed
+  Update .claude/ hooks if needed
+
+PHASE 6: Simplify Root README (10 minutes)
+──────────────────────────────────────────
+  Keep root README minimal:
+  • Project statement (1-2 sentences)
+  • Quick links to key docs (docs/README.md)
+  • Contributing link (docs/development/CONTRIBUTING.md)
+  • Badges/status
+
+TOTAL ESTIMATED TIME: 1-2 hours
+
+================================================================================
+BENEFITS OF ORGANIZATION
+================================================================================
+
+For Users
+  ✓ Logical hierarchy, easier to find relevant docs
+  ✓ Clear user guides section (PXE deployment, quick start)
+  ✓ Reduced clutter at root level
+  ✓ Better onboarding experience
+
+For Developers
+  ✓ All development docs grouped in one place
+  ✓ Testing guides consolidated and discoverable
+  ✓ Clear contribution path (CONTRIBUTING.md)
+  ✓ AI guide available for tools
+
+For Security/Operations
+  ✓ Security section gets prominence and own space
+  ✓ Deployment documentation organized
+  ✓ Clear separation from user/dev docs
+
+For Maintainers
+  ✓ Scalable structure supports project growth
+  ✓ New contributors find docs easily
+  ✓ Organized references less likely to break
+
+For Knowledge Management
+  ✓ All files cataloged in qdrant
+  ✓ Quick retrieval without token overhead
+  ✓ Searchable metadata for future reviews
+
+================================================================================
+CRITICAL SUCCESS FACTOR
+================================================================================
+
+⚠️  BEFORE MOVING ANY FILES ⚠️
+
+Run the comprehensive grep command above to identify all references that need
+updating. Per CLAUDE.md rules: "grep before u ship"
+
+Files to update after finding references:
+  • Documentation files (.md) with cross-links
+  • GitHub workflows (.github/ directory)
+  • .claude/ hooks if they reference docs
+  • Any scripts that reference documentation paths
+
+================================================================================
+STATUS
+================================================================================
+
+Documentation Audit:       ✓ COMPLETE (13 files, 3,600 lines)
+Qdrant Cataloging:         ✓ COMPLETE (all 13 files + analysis)
+Organization Analysis:     ✓ COMPLETE (359-line detailed plan)
+Migration Planning:        ✓ COMPLETE (6-phase implementation)
+Risk Assessment:           ✓ COMPLETE (LOW-MEDIUM risk with grep validation)
+
+READY FOR: egirl-ops review and approval
+
+FILES CREATED:
+  • DOCUMENTATION_ORGANIZATION_ANALYSIS.md (359 lines) - Complete detailed plan
+  • DOCS_SUMMARY.md (258 lines) - Executive summary
+  • DOCUMENTATION_CATALOG.txt (this file) - Quick reference
+
+NEXT STEPS:
+  1. Review DOCUMENTATION_ORGANIZATION_ANALYSIS.md
+  2. Approve proposed structure or request modifications
+  3. Schedule 1-2 hour implementation window
+  4. Execute phases 1-6 per plan
+  5. Verify all links work after migration
+
+================================================================================

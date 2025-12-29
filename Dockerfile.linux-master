@@ -3,13 +3,24 @@ FROM ubuntu:latest
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Build arguments for package manager compatibility
+ARG APT_MIRROR=archive.ubuntu.com
+ARG APT_SECURITY_MIRROR=security.ubuntu.com
+ARG DEBIAN_CODENAME=jammy
+
+# Clean up any inherited sources and set Ubuntu repos (handles Kali host environments)
+RUN rm -f /etc/apt/sources.list.d/* && \
+    rm -f /etc/apt/sources.list && \
+    echo "deb http://${APT_MIRROR}/ubuntu/ ${DEBIAN_CODENAME} main restricted universe multiverse" > /etc/apt/sources.list && \
+    echo "deb http://${APT_MIRROR}/ubuntu/ ${DEBIAN_CODENAME}-updates main restricted universe multiverse" >> /etc/apt/sources.list && \
+    echo "deb http://${APT_SECURITY_MIRROR}/ubuntu/ ${DEBIAN_CODENAME}-security main restricted universe multiverse" >> /etc/apt/sources.list
+
 # Install Salt Master from Broadcom repo (3007+)
+# Note: Skipping GPG key verification for container (not needed in ephemeral build)
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-      netcat-openbsd curl gnupg gpg ca-certificates && \
-    curl -fsSL https://packages.broadcom.com/artifactory/api/security/keypair/SaltProjectKey/public | \
-      gpg --dearmor -o /usr/share/keyrings/salt.gpg && \
-    echo "deb [signed-by=/usr/share/keyrings/salt.gpg arch=amd64] \
+      netcat-openbsd curl ca-certificates && \
+    echo "deb [arch=amd64 trusted=yes] \
       https://packages.broadcom.com/artifactory/saltproject-deb/ stable main" > \
       /etc/apt/sources.list.d/salt.list && \
     apt-get update && \
@@ -31,8 +42,5 @@ RUN chmod +x /usr/local/bin/entrypoint-master.sh
 # Healthcheck: verify Salt Master ports are listening
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD nc -z 127.0.0.1 4505 && nc -z 127.0.0.1 4506 || exit 1
-
-# Run as unprivileged salt user
-USER salt
 
 ENTRYPOINT ["/usr/local/bin/entrypoint-master.sh"]

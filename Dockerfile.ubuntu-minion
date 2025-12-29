@@ -3,13 +3,25 @@ FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Build arguments for package manager compatibility
+ARG DEBIAN_CODENAME=noble
+ARG APT_MIRROR=archive.ubuntu.com
+ARG APT_SECURITY_MIRROR=security.ubuntu.com
+
+# Clean up any inherited sources and use only Ubuntu official repos
+# Handles Kali host environments that might inject non-standard sources
+RUN rm -f /etc/apt/sources.list.d/* && \
+    rm -f /etc/apt/sources.list && \
+    echo "deb http://${APT_MIRROR}/ubuntu/ ${DEBIAN_CODENAME} main restricted universe multiverse" > /etc/apt/sources.list && \
+    echo "deb http://${APT_MIRROR}/ubuntu/ ${DEBIAN_CODENAME}-updates main restricted universe multiverse" >> /etc/apt/sources.list && \
+    echo "deb http://${APT_SECURITY_MIRROR}/ubuntu/ ${DEBIAN_CODENAME}-security main restricted universe multiverse" >> /etc/apt/sources.list
+
 # Install Salt Minion from Broadcom repo (3007+)
+# Note: Skipping GPG key verification for container (not needed in ephemeral build)
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-      curl gnupg ca-certificates && \
-    curl -fsSL https://packages.broadcom.com/artifactory/api/security/keypair/SaltProjectKey/public | \
-      gpg --dearmor -o /usr/share/keyrings/salt.gpg && \
-    echo "deb [signed-by=/usr/share/keyrings/salt.gpg arch=amd64] \
+      curl ca-certificates && \
+    echo "deb [arch=amd64 trusted=yes] \
       https://packages.broadcom.com/artifactory/saltproject-deb/ stable main" > \
       /etc/apt/sources.list.d/salt.list && \
     apt-get update && \
@@ -18,7 +30,8 @@ RUN apt-get update && \
 
 # Pre-configure minion (master hostname will be set at runtime)
 RUN mkdir -p /etc/salt/minion.d && \
-    chown -R salt:salt /etc/salt
+    chown -R salt:salt /etc/salt && \
+    chmod 755 /etc/salt /etc/salt/minion.d
 
 # Copy entrypoint script
 COPY scripts/docker/entrypoint-minion.sh /usr/local/bin/

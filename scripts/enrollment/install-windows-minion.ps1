@@ -15,7 +15,7 @@ param(
     [string]$MinionId = $env:COMPUTERNAME.ToLower(),
 
     [Parameter(Mandatory=$false)]
-    [string]$SaltVersion = "3007"
+    [string]$SaltVersion = "3007.10"
 )
 
 $ErrorActionPreference = "Stop"
@@ -53,8 +53,8 @@ $saltExe = "C:\salt\salt-minion.exe"
 if (-NOT (Test-Path $saltExe)) {
     Write-Host "Downloading Salt Minion..." -ForegroundColor Green
 
-    # Salt download URL (Broadcom Artifactory for 3007+)
-    $downloadUrl = "https://packages.broadcom.com/artifactory/saltproject-generic/windows/Salt-Minion-$SaltVersion-Py3-AMD64-Setup.exe"
+    # Salt download URL (Broadcom Artifactory - requires version subdirectory)
+    $downloadUrl = "https://packages.broadcom.com/artifactory/saltproject-generic/windows/$SaltVersion/Salt-Minion-$SaltVersion-Py3-AMD64-Setup.exe"
     $installerPath = "$env:TEMP\salt-minion-setup.exe"
 
     try {

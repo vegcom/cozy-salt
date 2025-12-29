@@ -5,5 +5,6 @@ include:
   - windows.install
   - windows.config
   - windows.nvm
+  - windows.miniforge
   - windows.tasks
   - windows.services

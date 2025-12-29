@@ -1,6 +1,16 @@
 # Test RHEL Minion - Rocky Linux 9 with Salt Minion pre-installed
 FROM rockylinux:9
 
+# Build arguments for package manager compatibility
+ARG RHEL_VERSION=9
+
+# Clean up any inherited repos (handles Kali host environments)
+# but preserve system repos via subscription-manager or distro defaults
+RUN rm -f /etc/yum.repos.d/kali* /etc/yum.repos.d/debian* 2>/dev/null || true && \
+    dnf install -y 'dnf-command(config-manager)' && \
+    dnf config-manager --set-enabled crb && \
+    dnf clean all
+
 # Install Salt Minion from Broadcom repo (3007+)
 RUN dnf install -y \
       curl gnupg ca-certificates && \
@@ -12,7 +22,8 @@ RUN dnf install -y \
 
 # Pre-configure minion (master hostname will be set at runtime)
 RUN mkdir -p /etc/salt/minion.d && \
-    chown -R salt:salt /etc/salt
+    chown -R salt:salt /etc/salt && \
+    chmod 755 /etc/salt /etc/salt/minion.d
 
 # Copy entrypoint script (shared with debian minion)
 COPY scripts/docker/entrypoint-minion.sh /usr/local/bin/

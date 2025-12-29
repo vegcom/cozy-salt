@@ -1,23 +1,15 @@
-#/etc/profile.d/starship.sh
+# Starship shell prompt initialization
 # Managed by Salt - DO NOT EDIT MANUALLY
-if ! which starship &>/dev/null ; then
-    sh <(curl -sS https://starship.rs/install.sh) --force
+
+# Only initialize starship in bash shells (not sh, zsh, etc when sourced)
+if [ -n "$BASH_VERSION" ]; then
+    if ! which starship >/dev/null 2>&1; then
+        sh <(curl -sS https://starship.rs/install.sh) --force 2>/dev/null || true
+    fi
+
+    if [ ! -f "$HOME/.config/starship.toml" ]; then
+        mkdir -p "$HOME/.config"
+    fi
+
+    eval "$(starship init bash)" 2>/dev/null || true
 fi
-
-if [[ ! -f $HOME/.config/starship.toml ]]; then
-    # Use custom theme if configured via Salt pillar, otherwise use Starship defaults
-    mkdir -p $HOME/.config
-
-{% set theme_url = salt['pillar.get']('shell:theme_url', '') -%}
-{% if theme_url %}
-    # Custom theme configured in pillar
-    wget -O ~/.config/starship.toml "{{ theme_url }}" || {
-        echo "Warning: Failed to download custom starship theme from {{ theme_url }}, using defaults"
-    }
-{% else %}
-    # No custom theme configured, Starship will use its built-in defaults
-    true
-{% endif %}
-fi
-
-eval "$(starship init bash)"

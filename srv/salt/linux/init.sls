@@ -5,4 +5,6 @@ include:
   - linux.install
   - linux.config
   - linux.nvm
+  - linux.miniforge
+  - linux.homebrew
   - linux.services

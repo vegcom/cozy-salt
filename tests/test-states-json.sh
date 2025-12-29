@@ -1,6 +1,9 @@
 #!/bin/bash
 # Test runner for Salt states with JSON output capture
-# Usage: ./tests/test-states-json.sh [linux|rhel|all]
+# Usage: ./tests/test-states-json.sh [linux|rhel|windows|all]
+#
+# All results saved to tests/output/{distro}_{YYYYMMDD}_{HHMMSS}.json
+# Running with 'all' executes tests sequentially: linux → rhel → windows
 
 set -euo pipefail
 
@@ -130,15 +133,21 @@ case "$MINION" in
     rhel)
         test_minion "rhel"
         ;;
+    windows)
+        test_minion "windows"
+        ;;
     all)
+        echo -e "${YELLOW}=== Running sequential tests (linux → rhel → windows) ===${NC}"
         success=0
         test_minion "linux" || success=1
         echo ""
         test_minion "rhel" || success=1
+        echo ""
+        test_minion "windows" || success=1
         exit $success
         ;;
     *)
-        echo "Usage: $0 [linux|rhel|all]"
+        echo "Usage: $0 [linux|rhel|windows|all]"
         exit 1
         ;;
 esac

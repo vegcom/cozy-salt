@@ -9,13 +9,24 @@ skel_files:
     - include_empty: True
     - clean: False
 
-# Deploy starship profile script (installation handled by the script itself)
+# Deploy profile.d initialization scripts
 starship_profile:
   file.managed:
     - name: /etc/profile.d/starship.sh
     - source: salt://linux/files/etc-profile.d/starship.sh
-    - template: jinja
-    - mode: 755
+    - mode: 644
+
+homebrew_profile:
+  file.managed:
+    - name: /etc/profile.d/homebrew.sh
+    - source: salt://linux/files/etc-profile.d/homebrew.sh
+    - mode: 644
+
+miniforge_profile:
+  file.managed:
+    - name: /etc/profile.d/miniforge.sh
+    - source: salt://linux/files/etc-profile.d/miniforge.sh
+    - mode: 644
 
 # Deploy hardened SSH configuration
 # WSL systems get WSL-specific config (Port 2222), others get standard config

@@ -3,6 +3,13 @@
 
 {% import_yaml 'packages.sls' as packages %}
 
+# Enable Chocolatey feature for remembered arguments on upgrades
+choco_feature_remembered_args:
+  cmd.run:
+    - name: choco feature enable -n=useRememberedArgumentsForUpgrades
+    - shell: powershell
+    - unless: powershell -Command "choco feature list | Select-String -Pattern 'useRememberedArgumentsForUpgrades.*Enabled' -Quiet"
+
 # Install Chocolatey packages
 {% for pkg in packages.choco %}
 choco_{{ pkg | replace('.', '_') | replace('-', '_') }}:

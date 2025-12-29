@@ -1,0 +1,46 @@
+* text=auto eol=lf
+
+.aliases text eol=lf
+.bash_logout text eol=lf
+.bash_profile text eol=lf
+.bashrc text eol=lf
+.config/* text eol=lf
+.env text eol=lf
+.envrc text eol=lf
+.exports text eol=lf
+.functions text eol=lf
+.gitattributes text eol=lf
+.gitignore text eol=lf
+.inputrc text eol=lf
+.profile text eol=lf
+.screenrc text eol=lf
+.tmux.conf text eol=lf
+.vim/* text eol=lf
+.vimrc text eol=lf
+.zsh_logout text eol=lf
+.zsh_profile text eol=lf
+.zshrc text eol=lf
+*.bash text eol=lf
+*.bat text eol=crlf
+*.cfg text eol=lf
+*.cmd text eol=crlf
+*.conf text eol=lf
+*.md text eol=lf
+*.ps1 text eol=crlf
+*.py text eol=lf
+*.sh text eol=lf
+*.sls text eol=lf
+*.terraform text eol=lf
+*.txt text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.zsh text eol=lf
+Dockerfile* text eol=lf
+
+*.gif binary
+*.gz binary
+*.jpeg binary
+*.jpg binary
+*.png binary
+*.tar binary
+*.zip binary
