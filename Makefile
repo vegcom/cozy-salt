@@ -1,16 +1,18 @@
 # cozy-salt Makefile - shortcuts for common operations
 
-.PHONY: help test test-linux test-rhel test-windows test-all lint lint-shell lint-ps clean
+.PHONY: help test test-ubuntu test-apt test-linux test-rhel test-windows test-all lint lint-shell lint-ps clean up down logs
 
 # Default target
 help:
 	@echo "cozy-salt - Salt infrastructure management"
 	@echo ""
 	@echo "Available targets:"
-	@echo "  test          - Run sequential state tests (linux → rhel → windows)"
-	@echo "  test-linux    - Test on Debian/Ubuntu"
-	@echo "  test-rhel     - Test on RHEL/Rocky"
-	@echo "  test-windows  - Test on Windows (requires Dockur running)"
+	@echo "  test          - Run sequential state tests (ubuntu → rhel → windows)"
+	@echo "  test-ubuntu   - Test on Ubuntu 24.04 (apt-based)"
+	@echo "  test-apt      - Alias for test-ubuntu"
+	@echo "  test-linux    - Alias for test-ubuntu (backward compat)"
+	@echo "  test-rhel     - Test on RHEL/Rocky 9 (dnf-based)"
+	@echo "  test-windows  - Test on Windows (requires KVM)"
 	@echo "  test-all      - Alias for 'test' (sequential)"
 	@echo "  lint          - Run all linters"
 	@echo "  lint-shell    - Lint shell scripts"
@@ -22,24 +24,29 @@ help:
 	@echo ""
 	@echo "Examples:"
 	@echo "  make test         # Run all tests sequentially"
-	@echo "  make test-linux   # Quick test on Ubuntu"
-	@echo "  make test-windows # Test on Windows (Dockur)"
+	@echo "  make test-ubuntu  # Quick test on Ubuntu"
+	@echo "  make test-rhel    # Test on Rocky Linux"
+	@echo "  make test-apt     # Test apt-based systems"
 	@echo "  make lint         # Check code quality"
 	@echo "  make clean        # Clean test artifacts"
 
 # Testing
 test: test-all
 
-test-linux:
-	@echo "=== Testing on Debian/Ubuntu ==="
-	./tests/test-states-json.sh linux
+test-ubuntu:
+	@echo "=== Testing on Ubuntu 24.04 (apt-based) ==="
+	./tests/test-states-json.sh ubuntu
+
+test-apt: test-ubuntu
+
+test-linux: test-ubuntu
 
 test-rhel:
-	@echo "=== Testing on RHEL/Rocky ==="
+	@echo "=== Testing on RHEL/Rocky 9 (dnf-based) ==="
 	./tests/test-states-json.sh rhel
 
 test-windows:
-	@echo "=== Testing on Windows ==="
+	@echo "=== Testing on Windows (via Dockur/KVM) ==="
 	./tests/test-states-json.sh windows
 
 test-all:
