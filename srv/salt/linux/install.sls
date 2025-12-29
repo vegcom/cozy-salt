@@ -6,6 +6,7 @@
 # Add Docker repository (required for docker-buildx-plugin and other Docker packages)
 {% if grains['os_family'] == 'Debian' %}
 {% set os_lower = grains['os']|lower %}
+{% set is_kali = grains['os'] == 'Kali' %}
 docker_repo_key:
   cmd.run:
     - name: curl -fsSL https://download.docker.com/linux/{{ os_lower }}/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
@@ -13,10 +14,17 @@ docker_repo_key:
 
 docker_repo:
   pkgrepo.managed:
-    - name: deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/{{ os_lower }} {{ grains['oscodename'] }} stable
+    - name: deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/{{ os_lower }} {{ 'stable' if is_kali else grains['oscodename'] }} stable
     - file: /etc/apt/sources.list.d/docker.list
     - require:
       - cmd: docker_repo_key
+
+# Force apt update with --allow-releaseinfo-change to handle stale release info (especially on Kali)
+apt_update_with_override:
+  cmd.run:
+    - name: apt-get update --allow-releaseinfo-change
+    - require:
+      - pkgrepo: docker_repo
 {% endif %}
 
 # Install base packages from consolidated list
@@ -28,7 +36,7 @@ base_packages:
       - {{ pkg }}
 {% endfor %}
     - require:
-      - pkgrepo: docker_repo
+      - cmd: apt_update_with_override
 {% elif grains['os_family'] == 'RedHat' %}
 {% for pkg in packages.dnf %}
       - {{ pkg }}
