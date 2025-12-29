@@ -12,7 +12,8 @@ RUN rm -f /etc/yum.repos.d/kali* /etc/yum.repos.d/debian* 2>/dev/null || true &&
     dnf clean all
 
 # Install Salt Minion from Broadcom repo (3007+)
-RUN dnf install -y \
+# Use --allowerasing to handle curl-minimal conflicts in some environments
+RUN dnf install -y --allowerasing \
       curl gnupg ca-certificates && \
     rpm --import https://packages.broadcom.com/artifactory/api/security/keypair/SaltProjectKey/public && \
     curl -fsSL https://packages.broadcom.com/artifactory/saltproject-rpm/el9/x86_64/latest.repo \
