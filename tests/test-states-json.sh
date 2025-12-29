@@ -120,9 +120,9 @@ parse_json_results() {
     local succeeded_states
     local failed_states
 
-    total_states=$(echo "$json_content" | jq -r '[.local | to_entries[] | select(.key != "retcode")] | length' 2>/dev/null || echo "0")
-    succeeded_states=$(echo "$json_content" | jq -r '[.local | to_entries[] | select(.key != "retcode") | select(.value.result == true)] | length' 2>/dev/null || echo "0")
-    failed_states=$(echo "$json_content" | jq -r '[.local | to_entries[] | select(.key != "retcode") | select(.value.result == false)] | length' 2>/dev/null || echo "0")
+    total_states=$(echo "$json_content" | jq '.local | length' 2>/dev/null || echo "0")
+    succeeded_states=$(echo "$json_content" | jq '[.local[] | select(.result == true)] | length' 2>/dev/null || echo "0")
+    failed_states=$(echo "$json_content" | jq '[.local[] | select(.result == false)] | length' 2>/dev/null || echo "0")
 
     echo ""
     echo "=== Results for ${minion_type} ==="
@@ -133,7 +133,7 @@ parse_json_results() {
         echo -e "${RED}Failed: $failed_states${NC}"
         echo ""
         echo "Failed states:"
-        echo "$json_content" | jq -r '.local | to_entries[] | select(.key != "retcode") | select(.value.result == false) | "\(.key): \(.value.comment)"' 2>/dev/null || echo "Unable to parse failed states"
+        echo "$json_content" | jq -r '.local[] | select(.result == false) | "\(.__id__): \(.comment)"' 2>/dev/null || echo "Unable to parse failed states"
         return 1
     else
         echo -e "${GREEN}Failed: 0${NC}"
