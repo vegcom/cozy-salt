@@ -24,6 +24,15 @@ check: `file.managed` sources, `cmd.run` paths, `salt://` references, `top.sls` 
 - file not found? check `provisioning/` is mounted and readable
 - minion hanging? master needs 15s after restart
 - permissions? `chmod -R 755 provisioning/` (salt runs as uid 999)
+-
+
+### Assess for breaks
+
+- Kali: current host (guava) use `salt-call state.highstate test=true`
+- Ubuntu: container use `make test-ubuntu` (or `make test-apt` / `make test-linux`)
+- RHEL: container use `make test-rhel`
+- Windows: container via kvm (`virsh list --all`) `make test-windows`
+- All: sequential use `make test` or `make test-all`
 
 see **CONTRIBUTING.md** for details and setup.
 

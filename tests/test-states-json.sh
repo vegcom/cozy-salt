@@ -1,9 +1,10 @@
 #!/bin/bash
 # Test runner for Salt states with JSON output capture
-# Usage: ./tests/test-states-json.sh [linux|rhel|windows|all]
+# Usage: ./tests/test-states-json.sh [ubuntu|linux|apt|rhel|windows|all]
 #
 # All results saved to tests/output/{distro}_{YYYYMMDD}_{HHMMSS}.json
-# Running with 'all' executes tests sequentially: linux → rhel → windows
+# Running with 'all' executes tests sequentially: ubuntu → rhel → windows
+# ubuntu, linux, apt are aliases for the same apt-based Ubuntu 24.04 test
 
 set -euo pipefail
 
@@ -23,13 +24,18 @@ NC='\033[0m' # No Color
 
 test_minion() {
     local minion_type="$1"
-    # Map test type to service/container name (linux → ubuntu, rhel → rhel, etc.)
+    # Map test type to service/container name
+    # ubuntu, linux, apt all map to 'ubuntu' service
     local service_name="${minion_type}"
-    if [ "$minion_type" = "linux" ]; then
+    local output_label="${minion_type}"
+
+    if [ "$minion_type" = "linux" ] || [ "$minion_type" = "apt" ]; then
         service_name="ubuntu"
+        output_label="ubuntu"
     fi
+
     local container_name="salt-minion-${service_name}-test"
-    local output_file="${OUTPUT_DIR}/${minion_type}_${TIMESTAMP}.json"
+    local output_file="${OUTPUT_DIR}/${output_label}_${TIMESTAMP}.json"
 
     echo -e "${YELLOW}=== Testing ${minion_type} minion ===${NC}"
 
@@ -132,8 +138,8 @@ parse_json_results() {
 
 # Main execution
 case "$MINION" in
-    linux)
-        test_minion "linux"
+    ubuntu|linux|apt)
+        test_minion "ubuntu"
         ;;
     rhel)
         test_minion "rhel"
@@ -142,9 +148,9 @@ case "$MINION" in
         test_minion "windows"
         ;;
     all)
-        echo -e "${YELLOW}=== Running sequential tests (linux → rhel → windows) ===${NC}"
+        echo -e "${YELLOW}=== Running sequential tests (ubuntu → rhel → windows) ===${NC}"
         success=0
-        test_minion "linux" || success=1
+        test_minion "ubuntu" || success=1
         echo ""
         test_minion "rhel" || success=1
         echo ""
@@ -152,7 +158,7 @@ case "$MINION" in
         exit $success
         ;;
     *)
-        echo "Usage: $0 [linux|rhel|windows|all]"
+        echo "Usage: $0 [ubuntu|linux|apt|rhel|windows|all]"
         exit 1
         ;;
 esac
