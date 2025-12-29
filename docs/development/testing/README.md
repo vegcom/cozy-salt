@@ -17,7 +17,7 @@ Want to test right now?
 
 ### State Application Tests
 Test Salt states on different Linux distributions:
-- Debian/Ubuntu (linux-test minion)
+- Debian/Ubuntu (ubuntu-test minion)
 - RHEL/Rocky (rhel-test minion)
 
 ### Static Analysis
@@ -39,7 +39,7 @@ make test-rhel     # RHEL/Rocky
 
 # Manual testing
 docker compose --profile test-linux up -d
-docker logs -f salt-minion-linux-test
+docker logs -f salt-minion-ubuntu-test
 ```
 
 ## CI/CD Integration

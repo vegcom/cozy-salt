@@ -3,7 +3,7 @@ set -e
 
 # Configure minion master and ID from environment variables
 echo "master: ${SALT_MASTER:-salt-master}" > /etc/salt/minion.d/master.conf
-echo "id: ${MINION_ID:-linux-test}" > /etc/salt/minion.d/id.conf
+echo "id: ${MINION_ID:-ubuntu-test}" > /etc/salt/minion.d/id.conf
 
 # Remove cached master key to handle master restarts
 rm -f /etc/salt/pki/minion/minion_master.pub
@@ -33,5 +33,5 @@ while [ $elapsed -lt $timeout ]; do
 done
 
 echo "=== ERROR: Timeout waiting for master connection ==="
-echo "=== Hint: Run with SALT_AUTO_ACCEPT=true or accept key manually: salt-key -a ${MINION_ID:-linux-test} ==="
+echo "=== Hint: Run with SALT_AUTO_ACCEPT=true or accept key manually: salt-key -a ${MINION_ID:-ubuntu-test} ==="
 exec tail -f /var/log/salt/minion  # Keep alive for debugging

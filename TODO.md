@@ -126,7 +126,7 @@ This document organizes refactoring and improvement tasks identified by automate
 **Acceptance Criteria:**
 - [ ] Create YAML anchor `x-minion-base` with common config
 - [ ] Create anchor `x-minion-healthcheck` for shared healthcheck logic
-- [ ] Apply anchors to salt-minion-linux and salt-minion-rhel services
+- [ ] Apply anchors to salt-minion-ubuntu and salt-minion-rhel services
 - [ ] Test `docker compose config` validates correctly
 - [ ] Verify test containers still work: `make test-all`
 

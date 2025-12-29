@@ -47,7 +47,7 @@ Add a `.env` file or modify `docker-compose.yaml`:
 
 ```yaml
 services:
-  salt-minion-linux-test:
+  salt-minion-ubuntu-test:
     build:
       context: .
       dockerfile: Dockerfile.ubuntu-minion
@@ -65,7 +65,7 @@ This indicates non-standard repository sources are being used. The Dockerfiles n
 
 1. **Force a fresh rebuild** (no cache):
    ```bash
-   docker compose build --no-cache salt-minion-linux-test
+   docker compose build --no-cache salt-minion-ubuntu-test
    ```
 
 2. **Check your host sources**:
@@ -79,7 +79,7 @@ This indicates non-standard repository sources are being used. The Dockerfiles n
    docker compose build \
      --build-arg UBUNTU_MIRROR=deb.debian.org \
      --build-arg SECURITY_MIRROR=security.debian.org \
-     salt-minion-linux-test
+     salt-minion-ubuntu-test
    ```
 
 ### Issue: "E: The repository 'https://download.docker.com/linux/kali kali-rolling Release' does not have a Release file"

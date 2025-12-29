@@ -34,18 +34,18 @@ services:
       retries: 3
       start_period: 10s
 
-  # Linux test minion - auto-applies highstate on startup
-  salt-minion-linux:
+  # Ubuntu test minion - auto-applies highstate on startup
+  salt-minion-ubuntu:
     build:
       context: .
       dockerfile: Dockerfile.ubuntu-minion
-    container_name: salt-minion-linux-test
+    container_name: salt-minion-ubuntu-test
     restart: "no"
     environment:
       - SALT_MASTER=salt-master
-      - MINION_ID=linux-test
+      - MINION_ID=ubuntu-test
     volumes:
-      - salt-minion-linux-pki:/etc/salt/pki/minion
+      - salt-minion-ubuntu-pki:/etc/salt/pki/minion
     networks:
       - salt-net
     depends_on:
@@ -145,7 +145,7 @@ volumes:
   salt-cache:
   salt-logs:
   salt-pki:
-  salt-minion-linux-pki:
+  salt-minion-ubuntu-pki:
   salt-minion-rhel-pki:
 
 networks:
