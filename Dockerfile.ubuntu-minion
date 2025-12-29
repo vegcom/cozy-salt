@@ -37,7 +37,4 @@ RUN mkdir -p /etc/salt/minion.d && \
 COPY scripts/docker/entrypoint-minion.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint-minion.sh
 
-# Run as unprivileged salt user
-USER salt
-
 ENTRYPOINT ["/usr/local/bin/entrypoint-minion.sh"]
