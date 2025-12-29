@@ -75,9 +75,9 @@ test_minion() {
         return 1
     fi
 
-    # Capture JSON output from state.apply
+    # Capture JSON output from state.highstate
     echo "Capturing JSON output..."
-    if docker exec "$container_name" salt-call --local state.apply --out=json > "$output_file" 2>&1; then
+    if docker exec "$container_name" salt-call state.highstate --out=json > "$output_file" 2>&1; then
         echo -e "${GREEN}JSON output saved to: ${output_file}${NC}"
     else
         echo -e "${YELLOW}Warning: JSON capture may have issues, but continuing...${NC}"
