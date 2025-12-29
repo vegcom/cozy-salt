@@ -76,6 +76,21 @@ if (-NOT (Test-Path $saltExe)) {
 
 # Configure minion
 $minionConfig = "C:\salt\conf\minion"
+$minionConfigDir = Split-Path -Path $minionConfig -Parent
+
+# Create directory structure if it doesn't exist
+if (-not (Test-Path -Path $minionConfigDir)) {
+    Write-Host "Creating Salt configuration directory: $minionConfigDir"
+    New-Item -ItemType Directory -Path $minionConfigDir -Force | Out-Null
+}
+
+# Also create minion.d directory for additional config files
+$minionDDir = "$minionConfigDir\..\minion.d"
+if (-not (Test-Path -Path $minionDDir)) {
+    Write-Host "Creating Salt minion.d directory: $minionDDir"
+    New-Item -ItemType Directory -Path $minionDDir -Force | Out-Null
+}
+
 Write-Host "Configuring Salt Minion..." -ForegroundColor Green
 
 $configContent = @"

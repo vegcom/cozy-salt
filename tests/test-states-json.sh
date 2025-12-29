@@ -23,14 +23,19 @@ NC='\033[0m' # No Color
 
 test_minion() {
     local minion_type="$1"
-    local container_name="salt-minion-${minion_type}-test"
+    # Map test type to service/container name (linux → ubuntu, rhel → rhel, etc.)
+    local service_name="${minion_type}"
+    if [ "$minion_type" = "linux" ]; then
+        service_name="ubuntu"
+    fi
+    local container_name="salt-minion-${service_name}-test"
     local output_file="${OUTPUT_DIR}/${minion_type}_${TIMESTAMP}.json"
 
     echo -e "${YELLOW}=== Testing ${minion_type} minion ===${NC}"
 
     # Start the test environment
     echo "Starting containers..."
-    if ! docker compose --profile "test-${minion_type}" up -d --build; then
+    if ! docker compose --profile "test-${service_name}" up -d --build; then
         echo -e "${RED}Failed to start containers${NC}"
         return 1
     fi
