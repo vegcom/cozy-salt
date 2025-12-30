@@ -50,10 +50,8 @@ services:
       # Pre-shared minion keys (bind mount from srv/salt/keys)
       - ./srv/salt/keys/ubuntu-test.pem:/etc/salt/pki/minion/minion.pem:ro
       - ./srv/salt/keys/ubuntu-test.pub:/etc/salt/pki/minion/minion.pub:ro
-      # Systemd support
+      # Cgroup support for privileged operations
       - /sys/fs/cgroup:/sys/fs/cgroup:rw
-      - /run:/run
-      - /run/lock:/run/lock
     networks:
       - salt-net
     depends_on:
@@ -83,10 +81,8 @@ services:
       # Pre-shared minion keys (bind mount from srv/salt/keys)
       - ./srv/salt/keys/rhel-test.pem:/etc/salt/pki/minion/minion.pem:ro
       - ./srv/salt/keys/rhel-test.pub:/etc/salt/pki/minion/minion.pub:ro
-      # Systemd support
+      # Cgroup support for privileged operations
       - /sys/fs/cgroup:/sys/fs/cgroup:rw
-      - /run:/run
-      - /run/lock:/run/lock
     networks:
       - salt-net
     depends_on:
