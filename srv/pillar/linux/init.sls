@@ -42,6 +42,13 @@ packages:
 nvm:
   default_version: 'lts/*'
 
+# Workstation role-based package selection
+# Options: workstation-minimal, workstation-base (default), workstation-developer
+# - workstation-minimal: Core utilities + shell only
+# - workstation-base: Core + monitoring + vcs + modern CLI + security (suitable for most users)
+# - workstation-developer: Base + build tools + networking + KVM (for developers/testing)
+workstation_role: 'workstation-base'
+
 # Host capabilities (optional - enable specific features)
 # Uncomment the capabilities needed for this host:
 host:
