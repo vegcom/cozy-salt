@@ -1,6 +1,6 @@
 # cozy-salt Makefile - shortcuts for common operations
 
-.PHONY: help test test-ubuntu test-apt test-linux test-rhel test-windows test-all lint lint-shell lint-ps clean up down logs salt-help salt-clear_cache salt-key-list salt-manage-status salt-jobs-active salt-jobs-list salt-test-ping salt-state-highstate salt-state-highstate-test salt-lorem
+.PHONY: help test test-ubuntu test-apt test-linux test-rhel test-windows test-all lint lint-shell lint-ps clean up down logs salt-help salt-clear_cache salt-key-list salt-key-cleanup-test salt-key-accept-test salt-manage-status salt-jobs-active salt-jobs-list salt-test-ping salt-state-highstate salt-state-highstate-test salt-lorem
 
 # Default target
 help:
@@ -125,6 +125,18 @@ salt-clear_cache:
 	 docker compose exec -t salt-master salt '*' saltutil.clear_cache
 
 salt-key-list:
+	docker compose exec -t salt-master salt-key -L
+
+salt-key-cleanup-test:
+	@echo "=== Deleting test minion keys ==="
+	docker compose exec -t salt-master salt-key -d ubuntu-test -y || true
+	docker compose exec -t salt-master salt-key -d rhel-test -y || true
+	@echo "Test keys cleaned up"
+
+salt-key-accept-test:
+	@echo "=== Accepting pending test minion keys ==="
+	docker compose exec -t salt-master salt-key -a ubuntu-test -y || true
+	docker compose exec -t salt-master salt-key -a rhel-test -y || true
 	docker compose exec -t salt-master salt-key -L
 
 salt-manage-status:
