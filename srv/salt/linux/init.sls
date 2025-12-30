@@ -3,10 +3,11 @@
 # Order matters: users must be created before tools that require non-root execution
 
 include:
-  - linux.users      # Create admin user and cozyusers group first
+  - linux.users           # Create admin user and cozyusers group first
   - linux.install
-  - linux.config     # Includes service management (merged from services.sls)
-  - linux.docker-proxy  # Deploy Docker socket proxy for TCP access
+  - linux.workstation_roles  # Workstation role-based packages + GPU detection
+  - linux.config          # Includes service management (merged from services.sls)
+  - linux.docker-proxy    # Deploy Docker socket proxy for TCP access
   - linux.nvm
   - linux.rust
   - linux.miniforge
