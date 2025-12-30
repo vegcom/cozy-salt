@@ -17,7 +17,6 @@ RUN rm -f /etc/apt/sources.list.d/* && \
     echo "deb http://${APT_SECURITY_MIRROR}/ubuntu/ ${DEBIAN_CODENAME}-security main restricted universe multiverse" >> /etc/apt/sources.list
 
 # Install Salt Minion from Broadcom repo (3007+)
-# Note: Skipping GPG key verification for container (not needed in ephemeral build)
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
       curl ca-certificates && \

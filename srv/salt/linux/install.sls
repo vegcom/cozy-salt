@@ -15,19 +15,12 @@ clean_stale_sources:
     - name: rm -f /etc/apt/sources.list.d/kali* /etc/apt/sources.list.d/debian* 2>/dev/null || true
     - onlyif: test -d /etc/apt/sources.list.d
 
-docker_repo_key:
-  cmd.run:
-    - name: curl -fsSL https://download.docker.com/linux/{{ os_lower }}/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-    - creates: /usr/share/keyrings/docker-archive-keyring.gpg
-    - require:
-      - cmd: clean_stale_sources
-
 docker_repo:
   pkgrepo.managed:
-    - name: deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/{{ os_lower }} {{ distro_component }} stable
+    - name: deb [arch=amd64 trusted=yes] https://download.docker.com/linux/{{ os_lower }} {{ distro_component }} stable
     - file: /etc/apt/sources.list.d/docker.list
     - require:
-      - cmd: docker_repo_key
+      - cmd: clean_stale_sources
 
 # Force apt update with --allow-releaseinfo-change to handle stale release info
 apt_update_with_override:
