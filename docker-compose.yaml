@@ -19,7 +19,8 @@ services:
   salt-master:
     build:
       context: .
-      dockerfile: Dockerfile.linux-master
+      dockerfile: Dockerfile
+      target: salt-master
     container_name: salt-master
     restart: unless-stopped
     ports:
@@ -55,7 +56,8 @@ services:
     <<: *minion-base
     build:
       context: .
-      dockerfile: Dockerfile.ubuntu-minion
+      dockerfile: Dockerfile
+      target: salt-minion-deb
     container_name: salt-minion-ubuntu-test
     environment:
       - SALT_MASTER=salt-master
@@ -73,7 +75,8 @@ services:
     <<: *minion-base
     build:
       context: .
-      dockerfile: Dockerfile.rhel-minion
+      dockerfile: Dockerfile
+      target: salt-minion-rpm
     container_name: salt-minion-rhel-test
     environment:
       - SALT_MASTER=salt-master
