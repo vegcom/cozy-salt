@@ -24,8 +24,6 @@ NC='\033[0m' # No Color
 
 test_minion() {
     local minion_type="$1"
-    # Map test type to service/container name
-    # ubuntu, linux, apt all map to 'ubuntu' service
     local service_name="${minion_type}"
     local output_label="${minion_type}"
 
@@ -39,14 +37,12 @@ test_minion() {
 
     echo -e "${YELLOW}=== Testing ${minion_type} minion ===${NC}"
 
-    # Start the test environment
     echo "Starting containers..."
     if ! docker compose --profile "test-${service_name}" up -d --build; then
         echo -e "${RED}Failed to start containers${NC}"
         return 1
     fi
 
-    # Wait for container to start and apply states
     echo "Waiting for state application (max 120s)..."
     local timeout=120
     local elapsed=0
@@ -75,12 +71,12 @@ test_minion() {
         return 1
     fi
 
-    # Capture JSON output from state.highstate
     echo "Capturing JSON output..."
     if docker exec "$container_name" salt-call state.highstate --out=json > "$output_file" 2>&1; then
         echo -e "${GREEN}JSON output saved to: ${output_file}${NC}"
     else
-        echo -e "${YELLOW}Warning: JSON capture may have issues, but continuing...${NC}"
+        echo -e "${RED}Failed to capture JSON output${NC}"
+        return 1
     fi
 
     # Parse and validate results
@@ -92,7 +88,6 @@ test_minion() {
         echo "Install jq for detailed results: apt install jq"
     fi
 
-    # Stop containers
     echo "Stopping containers..."
     docker compose --profile "test-${minion_type}" down
 
@@ -108,15 +103,12 @@ parse_json_results() {
         return 1
     fi
 
-    # Extract JSON from file (skip error logs at beginning)
-    # sed outputs everything from first { to end; cat it all (don't truncate with head)
     local json_content=$(sed -n '/^{/,$p' "$json_file")
     if [ -z "$json_content" ]; then
         echo -e "${RED}No valid JSON found in output${NC}"
         return 1
     fi
 
-    # Extract summary using jq
     local total_states
     local succeeded_states
     local failed_states
