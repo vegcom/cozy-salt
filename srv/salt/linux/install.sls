@@ -3,31 +3,21 @@
 
 {% import_yaml 'packages.sls' as packages %}
 
-# Add Docker repository (required for docker-buildx-plugin and other Docker packages)
+# Install Docker using official installer script (handles repo setup and GPG keys automatically)
 {% if grains['os_family'] == 'Debian' %}
-{% set os_lower = grains['os']|lower %}
-{% set is_kali = grains['os'] == 'Kali' %}
-{% set distro_component = 'kali-rolling' if is_kali else grains['oscodename'] %}
-
-# Clean up stale sources to prevent apt-get update conflicts
-clean_stale_sources:
+docker_install:
   cmd.run:
-    - name: rm -f /etc/apt/sources.list.d/kali* /etc/apt/sources.list.d/debian* 2>/dev/null || true
-    - onlyif: test -d /etc/apt/sources.list.d
+    - name: curl -fsSL https://get.docker.com -o /tmp/get-docker.sh && sh /tmp/get-docker.sh
+    - creates: /usr/bin/docker
+    - require_in:
+      - pkg: base_packages
 
-docker_repo:
-  pkgrepo.managed:
-    - name: deb [arch=amd64 trusted=yes] https://download.docker.com/linux/{{ os_lower }} {{ distro_component }} stable
-    - file: /etc/apt/sources.list.d/docker.list
-    - require:
-      - cmd: clean_stale_sources
-
-# Force apt update with --allow-releaseinfo-change to handle stale release info
+# Force apt update after Docker repo is added
 apt_update_with_override:
   cmd.run:
     - name: apt-get update --allow-releaseinfo-change
     - require:
-      - pkgrepo: docker_repo
+      - cmd: docker_install
 {% endif %}
 
 # Install base packages from consolidated list

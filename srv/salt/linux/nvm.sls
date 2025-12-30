@@ -1,44 +1,66 @@
 # Linux Node.js version management via nvm
-# Installs nvm and configures default Node.js version
+# System-wide installation to /opt/nvm with NPM prefix management
+# No per-user profile pollution - initialized via /etc/profile.d/nvm.sh
 
 {% import_yaml 'packages.sls' as packages %}
 {% set nvm_config = salt['pillar.get']('nvm', {}) %}
 {% set default_version = nvm_config.get('default_version', 'lts/*') %}
-{% set user = salt['pillar.get']('user:name', 'admin') %}
-{% set user_home = '/home/' ~ user if user != 'root' else '/root' %}
 
-install_nvm:
+# Create /opt/nvm directory first (NVM installer requires it to exist)
+nvm_directory:
+  file.directory:
+    - name: /opt/nvm
+    - mode: 755
+    - makedirs: True
+
+# Download and install NVM to /opt/nvm system-wide
+# NVM_DIR=/opt/nvm - custom installation path (no trailing slash!)
+# PROFILE=/dev/null - prevents auto-modification of shell profiles
+# Note: Runs as root (needed for /opt directory ownership) but in clean environment
+nvm_download_and_install:
   cmd.run:
     - name: |
-        curl -sS -o /tmp/nvm-install.sh https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh
-        bash /tmp/nvm-install.sh
-        rm -f /tmp/nvm-install.sh
-        # Source profile to initialize nvm
-        if [ -f ~/.bashrc ]; then source ~/.bashrc; fi
-    - runas: {{ user }}
-    - shell: /bin/bash
-    - creates: {{ user_home }}/.nvm/nvm.sh
-    - env:
-      - HOME: {{ user_home }}
-
-install_default_node_version:
-  cmd.run:
-    - name: bash -il -c "nvm install {{ default_version }} && nvm alias default {{ default_version }}"
-    - runas: {{ user }}
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | \
+          NVM_DIR=/opt/nvm PROFILE=/dev/null bash
+    - creates: /opt/nvm/nvm.sh
     - require:
-      - cmd: install_nvm
-    - creates: {{ user_home }}/.nvm/versions/node/v*/bin/node
-    - env:
-      - HOME: {{ user_home }}
+      - file: nvm_directory
 
-{% for package in packages.npm_global %}
+# Deploy NVM profile.d initialization script first
+nvm_profile:
+  file.managed:
+    - name: /etc/profile.d/nvm.sh
+    - source: salt://linux/files/etc-profile.d/nvm.sh
+    - mode: 644
+
+# Install default Node.js version system-wide
+# Use BASH_ENV for non-interactive shells (Salt cmd.run)
+# This ensures NVM is sourced even without -i (interactive) flag
+# NOTE: Only NVM_DIR during installation - NVM rejects PREFIX and NPM_CONFIG_PREFIX
+nvm_install_default_version:
+  cmd.run:
+    - name: |
+        nvm install {{ default_version }} && nvm alias default {{ default_version }}
+    - shell: /bin/bash
+    - creates: /opt/nvm/versions/node/v*/bin/node
+    - require:
+      - cmd: nvm_download_and_install
+      - file: nvm_profile
+    - env:
+      - BASH_ENV: /etc/profile.d/nvm.sh
+      - NVM_DIR: /opt/nvm
+
+# Install global npm packages (if defined)
+# Set NPM_CONFIG_PREFIX inline in command, not in env (NVM rejects it in shell environment)
+{% for package in packages.get('npm_global', []) %}
 install_npm_{{ package | replace('/', '_') | replace('@', '') | replace('-', '_') }}:
   cmd.run:
-    - name: bash -il -c "nvm use default && npm install -g {{ package }}"
-    - runas: {{ user }}
+    - name: NPM_CONFIG_PREFIX=/opt/nvm npm install -g {{ package }}
+    - shell: /bin/bash
     - require:
-      - cmd: install_default_node_version
-    - unless: bash -il -c "npm list -g --depth=0 | grep -q {{ package }}"
+      - cmd: nvm_install_default_version
+    - unless: npm list -g --depth=0 | grep -q {{ package }}
     - env:
-      - HOME: {{ user_home }}
+      - BASH_ENV: /etc/profile.d/nvm.sh
+      - NVM_DIR: /opt/nvm
 {% endfor %}

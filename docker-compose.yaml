@@ -17,7 +17,8 @@ services:
       - ./srv/pillar:/srv/pillar:ro
       # Provisioning files - mount to separate location, configure via file_roots
       - ./provisioning:/srv/provisioning:ro
-      # Pre-shared minion keys (optional, used for automated testing )
+      # Pre-shared minion public keys for auto-acceptance during testing
+      # Mount as individual files (master auto-accepts these)
       - ./srv/salt/keys:/etc/salt/pki/master/minions_pre
       # Persistent data
       - salt-cache:/var/cache/salt
@@ -45,7 +46,9 @@ services:
       - SALT_MASTER=salt-master
       - MINION_ID=ubuntu-test
     volumes:
-      - salt-minion-ubuntu-pki:/etc/salt/pki/minion
+      # Pre-shared minion keys (bind mount from srv/salt/keys)
+      - ./srv/salt/keys/ubuntu-test.pem:/etc/salt/pki/minion/minion.pem:ro
+      - ./srv/salt/keys/ubuntu-test.pub:/etc/salt/pki/minion/minion.pub:ro
     networks:
       - salt-net
     depends_on:
@@ -71,7 +74,9 @@ services:
       - SALT_MASTER=salt-master
       - MINION_ID=rhel-test
     volumes:
-      - salt-minion-rhel-pki:/etc/salt/pki/minion
+      # Pre-shared minion keys (bind mount from srv/salt/keys)
+      - ./srv/salt/keys/rhel-test.pem:/etc/salt/pki/minion/minion.pem:ro
+      - ./srv/salt/keys/rhel-test.pub:/etc/salt/pki/minion/minion.pub:ro
     networks:
       - salt-net
     depends_on:

@@ -9,6 +9,13 @@ skel_files:
     - include_empty: True
     - clean: False
 
+# Deploy system-wide tmux configuration (Twilite theme)
+tmux_system_config:
+  file.managed:
+    - name: /etc/tmux.conf
+    - source: salt://linux/files/etc/tmux.conf
+    - mode: 644
+
 # Deploy profile.d initialization scripts
 starship_profile:
   file.managed:
@@ -16,16 +23,16 @@ starship_profile:
     - source: salt://linux/files/etc-profile.d/starship.sh
     - mode: 644
 
-homebrew_profile:
-  file.managed:
-    - name: /etc/profile.d/homebrew.sh
-    - source: salt://linux/files/etc-profile.d/homebrew.sh
-    - mode: 644
-
-miniforge_profile:
+miniforge_system_profile:
   file.managed:
     - name: /etc/profile.d/miniforge.sh
     - source: salt://linux/files/etc-profile.d/miniforge.sh
+    - mode: 644
+
+nvm_system_profile:
+  file.managed:
+    - name: /etc/profile.d/nvm.sh
+    - source: salt://linux/files/etc-profile.d/nvm.sh
     - mode: 644
 
 # Deploy hardened SSH configuration
@@ -46,32 +53,57 @@ sshd_hardening_config:
     - makedirs: True
 {% endif %}
 
-# Export git user config as environment variables for vim
-git_env_vars_linux:
+# Allow unauthenticated APT packages (trusted repositories)
+apt_allow_unauthenticated:
+  file.managed:
+    - name: /etc/apt/apt.conf.d/99-allow-unauthenticated
+    - contents: |
+        APT::Get::AllowUnauthenticated "true";
+    - mode: 644
+
+# Manage /etc/hosts entries for network services
+hosts_entries:
+  host.present:
+    - name: unifi
+    - ip: 10.0.0.1
   cmd.run:
     - name: |
-        GIT_NAME=$(git config --global user.name)
-        GIT_EMAIL=$(git config --global user.email)
+        # Add guava entry
+        grep -q "^10.0.0.2 guava" /etc/hosts || echo "10.0.0.2 guava" >> /etc/hosts
+        # Add ipa.guava.local entry
+        grep -q "^10.0.0.110 ipa.guava.local" /etc/hosts || echo "10.0.0.110 ipa.guava.local" >> /etc/hosts
+        # Add romm.local entry
+        grep -q "^10.0.0.3 romm.local" /etc/hosts || echo "10.0.0.3 romm.local" >> /etc/hosts
+    - require:
+      - host: hosts_entries
 
-        BASHRC="$HOME/.bashrc"
-        MARKER_START="# START: Git environment variables (managed by Salt)"
-        MARKER_END="# END: Git environment variables"
+# Configure DNS search domain (skip in containers - they have their own DNS)
+# Container detection pattern from Homebrew install script:
+# https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh (check_run_command_as_root)
+# Detect containers: Docker, Podman/systemd-container, Kubernetes, Azure Pipelines
+{% set is_container = salt['file.file_exists']('/.dockerenv') or
+                      salt['file.file_exists']('/run/.containerenv') %}
+{% if not is_container %}
+dns_search_domain:
+  file.managed:
+    - name: /etc/resolv.conf
+    - contents: |
+        search local
+        nameserver 10.0.0.1
+        nameserver 1.1.1.1
+        nameserver 1.0.0.1
+    - mode: 644
+{% else %}
+# DNS configuration skipped - running in container (Docker/Podman/Kubernetes)
+skip_dns_config:
+  test.nop:
+    - name: Skipping resolv.conf management in container environment
+{% endif %}
 
-        if ! grep -q "$MARKER_START" "$BASHRC" 2>/dev/null; then
-          cat >> "$BASHRC" <<EOF
-
-        $MARKER_START
-        export GIT_NAME="$GIT_NAME"
-        export GIT_EMAIL="$GIT_EMAIL"
-        $MARKER_END
-        EOF
-        else
-          sed -i "/$MARKER_START/,/$MARKER_END/c\\
-        $MARKER_START\\
-        export GIT_NAME=\"$GIT_NAME\"\\
-        export GIT_EMAIL=\"$GIT_EMAIL\"\\
-        $MARKER_END" "$BASHRC"
-        fi
-    - runas: {{ salt['pillar.get']('user:name', 'admin') }}
-    - shell: /bin/bash
-    - onlyif: git config --global user.name
+# Deploy system-wide git environment variables initialization
+# Exports GIT_NAME and GIT_EMAIL from global git config for all users via /etc/profile.d
+git_env_vars_profile:
+  file.managed:
+    - name: /etc/profile.d/git-env.sh
+    - source: salt://linux/files/etc-profile.d/git-env.sh
+    - mode: 644

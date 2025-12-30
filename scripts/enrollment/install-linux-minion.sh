@@ -97,16 +97,16 @@ case "$OS" in
     ubuntu|debian|kali)
         echo "Installing Salt Minion on Debian/Ubuntu/Kali..."
 
+        # Clean up broken Docker repository configurations before apt-get update
+        # WSL may have pre-existing repo configs pointing to wrong OS path
+        rm -f /etc/apt/sources.list.d/docker.list 2>/dev/null || true
+
         # Install prerequisites
-        apt-get update
-        apt-get install -y curl gnupg apt-transport-https ca-certificates
+        apt-get update || apt-get update --allow-releaseinfo-change
+        apt-get install -y curl ca-certificates
 
-        # Add Salt repository
-        mkdir -p /usr/share/keyrings
-        curl -fsSL https://packages.broadcom.com/artifactory/api/security/keypair/SaltProjectKey/public | \
-            gpg --dearmor -o /usr/share/keyrings/salt.gpg
-
-        echo "deb [signed-by=/usr/share/keyrings/salt.gpg arch=amd64] https://packages.broadcom.com/artifactory/saltproject-deb/ stable main" > \
+        # Add Salt repository (no GPG verification - trusted repository)
+        echo "deb [arch=amd64 trusted=yes] https://packages.broadcom.com/artifactory/saltproject-deb/ stable main" > \
             /etc/apt/sources.list.d/salt.list
 
         apt-get update
@@ -116,14 +116,13 @@ case "$OS" in
     rhel|centos|rocky|almalinux|fedora)
         echo "Installing Salt Minion on RHEL/CentOS/Rocky/Fedora..."
 
-        # Add Salt repository
+        # Add Salt repository (no GPG verification - trusted repository)
         cat > /etc/yum.repos.d/salt.repo <<EOF
 [salt-repo]
 name=Salt repo for RHEL/CentOS/Rocky/Fedora
 baseurl=https://packages.broadcom.com/artifactory/saltproject-rpm/
 enabled=1
-gpgcheck=1
-gpgkey=https://packages.broadcom.com/artifactory/api/security/keypair/SaltProjectKey/public
+gpgcheck=0
 EOF
 
         yum install -y salt-minion

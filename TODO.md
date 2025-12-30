@@ -394,3 +394,105 @@ These tasks have no dependencies and provide immediate value:
 - Day 11+: LOW priority items as needed
 
 This plan reduces technical debt while maintaining production stability.
+
+---
+
+## Session Progress (2025-12-30)
+
+### 🔧 In Progress
+
+**NVM/NPM Fixes:**
+- 🔄 NPM_CONFIG_PREFIX handling: Set inline in npm command instead of env (avoids NVM rejection)
+- 🔄 Git environment variables: Move from bashrc to /etc/profile.d/git-env.sh
+- ⏳ Provision 'admin' user on Linux for tool installations (Homebrew, NVM, etc.)
+
+**Docker Infrastructure:**
+- ⏳ Docker repository: Switched from pkgrepo.managed to official get.docker.sh installer script
+
+**Testing:**
+- 🔄 WSL minion: Testing NVM fixes with cache cleared
+
+---
+
+### 📋 Upcoming Tasks
+
+#### Docker CUDA & GPU Support (WSL)
+
+##### Part 1: CUDA 12.1 Installation
+**Issue:** Need CUDA 12.1 support for Docker in WSL environments
+**Installation:** Manual steps identified for WSL-Ubuntu:
+```bash
+wget https://developer.download.nvidia.com/compute/cuda/repos/wsl-ubuntu/x86_64/cuda-keyring_1.0-1_all.deb
+sudo dpkg -i cuda-keyring_1.0-1_all.deb
+sudo apt-get update
+sudo apt-get -y install cuda-12.1
+```
+**Reference:** https://developer.nvidia.com/cuda-12-1-1-download-archive?target_os=Linux&target_arch=x86_64&Distribution=WSL-Ubuntu&target_version=2.0&target_type=deb_network
+
+**Acceptance Criteria:**
+- [ ] Create Salt state for CUDA 12.1 installation in WSL
+- [ ] Add cuda-keyring package management
+- [ ] Test CUDA installation on WSL test container
+- [ ] Verify nvidia-smi and CUDA toolkit availability
+
+---
+
+##### Part 2: NVIDIA Container Toolkit
+**Issue:** Docker containers need access to GPU via NVIDIA Container Runtime
+**Installation:** NVIDIA Container Toolkit must be installed separately from CUDA
+**Reference:** https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
+
+**Acceptance Criteria:**
+- [ ] Create Salt state for NVIDIA Container Toolkit installation
+- [ ] Configure Docker daemon to use nvidia runtime
+- [ ] Test GPU access from container: `docker run --gpus all nvidia/cuda:12.1.0-runtime-ubuntu22.04 nvidia-smi`
+- [ ] Verify runtime configuration in /etc/docker/daemon.json
+
+**Installation Pattern (from official docs):**
+1. Add NVIDIA package repository
+2. Install nvidia-docker2 package
+3. Restart Docker daemon
+4. Test with `docker run --rm --gpus all nvidia/cuda nvidia-smi`
+
+---
+
+**Combined Complexity:** Medium-High (two related components)
+**Priority:** Medium (GPU acceleration support)
+**Dependencies:** WSL minion testing complete, CUDA 12.1 installed first
+
+---
+
+#### LOW PRIORITY: Rust Installation
+**Issue:** Need Rust toolchain for systems that require it
+**Installation Methods:**
+
+Linux / macOS:
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+Windows (via Chocolatey - simpler):
+```powershell
+choco install rustup
+```
+
+**Acceptance Criteria:**
+- [ ] Create Salt state for Rust installation (Linux)
+- [ ] Create Salt state for Rust installation (Windows)
+- [ ] Handle installation as admin user (not root)
+- [ ] Add to managed_users dotfiles if needed (.cargo paths)
+- [ ] Test Rust and Cargo availability after install
+
+**Complexity:** Low
+**Priority:** Low (optional toolchain)
+**Dependencies:** Admin user provisioning complete
+
+---
+
+### 🎯 Priority Reminders for Current Session
+
+1. **Git env vars → /etc/profile.d/** (not bashrc)
+2. **Create 'admin' user on Linux** → fixes Homebrew root rejection ✅ DONE
+3. **Create 'admin' user on Windows** (LOW priority) → for consistency
+4. **Test NVM/npm after fixes** → before moving to other tasks
+5. **Rust installation** (LOW priority) → optional toolchain

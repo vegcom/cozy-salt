@@ -1,0 +1,4 @@
+#ruff check .
+#mypy . --strict
+#git add -u
+#echo zutto >> $(git rev-parse --git-dir)/COMMIT_EDITMSG

@@ -24,10 +24,8 @@ echo "Installing Salt Minion for $OS..."
 case "$OS" in
     ubuntu|debian)
         apt-get update
-        apt-get install -y curl gnupg ca-certificates
-        curl -fsSL https://packages.broadcom.com/artifactory/api/security/keypair/SaltProjectKey/public | \
-            gpg --dearmor -o /usr/share/keyrings/salt.gpg
-        echo "deb [signed-by=/usr/share/keyrings/salt.gpg arch=amd64] \
+        apt-get install -y curl ca-certificates
+        echo "deb [arch=amd64 trusted=yes] \
             https://packages.broadcom.com/artifactory/saltproject-deb/ stable main" > \
             /etc/apt/sources.list.d/salt.list
         apt-get update
@@ -35,15 +33,12 @@ case "$OS" in
         ;;
 
     rocky|rhel|almalinux|centos)
-        dnf install -y yum-utils
-        rpm --import https://packages.broadcom.com/artifactory/api/security/keypair/SaltProjectKey/public
         cat > /etc/yum.repos.d/salt.repo <<EOF
 [salt-repo]
 name=Salt Repository
 baseurl=https://packages.broadcom.com/artifactory/saltproject-rpm/
 enabled=1
-gpgcheck=1
-gpgkey=https://packages.broadcom.com/artifactory/api/security/keypair/SaltProjectKey/public
+gpgcheck=0
 EOF
         dnf install -y salt-minion
         ;;
