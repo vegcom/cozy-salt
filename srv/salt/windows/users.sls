@@ -12,7 +12,6 @@
     - name: {{ username }}
     - fullname: {{ userdata.get('fullname', username) }}
     - groups: {{ userdata.get('windows_groups', ['Users']) | tojson }}
-    - groups_mode: replace
 
 # Create {{ username }} home directory
 {{ username }}_home_directory:

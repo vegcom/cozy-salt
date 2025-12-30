@@ -14,12 +14,12 @@ nvm_directory:
 
 # Set system-wide environment variable for NVM_HOME
 # nvm-windows will use this location for Node.js versions
-nvm_environment_variables:
+nvm_home:
   reg.present:
     - name: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
+    - vname: NVM_HOME
+    - vdata: C:\opt\nvm
     - vtype: REG_SZ
-    - entries:
-      - NVM_HOME: C:\opt\nvm
     - require:
       - file: nvm_directory
 

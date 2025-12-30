@@ -15,7 +15,7 @@
 
 windows_package_role_{{ host_role }}:
   cmd.run:
-    - name: echo "Installing packages for role: {{ host_role }}"
+    - name: 'echo "Installing packages for role: {{ host_role }}"'
     - shell: powershell
 
 # Enable Chocolatey feature for remembered arguments on upgrades
