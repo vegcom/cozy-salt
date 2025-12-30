@@ -1,29 +1,38 @@
 # cozy-salt Makefile - shortcuts for common operations
 
-.PHONY: help test test-ubuntu test-apt test-linux test-rhel test-windows test-all lint lint-shell lint-ps clean up down logs validate perms shell salt-help salt-clear_cache salt-key-list salt-key-cleanup-test salt-key-accept salt-key-delete salt-key-reject salt-key-accept-test salt-manage-status salt-jobs-active salt-jobs-list salt-test-ping salt-state-highstate salt-state-highstate-test
+.PHONY: help test test-ubuntu test-apt test-linux test-rhel test-windows test-all test-quick lint lint-shell lint-ps clean clean-keys clean-all up down restart logs status validate perms shell state-check debug-minion logs-minion salt-help salt-key-list salt-key-status salt-key-cleanup-test salt-key-accept salt-key-delete salt-key-reject salt-key-accept-test salt-manage-status salt-jobs-active salt-jobs-list salt-jobs-clear salt-test-ping salt-state-highstate salt-state-highstate-test
 
 # Default target
 help:
 	@echo "cozy-salt - Salt infrastructure management"
 	@echo ""
 	@echo "Available targets:"
+	@echo ""
+	@echo "Testing:"
 	@echo "  test          - Run sequential state tests (ubuntu → rhel → windows)"
 	@echo "  test-ubuntu   - Test on Ubuntu 24.04 (apt-based)"
-	@echo "  test-apt      - Alias for test-ubuntu"
-	@echo "  test-linux    - Alias for test-ubuntu (backward compat)"
 	@echo "  test-rhel     - Test on RHEL/Rocky 9 (dnf-based)"
 	@echo "  test-windows  - Test on Windows (requires KVM)"
-	@echo "  test-all      - Alias for 'test' (sequential)"
-	@echo "  lint          - Run all linters"
-	@echo "  lint-shell    - Lint shell scripts"
-	@echo "  lint-ps       - Lint PowerShell scripts"
-	@echo "  validate      - Run pre-commit validation (permissions, optional linting)"
-	@echo "  perms         - Fix file permissions"
-	@echo "  shell         - Enter salt-master container (interactive bash)"
-	@echo "  clean         - Clean up test artifacts"
-	@echo "  up            - Start Salt Master"
+	@echo "  test-quick    - Run test without docker rebuild (faster iteration)"
+	@echo "  lint          - Run all linters (shell + powershell)"
+	@echo ""
+	@echo "Docker/Container:"
+	@echo "  up            - Start Salt Master + minions"
 	@echo "  down          - Stop all containers"
-	@echo "  logs          - View Salt Master logs"
+	@echo "  restart       - Restart containers (quick bounce)"
+	@echo "  status        - Show container + minion status"
+	@echo "  logs          - View salt-master logs (streaming)"
+	@echo "  shell         - Enter salt-master container (interactive bash)"
+	@echo "  debug-minion  - Enter a minion container (usage: make debug-minion MINION=ubuntu)"
+	@echo "  logs-minion   - Tail minion logs (usage: make logs-minion MINION=ubuntu)"
+	@echo ""
+	@echo "Validation/Maintenance:"
+	@echo "  validate      - Run pre-commit validation (permissions + optional linting)"
+	@echo "  perms         - Fix file permissions"
+	@echo "  state-check   - Validate state syntax before applying"
+	@echo "  clean         - Clean up test artifacts (*.json)"
+	@echo "  clean-keys    - Delete test minion keys only"
+	@echo "  clean-all     - Full cleanup (containers + keys + artifacts)"
 	@echo ""
 	@echo "Salt-Master helpers:"
 	@echo "  salt-help              - Show Salt documentation links"
@@ -67,6 +76,10 @@ test-all:
 	@echo "=== Testing on all distributions (sequential) ==="
 	./tests/test-states-json.sh all
 
+test-quick:
+	@echo "=== Quick test (no docker rebuild) ==="
+	docker compose exec -t salt-minion-ubuntu-test salt-call state.highstate --out=json
+
 # Linting
 lint: lint-shell lint-ps
 
@@ -93,6 +106,12 @@ up:
 down:
 	docker compose down
 
+restart:
+	docker compose restart
+
+status:
+	@echo "=== Container Status ===" && docker compose ps && echo "" && echo "=== Minion Connectivity ===" && docker compose exec -t salt-master salt-run manage.status 2>/dev/null || echo "(Master not running)"
+
 logs:
 	docker compose logs -f salt-master
 
@@ -105,6 +124,15 @@ clean:
 	docker compose --profile test-windows down 2>/dev/null || true
 	@echo "Clean complete"
 
+clean-keys:
+	@echo "=== Deleting test minion keys ==="
+	docker compose exec -t salt-master salt-key -d ubuntu-test -y 2>/dev/null || true
+	docker compose exec -t salt-master salt-key -d rhel-test -y 2>/dev/null || true
+	@echo "Test keys cleaned"
+
+clean-all: clean clean-keys
+	@echo "✓ Full cleanup complete"
+
 # Utilities
 validate:
 	@echo "=== Running validation... ==="
@@ -116,6 +144,15 @@ perms:
 
 shell:
 	docker compose exec -it salt-master /bin/bash
+
+debug-minion: require-MINION
+	docker compose exec -it salt-minion-$(MINION)-test /bin/bash
+
+logs-minion: require-MINION
+	docker compose logs -f salt-minion-$(MINION)-test
+
+state-check:
+	docker compose exec -t salt-master salt-call state.show_top 2>/dev/null || echo "Error: Check state syntax in srv/salt/"
 
 # Salt-Master helpers
 
@@ -141,6 +178,9 @@ salt-clear_cache:
 salt-key-list:
 	docker compose exec -t salt-master salt-key -L
 
+salt-key-status:
+	@echo "=== Minion Key Status ===" && docker compose exec -t salt-master salt-key -L
+
 salt-key-cleanup-test:
 	@echo "=== Deleting test minion keys ==="
 	docker compose exec -t salt-master salt-key -d ubuntu-test -y || true
@@ -155,7 +195,13 @@ salt-key-delete: require-NAME
 	@echo "=== Delete a minion key ==="
 	docker compose exec -t salt-master salt-key -d "$(NAME)" -y || true
 
-# Generic required-argument checker
+salt-key-reject: require-NAME
+	@echo "=== Reject a pending minion key ==="
+	docker compose exec -t salt-master salt-key -r "$(NAME)" -y || true
+
+# Generic required-argument checker (used by parameterized targets)
+# Usage: make target ARGUMENT=value
+# Example: make debug-minion MINION=ubuntu
 require-%:
 	@if [ -z "$($*)" ]; then \
 		echo "Error: missing required argument '$*'"; \
@@ -177,6 +223,9 @@ salt-jobs-active:
 
 salt-jobs-list:
 	docker compose exec -t salt-master salt-run jobs.list_jobs
+
+salt-jobs-clear:
+	docker compose exec -t salt-master salt-run jobs.clear_old_jobs 2>/dev/null || echo "No old jobs to clear"
 
 salt-test-ping:
 	docker compose exec -t salt-master salt '*' test.ping
