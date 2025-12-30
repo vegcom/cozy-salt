@@ -3,7 +3,7 @@
 # nvm-windows Chocolatey package installs to AppData, then configure for C:\opt\nvm
 
 {% set nvm_config = salt['pillar.get']('nvm', {}) %}
-{% set default_version = nvm_config.get('default_version', 'lts') %}
+{% set default_version = nvm_config.get('default_version', 'lts/*') %}
 
 # Create C:\opt\nvm directory for consistency
 nvm_directory:
