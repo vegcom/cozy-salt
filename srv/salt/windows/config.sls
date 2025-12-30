@@ -5,8 +5,10 @@
 {% set hosts = network_config.get('hosts', {}) %}
 
 # WSL-specific configuration (detection and Docker context setup)
+# Export git user config as environment variables for vim
 include:
   - wsl
+  - common.git_env
 
 # Deploy hardened SSH configuration (consolidated template - High-003)
 # Template handles platform conditionals: Linux, WSL, and Windows
@@ -34,11 +36,6 @@ windows_hosts_entries:
           }
         }
     - shell: powershell
-
-# Export git user config as environment variables for vim
-# Implementation delegated to common.git_env module (platform-specific)
-include:
-  - common.git_env
 
 # ============================================================================
 # Service Management (merged from services.sls)
