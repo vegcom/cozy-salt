@@ -1,10 +1,13 @@
 # Capability-Based Package Configuration (P2)
 # Organized by PURPOSE/ROLE, with per-distro package mapping
-# 
-# WARNING: DO NOT use Jinja2 syntax in comments (causes circular import errors)
-# This file is imported by salt states
+#
+# WARNING: DO NOT use Jinja2 tag syntax in comments (causes rendering errors)
+# This file is imported by salt states as YAML
+#
 # In states use: import_yaml 'provisioning/packages.sls' as packages
-# Then select: packages.core_utils[os_name] where os_name is ubuntu/debian/rhel
+# Then select packages: packages.core_utils[os_name] where os_name is ubuntu/debian/rhel
+#
+# See provisioning/packages-p2-draft.sls for detailed notes
 
 # =============================================================================
 # CAPABILITY: Core Utilities
@@ -112,7 +115,6 @@ build_tools:
     - gcc-c++
     - make
     - cmake
-    - pkgconfig
     - autoconf
     - automake
 
