@@ -15,8 +15,9 @@ services:
       # Provisioning files - mount to separate location, configure via file_roots
       - ./provisioning:/srv/provisioning:ro
       # Pre-shared minion public keys for auto-acceptance during testing
-      # Mount as individual files (master auto-accepts these)
-      - ./srv/salt/keys:/etc/salt/pki/master/minions_pre
+      # Mount only .pub files individually (private .pem keys stay on minions)
+      - ./srv/salt/keys/ubuntu-test.pub:/etc/salt/pki/master/minions_pre/ubuntu-test
+      - ./srv/salt/keys/rhel-test.pub:/etc/salt/pki/master/minions_pre/rhel-test
       # Persistent data
       - salt-cache:/var/cache/salt
       - salt-logs:/var/log/salt
