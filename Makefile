@@ -2,6 +2,7 @@
 
 .PHONY: help test test-ubuntu test-apt test-linux test-rhel test-windows test-all test-quick lint lint-shell lint-ps clean clean-keys clean-all up down restart logs status validate perms shell state-check debug-minion logs-minion salt-help salt-key-list salt-key-status salt-key-cleanup-test salt-key-accept salt-key-delete salt-key-reject salt-key-accept-test salt-manage-status salt-jobs-active salt-jobs-list salt-jobs-clear salt-test-ping salt-state-highstate salt-state-highstate-test
 
+
 # Default target
 help:
 	@echo "cozy-salt - Salt infrastructure management"
@@ -55,7 +56,27 @@ help:
 	@echo "  make lint         # Check code quality"
 	@echo "  make clean        # Clean test artifacts"
 
+# =========================================================================== #
+# Fixtures
+# =========================================================================== #
+
+# salt-call 
+SALT_CALL = sh -c 'salt-call "$$@" 2>/dev/null || exec sudo salt-call "$$@"' --
+
+# Generic required-argument checker (used by parameterized targets)
+# Usage: make target ARGUMENT=value
+# Example: make debug-minion MINION=ubuntu
+require-%:
+	@if [ -z "$($*)" ]; then \
+		echo "Error: missing required argument '$*'"; \
+		echo "Usage: make $*=<value> <target>"; \
+		exit 1; \
+	fi
+
+# =========================================================================== #
 # Testing
+# =========================================================================== #
+
 test: test-all
 
 test-ubuntu:
@@ -82,7 +103,11 @@ test-quick:
 	@echo "=== Quick test (no docker rebuild) ==="
 	docker compose exec -t salt-minion-ubuntu-test salt-call state.highstate --out=json
 
+
+
+# =========================================================================== #
 # Linting
+# =========================================================================== #
 lint: lint-shell lint-ps
 
 lint-shell:
@@ -101,7 +126,10 @@ lint-ps:
 		echo "PowerShell not installed, skipping"; \
 	fi
 
+# =========================================================================== #
 # Docker operations
+# =========================================================================== #
+
 up:
 	docker compose up -d
 
@@ -117,7 +145,6 @@ status:
 logs:
 	docker compose logs -f salt-master
 
-# Cleanup
 clean:
 	@echo "=== Cleaning test artifacts... ==="
 	rm -f tests/output/*.json
@@ -135,7 +162,9 @@ clean-keys:
 clean-all: clean clean-keys
 	@echo "✓ Full cleanup complete"
 
+# =========================================================================== #
 # Utilities
+# =========================================================================== #
 validate:
 	@echo "=== Running validation... ==="
 	./scripts/fix-permissions.sh
@@ -156,7 +185,9 @@ logs-minion: require-MINION
 state-check:
 	docker compose exec -t salt-master salt-call state.show_top 2>/dev/null || echo "Error: Check state syntax in srv/salt/"
 
+# =========================================================================== #
 # Salt-Master helpers
+# =========================================================================== #
 
 salt-help:
 	@echo "=== Salt documentation... ==="
@@ -201,15 +232,7 @@ salt-key-reject: require-NAME
 	@echo "=== Reject a pending minion key ==="
 	docker compose exec -t salt-master salt-key -r "$(NAME)" -y || true
 
-# Generic required-argument checker (used by parameterized targets)
-# Usage: make target ARGUMENT=value
-# Example: make debug-minion MINION=ubuntu
-require-%:
-	@if [ -z "$($*)" ]; then \
-		echo "Error: missing required argument '$*'"; \
-		echo "Usage: make $*=<value> <target>"; \
-		exit 1; \
-	fi
+
 
 salt-key-accept-test:
 	@echo "=== Accepting pending test minion keys ==="
@@ -246,12 +269,47 @@ salt-state-apply-test: require-MINION
 	@echo "=== Testing state on $(MINION) ==="
 	docker compose exec -t salt-master salt '$(MINION)' state.highstate test=true
 
-# salt-call 
+# =========================================================================== #
+# Salt-call: On host blocks
+# =========================================================================== #
+
+
+salt-call-ping:
+	@echo "=== Test minion connectivity ==="
+	$(SALT_CALL) test.ping
 
 salt-call-highstate:
 	@echo "=== Applying state ==="
-	salt-call state.highstate
+	$(SALT_CALL) state.highstate
 
 salt-call-highstate-test:
 	@echo "=== Test state ==="
-	salt-call state.highstate
+	$(SALT_CALL) state.highstate test=True
+
+salt-call-show-top:
+	@echo "=== Show which states would apply ==="
+	$(SALT_CALL) state.show_top
+
+salt-call-show-highstate:
+	@echo "=== Show highstate without applying ==="
+	$(SALT_CALL) state.show_highstate
+
+salt-call-grains:
+	@echo "=== Show all grains ==="
+	$(SALT_CALL) grains.items
+
+salt-call-pillar:
+	@echo "=== Show all pillar data ==="
+	$(SALT_CALL) pillar.items
+
+salt-call-sync:
+	@echo "=== Sync all modules from master ==="
+	$(SALT_CALL) saltutil.sync_all
+
+salt-call-refresh-pillar:
+	@echo "=== Refresh pillar data ==="
+	$(SALT_CALL) saltutil.refresh_pillar
+
+salt-call-pkg-upgrades:
+	@echo "=== Show available package upgrades ==="
+	$(SALT_CALL) pkg.list_upgrades
