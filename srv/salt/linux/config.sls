@@ -41,23 +41,15 @@ nvm_system_profile:
     - source: salt://linux/files/etc-profile.d/nvm.sh
     - mode: 644
 
-# Deploy hardened SSH configuration
-# WSL systems get WSL-specific config (Port 2222), others get standard config
-{% if grains.get('kernel_release', '').find('WSL') != -1 or grains.get('kernel_release', '').find('Microsoft') != -1 %}
+# Deploy hardened SSH configuration (consolidated template - High-003)
+# Template handles platform conditionals: Linux, WSL, and Windows
 sshd_hardening_config:
   file.managed:
     - name: /etc/ssh/sshd_config.d/99-hardening.conf
-    - source: salt://wsl/files/etc-ssh/sshd_config.d/99-hardening.conf
+    - source: salt://_templates/sshd_hardening.conf.jinja
+    - template: jinja
     - mode: 644
     - makedirs: True
-{% else %}
-sshd_hardening_config:
-  file.managed:
-    - name: /etc/ssh/sshd_config.d/99-hardening.conf
-    - source: salt://linux/files/etc-ssh/sshd_config.d/99-hardening.conf
-    - mode: 644
-    - makedirs: True
-{% endif %}
 
 # Allow unauthenticated APT packages (trusted repositories) - Debian/Ubuntu only
 {% if grains['os_family'] == 'Debian' %}

@@ -1,0 +1,39 @@
+# Hardened SSH configuration for production
+# Generated from srv/salt/_templates/sshd_hardening.conf.jinja
+# Deployed by Salt - cozy-salt project
+
+# Authentication
+PasswordAuthentication no
+PubkeyAuthentication yes
+PermitRootLogin no
+PermitEmptyPasswords no
+
+# Security
+{% if grains['os_family'] == 'Windows' %}
+# Windows OpenSSH specific
+KbdInteractiveAuthentication no
+PubkeyAcceptedKeyTypes ssh-ed25519,ssh-rsa,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521
+{% else %}
+# Unix/Linux specific
+ChallengeResponseAuthentication no
+UsePAM yes
+{% endif %}
+
+# Session limits
+MaxAuthTries 3
+MaxSessions 10
+
+# Protocol
+Protocol 2
+
+{% if grains.get('kernel_release', '').find('WSL') != -1 or grains.get('kernel_release', '').find('Microsoft') != -1 %}
+# WSL-specific: Listen on alternate port to avoid Windows SSH conflict
+Port 2222
+{% endif %}
+
+{% if grains['os_family'] == 'Windows' %}
+# Windows-specific: Administrators group authorization (optional)
+# Uncomment to use administrators_authorized_keys instead of per-user authorized_keys
+# Match Group administrators
+#        AuthorizedKeysFile __PROGRAMDATA__/ssh/administrators_authorized_keys
+{% endif %}

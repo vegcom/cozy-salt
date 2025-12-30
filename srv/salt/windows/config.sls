@@ -29,11 +29,13 @@ run_configure_docker_wsl_context:
     - require:
       - file: deploy_configure_docker_wsl_context
 
-# Deploy hardened SSH configuration
+# Deploy hardened SSH configuration (consolidated template - High-003)
+# Template handles platform conditionals: Linux, WSL, and Windows
 sshd_hardening_config:
   file.managed:
     - name: C:\ProgramData\ssh\sshd_config.d\99-hardening.conf
-    - source: salt://windows/files/ProgramData/ssh/sshd_config.d/99-hardening.conf
+    - source: salt://_templates/sshd_hardening.conf.jinja
+    - template: jinja
     - makedirs: True
 
 # Manage Windows hosts file entries for network services (from pillar.network.hosts)
