@@ -58,3 +58,6 @@ nul
 
 # Tests
 tests/output/*.json
+
+# OPT
+.claude

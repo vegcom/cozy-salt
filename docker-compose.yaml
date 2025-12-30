@@ -42,7 +42,6 @@ services:
       dockerfile: Dockerfile.ubuntu-minion
     container_name: salt-minion-ubuntu-test
     restart: "no"
-    privileged: true
     environment:
       - SALT_MASTER=salt-master
       - MINION_ID=ubuntu-test
@@ -50,8 +49,6 @@ services:
       # Pre-shared minion keys (bind mount from srv/salt/keys)
       - ./srv/salt/keys/ubuntu-test.pem:/etc/salt/pki/minion/minion.pem:ro
       - ./srv/salt/keys/ubuntu-test.pub:/etc/salt/pki/minion/minion.pub:ro
-      # Cgroup support for privileged operations
-      - /sys/fs/cgroup:/sys/fs/cgroup:rw
     networks:
       - salt-net
     depends_on:
@@ -73,7 +70,6 @@ services:
       dockerfile: Dockerfile.rhel-minion
     container_name: salt-minion-rhel-test
     restart: "no"
-    privileged: true
     environment:
       - SALT_MASTER=salt-master
       - MINION_ID=rhel-test
@@ -81,8 +77,6 @@ services:
       # Pre-shared minion keys (bind mount from srv/salt/keys)
       - ./srv/salt/keys/rhel-test.pem:/etc/salt/pki/minion/minion.pem:ro
       - ./srv/salt/keys/rhel-test.pub:/etc/salt/pki/minion/minion.pub:ro
-      # Cgroup support for privileged operations
-      - /sys/fs/cgroup:/sys/fs/cgroup:rw
     networks:
       - salt-net
     depends_on:
