@@ -60,3 +60,4 @@ docker:
 - **Desktop Commander for tests** - `start_process`, run `tests/run.sh`, actually verify shit works
 - **Memory + Sequential Thinking** - use these often. document decisions, track context, think out loud
 - **grep before u move anything** - see rule #3. seriously. do it.
+- **Makefile is ur friend** - maintain, review, and leverage for docker/salt operations

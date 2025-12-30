@@ -6,8 +6,6 @@
 #
 # In states use: import_yaml 'provisioning/packages.sls' as packages
 # Then select packages: packages.core_utils[os_name] where os_name is ubuntu/debian/rhel
-#
-# See provisioning/packages-p2-draft.sls for detailed notes
 
 # =============================================================================
 # CAPABILITY: Core Utilities
