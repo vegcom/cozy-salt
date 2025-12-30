@@ -67,3 +67,13 @@ git_env_vars_windows:
         }
     - shell: powershell
     - onlyif: git config --global user.name
+
+# ============================================================================
+# Service Management (merged from services.sls)
+# ============================================================================
+
+# Ensure Salt Minion service is running
+salt_minion_service:
+  service.running:
+    - name: salt-minion
+    - enable: True

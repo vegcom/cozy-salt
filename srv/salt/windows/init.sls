@@ -4,9 +4,8 @@
 include:
   - windows.users
   - windows.install
-  - windows.config
+  - windows.config   # Includes service management (merged from services.sls)
   - windows.nvm
   - windows.rust
   - windows.miniforge
   - windows.tasks
-  - windows.services
