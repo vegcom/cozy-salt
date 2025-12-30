@@ -1,13 +1,11 @@
 # Capability-Based Package Configuration (P2)
 # Organized by PURPOSE/ROLE, with per-distro package mapping
 # 
-# Import this in states using:
-#   {% import_yaml "provisioning/packages.sls" as packages %}
+# This file is imported by salt states - do NOT use Jinja2 syntax in comments!
+# (Comments with {% %} syntax cause circular imports)
 #
-# Use in Jinja2:
-#   {%- set os = grains.os_family | lower -%}
-#   - pkg.installed:
-#       - pkgs: {{ packages.core_utils[os] }}
+# In states, use: {%- import_yaml 'provisioning/packages.sls' as packages -%}
+# Then select packages: packages.core_utils[os_name] where os_name is ubuntu/debian/rhel
 #
 # See provisioning/packages-p2-draft.sls for detailed notes
 
