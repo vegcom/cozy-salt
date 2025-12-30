@@ -92,12 +92,10 @@ skip_dns_config:
 {% endif %}
 
 # Deploy system-wide git environment variables initialization
-# Exports GIT_NAME and GIT_EMAIL from global git config for all users via /etc/profile.d
-git_env_vars_profile:
-  file.managed:
-    - name: /etc/profile.d/git-env.sh
-    - source: salt://linux/files/etc-profile.d/git-env.sh
-    - mode: 644
+# Exports GIT_NAME and GIT_EMAIL from global git config for all users
+# Implementation delegated to common.git_env module (platform-specific)
+include:
+  - common.git_env
 
 # ============================================================================
 # Service Management (merged from services.sls)

@@ -57,20 +57,9 @@ windows_hosts_entries:
     - shell: powershell
 
 # Export git user config as environment variables for vim
-git_env_vars_windows:
-  cmd.run:
-    - name: |
-        $name = git config --global user.name
-        $email = git config --global user.email
-        if ($name -and $email) {
-          [System.Environment]::SetEnvironmentVariable('GIT_NAME', $name, 'User')
-          [System.Environment]::SetEnvironmentVariable('GIT_EMAIL', $email, 'User')
-          Write-Host "Set GIT_NAME=$name and GIT_EMAIL=$email"
-        } else {
-          Write-Host "Git user not configured yet, skipping"
-        }
-    - shell: powershell
-    - onlyif: git config --global user.name
+# Implementation delegated to common.git_env module (platform-specific)
+include:
+  - common.git_env
 
 # ============================================================================
 # Service Management (merged from services.sls)
