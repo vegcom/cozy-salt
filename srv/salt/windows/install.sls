@@ -55,8 +55,10 @@ winget_{{ pkg | replace('.', '_') | replace('-', '_') }}:
 {% endif %}
 
 # Install Winget runtime packages for selected role
+# Handles list-of-dicts structure from roles.sls
 {% if selected_role.winget_runtimes is defined %}
-{% for category, packages in selected_role.winget_runtimes.items() %}
+{% for category_dict in selected_role.winget_runtimes %}
+{% for category, packages in category_dict.items() %}
 {% if packages is not string and packages is iterable and packages != 'all' %}
 {% for pkg in packages %}
 winget_runtime_{{ pkg | replace('.', '_') | replace('-', '_') }}:
@@ -68,5 +70,6 @@ winget_runtime_{{ pkg | replace('.', '_') | replace('-', '_') }}:
 # Note: 'all' marker means install entire category from base provisioning/packages.sls
 # Implementation: iterate full category from packages.sls when role is 'full'
 {% endif %}
+{% endfor %}
 {% endfor %}
 {% endif %}
