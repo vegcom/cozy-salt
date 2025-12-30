@@ -31,12 +31,12 @@ miniforge_install:
       - cmd: miniforge_download
     - unless: Test-Path '{{ miniforge_path }}\Scripts\conda.exe'
 
-# Set system-wide environment variables for Miniforge/Conda
-miniforge_environment_variables:
+# Set system-wide environment variable for Miniforge/Conda
+miniforge_conda_home:
   reg.present:
     - name: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
+    - vname: CONDA_HOME
+    - vdata: C:\opt\miniforge3
     - vtype: REG_SZ
-    - entries:
-      - CONDA_HOME: C:\opt\miniforge3
     - require:
       - cmd: miniforge_install

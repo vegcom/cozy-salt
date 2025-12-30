@@ -44,6 +44,8 @@ help:
 	@echo "  salt-jobs-list         - List recent jobs"
 	@echo "  salt-state-highstate   - Apply full state to all minions"
 	@echo "  salt-state-highstate-test - Dry-run full state (test mode)"
+	@echo "  salt-state-apply       - Apply state to specific minion (MINION=name)"
+	@echo "  salt-state-apply-test  - Dry-run state on specific minion (MINION=name)"
 	@echo ""
 	@echo "Examples:"
 	@echo "  make test         # Run all tests sequentially"
@@ -225,7 +227,7 @@ salt-jobs-list:
 	docker compose exec -t salt-master salt-run jobs.list_jobs
 
 salt-jobs-clear:
-	docker compose exec -t salt-master salt-run jobs.clear_old_jobs 2>/dev/null || echo "No old jobs to clear"
+	docker compose exec -t salt-master salt-run jobs.clear_old_jobs 2>/dev/null || echo "No old jobs to clear"d
 
 salt-test-ping:
 	docker compose exec -t salt-master salt '*' test.ping
@@ -235,3 +237,21 @@ salt-state-highstate:
 
 salt-state-highstate-test:
 	docker compose exec -t salt-master salt '*' state.highstate test=true
+
+salt-state-apply: require-MINION
+	@echo "=== Applying state to $(MINION) ==="
+	docker compose exec -t salt-master salt '$(MINION)' state.highstate
+
+salt-state-apply-test: require-MINION
+	@echo "=== Testing state on $(MINION) ==="
+	docker compose exec -t salt-master salt '$(MINION)' state.highstate test=true
+
+# salt-call 
+
+salt-call-highstate:
+	@echo "=== Applying state ==="
+	salt-call state.highstate
+
+salt-call-highstate-test:
+	@echo "=== Test state ==="
+	salt-call state.highstate

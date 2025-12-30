@@ -28,12 +28,20 @@ rust_install:
 
 # Set system-wide environment variables for Rust
 # HKEY_LOCAL_MACHINE ensures all users have access
-rust_environment_variables:
+rust_rustup_home:
   reg.present:
     - name: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
+    - vname: RUSTUP_HOME
+    - vdata: C:\opt\rust
     - vtype: REG_SZ
-    - entries:
-      - RUSTUP_HOME: C:\opt\rust
-      - CARGO_HOME: C:\opt\rust
+    - require:
+      - cmd: rust_install
+
+rust_cargo_home:
+  reg.present:
+    - name: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
+    - vname: CARGO_HOME
+    - vdata: C:\opt\rust
+    - vtype: REG_SZ
     - require:
       - cmd: rust_install
