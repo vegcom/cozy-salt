@@ -1,28 +1,6 @@
 #!/bin/bash
 set -e
 
-# Start systemd as PID 1 if available (required for full state testing with services)
-# This allows states that manage systemd services (nginx, docker, etc.) to work correctly
-if [ -x /lib/systemd/systemd ]; then
-  echo "=== Starting systemd as init system ==="
-  
-  # Start systemd in background
-  /lib/systemd/systemd --system &
-  SYSTEMD_PID=$!
-  
-  # Wait for systemd to be ready (max 30 seconds)
-  for i in {1..30}; do
-    if systemctl is-system-running >/dev/null 2>&1; then
-      echo "Systemd ready!"
-      break
-    fi
-    if [ $i -eq 30 ]; then
-      echo "WARNING: Systemd did not fully initialize in time"
-    fi
-    sleep 1
-  done
-fi
-
 # Configure minion master and ID from environment variables
 echo "master: ${SALT_MASTER:-salt-master}" > /etc/salt/minion.d/master.conf
 echo "id: ${MINION_ID:-ubuntu-test}" > /etc/salt/minion.d/id.conf

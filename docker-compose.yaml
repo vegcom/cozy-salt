@@ -43,7 +43,6 @@ services:
     container_name: salt-minion-ubuntu-test
     restart: "no"
     privileged: true
-    cgroupns: host
     environment:
       - SALT_MASTER=salt-master
       - MINION_ID=ubuntu-test
@@ -77,7 +76,6 @@ services:
     container_name: salt-minion-rhel-test
     restart: "no"
     privileged: true
-    cgroupns: host
     environment:
       - SALT_MASTER=salt-master
       - MINION_ID=rhel-test
