@@ -1,113 +1,51 @@
-# Common dotfiles deployment
+# Common dotfiles deployment - Git configuration
 # Deploys git config ONLY to managed users (never to root)
+# Uses Jinja macros to eliminate platform-specific conditionals
 
-{% set is_windows = grains['os_family'] == 'Windows' %}
+{% import 'common/_dotfiles_macros.sls' as dotfiles %}
+
 {% set username = salt['pillar.get']('user:name', 'admin') %}
 {% set managed_users = salt['pillar.get']('managed_users', []) %}
 
 # Only deploy if user is in managed_users list and NOT root
 {% if username in managed_users and username != 'root' %}
 
-{% if is_windows %}
-  {% set user_home = salt['environ.get']('USERPROFILE', 'C:\\Users\\' ~ username) %}
-{% else %}
-  {% set user_home = '/home/' ~ username %}
-{% endif %}
+{% set user_home = dotfiles.get_user_home(username) %}
 
-# Git configuration files (always overwrite)
-deploy_gitconfig:
-  file.managed:
-    {% if is_windows %}
-    - name: {{ user_home }}\\.gitconfig
-    {% else %}
-    - name: {{ user_home }}/.gitconfig
-    {% endif %}
-    - source: salt://common/dotfiles/.gitconfig
-    - user: {{ username }}
-    - mode: 644
-    - makedirs: True
+# Deploy .gitconfig
+{{ dotfiles.deploy_file('deploy_gitconfig', user_home, '.gitconfig', 'salt://common/dotfiles/.gitconfig', username) }}
 
-deploy_git_credentials:
-  file.managed:
-    {% if is_windows %}
-    - name: {{ user_home }}\\.git-credentials
-    {% else %}
-    - name: {{ user_home }}/.git-credentials
-    {% endif %}
-    - source: salt://common/dotfiles/.git-credentials
-    - user: {{ username }}
-    - mode: 644
-    - makedirs: True
+# Deploy .git-credentials
+{{ dotfiles.deploy_file('deploy_git_credentials', user_home, '.git-credentials', 'salt://common/dotfiles/.git-credentials', username) }}
 
-deploy_gitignore:
-  file.managed:
-    {% if is_windows %}
-    - name: {{ user_home }}\\.gitignore
-    {% else %}
-    - name: {{ user_home }}/.gitignore
-    {% endif %}
-    - source: salt://common/dotfiles/.gitignore
-    - user: {{ username }}
-    - mode: 644
-    - makedirs: True
+# Deploy .gitignore
+{{ dotfiles.deploy_file('deploy_gitignore', user_home, '.gitignore', 'salt://common/dotfiles/.gitignore', username) }}
 
-# Local override files - only create if they don't exist (user customizations)
+# Deploy .gitconfig.local (user customizations - only create if doesn't exist)
 deploy_gitconfig_local:
   file.managed:
-    {% if is_windows %}
-    - name: {{ user_home }}\\.gitconfig.local
-    - creates: {{ user_home }}\\.gitconfig.local
-    {% else %}
-    - name: {{ user_home }}/.gitconfig.local
-    - creates: {{ user_home }}/.gitconfig.local
-    {% endif %}
+    - name: {{ dotfiles.dotfile_path(user_home, '.gitconfig.local') }}
     - source: salt://common/dotfiles/.gitconfig.local
     - user: {{ username }}
     - mode: 644
     - makedirs: True
+    - create: False
 
+# Deploy .gitignore.local (user customizations - only create if doesn't exist)
 deploy_gitignore_local:
   file.managed:
-    {% if is_windows %}
-    - name: {{ user_home }}\\.gitignore.local
-    - creates: {{ user_home }}\\.gitignore.local
-    {% else %}
-    - name: {{ user_home }}/.gitignore.local
-    - creates: {{ user_home }}/.gitignore.local
-    {% endif %}
+    - name: {{ dotfiles.dotfile_path(user_home, '.gitignore.local') }}
     - source: salt://common/dotfiles/.gitignore.local
     - user: {{ username }}
     - mode: 644
     - makedirs: True
+    - create: False
 
-# Git template directories
-deploy_git_template:
-  file.recurse:
-    {% if is_windows %}
-    - name: {{ user_home }}\\.git_template
-    {% else %}
-    - name: {{ user_home }}/.git_template
-    {% endif %}
-    - source: salt://common/dotfiles/.git_template
-    - user: {{ username }}
-    - dir_mode: 755
-    - file_mode: 644
-    - makedirs: True
-    - clean: False
+# Deploy .git_template directory
+{{ dotfiles.deploy_directory('deploy_git_template', user_home, '.git_template', 'salt://common/dotfiles/.git_template', username) }}
 
-deploy_git_template_local:
-  file.recurse:
-    {% if is_windows %}
-    - name: {{ user_home }}\\.git_template.local
-    {% else %}
-    - name: {{ user_home }}/.git_template.local
-    {% endif %}
-    - source: salt://common/dotfiles/.git_template.local
-    - user: {{ username }}
-    - dir_mode: 755
-    - file_mode: 644
-    - makedirs: True
-    - clean: False
+# Deploy .git_template.local directory
+{{ dotfiles.deploy_directory('deploy_git_template_local', user_home, '.git_template.local', 'salt://common/dotfiles/.git_template.local', username) }}
 
 {% else %}
 # Git config NOT deployed - user '{{ username }}' not in managed_users list or is root

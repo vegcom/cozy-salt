@@ -1,48 +1,22 @@
 # Common Vim configuration
 # Deploys vim config ONLY to managed users (never to root)
+# Uses Jinja macros to eliminate platform-specific conditionals
 
-{% set is_windows = grains['os_family'] == 'Windows' %}
+{% import 'common/_dotfiles_macros.sls' as dotfiles %}
+
 {% set username = salt['pillar.get']('user:name', 'admin') %}
 {% set managed_users = salt['pillar.get']('managed_users', []) %}
 
 # Only deploy if user is in managed_users list and NOT root
 {% if username in managed_users and username != 'root' %}
 
-{% if is_windows %}
-  {% set user_home = salt['environ.get']('USERPROFILE', 'C:\\Users\\' ~ username) %}
-{% else %}
-  {% set user_home = '/home/' ~ username %}
-{% endif %}
+{% set user_home = dotfiles.get_user_home(username) %}
 
 # Deploy .vim directory with all configs
-deploy_vim_directory:
-  file.recurse:
-    {% if is_windows %}
-    - name: {{ user_home }}\\.vim
-    {% else %}
-    - name: {{ user_home }}/.vim
-    {% endif %}
-    - source: salt://common/dotfiles/.vim
-    - user: {{ username }}
-    - dir_mode: 755
-    - file_mode: 644
-    - makedirs: True
-    - clean: False
+{{ dotfiles.deploy_directory('deploy_vim_directory', user_home, '.vim', 'salt://common/dotfiles/.vim', username) }}
 
 # Create symlink ~/.vimrc -> ~/.vim/vimrc
-deploy_vimrc_symlink:
-  file.symlink:
-    {% if is_windows %}
-    - name: {{ user_home }}\\.vimrc
-    - target: {{ user_home }}\\.vim\\vimrc
-    {% else %}
-    - name: {{ user_home }}/.vimrc
-    - target: {{ user_home }}/.vim/vimrc
-    {% endif %}
-    - user: {{ username }}
-    - makedirs: True
-    - require:
-      - file: deploy_vim_directory
+{{ dotfiles.deploy_symlink('deploy_vimrc_symlink', user_home, '.vimrc', '.vim/vimrc', username, require='deploy_vim_directory') }}
 
 {% else %}
 # Vim config NOT deployed - user '{{ username }}' not in managed_users list or is root
