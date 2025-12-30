@@ -11,7 +11,19 @@
   user.present:
     - name: {{ username }}
     - fullname: {{ userdata.get('fullname', username) }}
-    - groups: {{ userdata.get('windows_groups', ['Users']) | tojson }}
+
+# Add {{ username }} to Windows groups using PowerShell
+# Salt's user.present groups parameter has a bug on Windows (ValueError: list.remove)
+# Use PowerShell Add-LocalGroupMember cmdlet instead
+{{ username }}_add_to_groups:
+  cmd.run:
+    - name: |
+        {% for group in userdata.get('windows_groups', ['Users']) %}
+        Add-LocalGroupMember -Group "{{ group }}" -Member "{{ username }}" -ErrorAction SilentlyContinue
+        {% endfor %}
+    - shell: powershell
+    - require:
+      - user: {{ username }}_user
 
 # Create {{ username }} home directory
 {{ username }}_home_directory:
