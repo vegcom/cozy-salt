@@ -1,12 +1,12 @@
 # Salt Master 3007+ (official images stopped at 3006)
-FROM ubuntu:latest
+FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Build arguments for package manager compatibility
 ARG APT_MIRROR=archive.ubuntu.com
 ARG APT_SECURITY_MIRROR=security.ubuntu.com
-ARG DEBIAN_CODENAME=jammy
+ARG DEBIAN_CODENAME=noble
 
 # Clean up any inherited sources and set Ubuntu repos (handles Kali host environments)
 RUN rm -f /etc/apt/sources.list.d/* && \
@@ -39,8 +39,6 @@ RUN sed -i 's/^#default_include: master.d\/\*.conf$/default_include: master.d\/*
 COPY scripts/docker/entrypoint-master.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint-master.sh
 
-# Healthcheck: verify Salt Master ports are listening
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD nc -z 127.0.0.1 4505 && nc -z 127.0.0.1 4506 || exit 1
+# Note: Healthcheck is defined in docker-compose.yaml (preferred for flexibility)
 
 ENTRYPOINT ["/usr/local/bin/entrypoint-master.sh"]
