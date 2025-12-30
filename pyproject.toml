@@ -1,0 +1,74 @@
+[project]
+name = "cozy-salt"
+version = "1.0.0"
+description = "SaltStack IaC for Windows/Linux provisioning"
+readme = "README.md"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+markers = [
+    "ubuntu: Ubuntu/Debian state tests",
+    "rhel: RHEL/Rocky state tests",
+    "windows: Windows state tests",
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: integration tests requiring Docker",
+]
+addopts = [
+    "-v",
+    "--tb=short",
+    "--strict-markers",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
+
+[tool.coverage.run]
+source = ["tests"]
+omit = [
+    "tests/archive-*/*",
+    "tests/output/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+]
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+    | \.venv
+    | tests/archive-.*
+    | tests/output
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 100
+known_first_party = ["tests"]
+skip_glob = ["tests/archive-*/*", "tests/output/*"]
+
+[tool.pylint.main]
+max-line-length = 100
+disable = [
+    "C0114",  # missing-module-docstring
+    "C0115",  # missing-class-docstring
+    "C0116",  # missing-function-docstring (for test functions)
+]
+ignore-paths = [
+    "tests/archive-.*",
+    "tests/output",
+]
+
+[tool.pylint.design]
+max-args = 7
+max-locals = 15
