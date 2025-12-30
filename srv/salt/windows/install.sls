@@ -35,9 +35,10 @@ choco_{{ pkg | replace('.', '_') | replace('-', '_') }}:
 {% endif %}
 
 # Install Winget packages for selected role
-# Handles both flat lists and categorized lists
+# Handles list-of-dicts structure from roles.sls
 {% if selected_role.winget is defined %}
-{% for category, packages in selected_role.winget.items() %}
+{% for category_dict in selected_role.winget %}
+{% for category, packages in category_dict.items() %}
 {% if packages is not string and packages is iterable and packages != 'all' %}
 {% for pkg in packages %}
 winget_{{ pkg | replace('.', '_') | replace('-', '_') }}:
@@ -49,6 +50,7 @@ winget_{{ pkg | replace('.', '_') | replace('-', '_') }}:
 # Note: 'all' marker means install entire category from base provisioning/packages.sls
 # Implementation: iterate full category from packages.sls when role is 'full'
 {% endif %}
+{% endfor %}
 {% endfor %}
 {% endif %}
 
