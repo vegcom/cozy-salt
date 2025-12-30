@@ -133,6 +133,18 @@ salt-key-cleanup-test:
 	docker compose exec -t salt-master salt-key -d rhel-test -y || true
 	@echo "Test keys cleaned up"
 
+salt-key-accept: require-NAME
+    @echo "=== Accept a pending minion key ==="
+    docker compose exec -t salt-master salt-key -a "$(NAME)" -y || true
+
+# Generic required-argument checker
+require-%:
+    @if [ -z "$($*)" ]; then \
+        echo "Error: missing required argument '$*'"; \
+        echo "Usage: make $*=<value> <target>"; \
+        exit 1; \
+    fi
+
 salt-key-accept-test:
 	@echo "=== Accepting pending test minion keys ==="
 	docker compose exec -t salt-master salt-key -a ubuntu-test -y || true
