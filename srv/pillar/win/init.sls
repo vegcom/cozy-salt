@@ -29,10 +29,14 @@ tasks:
     - wsl
     - kubernetes
 
-# Package management preferences
+# Package management preferences (P2 - Role-based selection)
 packages:
   manager: chocolatey  # Primary: chocolatey, secondary: winget
   auto_update: False
+
+# Host role determines which packages to install (minimal/base/dev/gaming/full)
+# Defined in srv/pillar/win/roles.sls
+host_role: desktop  # Default: desktop (base + dev_tools + shells + communication)
 
 # Node.js version management via nvm
 nvm:
