@@ -416,63 +416,142 @@ This plan reduces technical debt while maintaining production stability.
 
 ### 📋 Upcoming Tasks
 
-#### Docker CUDA & GPU Support (WSL)
+#### GPU Support Framework (Extensible for Multiple Vendors)
 
-##### Part 1: CUDA Installation (Debian 12)
-**Issue:** Need CUDA support for Docker in WSL environments
+**Overview:** Implement GPU support with vendor-agnostic framework. Start with NVIDIA, prepare for AMD/Intel in future.
+
+**Architecture Pattern:**
+```
+srv/salt/gpu/
+├── init.sls              # GPU orchestrator (router by vendor)
+├── nvidia/
+│   ├── init.sls          # NVIDIA orchestrator
+│   ├── cuda.sls          # CUDA toolkit installation
+│   └── container-runtime.sls  # Container integration
+├── amd/
+│   ├── init.sls          # AMD orchestrator (future)
+│   ├── rocm.sls          # ROCm installation (future)
+│   └── container-runtime.sls  # Container integration (future)
+└── common/
+    └── gpu-check.sls     # Vendor-agnostic GPU detection
+
+srv/pillar/common/
+├── gpu.sls               # GPU configuration (vendor + version)
+└── (per-host gpu settings)
+```
+
+**Pillar Structure (extensible):**
+```yaml
+gpu:
+  enabled: true
+  vendor: nvidia        # or: amd, intel (future)
+  
+  nvidia:
+    cuda_version: "12.1"
+    cuda_toolkit: "cuda-toolkit-12-1"  # Vendor-specific package name
+    container_runtime: nvidia-docker2
+    
+  amd:  # Future
+    rocm_version: "6.0"
+    rocm_toolkit: "rocm-core"
+```
+
+---
+
+### NVIDIA GPU Support (Immediate Implementation)
+
+#### NVIDIA-001: CUDA Toolkit Installation (Debian 12)
+**Severity:** 🟡 **MEDIUM** (enables GPU compute)
+**Status:** ⏳ **PENDING**
+**Effort:** 1 hour | **Impact:** CUDA compute available for containers
+
 **Official Installation Reference:** https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&Distribution=Debian&target_version=12&target_type=deb_network
 
-**⚠️ NOTE: Default installation commands may require tuning**
-NVIDIA's default installation specifies `cuda-toolkit-13-1`, which may be incorrect or outdated for specific use cases. Verify the correct version before implementation.
+**⚠️ CRITICAL NOTE: Version tuning required**
+NVIDIA's default specifies `cuda-toolkit-13-1`, but this may be incorrect for your use case. **Verify the correct version before implementing.**
 
-**Default Installation Steps (from NVIDIA):**
+**Default Installation (verify version first):**
 ```bash
 wget https://developer.download.nvidia.com/compute/cuda/repos/debian12/x86_64/cuda-keyring_1.1-1_all.deb
 sudo dpkg -i cuda-keyring_1.1-1_all.deb
 sudo apt-get update
-sudo apt-get -y install cuda-toolkit-13-1
+sudo apt-get -y install cuda-toolkit-13-1  # ⚠️ VERIFY THIS VERSION
 ```
 
-**Alternative for WSL (if different keyring needed):**
+**Alternative for WSL:**
 ```bash
 wget https://developer.download.nvidia.com/compute/cuda/repos/wsl-ubuntu/x86_64/cuda-keyring_1.0-1_all.deb
 sudo dpkg -i cuda-keyring_1.0-1_all.deb
 sudo apt-get update
-sudo apt-get -y install cuda-toolkit-12-1  # Check actual version needed
+sudo apt-get -y install cuda-toolkit-12-1  # Different version for WSL
 ```
 
 **Acceptance Criteria:**
-- [ ] Verify correct CUDA toolkit version for target system (⚠️ may not be 13-1)
-- [ ] Create Salt state for CUDA installation
+- [ ] Verify correct CUDA toolkit version for target system
+- [ ] Create `srv/salt/gpu/nvidia/cuda.sls` state
 - [ ] Add cuda-keyring package management
-- [ ] Test CUDA installation on test container
-- [ ] Verify nvidia-smi and CUDA toolkit availability
-- [ ] Document final version selection rationale
+- [ ] Support configurable version via pillar
+- [ ] Test on Debian 12 container
+- [ ] Verify `nvidia-smi` and toolkit availability
 
 ---
 
-##### Part 2: NVIDIA Container Toolkit
-**Issue:** Docker containers need access to GPU via NVIDIA Container Runtime
-**Installation:** NVIDIA Container Toolkit must be installed separately from CUDA
+#### NVIDIA-002: NVIDIA Container Toolkit (Docker Runtime)
+**Severity:** 🟡 **MEDIUM** (enables GPU in containers)
+**Status:** ⏳ **PENDING**
+**Effort:** 30 minutes
 **Reference:** https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
 
 **Acceptance Criteria:**
-- [ ] Create Salt state for NVIDIA Container Toolkit installation
-- [ ] Configure Docker daemon to use nvidia runtime
-- [ ] Test GPU access from container: `docker run --gpus all nvidia/cuda:12.1.0-runtime-ubuntu22.04 nvidia-smi`
-- [ ] Verify runtime configuration in /etc/docker/daemon.json
-
-**Installation Pattern (from official docs):**
-1. Add NVIDIA package repository
-2. Install nvidia-docker2 package
-3. Restart Docker daemon
-4. Test with `docker run --rm --gpus all nvidia/cuda nvidia-smi`
+- [ ] Create `srv/salt/gpu/nvidia/container-runtime.sls` state
+- [ ] Configure Docker daemon (`/etc/docker/daemon.json`) to use nvidia runtime
+- [ ] Ensure orderly restart of Docker service
+- [ ] Test GPU access: `docker run --gpus all nvidia/cuda:12.1-runtime nvidia-smi`
+- [ ] Verify runtime config persists across reboots
 
 ---
 
-**Combined Complexity:** Medium-High (two related components)
-**Priority:** Medium (GPU acceleration support)
-**Dependencies:** WSL minion testing complete, CUDA 12.1 installed first
+### AMD GPU Support (Future - Framework Only)
+
+#### AMD-001: ROCm Framework (Documentation & Architecture)
+**Severity:** 🟡 **MEDIUM** (future implementation)
+**Status:** ⏳ **PENDING** (framework only, not implementing yet)
+**Effort:** 30 minutes (design only)
+
+**When to implement:** When AMD GPU systems become part of infrastructure
+
+**Architecture (parallel to NVIDIA):**
+- `srv/salt/gpu/amd/rocm.sls` - ROCm toolkit installation
+- `srv/salt/gpu/amd/container-runtime.sls` - AMD container integration
+- `srv/pillar/common/gpu.sls` - Shared GPU config with AMD section
+- GPU vendor detection in pillar (grain-based or explicit)
+
+**Reference Resources (for future):**
+- https://rocmdocs.amd.com/en/docs-5.7.1/deploy/linux/
+- https://github.com/ROCm/ROCm-docker
+- AMD container toolkit: amd-docker / rocm-docker
+
+**Acceptance Criteria (when implemented):**
+- [ ] Create `srv/salt/gpu/amd/rocm.sls` state
+- [ ] Support configurable ROCm version via pillar
+- [ ] Test on RHEL/Ubuntu systems
+- [ ] Verify `rocm-smi` availability
+- [ ] Test GPU access in containers via AMD runtime
+
+---
+
+### GPU Support - Combined Notes
+
+**Design Principle:** Keep vendor-specific logic in separate state trees (`gpu/nvidia/`, `gpu/amd/`), with shared framework in `gpu/common/`
+
+**Testing Strategy:**
+1. NVIDIA: Test in existing Debian 12 container (has NVIDIA GPU simulation available)
+2. AMD: Test when infrastructure includes AMD GPUs
+
+**Future Extensibility:**
+- Can add Intel Arc support by following same pattern
+- Pillar-driven vendor selection enables per-host customization
+- Single `gpu/init.sls` routes to appropriate vendor implementation
 
 ---
 

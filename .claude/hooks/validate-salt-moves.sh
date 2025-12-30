@@ -4,10 +4,10 @@
 
 set -e
 
-# Load input from stdin
-INPUT=$(cat)
-COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // ""')
-TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name // ""')
+# Load input from environment variables
+TOOL_INPUT="${TOOL_INPUT:-{}}"
+TOOL_NAME="${TOOL_NAME:-unknown}"
+COMMAND=$(echo "$TOOL_INPUT" | jq -r '.command // ""')
 
 # Only validate move/rename operations
 if [[ ! "$COMMAND" =~ ^(mv|cp|rm|rmdir) ]]; then
