@@ -372,6 +372,7 @@ winget:
     - Beyond-All-Reason.Beyond-All-Reason
     - SpecialK.SpecialK
     - mtkennerly.ludusavi
+    - IridiumIO.CompactGUI
   media_creative:
     - Audacity.Audacity
     - KDE.Krita
