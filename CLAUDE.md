@@ -22,6 +22,7 @@ check: `file.managed` sources, `cmd.run` paths, `salt://` references, `top.sls` 
 
 - state not found? check `top.sls` and filename match
 - file not found? check `provisioning/` is mounted and readable
+- Jinja `undefined` on packages? add `{% import_yaml "provisioning/packages.sls" as packages %}` at top of .sls file (rule 1: states import packages, never hardcode)
 - minion hanging? master needs 15s after restart
 - permissions? run `./scripts/fix-permissions.sh` (automated via pre-commit hook)
 - salt runs as uid 999, needs read access to all .sls/.yml files
