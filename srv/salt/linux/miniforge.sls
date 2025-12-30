@@ -1,11 +1,14 @@
 # Linux Miniforge system-wide installation
 # Installs miniforge to /opt/miniforge3 for all users
 
+{% set miniforge_versions = salt['pillar.get']('versions:miniforge', {}) %}
+{% set miniforge_version = miniforge_versions.get('version', '24.11.3-0') %}
+
 # Download miniforge installer
 miniforge_download:
   cmd.run:
     - name: |
-        curl -fsSL -o /tmp/miniforge-init.sh https://github.com/conda-forge/miniforge/releases/download/23.11.0-0/Miniforge3-Linux-x86_64.sh
+        curl -fsSL -o /tmp/miniforge-init.sh https://github.com/conda-forge/miniforge/releases/download/{{ miniforge_version }}/Miniforge3-Linux-x86_64.sh
     - creates: /tmp/miniforge-init.sh
 
 # Install miniforge system-wide to /opt/miniforge3

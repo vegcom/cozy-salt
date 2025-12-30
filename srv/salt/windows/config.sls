@@ -1,6 +1,9 @@
 # Windows configuration
 # User setup, environment, and system configuration
 
+{% set network_config = salt['pillar.get']('network', {}) %}
+{% set hosts = network_config.get('hosts', {}) %}
+
 # Detect if WSL is available and set grain for future targeting
 detect_wsl:
   cmd.run:
@@ -33,16 +36,15 @@ sshd_hardening_config:
     - source: salt://windows/files/ProgramData/ssh/sshd_config.d/99-hardening.conf
     - makedirs: True
 
-# Manage Windows hosts file entries for network services
+# Manage Windows hosts file entries for network services (from pillar.network.hosts)
 windows_hosts_entries:
   cmd.run:
     - name: |
         $hostsFile = "C:\Windows\System32\drivers\etc\hosts"
         $entries = @(
-          "10.0.0.1 unifi",
-          "10.0.0.2 guava",
-          "10.0.0.110 ipa.guava.local",
-          "10.0.0.3 romm.local"
+        {% for hostname, ip in hosts.items() %}
+          "{{ ip }} {{ hostname }}",
+        {% endfor %}
         )
         foreach ($entry in $entries) {
           $exists = Select-String -Path $hostsFile -Pattern ([regex]::Escape($entry)) -Quiet -ErrorAction SilentlyContinue
@@ -67,3 +69,13 @@ git_env_vars_windows:
         }
     - shell: powershell
     - onlyif: git config --global user.name
+
+# ============================================================================
+# Service Management (merged from services.sls)
+# ============================================================================
+
+# Ensure Salt Minion service is running
+salt_minion_service:
+  service.running:
+    - name: salt-minion
+    - enable: True

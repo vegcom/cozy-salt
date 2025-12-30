@@ -4,9 +4,10 @@
 
 set -e
 
-INPUT=$(cat)
-FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // ""')
-TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name // ""')
+# Load input from environment variables
+TOOL_INPUT="${TOOL_INPUT:-{}}"
+TOOL_NAME="${TOOL_NAME:-unknown}"
+FILE_PATH=$(echo "$TOOL_INPUT" | jq -r '.file_path // ""')
 
 # Only check Salt state files
 if [[ ! "$FILE_PATH" =~ \.sls$ ]]; then

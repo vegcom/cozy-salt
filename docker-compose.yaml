@@ -42,6 +42,7 @@ services:
       dockerfile: Dockerfile.ubuntu-minion
     container_name: salt-minion-ubuntu-test
     restart: "no"
+    privileged: true
     environment:
       - SALT_MASTER=salt-master
       - MINION_ID=ubuntu-test
@@ -70,6 +71,7 @@ services:
       dockerfile: Dockerfile.rhel-minion
     container_name: salt-minion-rhel-test
     restart: "no"
+    privileged: true
     environment:
       - SALT_MASTER=salt-master
       - MINION_ID=rhel-test

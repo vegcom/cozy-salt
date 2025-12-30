@@ -5,10 +5,9 @@
 include:
   - linux.users      # Create admin user and cozyusers group first
   - linux.install
-  - linux.config
+  - linux.config     # Includes service management (merged from services.sls)
   - linux.docker-proxy  # Deploy Docker socket proxy for TCP access
   - linux.nvm
   - linux.rust
   - linux.miniforge
   - linux.homebrew
-  - linux.services
