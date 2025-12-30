@@ -61,3 +61,14 @@ docker:
 - **Memory + Sequential Thinking** - use these often. document decisions, track context, think out loud
 - **grep before u move anything** - see rule #3. seriously. do it.
 - **Makefile is ur friend** - maintain, review, and leverage for docker/salt operations
+
+## TODO.md Workflow
+
+Never retain completed tasks in TODO.md on main:
+
+1. **In branch**: Update TODO.md to mark tasks as completed (with dates/commit refs)
+2. **Before merge**: Ensure all tests pass
+3. **After merge to main**: Remove completed task sections from TODO.md entirely
+4. **Commit cleanup**: Commit the TODO.md cleanup separately so history is clean
+
+This keeps TODO.md as active work only. Completed tasks are in git history.
