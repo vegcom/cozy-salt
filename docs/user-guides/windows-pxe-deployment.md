@@ -18,11 +18,11 @@ This directory contains files for automated Windows deployment via PXE with auto
                     │                          │                          │
                     ▼                          ▼                          ▼
 ┌─────────────────────┐      ┌─────────────────────┐      ┌─────────────────────┐
-│  Windows Workstation │      │  Windows Workstation │      │  Linux Server       │
-│  (PXE deployed)      │      │  (PXE deployed)      │      │  (Salt Minion)      │
-│  ┌─────────────┐     │      │  ┌─────────────┐     │      │  ┌─────────────┐    │
-│  │ Salt Minion │     │      │  │ Salt Minion │     │      │  │ Salt Minion │    │
-│  └─────────────┘     │      │  └─────────────┘     │      │  └─────────────┘    │
+│  Windows Workstation│      │  Windows Workstation│      │  Linux Server       │
+│  (PXE deployed)     │      │  (PXE deployed)     │      │  (Salt Minion)      │
+│  ┌─────────────┐    │      │  ┌─────────────┐    │      │  ┌─────────────┐    │
+│  │ Salt Minion │    │      │  │ Salt Minion │    │      │  │ Salt Minion │    │
+│  └─────────────┘    │      │  └─────────────┘    │      │  └─────────────┘    │
 └─────────────────────┘      └─────────────────────┘      └─────────────────────┘
 
 PXE Deployment Flow:
@@ -35,8 +35,8 @@ PXE Deployment Flow:
          │  2. Download install.wim            │
          │  3. Apply autounattend.xml          │
          ▼                                     │
-┌─────────────────┐                           │
-│ Windows Install │◀──────────────────────────┘
+┌─────────────────┐                            │
+│ Windows Install │◀───────────────────────────┘
 │ (unattended)    │
 └────────┬────────┘
          │  4. First boot
