@@ -16,10 +16,10 @@ RUN rm -f /etc/apt/sources.list.d/* && \
     echo "deb http://${APT_MIRROR}/ubuntu/ ${DEBIAN_CODENAME}-updates main restricted universe multiverse" >> /etc/apt/sources.list && \
     echo "deb http://${APT_SECURITY_MIRROR}/ubuntu/ ${DEBIAN_CODENAME}-security main restricted universe multiverse" >> /etc/apt/sources.list
 
-# Install Salt Minion from Broadcom repo (3007+)
+# Install Salt Minion from Broadcom repo (3007+) + systemd for service testing
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-      curl ca-certificates && \
+      curl ca-certificates systemd && \
     echo "deb [arch=amd64 trusted=yes] \
       https://packages.broadcom.com/artifactory/saltproject-deb/ stable main" > \
       /etc/apt/sources.list.d/salt.list && \

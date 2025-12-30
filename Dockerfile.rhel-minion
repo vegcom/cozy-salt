@@ -11,10 +11,10 @@ RUN rm -f /etc/yum.repos.d/kali* /etc/yum.repos.d/debian* 2>/dev/null || true &&
     dnf config-manager --set-enabled crb && \
     dnf clean all
 
-# Install Salt Minion from Broadcom repo (3007+)
+# Install Salt Minion from Broadcom repo (3007+) + systemd for service testing
 # Use official Salt Project repo configuration (automatically handles platform-specific paths)
 RUN curl -fsSL https://github.com/saltstack/salt-install-guide/releases/latest/download/salt.repo -o /etc/yum.repos.d/salt.repo && \
-    dnf install -y salt-minion && \
+    dnf install -y salt-minion systemd && \
     dnf clean all && rm -rf /var/cache/dnf /tmp/*
 
 # Pre-configure minion (master hostname will be set at runtime)
