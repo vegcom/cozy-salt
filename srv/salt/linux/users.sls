@@ -1,15 +1,22 @@
 # Linux user and group management
 # Iterates over users defined in pillar (srv/pillar/common/users.sls)
-# Creates cozyusers group for shared resource access
+# Creates system groups (cozyusers, docker) for user membership
 # Creates managed users with appropriate groups (cozyusers, sudo, docker)
 # Managed users can run docker and sudo commands without password
 
 {% set users = salt['pillar.get']('users', {}) %}
 
+# Create system groups (must exist before users are added to them)
+docker_group:
+  group.present:
+    - name: docker
+
 # Create cozyusers group (for group-based permissions on shared tools)
 cozyusers_group:
   group.present:
     - name: cozyusers
+    - require:
+      - group: docker_group
 
 # Iterate over users from pillar and create each one
 {% for username, userdata in users.items() %}
