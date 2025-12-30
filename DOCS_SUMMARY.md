@@ -15,7 +15,6 @@ Explored and analyzed **13 markdown documentation files** across the project:
 - README.md - Project overview & quick start (256 lines)
 - SECURITY.md - Security hardening & key management (188 lines)
 - CONTRIBUTING.md - Developer workflow & code style (347 lines)
-- CLAUDE.md - AI assistant guide & core rules (36 lines)
 - DEPLOYMENT_SUMMARY.md - Test infrastructure summary (116 lines)
 - TODO.md - Implementation roadmap with priorities (367 lines)
 
@@ -62,7 +61,6 @@ docs/
 │   └── linux-pxe-deployment.md
 ├── development/
 │   ├── CONTRIBUTING.md
-│   ├── CLAUDE.md
 │   └── testing/
 │       ├── README.md
 │       ├── QUICKSTART.md
@@ -96,7 +94,6 @@ docs/
 
 **By File Type:**
 - User Guides: 3 files (README, 2x PXE)
-- Developer Guides: 5 files (CONTRIBUTING, CLAUDE, 3x testing)
 - Security Docs: 1 file
 - Architecture Docs: 2 files
 - Deployment Docs: 2 files

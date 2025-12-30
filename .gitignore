@@ -5,8 +5,7 @@ salt-logs/
 *.key
 
 # Salt minion keys (generated, not tracked)
-srv/salt/keys/*.pem
-srv/salt/keys/*.pub
+srv/salt/keys/**
 
 # Environment & secrets
 .env
@@ -58,3 +57,6 @@ nul
 
 # Tests
 tests/output/*.json
+
+# OPT
+.claude

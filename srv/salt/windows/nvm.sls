@@ -2,9 +2,9 @@
 # System-wide installation to C:\opt\nvm (consistent with Linux /opt/nvm)
 # nvm-windows Chocolatey package installs to AppData, then configure for C:\opt\nvm
 
-{% import_yaml 'packages.sls' as packages %}
+{% import_yaml "provisioning/packages.sls" as packages %}
 {% set nvm_config = salt['pillar.get']('nvm', {}) %}
-{% set default_version = nvm_config.get('default_version', 'lts') %}
+{% set default_version = nvm_config.get('default_version', 'lts/*') %}
 
 # Create C:\opt\nvm directory for consistency
 nvm_directory:

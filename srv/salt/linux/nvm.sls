@@ -2,9 +2,11 @@
 # System-wide installation to /opt/nvm with NPM prefix management
 # No per-user profile pollution - initialized via /etc/profile.d/nvm.sh
 
-{% import_yaml 'packages.sls' as packages %}
+{% import_yaml "provisioning/packages.sls" as packages %}
 {% set nvm_config = salt['pillar.get']('nvm', {}) %}
+{% set nvm_versions = salt['pillar.get']('versions:nvm', {}) %}
 {% set default_version = nvm_config.get('default_version', 'lts/*') %}
+{% set nvm_version = nvm_versions.get('version', 'v0.40.1') %}
 
 # Create /opt/nvm directory first (NVM installer requires it to exist)
 nvm_directory:
@@ -20,7 +22,7 @@ nvm_directory:
 nvm_download_and_install:
   cmd.run:
     - name: |
-        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | \
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_version }}/install.sh | \
           NVM_DIR=/opt/nvm PROFILE=/dev/null bash
     - creates: /opt/nvm/nvm.sh
     - require:

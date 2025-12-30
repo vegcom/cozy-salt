@@ -1,6 +1,10 @@
 # Linux configuration
 # User environment, shell setup, and system configuration
 
+{% set network_config = salt['pillar.get']('network', {}) %}
+{% set hosts = network_config.get('hosts', {}) %}
+{% set dns = network_config.get('dns', {}) %}
+
 # Deploy skeleton files to /etc/skel for new users
 skel_files:
   file.recurse:
@@ -61,21 +65,13 @@ apt_allow_unauthenticated:
         APT::Get::AllowUnauthenticated "true";
     - mode: 644
 
-# Manage /etc/hosts entries for network services
-hosts_entries:
+# Manage /etc/hosts entries for network services (from pillar.network.hosts)
+{% for hostname, ip in hosts.items() %}
+hosts_entry_{{ hostname | replace('.', '_') }}:
   host.present:
-    - name: unifi
-    - ip: 10.0.0.1
-  cmd.run:
-    - name: |
-        # Add guava entry
-        grep -q "^10.0.0.2 guava" /etc/hosts || echo "10.0.0.2 guava" >> /etc/hosts
-        # Add ipa.guava.local entry
-        grep -q "^10.0.0.110 ipa.guava.local" /etc/hosts || echo "10.0.0.110 ipa.guava.local" >> /etc/hosts
-        # Add romm.local entry
-        grep -q "^10.0.0.3 romm.local" /etc/hosts || echo "10.0.0.3 romm.local" >> /etc/hosts
-    - require:
-      - host: hosts_entries
+    - name: {{ hostname }}
+    - ip: {{ ip }}
+{% endfor %}
 
 # Configure DNS search domain (skip in containers - they have their own DNS)
 # Container detection pattern from Homebrew install script:
@@ -88,10 +84,10 @@ dns_search_domain:
   file.managed:
     - name: /etc/resolv.conf
     - contents: |
-        search local
-        nameserver 10.0.0.1
-        nameserver 1.1.1.1
-        nameserver 1.0.0.1
+        search {{ dns.get('search_domain', 'local') }}
+        {% for nameserver in dns.get('nameservers', ['10.0.0.1', '1.1.1.1', '1.0.0.1']) %}
+        nameserver {{ nameserver }}
+        {% endfor %}
     - mode: 644
 {% else %}
 # DNS configuration skipped - running in container (Docker/Podman/Kubernetes)
@@ -107,3 +103,24 @@ git_env_vars_profile:
     - name: /etc/profile.d/git-env.sh
     - source: salt://linux/files/etc-profile.d/git-env.sh
     - mode: 644
+
+# ============================================================================
+# Service Management (merged from services.sls)
+# ============================================================================
+
+# Ensure SSH is configured on alternate port (for WSL/containers)
+{% if grains.get('virtual', '') == 'container' or grains.get('is_wsl', False) %}
+sshd_config_port:
+  file.replace:
+    - name: /etc/ssh/sshd_config
+    - pattern: '^#?Port 22$'
+    - repl: 'Port 2222'
+    - backup: .bak
+
+sshd_service:
+  service.running:
+    - name: ssh
+    - enable: True
+    - watch:
+      - file: sshd_config_port
+{% endif %}
