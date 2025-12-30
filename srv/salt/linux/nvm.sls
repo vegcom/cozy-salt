@@ -1,8 +1,8 @@
 # Linux Node.js version management via nvm
 # System-wide installation to /opt/nvm with NPM prefix management
 # No per-user profile pollution - initialized via /etc/profile.d/nvm.sh
+# Global npm packages installed via common.nvm orchestration
 
-{% import_yaml "provisioning/packages.sls" as packages %}
 {% set nvm_config = salt['pillar.get']('nvm', {}) %}
 {% set nvm_versions = salt['pillar.get']('versions:nvm', {}) %}
 {% set default_version = nvm_config.get('default_version', 'lts/*') %}
@@ -52,17 +52,6 @@ nvm_install_default_version:
       - BASH_ENV: /etc/profile.d/nvm.sh
       - NVM_DIR: /opt/nvm
 
-# Install global npm packages (if defined)
-# Set NPM_CONFIG_PREFIX inline in command, not in env (NVM rejects it in shell environment)
-{% for package in packages.get('npm_global', []) %}
-install_npm_{{ package | replace('/', '_') | replace('@', '') | replace('-', '_') }}:
-  cmd.run:
-    - name: NPM_CONFIG_PREFIX=/opt/nvm npm install -g {{ package }}
-    - shell: /bin/bash
-    - require:
-      - cmd: nvm_install_default_version
-    - unless: npm list -g --depth=0 | grep -q {{ package }}
-    - env:
-      - BASH_ENV: /etc/profile.d/nvm.sh
-      - NVM_DIR: /opt/nvm
-{% endfor %}
+# Install global npm packages via common orchestration
+include:
+  - common.nvm

@@ -1,8 +1,8 @@
 # Windows Node.js version management via nvm-windows
 # System-wide installation to C:\opt\nvm (consistent with Linux /opt/nvm)
 # nvm-windows Chocolatey package installs to AppData, then configure for C:\opt\nvm
+# Global npm packages installed via common.nvm orchestration
 
-{% import_yaml "provisioning/packages.sls" as packages %}
 {% set nvm_config = salt['pillar.get']('nvm', {}) %}
 {% set default_version = nvm_config.get('default_version', 'lts/*') %}
 
@@ -32,12 +32,6 @@ install_default_node_version:
     - require:
       - reg: nvm_environment_variables
 
-{% for package in packages.npm_global %}
-install_npm_{{ package | replace('/', '_') | replace('@', '') | replace('-', '_') }}:
-  cmd.run:
-    - name: npm install -g {{ package }}
-    - shell: powershell
-    - require:
-      - cmd: install_default_node_version
-    - unless: npm list -g --depth=0 | findstr "{{ package }}"
-{% endfor %}
+# Install global npm packages via common orchestration
+include:
+  - common.nvm
