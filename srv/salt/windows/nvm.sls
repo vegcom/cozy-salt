@@ -30,7 +30,7 @@ install_default_node_version:
     - shell: powershell
     - unless: nvm list | findstr "{{ default_version }}"
     - require:
-      - reg: nvm_environment_variables
+      - reg: nvm_home
 
 # Install global npm packages via common orchestration
 include:
