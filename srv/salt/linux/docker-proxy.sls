@@ -2,7 +2,10 @@
 # Exposes Docker daemon on TCP 2375 for Windows/WSL access
 # Only deployed on Debian systems with Docker installed
 
-{% if grains['os_family'] == 'Debian' %}
+{% set is_container = salt['file.file_exists']('/.dockerenv') or
+                      salt['file.file_exists']('/run/.containerenv') %}
+
+{% if not is_container %}
 # Deploy docker-proxy docker-compose file
 docker_proxy_file:
   file.managed:
@@ -13,7 +16,7 @@ docker_proxy_file:
     - group: root
     - makedirs: True
     - require:
-      - cmd: docker_install  # Docker installation state
+      - cmd: docker_install
 
 # Start docker-proxy service
 docker_proxy_service:
@@ -23,12 +26,12 @@ docker_proxy_service:
       - file: docker_proxy_file
     - unless: docker ps | grep -q docker-socket-proxy
 {% else %}
-# Docker proxy skipped on non-Debian systems (RHEL, etc.)
+# Docker proxy skipped (non-Debian or container)
 docker_proxy_file:
   test.nop:
-    - name: Skipping Docker proxy deployment on non-Debian system
+    - name: Skipping Docker proxy
 
 docker_proxy_service:
   test.nop:
-    - name: Skipping Docker proxy service on non-Debian system
+    - name: Skipping Docker proxy service
 {% endif %}
