@@ -418,22 +418,36 @@ This plan reduces technical debt while maintaining production stability.
 
 #### Docker CUDA & GPU Support (WSL)
 
-##### Part 1: CUDA 12.1 Installation
-**Issue:** Need CUDA 12.1 support for Docker in WSL environments
-**Installation:** Manual steps identified for WSL-Ubuntu:
+##### Part 1: CUDA Installation (Debian 12)
+**Issue:** Need CUDA support for Docker in WSL environments
+**Official Installation Reference:** https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&Distribution=Debian&target_version=12&target_type=deb_network
+
+**⚠️ NOTE: Default installation commands may require tuning**
+NVIDIA's default installation specifies `cuda-toolkit-13-1`, which may be incorrect or outdated for specific use cases. Verify the correct version before implementation.
+
+**Default Installation Steps (from NVIDIA):**
+```bash
+wget https://developer.download.nvidia.com/compute/cuda/repos/debian12/x86_64/cuda-keyring_1.1-1_all.deb
+sudo dpkg -i cuda-keyring_1.1-1_all.deb
+sudo apt-get update
+sudo apt-get -y install cuda-toolkit-13-1
+```
+
+**Alternative for WSL (if different keyring needed):**
 ```bash
 wget https://developer.download.nvidia.com/compute/cuda/repos/wsl-ubuntu/x86_64/cuda-keyring_1.0-1_all.deb
 sudo dpkg -i cuda-keyring_1.0-1_all.deb
 sudo apt-get update
-sudo apt-get -y install cuda-12.1
+sudo apt-get -y install cuda-toolkit-12-1  # Check actual version needed
 ```
-**Reference:** https://developer.nvidia.com/cuda-12-1-1-download-archive?target_os=Linux&target_arch=x86_64&Distribution=WSL-Ubuntu&target_version=2.0&target_type=deb_network
 
 **Acceptance Criteria:**
-- [ ] Create Salt state for CUDA 12.1 installation in WSL
+- [ ] Verify correct CUDA toolkit version for target system (⚠️ may not be 13-1)
+- [ ] Create Salt state for CUDA installation
 - [ ] Add cuda-keyring package management
-- [ ] Test CUDA installation on WSL test container
+- [ ] Test CUDA installation on test container
 - [ ] Verify nvidia-smi and CUDA toolkit availability
+- [ ] Document final version selection rationale
 
 ---
 
