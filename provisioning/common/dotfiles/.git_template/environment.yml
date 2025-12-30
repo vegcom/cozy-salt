@@ -1,0 +1,21 @@
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  # --- Build tools ---
+  - cmake>=3.26
+  - ninja
+  - git
+  - pip
+  - pkg-config
+  # --- Optional but recommended for dev ---
+  - numpy
+  - pydantic
+  - psutil
+  - pysql-framework
+  # --- Python packages installed via pip ---
+  - pip:
+      # optional: dev tooling
+      - ruff
+      - mypy

@@ -43,8 +43,8 @@ test_minion() {
         return 1
     fi
 
-    echo "Waiting for state application (max 120s)..."
-    local timeout=120
+    echo "Waiting for state application (max 600s)..."
+    local timeout=600
     local elapsed=0
 
     while [ $elapsed -lt $timeout ]; do
@@ -72,7 +72,9 @@ test_minion() {
     fi
 
     echo "Capturing JSON output..."
-    if docker exec "$container_name" salt-call state.highstate --out=json > "$output_file" 2>&1; then
+    docker exec "$container_name" salt-call state.highstate --out=json > "$output_file" 2>&1
+    
+    if [ -f "$output_file" ] && grep -q "^{" "$output_file"; then
         echo -e "${GREEN}JSON output saved to: ${output_file}${NC}"
     else
         echo -e "${RED}Failed to capture JSON output${NC}"

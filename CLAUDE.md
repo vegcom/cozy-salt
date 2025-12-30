@@ -36,6 +36,22 @@ check: `file.managed` sources, `cmd.run` paths, `salt://` references, `top.sls` 
 
 see **CONTRIBUTING.md** for details and setup.
 
+## Docker Repository Auto-Detection
+
+The `srv/salt/linux/install.sls` state auto-detects system type and configures the correct Docker repo:
+
+- **Native Debian** → `https://download.docker.com/linux/debian {codename} stable`
+- **Ubuntu/WSL/Kali** → `https://download.docker.com/linux/ubuntu noble stable`
+
+WSL systems are detected via `/proc/version` Microsoft check. Ubuntu/WSL always use `noble` (24.04) codename for Docker repo compatibility, regardless of reported system codename.
+
+**Override via pillar** (if needed for specific systems):
+```yaml
+docker:
+  repo_path: ubuntu  # or: debian
+  codename: focal    # override default detection
+```
+
 ## how we actually work here
 
 - **check DeepWiki + Omnisearch FIRST** - before suggesting changes, know what exists

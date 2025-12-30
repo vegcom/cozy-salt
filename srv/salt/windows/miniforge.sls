@@ -1,9 +1,8 @@
-# Windows Miniforge per-user installation
-# Installs Miniforge3 to C:\Users\{USERNAME}\miniforge3
+# Windows Miniforge system-wide installation
+# Installs Miniforge3 to C:\opt\miniforge3 for all users
+# Environment variables configured as system-wide for consistency
 
-{% set user = salt['pillar.get']('user:name', 'Administrator') %}
-{% set user_home = 'C:\\Users\\' ~ user %}
-{% set miniforge_path = user_home ~ '\\miniforge3' %}
+{% set miniforge_path = 'C:\\opt\\miniforge3' %}
 
 # Download miniforge installer
 miniforge_download:
@@ -17,38 +16,25 @@ miniforge_download:
     - creates: C:\Windows\Temp\miniforge-install.exe
     - shell: powershell
 
-# Install miniforge to user home directory
+# Install miniforge system-wide to C:\opt\miniforge3
 miniforge_install:
   cmd.run:
     - name: |
         powershell -Command "
-        & '$env:TEMP\miniforge-install.exe' /InstallationType=JustMe /RegisterPython=0 /AddToPath=1 /D='{{ user_home }}\miniforge3' /S
+        & '$env:TEMP\miniforge-install.exe' /InstallationType=AllUsers /RegisterPython=1 /AddToPath=1 /D='{{ miniforge_path }}' /S
         Remove-Item -Path '$env:TEMP\miniforge-install.exe' -Force -ErrorAction SilentlyContinue
         "
     - shell: powershell
     - require:
       - cmd: miniforge_download
-    - unless: Test-Path '{{ user_home }}\miniforge3\Scripts\conda.exe'
+    - unless: Test-Path '{{ miniforge_path }}\Scripts\conda.exe'
 
-# Initialize conda for PowerShell
-miniforge_init_powershell:
-  cmd.run:
-    - name: |
-        powershell -Command "
-        & '{{ user_home }}\miniforge3\Scripts\conda.exe' init powershell
-        "
-    - shell: powershell
-    - require:
-      - cmd: miniforge_install
-    - unless: powershell -Command "if (Test-Path $PROFILE) { Select-String -Path $PROFILE -Pattern 'conda initialize' -Quiet } else { $false }"
-
-# Initialize conda for cmd
-miniforge_init_cmd:
-  cmd.run:
-    - name: |
-        powershell -Command "
-        & '{{ user_home }}\miniforge3\Scripts\conda.exe' init cmd.exe
-        "
-    - shell: powershell
+# Set system-wide environment variables for Miniforge/Conda
+miniforge_environment_variables:
+  reg.present:
+    - name: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
+    - vtype: REG_SZ
+    - entries:
+      - CONDA_HOME: C:\opt\miniforge3
     - require:
       - cmd: miniforge_install

@@ -1,0 +1,34 @@
+# Common user definitions shared across all platforms
+# Each user can have OS-specific configuration (linux_groups, windows_groups, etc)
+
+users:
+  admin:
+    fullname: Admin User
+    shell: /bin/bash
+    home_prefix: /home        # Linux: /home/admin, Windows: C:\Users\admin
+    linux_groups:
+      - cozyusers
+      - docker
+    windows_groups:
+      - Administrators
+      - Users
+
+  vegcom:
+    fullname: Vegcom User
+    shell: /bin/bash
+    home_prefix: /home        # Linux: /home/vegcom, Windows: C:\Users\vegcom
+    linux_groups:
+      - cozyusers
+      - docker
+    windows_groups:
+      - Users
+
+  eve:
+    fullname: Eve User
+    shell: /bin/bash
+    home_prefix: /home        # Linux: /home/eve, Windows: C:\Users\eve
+    linux_groups:
+      - cozyusers
+      - docker
+    windows_groups:
+      - Users

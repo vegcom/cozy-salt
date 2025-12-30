@@ -43,17 +43,14 @@ apt:
   - automake
 
   # --- Docker & Containers ---
-  - docker.io
-  - docker-compose
-  - docker-buildx-plugin
-  - containerd
+  # Installed via get.docker.sh (official Docker installer)
 
   # --- Networking ---
   - openssh-client
   - openssh-server
   - net-tools
   - iputils-ping
-  - dnsutils
+  - bind9-dnsutils
   - netcat-openbsd
   - socat
   - traceroute
@@ -62,14 +59,12 @@ apt:
 
   # --- Compression & Archives ---
   - zip
-  - p7zip-full
+  - 7zip
   - bzip2
   - xz-utils
 
   # --- Security & Certificates ---
-  - gnupg
   - ca-certificates
-  - apt-transport-https
 
   # --- System Utilities ---
   - lsof
@@ -142,9 +137,7 @@ dnf:
   - automake
 
   # --- Docker & Containers ---
-  - docker
-  - docker-compose
-  - containerd
+  # Installed via get.docker.sh (official Docker installer)
 
   # --- Networking ---
   - openssh-clients
@@ -237,6 +230,9 @@ choco:
 
   # --- Gaming/Modding ---
   - cheatengine                   # Memory scanner/debugger
+
+  # --- Development ---
+  - make
 
 
 # =============================================================================
