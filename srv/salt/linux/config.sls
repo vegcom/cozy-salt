@@ -4,6 +4,8 @@
 {% set network_config = salt['pillar.get']('network', {}) %}
 {% set hosts = network_config.get('hosts', {}) %}
 {% set dns = network_config.get('dns', {}) %}
+{% set is_container = salt['file.file_exists']('/.dockerenv') or
+                      salt['file.file_exists']('/run/.containerenv') %}
 
 # Deploy skeleton files to /etc/skel for new users
 skel_files:
@@ -80,11 +82,6 @@ hosts_entry_{{ hostname | replace('.', '_') }}:
 {% endfor %}
 
 # Configure DNS search domain (skip in containers - they have their own DNS)
-# Container detection pattern from Homebrew install script:
-# https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh (check_run_command_as_root)
-# Detect containers: Docker, Podman/systemd-container, Kubernetes, Azure Pipelines
-{% set is_container = salt['file.file_exists']('/.dockerenv') or
-                      salt['file.file_exists']('/run/.containerenv') %}
 {% if not is_container %}
 dns_search_domain:
   file.managed:
@@ -114,8 +111,8 @@ git_env_vars_profile:
 # Service Management (merged from services.sls)
 # ============================================================================
 
-# Ensure SSH is configured on alternate port (for WSL/containers)
-{% if grains.get('virtual', '') == 'container' or grains.get('is_wsl', False) %}
+# SSH service management (skip in containers - sshd not available)
+{% if not is_container %}
 sshd_config_port:
   file.replace:
     - name: /etc/ssh/sshd_config
@@ -129,4 +126,8 @@ sshd_service:
     - enable: True
     - watch:
       - file: sshd_config_port
+{% else %}
+sshd_service:
+  test.nop:
+    - name: Skipping SSH service in container
 {% endif %}
