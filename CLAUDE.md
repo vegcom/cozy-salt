@@ -23,8 +23,8 @@ check: `file.managed` sources, `cmd.run` paths, `salt://` references, `top.sls` 
 - state not found? check `top.sls` and filename match
 - file not found? check `provisioning/` is mounted and readable
 - minion hanging? master needs 15s after restart
-- permissions? `chmod -R 755 provisioning/` (salt runs as uid 999)
--
+- permissions? run `./scripts/fix-permissions.sh` (automated via pre-commit hook)
+- salt runs as uid 999, needs read access to all .sls/.yml files
 
 ### Assess for breaks
 

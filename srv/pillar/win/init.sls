@@ -2,18 +2,15 @@
 # Windows Pillar Data
 # Configuration values for Windows minions
 
-# Import common user definitions
-{% import_yaml 'common/users.sls' as common_users %}
+# Include shared user definitions
+include:
+  - users
 
 # User configuration
 # Auto-detected from current user (falls back to Administrator if not detected)
 {% set detected_user = salt['environ.get']('USERNAME') or 'Administrator' %}
 user:
   name: {{ detected_user }}
-
-# User accounts (from common/users.sls)
-# Windows states iterate over this to create users with appropriate groups
-users: {{ common_users.users }}
 
 # Provisioning paths
 cozy:

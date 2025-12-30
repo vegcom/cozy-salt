@@ -2,8 +2,9 @@
 # Linux Pillar Data
 # Configuration values for Linux minions
 
-# Import common user definitions
-{% import_yaml 'common/users.sls' as common_users %}
+# Include shared user definitions
+include:
+  - users
 
 # User configuration
 # Auto-detected from login user (defaults to root in containers)
@@ -16,14 +17,6 @@
 {% endif %}
 user:
   name: {{ detected_user }}
-
-# Managed users - dotfiles and resources applied ONLY to users in this list
-# Root is NEVER managed, regardless of this list
-managed_users: {{ common_users.users.keys() | list }}
-
-# User accounts (from common/users.sls)
-# Linux states iterate over this to create users with appropriate groups
-users: {{ common_users.users }}
 
 # Provisioning paths
 cozy:
