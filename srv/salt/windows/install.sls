@@ -13,7 +13,7 @@
 
 {% set selected_role = roles[host_role] %}
 
-echo "Windows package role: {{ host_role }}":
+windows_package_role_{{ host_role }}:
   cmd.run:
     - name: echo "Installing packages for role: {{ host_role }}"
     - shell: powershell
