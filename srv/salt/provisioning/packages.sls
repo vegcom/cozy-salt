@@ -1,454 +1,280 @@
-# Consolidated Package List for cozy-salt
-# Source preference: Chocolatey > Winget (when package exists in both)
+# Capability-Based Package Configuration (P2)
+# Organized by PURPOSE/ROLE, with per-distro package mapping
+# 
+# Import this in states using:
+#   {% import_yaml "provisioning/packages.sls" as packages %}
 #
-# This file is imported by Salt states using import_yaml.
-# See CONTRIBUTING.md for usage examples.
+# Use in Jinja2:
+#   {%- set os = grains.os_family | lower -%}
+#   - pkg.installed:
+#       - pkgs: {{ packages.core_utils[os] }}
 #
-# Package subsets:
-#   - apt / dnf: Core packages (always installed)
-#   - apt_kvm / dnf_kvm: Virtualization packages (only on test hosts)
-#   - choco / winget: Windows packages
-#   - npm_global: Global npm packages (via nvm)
+# See provisioning/packages-p2-draft.sls for detailed notes
 
 # =============================================================================
-# LINUX PACKAGES (APT/DNF)
+# CAPABILITY: Core Utilities
 # =============================================================================
-# Base packages for Debian/Ubuntu and RHEL/CentOS systems
-
-apt:
-  # --- Base Utilities ---
-  - curl
-  - wget
-  - git
-  - vim
-  - htop
-  - rsync
-  - jq
-  - tree
-  - unzip
-
-  # --- Terminal & Shell ---
-  - tmux
-  - screen
-  - zsh
-  - bash-completion
-  - zsh-autosuggestions
-  - zsh-syntax-highlighting
-
-  # --- Build & Development ---
-  - build-essential
-  - cmake
-  - pkg-config
-  - autoconf
-  - automake
-
-  # --- Docker & Containers ---
-  # Installed via get.docker.sh (official Docker installer)
-
-  # --- Networking ---
-  - openssh-client
-  - openssh-server
-  - net-tools
-  - iputils-ping
-  - bind9-dnsutils
-  - netcat-openbsd
-  - socat
-  - traceroute
-  - tcpdump
-  - nmap
-
-  # --- Compression & Archives ---
-  - zip
-  - 7zip
-  - bzip2
-  - xz-utils
-
-  # --- Security & Certificates ---
-  - ca-certificates
-
-  # --- System Utilities ---
-  - lsof
-  - strace
-  - ltrace
-  - sysstat
-  - acl
-
-  # --- Version Control Extras ---
-  - git-lfs
-  - tig
-  - gh
-
-  # --- Modern CLI Tools ---
-  - ripgrep
-  - fd-find
-  - bat
-  - fzf
-  - ncdu
-  - duf
+core_utils:
+  ubuntu:
+    - curl
+    - wget
+    - git
+    - vim
+    - rsync
+    - jq
+    - tree
+    - unzip
+  debian:
+    - curl
+    - wget
+    - git
+    - vim
+    - rsync
+    - jq
+    - tree
+    - unzip
+  rhel:
+    - curl
+    - wget
+    - git
+    - vim-enhanced
+    - rsync
+    - jq
+    - tree
+    - unzip
 
 # =============================================================================
-# KVM/VIRTUALIZATION PACKAGES (Optional - for hosts running Windows tests)
+# CAPABILITY: System Monitoring & Diagnostics  
 # =============================================================================
-# Required for Dockur Windows testing (https://github.com/dockur/windows)
-# Only install on hosts that will run test-windows profile
-
-apt_kvm:
-  # --- KVM Core ---
-  - qemu-system-x86             # x86 system emulation with KVM support
-  - qemu-utils                  # QEMU utilities
-  - cpu-checker                 # kvm-ok command
-
-  # --- Virtualization Libraries ---
-  - libvirt-daemon-system       # Libvirt daemon
-  - libvirt-clients             # virsh, etc.
-  - virtinst                    # virt-install command
-
-  # --- Optional Management Tools ---
-  # - virt-manager              # GUI (uncomment if needed)
-  # - virt-viewer               # VM console viewer
-
-dnf:
-  # --- Base Utilities (RHEL/CentOS equivalents) ---
-  - curl
-  - wget
-  - git
-  - vim-enhanced
-  - htop
-  - rsync
-  - jq
-  - tree
-  - unzip
-
-  # --- Terminal & Shell ---
-  - tmux
-  - screen
-  - zsh
-  - bash-completion
-  - zsh-autosuggestions
-  - zsh-syntax-highlighting
-
-  # --- Build & Development ---
-  - gcc
-  - gcc-c++
-  - make
-  - cmake
-  - pkgconfig
-  - autoconf
-  - automake
-
-  # --- Docker & Containers ---
-  # Installed via get.docker.sh (official Docker installer)
-
-  # --- Networking ---
-  - openssh-clients
-  - openssh-server
-  - net-tools
-  - iputils
-  - bind-utils
-  - nmap-ncat
-  - socat
-  - traceroute
-  - tcpdump
-  - nmap
-
-  # --- Compression & Archives ---
-  - zip
-  - p7zip
-  - p7zip-plugins
-  - bzip2
-  - xz
-
-  # --- Security & Certificates ---
-  - gnupg2
-  - ca-certificates
-
-  # --- System Utilities ---
-  - lsof
-  - strace
-  - ltrace
-  - sysstat
-  - acl
-
-  # --- Version Control Extras ---
-  - git-lfs
-  - tig
-  - gh
-
-  # --- Modern CLI Tools ---
-  - ripgrep
-  - fd-find
-  - bat
-  - fzf
-  - ncdu
-
-dnf_kvm:
-  # --- KVM Core ---
-  - qemu-kvm
-  - qemu-img
-  - qemu-kvm-tools
-  - cpu-checker
-
-  # --- Virtualization Libraries ---
-  - libvirt
-  - libvirt-daemon
-  - libvirt-client
-  - virt-install
-
-  # --- Optional Management Tools ---
-  # - virt-manager              # GUI (uncomment if needed)
-  # - virt-viewer               # VM console viewer
+monitoring:
+  ubuntu:
+    - htop
+    - lsof
+    - strace
+    - ltrace
+    - sysstat
+    - duf
+    - ncdu
+  debian:
+    - htop
+    - lsof
+    - strace
+    - ltrace
+    - sysstat
+    - duf
+    - ncdu
+  rhel:
+    # Note: Many not in base repos, may need EPEL
+    - htop
+    - lsof
+    - strace
+    - ltrace
+    - sysstat
 
 # =============================================================================
-# CHOCOLATEY PACKAGES (Primary)
+# CAPABILITY: Shell Customization & Enhancements
 # =============================================================================
-# These are installed via Chocolatey. When a package exists in both choco and
-# winget, choco is preferred for better scripting support and consistency.
-
-choco:
-  # --- Package Managers & Meta ---
-  - chocolatey-core.extension
-  - chocolatey-compatibility.extension
-  - chocolatey-font-helpers.extension
-
-  # --- Container & DevOps ---
-  - dive                          # Docker image explorer
-  - docker-cli                    # Docker CLI (no daemon)
-  - docker-compose                # Docker Compose v2
-
-  # --- Editors (CHOCO PREFERRED - more config options) ---
-  - vim                           # Vim - USE CHOCO, not winget vim.vim
-
-  # --- Fonts ---
-  - FiraCode
-  - nerd-fonts-FiraCode
-  - nerd-fonts-Hack
-
-  # --- Shell & Terminal ---
-  - Cygwin                        # USE CHOCO, not winget Cygwin.CygwinSetup
-  - colortool                     # Windows console color schemes
-  - rsync                         # File sync (via Cygwin)
-
-  # --- Gaming/Modding ---
-  - cheatengine                   # Memory scanner/debugger
-
-  # --- Development ---
-  - make
-
+shell_enhancements:
+  ubuntu:
+    - zsh
+    - bash-completion
+    - zsh-autosuggestions
+    - zsh-syntax-highlighting
+    - tmux
+    - screen
+  debian:
+    - zsh
+    - bash-completion
+    - zsh-autosuggestions
+    - zsh-syntax-highlighting
+    - tmux
+    - screen
+  rhel:
+    # Note: zsh-autosuggestions/zsh-syntax-highlighting may need EPEL
+    - zsh
+    - bash-completion
+    - tmux
+    - screen
 
 # =============================================================================
-# WINGET PACKAGES (Secondary)
+# CAPABILITY: Build Tools & Compilers
 # =============================================================================
-# These are installed via Winget. Only packages NOT available or inferior in
-# Chocolatey are listed here.
-
-winget:
-  # --- Development: Languages & Runtimes ---
-  - CoreyButler.NVMforWindows     # Node Version Manager
-  - DenoLand.Deno                 # Deno runtime
-  - GoLang.Go                     # Go language (deck only, add if needed)
-  - Anaconda.Miniconda3           # Python via Miniconda
-
-  # --- Development: Tools ---
-  - Git.Git                       # Git
-  - GitHub.cli                    # GitHub CLI (gh)
-  - Neovim.Neovim                 # Neovim
-  - Microsoft.VisualStudioCode.Insiders  # VS Code Insiders
-  - Microsoft.VisualStudioCode.CLI       # VS Code CLI
-  - Hashicorp.Terraform           # Terraform
-  - Hashicorp.TerraformLanguageServer    # Terraform LSP
-  - nektos.act                    # Run GitHub Actions locally
-  - jqlang.jq                     # JSON processor
-  - junegunn.fzf                  # Fuzzy finder
-  - ajeetdsouza.zoxide            # Smart cd (deck)
-  - direnv.direnv                 # Directory-specific env vars
-  - waterlan.dos2unix             # Line ending converter
-
-  # --- Development: Kubernetes ---
-  - Kubernetes.kubectl            # kubectl
-  - Kubernetes.minikube           # Minikube
-  - Helm.Helm                     # Helm package manager
-  - Kubecolor.kubecolor           # Colorized kubectl
-  - stern.stern                   # Multi-pod log tailing
-
-  # --- Shell & Terminal ---
-  - Starship.Starship             # Cross-shell prompt
-  - JanDeDobbeleer.OhMyPosh       # PowerShell prompt
-  - Microsoft.WindowsTerminal     # Windows Terminal
-  - Microsoft.PowerShell.Preview  # PowerShell 7 Preview
-  - Microsoft.AIShell             # AI Shell
-
-  # --- System Utilities ---
-  - 7zip.7zip                     # Archive manager
-  - AntibodySoftware.WizTree      # Disk space analyzer
-  - CodeSector.TeraCopy           # File copy utility
-  - Rufus.Rufus                   # USB boot creator
-  - Ventoy.Ventoy                 # Multi-boot USB
-  - WinSCP.WinSCP                 # SFTP/SCP client
-  - WinMerge.WinMerge             # File diff/merge (deck)
-  - Rclone.Rclone                 # Cloud sync
-  - Microsoft.Sysinternals.Autoruns      # Startup manager
-  - Microsoft.Sysinternals.ProcessExplorer  # Process viewer
-  - Microsoft.Sysinternals.ProcessMonitor   # Process monitor (deck)
-  - Microsoft.PowerToys           # Windows power utilities
-
-  # --- Hardware & Monitoring ---
-  - REALiX.HWiNFO                 # Hardware info
-  - LibreHardwareMonitor.LibreHardwareMonitor  # Hardware monitor
-  - Rem0o.FanControl              # Fan control
-  - Guru3D.Afterburner            # GPU overclocking
-  - Guru3D.RTSS                   # Rivatuner (frame limiter)
-  - BitSum.ProcessLasso           # Process priority manager
-  - BitSum.ParkControl            # CPU parking control
-  - TechPowerUp.NVCleanstall      # NVIDIA driver installer
-  - Wagnardsoft.DisplayDriverUninstaller  # DDU
-
-  # --- RGB & Peripherals ---
-  - OpenRGB.OpenRGB               # RGB controller
-  - OpenRGB.OpenRGBEffectsPlugin
-  - OpenRGB.OpenRGBHardwareSyncPlugin
-  - OpenRGB.OpenRGBVisualMapPlugin
-  - Olivia.VIA                    # Keyboard configurator
-  - Ryochan7.DS4Windows           # DualShock 4 support
-  - ViGEm.ViGEmBus                # Virtual gamepad bus
-  - Nefarius.HidHide              # HID device hider
-  - namazso.PawnIO                # IO controller
-
-  # --- Networking & Remote ---
-  - Tailscale.Tailscale           # VPN mesh
-  - SSHFS-Win.SSHFS-Win           # SSHFS for Windows
-  - evsar3.sshfs-win-manager      # SSHFS GUI manager
-  - WinFsp.WinFsp                 # Windows File System Proxy
-  - Insecure.Nmap                 # Network scanner
-  - WiresharkFoundation.Wireshark # Packet analyzer (deck)
-  - Apple.Bonjour                 # mDNS/Bonjour
-
-  # --- Gaming ---
-  - Valve.Steam                   # Steam
-  - Valve.SteamCMD                # Steam CLI
-  - Playnite.Playnite             # Game launcher
-  - HeroicGamesLauncher.HeroicGamesLauncher  # Epic/GOG launcher
-  - Beyond-All-Reason.Beyond-All-Reason      # RTS game
-  - SpecialK.SpecialK             # Game injector/fixer
-  - mtkennerly.ludusavi           # Game save manager
-  - MoonlightGameStreamingProject.Moonlight  # Game streaming (deck)
-  - SteamGridDB.RomManager        # ROM manager (deck)
-
-  # --- Media & Creative ---
-  - Audacity.Audacity             # Audio editor
-  - KDE.Krita                     # Digital painting
-  - Gyan.FFmpeg                   # FFmpeg
-  - yt-dlp.FFmpeg                 # FFmpeg (yt-dlp build)
-  - yt-dlp.yt-dlp                 # Video downloader
-  - Inkscape.Inkscape             # Vector graphics (deck)
-  - rocksdanister.LivelyWallpaper # Animated wallpaper
-
-  # --- Communication ---
-  - Vencord.Vesktop               # Discord client
-  - Proton.ProtonMailBridge       # ProtonMail
-  - Microsoft.Teams               # Teams
-  - Obsidian.Obsidian             # Note-taking
-  - hoppscotch.Hoppscotch         # API testing
-
-  # --- File Transfer ---
-  - Transmission.Transmission     # Torrent client
-  - DelugeTeam.Deluge             # Torrent client
-
-  # --- Sync & Backup ---
-  - Martchus.syncthingtray        # Syncthing tray
-  - Microsoft.OneDrive            # OneDrive
-  - restic.restic                 # Backup tool (deck)
-
-  # --- Desktop Customization ---
-  # - RamenSoftware.Windhawk      # Windows customizer ( using portable install presently )
-  - AutoHotkey.AutoHotkey         # Automation
-  - File-New-Project.EarTrumpet   # Volume mixer
-  - Rainmeter.Rainmeter           # Desktop widgets (deck)
-  - ModernFlyouts.ModernFlyouts   # Modern volume flyout (deck)
-  - ArcadeRenegade.SidebarDiagnostics  # Sidebar diagnostics (deck)
-
-  # --- Browsers ---
-  - Google.Chrome.EXE             # Chrome
-  - Microsoft.Edge                # Edge
-
-  # --- Disk & Filesystem ---
-  - GrafanaLabs.Alloy             # Grafana agent
-  - maharmstone.btrfs             # Btrfs driver (deck)
-  - maharmstone.Ntfs2btrfs        # NTFS to Btrfs converter (deck)
-  - EFIBootEditor.EFIBootEditor   # EFI boot manager (deck)
-  - CodingWondersSoftware.DISMTools.Stable  # DISM GUI (deck)
-  - RaspberryPiFoundation.RaspberryPiImager  # Pi imager (deck)
-
-  # --- Winget/System Management ---
-  - Romanitho.Winget-AutoUpdate   # Auto-update via winget (deck)
-  - KnifMelti.WAU-Settings-GUI    # WAU settings (deck)
-  - lin-ycv.EverythingCmdPal      # Everything PowerToys (deck)
-  - voidtools.Everything.Alpha    # Everything search (deck)
-
+build_tools:
+  ubuntu:
+    - build-essential
+    - cmake
+    - pkg-config
+    - autoconf
+    - automake
+  debian:
+    - build-essential
+    - cmake
+    - pkg-config
+    - autoconf
+    - automake
+  rhel:
+    - gcc
+    - gcc-c++
+    - make
+    - cmake
+    - pkgconfig
+    - autoconf
+    - automake
 
 # =============================================================================
-# WINGET: MICROSOFT STORE PACKAGES
+# CAPABILITY: Networking & Communication Tools
 # =============================================================================
-# These require the msstore source in winget
-
-winget_msstore:
-  - XP99VR1BPSBQJ2                # (desktop) - Unknown store app
-  - XP8K0HKJFRXGCK                # (deck) - Unknown store app (Oh My Posh?)
-
+networking:
+  ubuntu:
+    - openssh-client
+    - openssh-server
+    - net-tools
+    - iputils-ping
+    - bind9-dnsutils
+    - netcat-openbsd
+    - socat
+    - traceroute
+    - tcpdump
+    - nmap
+  debian:
+    - openssh-client
+    - openssh-server
+    - net-tools
+    - iputils-ping
+    - bind9-dnsutils
+    - netcat-openbsd
+    - socat
+    - traceroute
+    - tcpdump
+    - nmap
+  rhel:
+    - openssh-clients
+    - openssh-server
+    - net-tools
+    - iputils
+    - bind-utils
+    - nmap-ncat
+    - socat
+    - traceroute
+    - tcpdump
+    - nmap
 
 # =============================================================================
-# WINGET: RUNTIMES & FRAMEWORKS
+# CAPABILITY: Compression & Archive Tools
 # =============================================================================
-# Microsoft runtimes - typically auto-installed as dependencies
+compression:
+  ubuntu:
+    - zip
+    - 7zip
+    - bzip2
+    - xz-utils
+  debian:
+    - zip
+    - 7zip
+    - bzip2
+    - xz-utils
+  rhel:
+    - zip
+    - p7zip
+    - p7zip-plugins
+    - bzip2
+    - xz
 
-winget_runtimes:
-  # --- .NET ---
-  - Microsoft.DotNet.Runtime.8
-  - Microsoft.DotNet.Runtime.10
-  - Microsoft.DotNet.DesktopRuntime.3_1   # deck
-  - Microsoft.DotNet.DesktopRuntime.5     # deck
-  - Microsoft.DotNet.DesktopRuntime.6     # deck
-  - Microsoft.DotNet.DesktopRuntime.7     # deck
-  - Microsoft.DotNet.DesktopRuntime.8
-  - Microsoft.DotNet.DesktopRuntime.9
-  - Microsoft.DotNet.DesktopRuntime.10
-  - Microsoft.DotNet.AspNetCore.9
-  - Microsoft.DotNet.HostingBundle.8
-  - Microsoft.DotNet.SDK.8                # deck
-  - Microsoft.DotNet.Framework.DeveloperPack.4.6
-  - Microsoft.DotNet.Framework.DeveloperPack_4   # deck
+# =============================================================================
+# CAPABILITY: Version Control Extras
+# =============================================================================
+vcs_extras:
+  ubuntu:
+    - git-lfs
+    - tig
+    - gh
+  debian:
+    - git-lfs
+    - tig
+    - gh
+  rhel:
+    - git-lfs
+    - tig
+    # gh (GitHub CLI) may need COPR on RHEL
 
-  # --- Visual C++ Redistributables ---
-  - Microsoft.VCRedist.2008.x86
-  - Microsoft.VCRedist.2008.x64
-  - Microsoft.VCRedist.2010.x86
-  - Microsoft.VCRedist.2010.x64
-  - Microsoft.VCRedist.2012.x86
-  - Microsoft.VCRedist.2012.x64
-  - Microsoft.VCRedist.2013.x86
-  - Microsoft.VCRedist.2013.x64
-  - Microsoft.VCRedist.2015+.x86
-  - Microsoft.VCRedist.2015+.x64
+# =============================================================================
+# CAPABILITY: Modern CLI Tools (Rust-based & others)
+# =============================================================================
+# WARNING: Many of these are NOT in RHEL base repos
+# Consider them OPTIONAL for RHEL without external repos (COPR, etc)
+modern_cli:
+  ubuntu:
+    - ripgrep
+    - fd-find
+    - bat
+    - fzf
+  debian:
+    - ripgrep
+    - fd-find
+    - bat
+    - fzf
+  rhel:
+    # These may not be in base repos:
+    # - ripgrep  (available via COPR or compile)
+    # - fd  (available via COPR or compile)
+    # - bat  (available via COPR or compile)
+    - fzf  # Fuzzy finder (in EPEL)
 
-  # --- UI/UX Libraries ---
-  - Microsoft.UI.Xaml.2.7
-  - Microsoft.UI.Xaml.2.8
-  - Microsoft.VCLibs.Desktop.14
+# =============================================================================
+# CAPABILITY: Security & Certificates
+# =============================================================================
+security:
+  ubuntu:
+    - ca-certificates
+  debian:
+    - ca-certificates
+  rhel:
+    - gnupg2
+    - ca-certificates
 
-  # --- SDKs & Tools ---
-  - Microsoft.WindowsSDK.10.0.18362
-  - Microsoft.WindowsADK
-  - Microsoft.NuGet                       # deck
-  - Microsoft.WebDeploy                   # deck
-  - Microsoft.CLRTypesSQLServer.2019      # deck
-  - Microsoft.GameInput                   # deck
+# =============================================================================
+# CAPABILITY: Access Control Lists
+# =============================================================================
+acl:
+  ubuntu:
+    - acl
+  debian:
+    - acl
+  rhel:
+    - acl
 
+# =============================================================================
+# CAPABILITY: KVM & Virtualization (Optional - test hosts only)
+# =============================================================================
+kvm:
+  ubuntu:
+    - qemu-system-x86
+    - qemu-utils
+    - cpu-checker
+    - libvirt-daemon-system
+    - libvirt-clients
+    - virtinst
+  debian:
+    - qemu-system-x86
+    - qemu-utils
+    - cpu-checker
+    - libvirt-daemon-system
+    - libvirt-clients
+    - virtinst
+  rhel:
+    - qemu-kvm
+    - qemu-img
+    - qemu-kvm-tools
+    - cpu-checker
+    - libvirt
+    - libvirt-daemon
+    - libvirt-client
+    - virt-install
 
 # =============================================================================
 # NPM GLOBAL PACKAGES (via nvm)
 # =============================================================================
-# Installed globally via npm after nvm installs Node.js
-# Applied to both Windows and Linux
-
+# Same across all platforms - applied after nvm installs Node.js
 npm_global:
   - '@anthropic-ai/claude-code'
   - 'pnpm'
@@ -459,13 +285,159 @@ npm_global:
   - 'prettier'
   - 'eslint'
 
+# =============================================================================
+# CHOCOLATEY PACKAGES (Windows Primary)
+# =============================================================================
+choco:
+  - chocolatey-core.extension
+  - chocolatey-compatibility.extension
+  - chocolatey-font-helpers.extension
+  - dive
+  - docker-cli
+  - docker-compose
+  - vim
+  - FiraCode
+  - nerd-fonts-FiraCode
+  - nerd-fonts-Hack
+  - Cygwin
+  - colortool
+  - rsync
+  - cheatengine
+  - make
 
 # =============================================================================
-# EXCLUDED FROM WINGET (use choco instead)
+# WINGET PACKAGES (Windows Secondary)
 # =============================================================================
-# These packages exist in winget but choco is preferred:
-#
-# - vim.vim              -> use choco:vim (better config)
-# - Cygwin.CygwinSetup   -> use choco:Cygwin (includes packages)
-# - OpenJS.NodeJS        -> use NVM (CoreyButler.NVMforWindows) instead
-# - GnuWin32.Grep        -> use Cygwin or native tools
+winget:
+  dev_tools:
+    - CoreyButler.NVMforWindows
+    - DenoLand.Deno
+    - Anaconda.Miniconda3
+    - Git.Git
+    - GitHub.cli
+    - Neovim.Neovim
+    - Microsoft.VisualStudioCode.Insiders
+    - Hashicorp.Terraform
+    - Hashicorp.TerraformLanguageServer
+    - nektos.act
+    - jqlang.jq
+    - junegunn.fzf
+    - direnv.direnv
+    - waterlan.dos2unix
+  kubernetes:
+    - Kubernetes.kubectl
+    - Kubernetes.minikube
+    - Helm.Helm
+    - Kubecolor.kubecolor
+    - stern.stern
+  shells:
+    - Starship.Starship
+    - JanDeDobbeleer.OhMyPosh
+    - Microsoft.WindowsTerminal
+    - Microsoft.PowerShell.Preview
+    - Microsoft.AIShell
+  system_utilities:
+    - 7zip.7zip
+    - AntibodySoftware.WizTree
+    - CodeSector.TeraCopy
+    - Rufus.Rufus
+    - Ventoy.Ventoy
+    - WinSCP.WinSCP
+    - Rclone.Rclone
+    - Microsoft.Sysinternals.Autoruns
+    - Microsoft.Sysinternals.ProcessExplorer
+    - Microsoft.PowerToys
+  hardware:
+    - REALiX.HWiNFO
+    - LibreHardwareMonitor.LibreHardwareMonitor
+    - Rem0o.FanControl
+    - Guru3D.Afterburner
+    - Guru3D.RTSS
+    - BitSum.ProcessLasso
+    - BitSum.ParkControl
+    - TechPowerUp.NVCleanstall
+    - Wagnardsoft.DisplayDriverUninstaller
+  rgb_peripherals:
+    - OpenRGB.OpenRGB
+    - OpenRGB.OpenRGBEffectsPlugin
+    - OpenRGB.OpenRGBHardwareSyncPlugin
+    - OpenRGB.OpenRGBVisualMapPlugin
+    - Olivia.VIA
+    - Ryochan7.DS4Windows
+    - ViGEm.ViGEmBus
+    - Nefarius.HidHide
+    - namazso.PawnIO
+  networking:
+    - Tailscale.Tailscale
+    - SSHFS-Win.SSHFS-Win
+    - evsar3.sshfs-win-manager
+    - WinFsp.WinFsp
+    - Insecure.Nmap
+    - WiresharkFoundation.Wireshark
+    - Apple.Bonjour
+  gaming:
+    - Valve.Steam
+    - Valve.SteamCMD
+    - Playnite.Playnite
+    - HeroicGamesLauncher.HeroicGamesLauncher
+    - Beyond-All-Reason.Beyond-All-Reason
+    - SpecialK.SpecialK
+    - mtkennerly.ludusavi
+  media_creative:
+    - Audacity.Audacity
+    - KDE.Krita
+    - Gyan.FFmpeg
+    - yt-dlp.yt-dlp
+    - Inkscape.Inkscape
+    - rocksdanister.LivelyWallpaper
+  communication:
+    - Vencord.Vesktop
+    - Proton.ProtonMailBridge
+    - Microsoft.Teams
+    - Obsidian.Obsidian
+    - hoppscotch.Hoppscotch
+  file_transfer:
+    - Transmission.Transmission
+    - DelugeTeam.Deluge
+  sync_backup:
+    - Martchus.syncthingtray
+    - Microsoft.OneDrive
+  desktop_customization:
+    - AutoHotkey.AutoHotkey
+    - File-New-Project.EarTrumpet
+  browsers:
+    - Google.Chrome.EXE
+    - Microsoft.Edge
+
+# =============================================================================
+# WINGET: RUNTIMES & FRAMEWORKS
+# =============================================================================
+winget_runtimes:
+  dotnet:
+    - Microsoft.DotNet.Runtime.8
+    - Microsoft.DotNet.Runtime.10
+    - Microsoft.DotNet.DesktopRuntime.8
+    - Microsoft.DotNet.DesktopRuntime.9
+    - Microsoft.DotNet.DesktopRuntime.10
+    - Microsoft.DotNet.AspNetCore.9
+    - Microsoft.DotNet.HostingBundle.8
+    - Microsoft.DotNet.Framework.DeveloperPack.4.6
+  vcredist:
+    - Microsoft.VCRedist.2008.x86
+    - Microsoft.VCRedist.2008.x64
+    - Microsoft.VCRedist.2010.x86
+    - Microsoft.VCRedist.2010.x64
+    - Microsoft.VCRedist.2012.x86
+    - Microsoft.VCRedist.2012.x64
+    - Microsoft.VCRedist.2013.x86
+    - Microsoft.VCRedist.2013.x64
+    - Microsoft.VCRedist.2015+.x86
+    - Microsoft.VCRedist.2015+.x64
+  ui_libraries:
+    - Microsoft.UI.Xaml.2.7
+    - Microsoft.UI.Xaml.2.8
+    - Microsoft.VCLibs.Desktop.14
+  sdks:
+    - Microsoft.WindowsSDK.10.0.18362
+    - Microsoft.WindowsADK
+    - Microsoft.NuGet
