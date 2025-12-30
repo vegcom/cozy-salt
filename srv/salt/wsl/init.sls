@@ -20,10 +20,9 @@ deploy_configure_docker_wsl_context:
     - source: salt://windows/files/opt-cozy/configure-docker-wsl-context.ps1
     - makedirs: True
 
-# Run Docker WSL context configuration script
+# Run Docker WSL context configuration script (idempotent - only re-runs if script changes)
 run_configure_docker_wsl_context:
   cmd.run:
     - name: powershell -ExecutionPolicy Bypass -File C:\opt\cozy\configure-docker-wsl-context.ps1
-    - creates: C:\opt\cozy\.done.flag
-    - require:
+    - onchanges:
       - file: deploy_configure_docker_wsl_context

@@ -11,19 +11,17 @@ if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
     exit 0
 }
 
-# Check if WSL context already exists
-$existingContext = docker context ls --format "{{.Name}}" 2>$null | Where-Object { $_ -eq "wsl" }
+# Check if WSL context already exists (idempotent check)
+$contextList = docker context ls --format "{{.Name}}" 2>$null
+$existingContext = $contextList -split "`n" | Where-Object { $_ -eq "wsl" }
 
 if ($existingContext) {
     Write-Host "Docker context 'wsl' already exists" -ForegroundColor Green
 } else {
     Write-Host "Creating Docker context 'wsl'..."
     docker context create wsl --docker "host=tcp://127.0.0.1:2375"
+    Write-Host "Docker context 'wsl' created successfully" -ForegroundColor Green
 }
-
-# Set as default
-Write-Host "Setting 'wsl' as default Docker context..."
-docker context use wsl
 
 # Test connection
 Write-Host ""
@@ -39,12 +37,4 @@ if ($LASTEXITCODE -eq 0) {
     Write-Host "  wsl -d Ubuntu" -ForegroundColor Gray
     Write-Host "  /opt/cozy/docker.sh" -ForegroundColor Gray
     Write-Host "  docker compose -f /opt/cozy/docker-proxy.yaml up -d" -ForegroundColor Gray
-}
-
-# Create done flag
-$doneFlag = "C:\opt\cozy\.done.flag"
-if (-not (Test-Path $doneFlag)) {
-    New-Item -ItemType File -Path $doneFlag -Force | Out-Null
-    Write-Host ""
-    Write-Host "Provisioning complete. Flag created at $doneFlag" -ForegroundColor Green
 }
