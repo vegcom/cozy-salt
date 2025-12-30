@@ -1,21 +1,31 @@
 # cozy-salt Makefile - shortcuts for common operations
 
-.PHONY: help test test-ubuntu test-apt test-linux test-rhel test-windows test-all test-quick lint lint-shell lint-ps clean clean-keys clean-all up down restart logs status validate perms shell state-check debug-minion logs-minion salt-help salt-key-list salt-key-status salt-key-cleanup-test salt-key-accept salt-key-delete salt-key-reject salt-key-accept-test salt-manage-status salt-jobs-active salt-jobs-list salt-jobs-clear salt-test-ping salt-state-highstate salt-state-highstate-test
+.PHONY: help test test-ubuntu test-apt test-linux test-rhel test-windows test-all test-quick lint lint-shell lint-ps clean clean-keys clean-all up down restart logs status validate perms shell state-check debug-minion logs-minion salt-help salt-key-list salt-key-status salt-key-cleanup-test salt-key-accept salt-key-delete salt-key-reject salt-key-accept-test salt-manage-status salt-jobs-active salt-jobs-list salt-jobs-clear salt-test-ping salt-state-highstate salt-state-highstate-test pytest pytest-ubuntu pytest-rhel pytest-windows pytest-all pytest-lint salt-doc salt-cmd salt-grains salt-state-sls salt-cache-clear salt-clear_cache
 
-
+# =========================================================================== #
 # Default target
+# =========================================================================== #
+
 help:
 	@echo "cozy-salt - Salt infrastructure management"
 	@echo ""
 	@echo "Available targets:"
 	@echo ""
-	@echo "Testing:"
-	@echo "  test          - Run sequential state tests (ubuntu → rhel → windows)"
-	@echo "  test-ubuntu   - Test on Ubuntu 24.04 (apt-based)"
-	@echo "  test-rhel     - Test on RHEL/Rocky 9 (dnf-based)"
-	@echo "  test-windows  - Test on Windows (requires KVM)"
-	@echo "  test-quick    - Run test without docker rebuild (faster iteration)"
-	@echo "  lint          - Run all linters (shell + powershell)"
+	@echo "Testing (pytest):"
+	@echo "  test          - Run all pytest tests"
+	@echo "  test-ubuntu   - Test Ubuntu/apt states (pytest -m ubuntu)"
+	@echo "  test-rhel     - Test RHEL/dnf states (pytest -m rhel)"
+	@echo "  test-windows  - Test Windows states (pytest -m windows)"
+	@echo "  test-all      - Run all distro tests"
+	@echo "  test-quick    - Quick test without docker rebuild"
+	@echo "  lint          - Run linting via pytest"
+	@echo ""
+	@echo "pytest (direct):"
+	@echo "  pytest        - Run all tests with verbose output"
+	@echo "  pytest-ubuntu - Ubuntu tests only"
+	@echo "  pytest-rhel   - RHEL tests only"
+	@echo "  pytest-windows- Windows tests only"
+	@echo "  pytest-lint   - Linting tests only"
 	@echo ""
 	@echo "Docker/Container:"
 	@echo "  up            - Start Salt Master + minions"
@@ -35,18 +45,35 @@ help:
 	@echo "  clean-keys    - Delete test minion keys only"
 	@echo "  clean-all     - Full cleanup (containers + keys + artifacts)"
 	@echo ""
-	@echo "Salt-Master helpers:"
+	@echo "Salt Discovery:"
 	@echo "  salt-help              - Show Salt documentation links"
-	@echo "  salt-test-ping         - Ping all minions (connectivity test)"
-	@echo "  salt-key-list          - List accepted/pending minion keys"
+	@echo "  salt-doc               - Show all module documentation"
+	@echo "  salt-doc-module        - Show docs for MODULE (make salt-doc-module MODULE=pkg)"
+	@echo "  salt-grains            - Show all grains on all minions"
+	@echo "  salt-grains-get        - Get specific grain (make salt-grains-get GRAIN=os)"
+	@echo ""
+	@echo "Salt Connectivity:"
+	@echo "  salt-test-ping         - Ping all minions"
 	@echo "  salt-manage-status     - Check minion connectivity status"
-	@echo "  salt-clear_cache       - Clear Salt cache on all minions"
-	@echo "  salt-jobs-active       - List currently running jobs"
-	@echo "  salt-jobs-list         - List recent jobs"
+	@echo "  salt-key-list          - List accepted/pending minion keys"
+	@echo ""
+	@echo "Salt Ad-Hoc Execution:"
+	@echo "  salt-cmd               - Run command on all minions (make salt-cmd CMD='uptime')"
+	@echo "  salt-cmd-target        - Run on target (make salt-cmd-target TARGET='web*' CMD='df -h')"
+	@echo ""
+	@echo "Salt State Management:"
 	@echo "  salt-state-highstate   - Apply full state to all minions"
 	@echo "  salt-state-highstate-test - Dry-run full state (test mode)"
 	@echo "  salt-state-apply       - Apply state to specific minion (MINION=name)"
-	@echo "  salt-state-apply-test  - Dry-run state on specific minion (MINION=name)"
+	@echo "  salt-state-sls         - Apply specific state (make salt-state-sls STATE=linux.install)"
+	@echo "  salt-state-sls-test    - Dry-run specific state"
+	@echo "  salt-state-show        - Preview state parsing (make salt-state-show STATE=linux)"
+	@echo ""
+	@echo "Salt Jobs & Cache:"
+	@echo "  salt-jobs-active       - List currently running jobs"
+	@echo "  salt-jobs-list         - List recent jobs"
+	@echo "  salt-jobs-clear        - Clear old jobs"
+	@echo "  salt-cache-clear       - Clear Salt cache on all minions"
 	@echo ""
 	@echo "Examples:"
 	@echo "  make test         # Run all tests sequentially"
@@ -74,41 +101,58 @@ require-%:
 	fi
 
 # =========================================================================== #
-# Testing
+# Testing (pytest-based)
 # =========================================================================== #
 
-test: test-all
+test: pytest
 
-test-ubuntu:
-	@echo "=== Testing on Ubuntu 24.04 (apt-based) ==="
-	./tests/test-states-json.sh ubuntu
+test-ubuntu: pytest-ubuntu
 
 test-apt: test-ubuntu
 
 test-linux: test-ubuntu
 
-test-rhel:
-	@echo "=== Testing on RHEL/Rocky 9 (dnf-based) ==="
-	./tests/test-states-json.sh rhel
+test-rhel: pytest-rhel
 
-test-windows:
-	@echo "=== Testing on Windows (via Dockur/KVM) ==="
-	./tests/test-states-json.sh windows
+test-windows: pytest-windows
 
-test-all:
-	@echo "=== Testing on all distributions (sequential) ==="
-	./tests/test-states-json.sh all
+test-all: pytest-all
 
 test-quick:
 	@echo "=== Quick test (no docker rebuild) ==="
 	docker compose exec -t salt-minion-ubuntu-test salt-call state.highstate --out=json
+
+# =========================================================================== #
+# pytest targets
+# =========================================================================== #
+
+pytest:
+	pytest tests/ -v --tb=short
+
+pytest-ubuntu:
+	pytest tests/ -v -m ubuntu --tb=short
+
+pytest-rhel:
+	pytest tests/ -v -m rhel --tb=short
+
+pytest-windows:
+	pytest tests/ -v -m windows --tb=short
+
+pytest-all:
+	pytest tests/ -v -m "ubuntu or rhel or windows" --tb=short
+
+pytest-lint:
+	pytest tests/test_linting.py -v
 
 
 
 # =========================================================================== #
 # Linting
 # =========================================================================== #
-lint: lint-shell lint-ps
+lint: pytest-lint
+
+# Legacy lint targets (still available for direct use)
+lint-legacy: lint-shell lint-ps
 
 lint-shell:
 	@echo "=== Linting shell scripts ==="
@@ -165,6 +209,7 @@ clean-all: clean clean-keys
 # =========================================================================== #
 # Utilities
 # =========================================================================== #
+
 validate:
 	@echo "=== Running validation... ==="
 	./scripts/fix-permissions.sh
@@ -203,10 +248,60 @@ salt-help:
 	@echo ""
 	@echo "	Architecture: https://docs.saltproject.io/en/latest/topics/topology/index.html"
 	@echo ""
-	@echo "	Windows documentaiton: https://docs.saltproject.io/en/latest/topics/windows/index.html"
+	@echo "	Windows documentation: https://docs.saltproject.io/en/latest/topics/windows/index.html"
 
-salt-clear_cache:
-	 docker compose exec -t salt-master salt '*' saltutil.clear_cache
+# ---------------------------------------------------------------------------
+# Discovery & Documentation
+# ---------------------------------------------------------------------------
+
+salt-doc:
+	docker compose exec -t salt-master salt '*' sys.doc
+
+salt-doc-module: require-MODULE
+	docker compose exec -t salt-master salt '*' sys.doc $(MODULE)
+
+# ---------------------------------------------------------------------------
+# Ad-hoc Command Execution
+# ---------------------------------------------------------------------------
+
+salt-cmd: require-CMD
+	docker compose exec -t salt-master salt '*' cmd.run '$(CMD)'
+
+salt-cmd-target: require-TARGET require-CMD
+	docker compose exec -t salt-master salt '$(TARGET)' cmd.run '$(CMD)'
+
+# ---------------------------------------------------------------------------
+# Grains (System Info)
+# ---------------------------------------------------------------------------
+
+salt-grains:
+	docker compose exec -t salt-master salt '*' grains.items
+
+salt-grains-get: require-GRAIN
+	docker compose exec -t salt-master salt '*' grains.item $(GRAIN)
+
+# ---------------------------------------------------------------------------
+# State Management (specific states)
+# ---------------------------------------------------------------------------
+
+salt-state-sls: require-STATE
+	docker compose exec -t salt-master salt '*' state.sls $(STATE)
+
+salt-state-sls-test: require-STATE
+	docker compose exec -t salt-master salt '*' state.sls $(STATE) test=true
+
+salt-state-show: require-STATE
+	docker compose exec -t salt-master salt '*' state.show_sls $(STATE)
+
+# ---------------------------------------------------------------------------
+# Cache Management
+# ---------------------------------------------------------------------------
+
+salt-cache-clear:
+	docker compose exec -t salt-master salt '*' saltutil.clear_cache
+
+# DEPRECATED: Use salt-cache-clear instead
+salt-clear_cache: salt-cache-clear
 
 salt-key-list:
 	docker compose exec -t salt-master salt-key -L
@@ -232,8 +327,6 @@ salt-key-reject: require-NAME
 	@echo "=== Reject a pending minion key ==="
 	docker compose exec -t salt-master salt-key -r "$(NAME)" -y || true
 
-
-
 salt-key-accept-test:
 	@echo "=== Accepting pending test minion keys ==="
 	docker compose exec -t salt-master salt-key -a ubuntu-test -y || true
@@ -250,7 +343,7 @@ salt-jobs-list:
 	docker compose exec -t salt-master salt-run jobs.list_jobs
 
 salt-jobs-clear:
-	docker compose exec -t salt-master salt-run jobs.clear_old_jobs 2>/dev/null || echo "No old jobs to clear"d
+	docker compose exec -t salt-master salt-run jobs.clear_old_jobs 2>/dev/null || echo "No old jobs to clear"
 
 salt-test-ping:
 	docker compose exec -t salt-master salt '*' test.ping
