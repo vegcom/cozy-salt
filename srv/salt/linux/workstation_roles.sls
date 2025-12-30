@@ -36,7 +36,7 @@ minimal_core_packages:
 
 minimal_shell_packages:
   pkg.installed:
-    - pkgs: {{ packages.shell_customization[os_name] | tojson }}
+    - pkgs: {{ packages.shell_enhancements[os_name] | tojson }}
     - require:
       - pkg: minimal_core_packages
 
@@ -49,7 +49,7 @@ base_core_packages:
 
 base_shell_packages:
   pkg.installed:
-    - pkgs: {{ packages.shell_customization[os_name] | tojson }}
+    - pkgs: {{ packages.shell_enhancements[os_name] | tojson }}
     - require:
       - pkg: base_core_packages
 
@@ -98,7 +98,7 @@ dev_core_packages:
 
 dev_shell_packages:
   pkg.installed:
-    - pkgs: {{ packages.shell_customization[os_name] | tojson }}
+    - pkgs: {{ packages.shell_enhancements[os_name] | tojson }}
     - require:
       - pkg: dev_core_packages
 
@@ -152,7 +152,7 @@ dev_networking_packages:
 
 dev_kvm_packages:
   pkg.installed:
-    - pkgs: {{ packages.kvm_virtualization[os_name] | tojson }}
+    - pkgs: {{ packages.kvm[os_name] | tojson }}
     - require:
       - pkg: dev_core_packages
 
