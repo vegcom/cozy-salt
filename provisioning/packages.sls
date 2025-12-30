@@ -387,7 +387,6 @@ winget:
     - Obsidian.Obsidian
     - hoppscotch.Hoppscotch
   file_transfer:
-    - Transmission.Transmission
     - DelugeTeam.Deluge
   sync_backup:
     - Martchus.syncthingtray
