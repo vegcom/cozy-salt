@@ -62,7 +62,6 @@ monitoring:
     - duf
     - ncdu
   rhel:
-    # Note: Many not in base repos, may need EPEL
     - htop
     - lsof
     - strace
@@ -88,7 +87,6 @@ shell_enhancements:
     - tmux
     - screen
   rhel:
-    # Note: zsh-autosuggestions/zsh-syntax-highlighting may need EPEL
     - zsh
     - bash-completion
     - tmux
@@ -192,13 +190,10 @@ vcs_extras:
   rhel:
     - git-lfs
     - tig
-    # gh (GitHub CLI) may need COPR on RHEL
 
 # =============================================================================
 # CAPABILITY: Modern CLI Tools (Rust-based & others)
 # =============================================================================
-# WARNING: Many of these are NOT in RHEL base repos
-# Consider them OPTIONAL for RHEL without external repos (COPR, etc)
 modern_cli:
   ubuntu:
     - ripgrep
@@ -211,11 +206,10 @@ modern_cli:
     - bat
     - fzf
   rhel:
-    # These may not be in base repos:
-    # - ripgrep  (available via COPR or compile)
-    # - fd  (available via COPR or compile)
-    # - bat  (available via COPR or compile)
-    - fzf  # Fuzzy finder (in EPEL)
+    - ripgrep
+    - fd-find
+    - bat
+    - fzf
 
 # =============================================================================
 # CAPABILITY: Security & Certificates

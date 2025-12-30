@@ -9,6 +9,7 @@ ARG RHEL_VERSION=9
 RUN rm -f /etc/yum.repos.d/kali* /etc/yum.repos.d/debian* 2>/dev/null || true && \
     dnf install -y 'dnf-command(config-manager)' && \
     dnf config-manager --set-enabled crb && \
+    dnf install -y epel-release && \
     dnf clean all
 
 # Install Salt Minion from Broadcom repo (3007+)
