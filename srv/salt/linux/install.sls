@@ -7,7 +7,7 @@
 {% set os_name = 'ubuntu' if os_family == 'Debian' else 'rhel' %}
 
 # Install Docker using official installer script (handles repo setup and GPG keys automatically)
-{% if os_family == 'Debian' %}
+# Works on Debian, Ubuntu, CentOS, RHEL, Fedora via get.docker.com
 docker_install:
   cmd.run:
     - name: curl -fsSL https://get.docker.com -o /tmp/get-docker.sh && sh /tmp/get-docker.sh
@@ -15,7 +15,8 @@ docker_install:
     - require_in:
       - pkg: core_utils_packages
 
-# Force apt update after Docker repo is added
+# Force apt update after Docker repo is added (Debian/Ubuntu only)
+{% if os_family == 'Debian' %}
 apt_update_with_override:
   cmd.run:
     - name: apt-get update --allow-releaseinfo-change
