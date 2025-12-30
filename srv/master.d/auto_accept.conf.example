@@ -1,2 +1,0 @@
-# Auto-accept minion keys (for testing/trusted networks only)
-auto_accept: True
