@@ -2,7 +2,6 @@
 # System-wide installation to /opt/nvm with NPM prefix management
 # No per-user profile pollution - initialized via /etc/profile.d/nvm.sh
 
-{% import_yaml 'packages.sls' as packages %}
 {% set nvm_config = salt['pillar.get']('nvm', {}) %}
 {% set default_version = nvm_config.get('default_version', 'lts/*') %}
 
