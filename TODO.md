@@ -897,3 +897,53 @@ docs/
 2. ⏳ **NEXT:** Delete DOCS_SUMMARY.md + verify docs/ links work
 3. ⏳ **THEN:** Run container tests to verify P0+P1 didn't break anything
 4. ⏳ **OPTIONAL:** Implement P2 (package bloat reduction) — 2 hours for 30-40% savings
+
+---
+
+## Session 2025-12-30: Hook Fixes & Container Infrastructure
+
+### ✅ Completed This Session
+
+**Critical Hook Validation Fixes:**
+- ✅ Fixed `validate-salt-moves.sh` - migrated from stdin to TOOL_INPUT env var pattern
+- ✅ Fixed `validate-salt-references.sh` - migrated from stdin to TOOL_INPUT env var pattern
+- ✅ Both hooks now properly catch broken salt:// references and dangerous file moves
+
+**Container Infrastructure Testing:**
+- ✅ Validated systemd-in-docker approach with raw docker run command
+- ✅ Confirmed: `--privileged + /sys/fs/cgroup:/sys/fs/cgroup:rw` enables service state testing
+- ✅ Tested and verified setup works in isolation
+
+**Commits (fix/bloat-consolidation branch):**
+1. `81deab7` - Fix critical hook validation issues (env var pattern)
+2. `fd1e720` - Enable systemd in test containers (initial approach)
+3. `edf9785` - Simplify systemd support (daemon approach)
+4. `5fd2174` - Remove systemd package (cgroup mounts sufficient)
+5. `e83991d` - Fix container startup (/run mount conflicts)
+6. `f5b0b00` - Revert to standard container setup
+
+### ⏳ Pending Work (Post-System-Recovery)
+
+**Container Testing (BLOCKED: Host systemd/dbus issue)**
+- [ ] Run `make test-ubuntu` once system is back online
+- [ ] Run `make test-rhel` once system is back online
+- [ ] Verify: 52+ states passing (baseline: 52 passed, 1 docker_proxy expected failure)
+- [ ] Verify: No systemd-related errors in state output
+
+**Analysis Needed:**
+- [ ] Review test results to determine if privileged mode + cgroup mounts are needed
+- [ ] If service states work without privileged: document final minimal approach
+- [ ] If service states fail: investigate alternative solutions (capability add, etc.)
+
+**Documentation:**
+- [ ] Update CLAUDE.md with container testing notes if systemd approach successful
+- [ ] Document hook validation improvements in docs/development/
+
+**Future Consideration:**
+- systemd in containers only needed if states manage systemd services (docker, nginx, ssh, etc.)
+- Current approach: standard containers work for most states
+- Advanced approach: privileged + cgroup mounts if service management required
+
+### Blockers Resolved
+- Host systemd/dbus connectivity issue (system upgrade artifact, not code-related)
+- Awaiting system reboot to restore Docker functionality
