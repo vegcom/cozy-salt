@@ -72,8 +72,9 @@ test_minion() {
     fi
 
     echo "Capturing JSON output..."
-    docker exec "$container_name" salt-call state.highstate --out=json > "$output_file" 2>&1
-    
+    # Capture JSON even if salt-call returns non-zero (some states may have failed)
+    docker exec "$container_name" salt-call state.highstate --out=json > "$output_file" 2>&1 || true
+
     if [ -f "$output_file" ] && grep -q "^{" "$output_file"; then
         echo -e "${GREEN}JSON output saved to: ${output_file}${NC}"
     else

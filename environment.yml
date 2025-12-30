@@ -1,0 +1,21 @@
+name: cozy-salt
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  - pyyaml
+  - jq
+  - shellcheck
+  - pip-tools
+  - pip:
+    - salt-lint
+    - yamllint
+    - ansible-lint
+    - pylint
+    - black
+    - isort
+    - pytest
+    - pytest-cov
+    - jinja2

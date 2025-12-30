@@ -1,7 +1,8 @@
 # Docker Socket Proxy for remote TCP access
 # Exposes Docker daemon on TCP 2375 for Windows/WSL access
-# Only deployed on non-Windows systems with Docker installed
+# Only deployed on Debian systems with Docker installed
 
+{% if grains['os_family'] == 'Debian' %}
 # Deploy docker-proxy docker-compose file
 docker_proxy_file:
   file.managed:
@@ -21,3 +22,13 @@ docker_proxy_service:
     - require:
       - file: docker_proxy_file
     - unless: docker ps | grep -q docker-socket-proxy
+{% else %}
+# Docker proxy skipped on non-Debian systems (RHEL, etc.)
+docker_proxy_file:
+  test.nop:
+    - name: Skipping Docker proxy deployment on non-Debian system
+
+docker_proxy_service:
+  test.nop:
+    - name: Skipping Docker proxy service on non-Debian system
+{% endif %}

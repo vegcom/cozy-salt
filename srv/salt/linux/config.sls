@@ -57,13 +57,19 @@ sshd_hardening_config:
     - makedirs: True
 {% endif %}
 
-# Allow unauthenticated APT packages (trusted repositories)
+# Allow unauthenticated APT packages (trusted repositories) - Debian/Ubuntu only
+{% if grains['os_family'] == 'Debian' %}
 apt_allow_unauthenticated:
   file.managed:
     - name: /etc/apt/apt.conf.d/99-allow-unauthenticated
     - contents: |
         APT::Get::AllowUnauthenticated "true";
     - mode: 644
+{% else %}
+apt_allow_unauthenticated:
+  test.nop:
+    - name: Skipping APT config on non-Debian system
+{% endif %}
 
 # Manage /etc/hosts entries for network services (from pillar.network.hosts)
 {% for hostname, ip in hosts.items() %}
