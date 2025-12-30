@@ -1,6 +1,6 @@
 # cozy-salt Makefile - shortcuts for common operations
 
-.PHONY: help test test-ubuntu test-apt test-linux test-rhel test-windows test-all lint lint-shell lint-ps clean up down logs salt-help salt-clear_cache salt-key-list salt-key-cleanup-test salt-key-accept-test salt-manage-status salt-jobs-active salt-jobs-list salt-test-ping salt-state-highstate salt-state-highstate-test salt-lorem
+.PHONY: help test test-ubuntu test-apt test-linux test-rhel test-windows test-all lint lint-shell lint-ps clean up down logs validate perms shell salt-help salt-clear_cache salt-key-list salt-key-cleanup-test salt-key-accept salt-key-delete salt-key-reject salt-key-accept-test salt-manage-status salt-jobs-active salt-jobs-list salt-test-ping salt-state-highstate salt-state-highstate-test
 
 # Default target
 help:
@@ -17,6 +17,9 @@ help:
 	@echo "  lint          - Run all linters"
 	@echo "  lint-shell    - Lint shell scripts"
 	@echo "  lint-ps       - Lint PowerShell scripts"
+	@echo "  validate      - Run pre-commit validation (permissions, optional linting)"
+	@echo "  perms         - Fix file permissions"
+	@echo "  shell         - Enter salt-master container (interactive bash)"
 	@echo "  clean         - Clean up test artifacts"
 	@echo "  up            - Start Salt Master"
 	@echo "  down          - Stop all containers"
@@ -102,11 +105,22 @@ clean:
 	docker compose --profile test-windows down 2>/dev/null || true
 	@echo "Clean complete"
 
+# Utilities
+validate:
+	@echo "=== Running validation... ==="
+	./scripts/fix-permissions.sh
+
+perms:
+	@echo "=== Fixing file permissions... ==="
+	./scripts/fix-permissions.sh
+
+shell:
+	docker compose exec -it salt-master /bin/bash
 
 # Salt-Master helpers
 
 salt-help:
-	@echo "=== Salt documentaiton... ==="
+	@echo "=== Salt documentation... ==="
 	@echo ""
 	@echo ""
 	@echo "	SaltStack documentation: https://docs.saltproject.io/"
@@ -138,7 +152,7 @@ salt-key-accept: require-NAME
 	docker compose exec -t salt-master salt-key -a "$(NAME)" -y || true
 
 salt-key-delete: require-NAME
-	@echo "=== Accept a pending minion key ==="
+	@echo "=== Delete a minion key ==="
 	docker compose exec -t salt-master salt-key -d "$(NAME)" -y || true
 
 # Generic required-argument checker
@@ -172,8 +186,3 @@ salt-state-highstate:
 
 salt-state-highstate-test:
 	docker compose exec -t salt-master salt '*' state.highstate test=true
-
-
-## Salt-Master template
-salt-lorem:
-	docker compose exec -t salt-master true
