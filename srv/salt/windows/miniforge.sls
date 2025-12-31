@@ -5,6 +5,17 @@
 # ref: https://docs.saltproject.io/en/latest/ref/modules/all/salt.modules.reg.html#salt.modules.reg.set_value
 {# set current_path = salt['reg.read_value']('HKLM',"SYSTEM\CurrentControlSet\Control\Session Manager\Environment",'Path').get('vdata','').replace('%', '\\%') #}
 
+
+# Install miniforge system-wide to C:\opt\miniforge3
+# XXX: Changed powershell to pwsh. powershell has no double ampersant or bar operator
+# XXX: $env:TEMP can not have single quotes
+# XXX: removed Remove-Item -Path {{ miniforge_tmp }} -Force
+# XXX: /AddToPath=1 is not allowed with all user installs
+# XXX: needs manual path add https://learn.microsoft.com/en-us/previous-versions/office/developer/sharepoint-2010/ee537574(v=office.14)#to-add-a-path-to-the-path-environment-variable
+# XXX: https://github.com/conda-forge/miniforge/blob/60ce0741ac3437a3d9fe35bb0ab5acfa6d8cc377/README.md#install
+# XXX: Changed powershell to pwsh. powershell has no double ampersant or bar operator
+# XXX: $env:TEMP can not have single quotes
+
 {% set miniforge_versions = salt['pillar.get']('versions:miniforge', {}) %}
 {% set miniforge_version  = miniforge_versions.get('version', '24.11.3-0') %}
 {% set miniforge_path     = 'C:\\opt\\miniforge3' %}
@@ -26,10 +37,6 @@ miniforge_directory:
     - name: {{ miniforge_path }}
     - makedirs: True
     
-
-# Download miniforge installer
-# XXX: Changed powershell to pwsh. powershell has no double ampersant or bar operator
-# XXX: $env:TEMP can not have single quotes
 # Download miniforge installer
 miniforge_download:
   cmd.run:
@@ -40,14 +47,6 @@ miniforge_download:
     - require:
       - file: miniforge_directory
 
-
-# Install miniforge system-wide to C:\opt\miniforge3
-# XXX: Changed powershell to pwsh. powershell has no double ampersant or bar operator
-# XXX: $env:TEMP can not have single quotes
-# XXX: removed Remove-Item -Path {{ miniforge_tmp }} -Force
-# XXX: /AddToPath=1 is not allowed with all user installs
-# XXX: needs manual path add https://learn.microsoft.com/en-us/previous-versions/office/developer/sharepoint-2010/ee537574(v=office.14)#to-add-a-path-to-the-path-environment-variable
-# XXX: https://github.com/conda-forge/miniforge/blob/60ce0741ac3437a3d9fe35bb0ab5acfa6d8cc377/README.md#install
 miniforge_install:
   cmd.run:
     - name: > 
