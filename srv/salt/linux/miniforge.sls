@@ -24,3 +24,7 @@ miniforge_install:
     - require:
       - cmd: miniforge_download
     - creates: /opt/miniforge3/bin/conda
+
+# Install base pip packages via common orchestration
+include:
+  - common.miniforge

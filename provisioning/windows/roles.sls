@@ -40,7 +40,7 @@ base:
       - Starship.Starship
       - JanDeDobbeleer.OhMyPosh
       - Microsoft.WindowsTerminal
-      - Microsoft.PowerShell.Preview
+      - Microsoft.PowerShell
     - system_utilities:
       - 7zip.7zip
       - AntibodySoftware.WizTree
@@ -97,7 +97,7 @@ dev:
       - Starship.Starship
       - JanDeDobbeleer.OhMyPosh
       - Microsoft.WindowsTerminal
-      - Microsoft.PowerShell.Preview
+      - Microsoft.PowerShell
       - Microsoft.AIShell
     - system_utilities:
       - 7zip.7zip
@@ -153,7 +153,7 @@ gaming:
       - Starship.Starship
       - JanDeDobbeleer.OhMyPosh
       - Microsoft.WindowsTerminal
-      - Microsoft.PowerShell.Preview
+      - Microsoft.PowerShell
     - system_utilities:
       - 7zip.7zip
       - AntibodySoftware.WizTree

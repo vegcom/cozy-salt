@@ -19,6 +19,15 @@ sshd_hardening_config:
     - template: jinja
     - makedirs: True
 
+# Set PowerShell 7 as default shell for OpenSSH connections
+# This makes SSH sessions drop into pwsh instead of cmd.exe
+openssh_default_shell:
+  reg.present:
+    - name: HKEY_LOCAL_MACHINE\SOFTWARE\OpenSSH
+    - vname: DefaultShell
+    - vdata: C:\Program Files\PowerShell\7\pwsh.exe
+    - vtype: REG_SZ
+
 # Manage Windows hosts file entries for network services (from pillar.network.hosts)
 windows_hosts_entries:
   cmd.run:
@@ -35,7 +44,7 @@ windows_hosts_entries:
             Add-Content -Path $hostsFile -Value $entry
           }
         }
-    - shell: powershell
+    - shell: pwsh
 
 # ============================================================================
 # Service Management (merged from services.sls)

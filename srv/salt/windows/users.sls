@@ -21,7 +21,7 @@
         {% for group in userdata.get('windows_groups', ['Users']) %}
         Add-LocalGroupMember -Group "{{ group }}" -Member "{{ username }}" -ErrorAction SilentlyContinue
         {% endfor %}
-    - shell: powershell
+    - shell: pwsh
     - require:
       - user: {{ username }}_user
 

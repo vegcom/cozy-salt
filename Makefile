@@ -1,6 +1,6 @@
 # cozy-salt Makefile - shortcuts for common operations
 
-.PHONY: help test test-ubuntu test-apt test-linux test-rhel test-windows test-all test-quick lint lint-shell lint-ps clean clean-keys clean-all up down restart logs status validate perms shell state-check debug-minion logs-minion salt-help salt-key-list salt-key-status salt-key-cleanup-test salt-key-accept salt-key-delete salt-key-reject salt-key-accept-test salt-manage-status salt-jobs-active salt-jobs-list salt-jobs-clear salt-test-ping salt-state-highstate salt-state-highstate-test pytest pytest-ubuntu pytest-rhel pytest-windows pytest-all pytest-lint salt-doc salt-cmd salt-grains salt-state-sls salt-cache-clear salt-clear_cache
+.PHONY: help test test-ubuntu test-apt test-linux test-rhel test-windows test-all test-quick lint lint-shell lint-ps clean clean-keys clean-all up down restart logs status validate perms shell state-check debug-minion logs-minion salt-help salt-key-list salt-key-status salt-key-cleanup-test salt-key-accept salt-key-delete salt-key-reject salt-key-accept-test salt-manage-status salt-jobs-active salt-jobs-list salt-jobs-clear salt-test-ping salt-state-highstate salt-state-highstate-test pytest pytest-ubuntu pytest-rhel pytest-windows pytest-all pytest-lint salt-doc salt-cmd salt-grains salt-state-sls salt-cache-clear salt-clear_cache mamba-create mamba-update mamba-remove mamba-activate
 
 # =========================================================================== #
 # Default target
@@ -10,6 +10,12 @@ help:
 	@echo "cozy-salt - Salt infrastructure management"
 	@echo ""
 	@echo "Available targets:"
+	@echo ""
+	@echo "Mamba environment:"
+	@echo "  mamba-create: Create the environment from environment.yml"
+	@echo "  mamba-update: Update the environment from environment.yml"
+	@echo "  mamba-remove: Remove the environment"
+	@echo "  mamba-activate: Prints activation instructions"
 	@echo ""
 	@echo "Testing (pytest):"
 	@echo "  test          - Run all pytest tests"
@@ -87,6 +93,8 @@ help:
 # Fixtures
 # =========================================================================== #
 
+SHELL := /bin/bash
+
 # salt-call 
 SALT_CALL = sh -c 'salt-call "$$@" 2>/dev/null || exec sudo salt-call "$$@"' --
 
@@ -99,6 +107,28 @@ require-%:
 		echo "Usage: make $*=<value> <target>"; \
 		exit 1; \
 	fi
+
+# =========================================================================== #
+# Python environment ( mamba )
+# =========================================================================== #
+
+
+mamba-create:
+	@echo "Mamba: Create environment"
+	mamba env create -f environment.yml
+
+mamba-update:
+	@echo "Mamba: Update environment"
+	mamba env update --prune -f environment.yml
+
+mamba-remove:
+	@echo "Mamba: Remove environment"
+	mamba env remove -yn cozy-salt
+
+mamba-activate:
+	@echo "Mamba: Activate"
+	@echo "Run: "
+	@echo "   mamba activate cozy-salt"
 
 # =========================================================================== #
 # Testing (pytest-based)
@@ -373,11 +403,11 @@ salt-call-ping:
 
 salt-call-highstate:
 	@echo "=== Applying state ==="
-	$(SALT_CALL) state.highstate
+	$(SALT_CALL) state.highstate --state-output=terse -l warning
 
 salt-call-highstate-test:
 	@echo "=== Test state ==="
-	$(SALT_CALL) state.highstate test=True
+	$(SALT_CALL) state.highstate test=True --state-output=terse -l warning
 
 salt-call-show-top:
 	@echo "=== Show which states would apply ==="

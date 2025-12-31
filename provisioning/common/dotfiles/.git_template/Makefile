@@ -1,10 +1,34 @@
-.PHONY: help
+# =========================================================================== #
+# Python environment ( mamba )
+# =========================================================================== #
 
-help:
-	@echo "handy little helpers"
+SHELL := /bin/bash
 
-conda:
-	conda env create -f environment.yml
+require-%:
+	@if [ -z "$($*)" ]; then \
+		echo "Error: missing required argument '$*'"; \
+		echo "Usage: make $*=<value> <target>"; \
+		exit 1; \
+	fi
 
-conda-update:
-	conda env update --prune --file environment.yml
+mamba-create: require=-TARGET
+	@echo "Mamba: Create environment"
+	mamba env create -f environment.yml -n '$(TARGET)'
+
+mamba-update: require=-TARGET
+	@echo "Mamba: Update environment"
+	mamba env update --prune -f environment.yml -n '$(TARGET)'
+
+mamba-remove: require=-TARGET
+	@echo "Mamba: Remove environment"
+	mamba env remove -yn '$(TARGET)'
+
+mamba-recreate: require=-TARGET
+	@echo "Mamba: Remove environment"
+	mamba-remove TARGET='$(TARGET)'
+	mamba-create TARGET='$(TARGET)'
+
+mamba-activate: require=-TARGET
+	@echo "Mamba: Activate"
+	@echo "Run: "
+	@echo "   mamba activate '$(TARGET)'"
