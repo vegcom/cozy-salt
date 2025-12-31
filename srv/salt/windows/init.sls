@@ -2,7 +2,7 @@
 # Includes all Windows state modules
 
 include:
-  # - windows.users  # TODO: Test PowerShell group management approach
+  - windows.users
   - windows.install
   - windows.config   # Includes service management (merged from services.sls)
   - windows.nvm

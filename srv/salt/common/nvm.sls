@@ -5,15 +5,22 @@
 {% import_yaml "provisioning/packages.sls" as packages %}
 {% set nvm_config = salt['pillar.get']('nvm', {}) %}
 
+# nvm on windows does not accept wildcards
+{% set default_version = nvm_config.get('default_version', 'lts') %}
+
 # Install global npm packages (if defined)
 # Platform-specific shell and environment handling in linux/nvm and windows/nvm
 {% for package in packages.get('npm_global', []) %}
 install_npm_{{ package | replace('/', '_') | replace('@', '') | replace('-', '_') }}:
   cmd.run:
     {% if grains['os_family'] == 'Windows' %}
-    - name: npm install -g {{ package }}
-    - shell: powershell
+    # XXX: nvm alias: does not work on NVM for Windows
+    - name: nvm use {{ default_version }} && npm install -g {{ package }}
+    - shell: pwsh
     - unless: npm list -g --depth=0 | findstr "{{ package }}"
+    # TODO: pillar "C:\opt\nvm"
+    - env:
+      - NVM_HOME: C:\opt\nvm
     {% else %}
     - name: NPM_CONFIG_PREFIX=/opt/nvm npm install -g {{ package }}
     - shell: /bin/bash

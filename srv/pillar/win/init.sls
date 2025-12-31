@@ -40,7 +40,7 @@ host_role: desktop  # Default: desktop (base + dev_tools + shells + communicatio
 
 # Node.js version management via nvm
 nvm:
-  default_version: 'lts/*'
+  default_version: 'lts'
 
 # Miniforge package management
 miniforge:

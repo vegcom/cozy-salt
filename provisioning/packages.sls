@@ -323,7 +323,7 @@ winget:
     - Starship.Starship
     - JanDeDobbeleer.OhMyPosh
     - Microsoft.WindowsTerminal
-    - Microsoft.PowerShell.Preview
+    - Microsoft.PowerShell
     - Microsoft.AIShell
   system_utilities:
     - 7zip.7zip

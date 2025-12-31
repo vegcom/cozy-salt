@@ -28,7 +28,7 @@ git_env_vars_windows:
         } else {
           Write-Host "Git user not configured yet, skipping"
         }
-    - shell: powershell
+    - shell: pwsh
     - onlyif: git config --global user.name
 
 {% endif %}

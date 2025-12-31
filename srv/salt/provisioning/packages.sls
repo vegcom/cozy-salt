@@ -262,6 +262,14 @@ kvm:
     - virt-install
 
 # =============================================================================
+# PIP BASE PACKAGES (via miniforge)
+# =============================================================================
+# Installed in miniforge base environment - same across all platforms
+# uvx = npx for Python (run CLI tools in isolated envs)
+pip_base:
+  - uv
+
+# =============================================================================
 # NPM GLOBAL PACKAGES (via nvm)
 # =============================================================================
 # Same across all platforms - applied after nvm installs Node.js
@@ -324,7 +332,7 @@ winget:
     - Starship.Starship
     - JanDeDobbeleer.OhMyPosh
     - Microsoft.WindowsTerminal
-    - Microsoft.PowerShell.Preview
+    - Microsoft.PowerShell
     - Microsoft.AIShell
   system_utilities:
     - 7zip.7zip

@@ -11,7 +11,10 @@ rust_directory:
 # Download rustup-init.exe
 rust_download:
   cmd.run:
-    - name: powershell -Command "Invoke-WebRequest -Uri 'https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe' -OutFile 'C:\opt\rust\rustup-init.exe'"
+    # XXX: Changed powershell to pwsh. powershell has no double ampersant or bar operator
+    # XXX: $env:TEMP can not have single quotes
+    # XXX: C:\Windows\Temp\ =/= $env:TEMP
+    - name: pwsh -Command "Invoke-WebRequest -Uri https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe -OutFile C:\opt\rust\rustup-init.exe
     - creates: C:\opt\rust\rustup-init.exe
     - require:
       - file: rust_directory
@@ -21,7 +24,8 @@ rust_download:
 # --no-modify-path suppresses shell profile modifications (we handle via environment variables)
 rust_install:
   cmd.run:
-    - name: powershell -Command "& { $env:RUSTUP_HOME='C:\opt\rust'; $env:CARGO_HOME='C:\opt\rust'; C:\opt\rust\rustup-init.exe -y --no-modify-path }"
+    # XXX: Changed powershell to pwsh. powershell has no double ampersant or bar operator
+    - name: pwsh -Command "& { $env:RUSTUP_HOME='C:\opt\rust'; $env:CARGO_HOME='C:\opt\rust'; C:\opt\rust\rustup-init.exe -y --no-modify-path }"
     - creates: C:\opt\rust\bin\rustc.exe
     - require:
       - cmd: rust_download
