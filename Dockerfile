@@ -2,6 +2,29 @@
 # Build targets: salt-master, salt-minion-deb, salt-minion-rpm
 
 # ============================================================================
+# STAGE 0: keygen
+# Generate pre-shared keys for test minions at build time
+# Keys are baked into images - no runtime bind mounts needed
+# Salt uses standard RSA keys in PEM format
+# ============================================================================
+FROM ubuntu:24.04 AS keygen
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends openssl && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/*
+
+# Generate RSA keys for test minions (Salt-compatible format)
+WORKDIR /keys
+RUN for minion in ubuntu-test rhel-test; do \
+      openssl genrsa -out ${minion}.pem 4096 2>/dev/null && \
+      openssl rsa -in ${minion}.pem -pubout -out ${minion}.pub 2>/dev/null; \
+    done && \
+    chmod 644 /keys/*.pub && \
+    chmod 600 /keys/*.pem
+
+# ============================================================================
 # STAGE 1: salt-base-deb
 # Common Debian/Ubuntu base with Salt repos configured
 # ============================================================================
@@ -52,6 +75,10 @@ RUN apt-get update && \
 RUN mkdir -p /srv/salt/files /srv/pillar /var/cache/salt /var/log/salt && \
     chown -R salt:salt /srv /var/cache/salt /var/log/salt /etc/salt
 
+# Copy pre-generated public keys for test minions (pre-acceptance)
+# Entrypoint copies these to /etc/salt/pki/master/minions/ on startup
+COPY --from=keygen /keys/*.pub /etc/salt/pki/master/minions-preload/
+
 # Enable master.d config drop-in directory
 RUN sed -i 's/^#default_include: master.d\/\*.conf$/default_include: master.d\/*.conf/' /etc/salt/master
 
@@ -79,6 +106,10 @@ RUN apt-get update && \
 RUN mkdir -p /etc/salt/minion.d && \
     chown -R salt:salt /etc/salt && \
     chmod 755 /etc/salt /etc/salt/minion.d
+
+# Copy pre-generated keys for test minions
+# Entrypoint selects correct key based on MINION_ID
+COPY --from=keygen /keys/ /etc/salt/pki/minion-preload/
 
 ENTRYPOINT ["/usr/local/bin/entrypoint-minion.sh"]
 
@@ -122,5 +153,9 @@ RUN dnf install -y salt-minion && \
 RUN mkdir -p /etc/salt/minion.d && \
     chown -R salt:salt /etc/salt && \
     chmod 755 /etc/salt /etc/salt/minion.d
+
+# Copy pre-generated keys for test minions
+# Entrypoint selects correct key based on MINION_ID
+COPY --from=keygen /keys/ /etc/salt/pki/minion-preload/
 
 ENTRYPOINT ["/usr/local/bin/entrypoint-minion.sh"]

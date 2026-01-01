@@ -2,8 +2,23 @@
 set -e
 
 # Configure minion master and ID from environment variables
+MINION_ID="${MINION_ID:-ubuntu-test}"
 echo "master: ${SALT_MASTER:-salt-master}" > /etc/salt/minion.d/master.conf
-echo "id: ${MINION_ID:-ubuntu-test}" > /etc/salt/minion.d/id.conf
+echo "id: ${MINION_ID}" > /etc/salt/minion.d/id.conf
+
+# Load pre-shared keys if available for this minion ID
+# Keys are baked into image at build time for test minions
+preload_dir="/etc/salt/pki/minion-preload"
+pki_dir="/etc/salt/pki/minion"
+
+if [ -f "$preload_dir/${MINION_ID}.pem" ] && [ ! -f "$pki_dir/minion.pem" ]; then
+    echo "=== Loading pre-shared keys for ${MINION_ID} ==="
+    mkdir -p "$pki_dir"
+    cp "$preload_dir/${MINION_ID}.pem" "$pki_dir/minion.pem"
+    cp "$preload_dir/${MINION_ID}.pub" "$pki_dir/minion.pub"
+    chmod 400 "$pki_dir/minion.pem"
+    chmod 644 "$pki_dir/minion.pub"
+fi
 
 # Remove cached master key to handle master restarts
 rm -f /etc/salt/pki/minion/minion_master.pub
