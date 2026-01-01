@@ -57,6 +57,21 @@
   - user: basic access (cozyusers only)
   - Define in pillar, resolve to groups in state
 
+### Game Streaming (Sunshine/Moonlight)
+
+- [ ] **Add Sunshine/Moonlight packages with device type distinction**
+  - Separate desktop (host) vs steamdeck/portable (client) package sets
+  - Existing roles: `minimal`, `base`, `dev`, `gaming`, `full`
+  - New device types: `desktop` (Sunshine host) vs `portable` (Moonlight client)
+  - **Sunshine** (host/streaming server):
+    - Windows: `winget://LizardByte.Sunshine`
+    - Source: https://github.com/LizardByte/Sunshine
+  - **Vibeshine** (Moonlight + optimizations for Steam Deck):
+    - Windows MSI: https://github.com/Nonary/vibeshine/releases/download/1.13.0/Vibeshine.msi
+    - Source: https://github.com/Nonary/vibeshine
+    - TODO: Figure out silent/background install for Vibeshine
+    - Version pin in pillar once install method confirmed
+
 ### Default cmd.run Environment Variables
 
 - [ ] **Create Jinja macro for Windows cmd.run with standard env**
