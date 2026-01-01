@@ -15,13 +15,44 @@ docker_install:
     - require_in:
       - pkg: core_utils_packages
 
-# Force apt update after Docker repo is added (Debian/Ubuntu only)
+# Fix Docker repo for Kali/WSL - get.docker.com creates broken repos
+# Kali has no official Docker repo, must use Ubuntu noble
 {% if os_family == 'Debian' %}
+{% set is_kali = grains.get('os', '') == 'Kali' %}
+{% set is_wsl = salt['file.file_exists']('/proc/version') and 'microsoft' in salt['cmd.run']('cat /proc/version 2>/dev/null || echo ""', python_shell=True).lower() %}
+
+{% if is_kali or is_wsl %}
+# Remove broken Docker repos created by get.docker.com
+# Kali/WSL get wrong repos that 404
+docker_repo_cleanup:
+  cmd.run:
+    - name: rm -f /etc/apt/sources.list.d/docker*.list /etc/apt/sources.list.d/archive_uri-*.list 2>/dev/null || true
+    - require:
+      - cmd: docker_install
+
+# Create correct Docker repo using Ubuntu noble (officially supported)
+docker_repo_fix:
+  file.managed:
+    - name: /etc/apt/sources.list.d/docker.list
+    - contents: |
+        # Docker repo for Kali/WSL - using Ubuntu noble (official supported)
+        deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu noble stable
+    - require:
+      - cmd: docker_repo_cleanup
+
+apt_update_with_override:
+  cmd.run:
+    - name: apt-get update --allow-releaseinfo-change
+    - require:
+      - file: docker_repo_fix
+{% else %}
+# Native Debian - just update after docker install
 apt_update_with_override:
   cmd.run:
     - name: apt-get update --allow-releaseinfo-change
     - require:
       - cmd: docker_install
+{% endif %}
 {% endif %}
 
 # ============================================================================
