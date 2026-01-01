@@ -17,11 +17,7 @@
 
 ### Kali Host (guava) Issues
 
-- [ ] **Docker repo 404 on Kali** - `download.docker.com/linux/kali` doesn't exist
-  - Salt is creating both Kali AND Debian repos, Kali one 404s
-  - Also has errant `testing` component in Debian bookworm repo
-  - Need to clean up `/etc/apt/sources.list.d/docker*.list` on host
-  - Fix: Ensure Kali detection uses Ubuntu `noble` repo only
+- [x] **Docker repo 404 on Kali** - Fixed: Kali/WSL detection uses Ubuntu `noble` repo
 
 - [x] **cozyusers group not created before user states**
   - Fixed: Added explicit `order:` parameters (groups: 1-2, users: 10)
