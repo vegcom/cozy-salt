@@ -1,6 +1,6 @@
 # cozy-salt Makefile - shortcuts for common operations
 
-.PHONY: help test test-ubuntu test-apt test-linux test-rhel test-windows test-all test-quick lint lint-shell lint-ps clean clean-keys clean-all up down restart logs status validate validate-states validate-states-windows perms shell state-check debug-minion logs-minion salt-help salt-key-list salt-key-status salt-key-cleanup-test salt-key-accept salt-key-delete salt-key-reject salt-key-accept-test salt-manage-status salt-jobs-active salt-jobs-list salt-jobs-clear salt-test-ping salt-state-highstate salt-state-highstate-test pytest pytest-ubuntu pytest-rhel pytest-windows pytest-all pytest-lint salt-doc salt-cmd salt-grains salt-state-sls salt-cache-clear salt-clear_cache mamba-create mamba-update mamba-remove mamba-activate
+.PHONY: help test test-ubuntu test-apt test-linux test-rhel test-windows test-all test-quick lint lint-shell lint-ps clean clean-keys clean-all up up-master down down-master restart restart-master up-ubuntu-test down-ubuntu-test up-rhel-test down-rhel-test logs status validate validate-states validate-states-windows perms shell state-check debug-minion logs-minion salt-help salt-key-list salt-key-status salt-key-cleanup-test salt-key-accept salt-key-delete salt-key-reject salt-key-accept-test salt-manage-status salt-jobs-active salt-jobs-list salt-jobs-clear salt-test-ping salt-state-highstate salt-state-highstate-test pytest pytest-ubuntu pytest-rhel pytest-windows pytest-all pytest-lint salt-doc salt-cmd salt-grains salt-state-sls salt-cache-clear salt-clear_cache mamba-create mamba-update mamba-remove mamba-activate
 
 # =========================================================================== #
 # Default target
@@ -34,14 +34,18 @@ help:
 	@echo "  pytest-lint   - Linting tests only"
 	@echo ""
 	@echo "Docker/Container:"
-	@echo "  up            - Start Salt Master + minions"
-	@echo "  down          - Stop all containers"
-	@echo "  restart       - Restart containers (quick bounce)"
-	@echo "  status        - Show container + minion status"
-	@echo "  logs          - View salt-master logs (streaming)"
-	@echo "  shell         - Enter salt-master container (interactive bash)"
-	@echo "  debug-minion  - Enter a minion container (usage: make debug-minion MINION=ubuntu)"
-	@echo "  logs-minion   - Tail minion logs (usage: make logs-minion MINION=ubuntu)"
+	@echo "  up-master        - Start Salt Master"
+	@echo "  down-master      - Stop all containers"
+	@echo "  restart-master   - Restart master"
+	@echo "  up-ubuntu-test   - Start Ubuntu test minion"
+	@echo "  down-ubuntu-test - Stop Ubuntu test minion"
+	@echo "  up-rhel-test     - Start RHEL test minion"
+	@echo "  down-rhel-test   - Stop RHEL test minion"
+	@echo "  status           - Show container + minion status"
+	@echo "  logs             - View salt-master logs (streaming)"
+	@echo "  shell            - Enter salt-master container"
+	@echo "  debug-minion     - Enter minion container (MINION=ubuntu)"
+	@echo "  logs-minion      - Tail minion logs (MINION=ubuntu)"
 	@echo ""
 	@echo "Validation/Maintenance:"
 	@echo "  validate                - Run pre-commit validation (permissions + optional linting)"
@@ -206,14 +210,33 @@ lint-ps:
 # Docker operations
 # =========================================================================== #
 
-up:
-	docker compose up -d
+# Master lifecycle
+up-master:
+	docker compose up -d salt-master
 
-down:
+down-master:
 	docker compose down
 
-restart:
-	docker compose restart
+restart-master:
+	docker compose restart salt-master
+
+# Minion lifecycle (test containers)
+up-ubuntu-test:
+	docker compose --profile test-ubuntu up -d salt-minion-ubuntu
+
+down-ubuntu-test:
+	docker compose --profile test-ubuntu down
+
+up-rhel-test:
+	docker compose --profile test-rhel up -d salt-minion-rhel
+
+down-rhel-test:
+	docker compose --profile test-rhel down
+
+# Aliases (up/down/restart = master only, minions require profiles)
+up: up-master
+down: down-master
+restart: restart-master
 
 status:
 	@echo "=== Container Status ===" && docker compose ps && echo "" && echo "=== Minion Connectivity ===" && docker compose exec -t salt-master salt-run manage.status 2>/dev/null || echo "(Master not running)"
@@ -229,14 +252,14 @@ clean:
 	docker compose --profile test-windows down 2>/dev/null || true
 	@echo "Clean complete"
 
-clean-keys:
-	@echo "=== Deleting test minion keys ==="
-	docker compose exec -t salt-master salt-key -d ubuntu-test -y 2>/dev/null || true
-	docker compose exec -t salt-master salt-key -d rhel-test -y 2>/dev/null || true
-	@echo "Test keys cleaned"
-
-clean-all: clean clean-keys
+clean-all: clean
 	@echo "✓ Full cleanup complete"
+
+# DEPRECATED: Keys are now baked at build time - no manual cleanup needed
+# Rebuild images to get fresh keys: docker compose build
+clean-keys:
+	@echo "DEPRECATED: Keys are baked at build time. Rebuild to get fresh keys:"
+	@echo "  docker compose build --no-cache"
 
 # =========================================================================== #
 # Utilities
@@ -390,11 +413,9 @@ salt-key-list:
 salt-key-status:
 	@echo "=== Minion Key Status ===" && docker compose exec -t salt-master salt-key -L
 
+# DEPRECATED: Keys are baked at build time - this target no longer needed
 salt-key-cleanup-test:
-	@echo "=== Deleting test minion keys ==="
-	docker compose exec -t salt-master salt-key -d ubuntu-test -y || true
-	docker compose exec -t salt-master salt-key -d rhel-test -y || true
-	@echo "Test keys cleaned up"
+	@echo "DEPRECATED: Keys are baked at build time. Rebuild to get fresh keys."
 
 salt-key-accept: require-NAME
 	@echo "=== Accept a pending minion key ==="

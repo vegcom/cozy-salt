@@ -69,8 +69,18 @@
   - **Vibeshine** (Moonlight + optimizations for Steam Deck):
     - Windows MSI: https://github.com/Nonary/vibeshine/releases/download/1.13.0/Vibeshine.msi
     - Source: https://github.com/Nonary/vibeshine
-    - TODO: Figure out silent/background install for Vibeshine
-    - Version pin in pillar once install method confirmed
+    - Silent install (all users): `msiexec /i Vibeshine.msi /quiet /norestart ALLUSERS=1`
+    - Force reinstall/update: `msiexec /i Vibeshine.msi /quiet /norestart ALLUSERS=1 REINSTALLMODE=vomus REINSTALL=ALL`
+    - TODO: Check GitHub releases API for new tags, version pin in pillar
+    - Releases API: `https://api.github.com/repos/Nonary/vibeshine/releases/latest`
+
+### Windows Environment Refresh
+
+- [ ] **Add refreshenv as final Windows highstate step**
+  - Chocolatey's `refreshenv` reloads PATH and env vars in current session
+  - Requires: `Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"; refreshenv`
+  - Should be last state to run after all installs complete
+  - Ensures new tools are immediately available without logout/reboot
 
 ### Default cmd.run Environment Variables
 
