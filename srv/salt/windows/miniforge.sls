@@ -1,20 +1,5 @@
 # Windows Miniforge system-wide installation
 # Installs Miniforge3 to C:\opt\miniforge3 for all users
-# Environment variables configured as system-wide for consistency
-# Save current reg entries
-# ref: https://docs.saltproject.io/en/latest/ref/modules/all/salt.modules.reg.html#salt.modules.reg.set_value
-{# set current_path = salt['reg.read_value']('HKLM',"SYSTEM\CurrentControlSet\Control\Session Manager\Environment",'Path').get('vdata','').replace('%', '\\%') #}
-
-
-# Install miniforge system-wide to C:\opt\miniforge3
-# XXX: Changed powershell to pwsh. powershell has no double ampersant or bar operator
-# XXX: $env:TEMP can not have single quotes
-# XXX: removed Remove-Item -Path {{ miniforge_tmp }} -Force
-# XXX: /AddToPath=1 is not allowed with all user installs
-# XXX: needs manual path add https://learn.microsoft.com/en-us/previous-versions/office/developer/sharepoint-2010/ee537574(v=office.14)#to-add-a-path-to-the-path-environment-variable
-# XXX: https://github.com/conda-forge/miniforge/blob/60ce0741ac3437a3d9fe35bb0ab5acfa6d8cc377/README.md#install
-# XXX: Changed powershell to pwsh. powershell has no double ampersant or bar operator
-# XXX: $env:TEMP can not have single quotes
 
 {% set miniforge_versions = salt['pillar.get']('versions:miniforge', {}) %}
 {% set miniforge_version  = miniforge_versions.get('version', '24.11.3-0') %}
@@ -23,13 +8,18 @@
 {% set miniforge_bin      = 'C:\\opt\\miniforge3\\Scripts' %}
 {% set current_path       = salt['reg.read_value']('HKLM',"SYSTEM\CurrentControlSet\Control\Session Manager\Environment",'Path').get('vdata','') %}
 
+# FIX: Use proper list-based path merging to avoid duplicates
+{% set paths = current_path.split(';') %}
 
-# Merge paths if absent
-{% if miniforge_bin not in current_path.split(';') %}
-  {% set merged_paths = current_path + ';' + miniforge_bin %}
-{% else %}
-  {% set merged_paths = current_path %}
+{% if miniforge_bin not in paths %}
+  {% do paths.append(miniforge_bin) %}
 {% endif %}
+
+{% if miniforge_path not in paths %}
+  {% do paths.append(miniforge_path) %}
+{% endif %}
+
+{% set merged_paths = ';'.join(paths) %}
 
 # Create C:\opt\miniforge3 directory for consistency
 miniforge_directory:
@@ -49,9 +39,10 @@ miniforge_download:
 
 miniforge_install:
   cmd.run:
-    - name: > 
-        pwsh -NoLogo -NoProfile -Command 
-        "'{{ miniforge_tmp }}' /Installation Type=AllUsers /RegisterPython=1 /S /D={{ miniforge_path }}"
+    - name: >
+        pwsh -NoLogo -NoProfile -Command
+        "& \"$env:TEMP\miniforge-install.exe\" /InstallationType=AllUsers /RegisterPython=1 /S /D={{ miniforge_path }}"
+    - creates: {{ miniforge_path }}\Scripts\conda.exe
     - require:
       - cmd: miniforge_download
 
@@ -78,7 +69,7 @@ miniforge_conda_home:
 # XXX https://docs.saltproject.io/en/latest/ref/modules/all/salt.modules.reg.html
 miniforge_path_update:
   reg.present:
-    - name: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session\ Manager\Environment
+    - name: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
     - vname: Path
     - vtype: REG_EXPAND_SZ
     - vdata: {{ merged_paths }}
