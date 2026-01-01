@@ -32,11 +32,7 @@ services:
       - ./srv/pillar:/srv/pillar:ro
       # Provisioning files - mount to separate location, configure via file_roots
       - ./provisioning:/srv/provisioning:ro
-      # Pre-shared minion public keys for auto-acceptance during testing
-      # Mount only .pub files individually (private .pem keys stay on minions)
-      - ./srv/salt/keys/ubuntu-test.pub:/etc/salt/pki/master/minions_pre/ubuntu-test
-      - ./srv/salt/keys/rhel-test.pub:/etc/salt/pki/master/minions_pre/rhel-test
-      # Persistent data
+      # Persistent data (keys are baked into image at build time)
       - salt-cache:/var/cache/salt
       - salt-logs:/var/log/salt
       - salt-pki:/etc/salt/pki/master
@@ -62,10 +58,7 @@ services:
     environment:
       - SALT_MASTER=salt-master
       - MINION_ID=ubuntu-test
-    volumes:
-      # Pre-shared minion keys (bind mount from srv/salt/keys)
-      - ./srv/salt/keys/ubuntu-test.pem:/etc/salt/pki/minion/minion.pem:ro
-      - ./srv/salt/keys/ubuntu-test.pub:/etc/salt/pki/minion/minion.pub:ro
+    # Keys are baked into image at build time - no bind mounts needed
     healthcheck: *minion-healthcheck
     profiles:
       - test-ubuntu
@@ -81,10 +74,7 @@ services:
     environment:
       - SALT_MASTER=salt-master
       - MINION_ID=rhel-test
-    volumes:
-      # Pre-shared minion keys (bind mount from srv/salt/keys)
-      - ./srv/salt/keys/rhel-test.pem:/etc/salt/pki/minion/minion.pem:ro
-      - ./srv/salt/keys/rhel-test.pub:/etc/salt/pki/minion/minion.pub:ro
+    # Keys are baked into image at build time - no bind mounts needed
     healthcheck: *minion-healthcheck
     profiles:
       - test-rhel
@@ -113,7 +103,7 @@ services:
     volumes:
       - ./windows-test:/storage                          # Persistent Windows storage
       - ./scripts:/mnt/scripts:ro                        # Mount scripts for Salt install
-      - ./srv/salt/keys:/mnt/keys:ro                     # Pre-shared minion keys
+      # Windows VM requires manual enrollment - keys not baked in
     networks:
       - salt-net
     depends_on:
@@ -148,8 +138,6 @@ volumes:
   salt-cache:
   salt-logs:
   salt-pki:
-  salt-minion-ubuntu-pki:
-  salt-minion-rhel-pki:
 
 networks:
   salt-net:

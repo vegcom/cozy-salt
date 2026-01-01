@@ -1,17 +1,25 @@
 #!/bin/bash
 set -e
 
-# Pre-accept minion keys from minions_pre directory
+# Pre-accept minion keys from build-time generated keys
+# Keys are baked into image at /etc/salt/pki/master/minions-preload/
 # This ensures test minions are ready immediately without manual acceptance
-if [ -d /etc/salt/pki/master/minions_pre ]; then
+preload_dir="/etc/salt/pki/master/minions-preload"
+minions_dir="/etc/salt/pki/master/minions"
+
+if [ -d "$preload_dir" ]; then
     echo "=== Pre-accepting minion keys ==="
-    for key_file in /etc/salt/pki/master/minions_pre/*.pub; do
+    mkdir -p "$minions_dir"
+    for key_file in "$preload_dir"/*.pub; do
         if [ -f "$key_file" ]; then
             minion_id=$(basename "$key_file" .pub)
-            minions_dir="/etc/salt/pki/master/minions"
-            mkdir -p "$minions_dir"
-            cp "$key_file" "$minions_dir/$minion_id"
-            echo "  ✓ Pre-accepted $minion_id"
+            # Only copy if not already accepted (preserves any runtime key changes)
+            if [ ! -f "$minions_dir/$minion_id" ]; then
+                cp "$key_file" "$minions_dir/$minion_id"
+                echo "  + Pre-accepted $minion_id"
+            else
+                echo "  - $minion_id already accepted"
+            fi
         fi
     done
 fi
