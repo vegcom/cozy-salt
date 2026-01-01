@@ -7,6 +7,11 @@
 ### Action Items
 
 - [ ] **Create git token for enrollment** - needed for provisioning new systems
+- [ ] **DNS config: append nameservers when Tailscale present**
+  - Tailscale overwrites /etc/resolv.conf with 100.100.100.100
+  - Append local (10.0.0.1) + Cloudflare (1.1.1.1, 1.0.0.1) after Tailscale DNS
+  - Keep Tailscale as primary, add fallbacks
+  - Detect via tailscale0 interface presence
 
 ### Kali Host (guava) Issues
 
