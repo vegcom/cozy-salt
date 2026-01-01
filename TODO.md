@@ -4,6 +4,10 @@
 
 ## Active Work
 
+### Action Items
+
+- [ ] **Create git token for enrollment** - needed for provisioning new systems
+
 ### Kali Host (guava) Issues
 
 - [ ] **Docker repo 404 on Kali** - `download.docker.com/linux/kali` doesn't exist
