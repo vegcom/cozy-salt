@@ -6,6 +6,10 @@
 {% set dns = network_config.get('dns', {}) %}
 {% set is_container = salt['file.file_exists']('/.dockerenv') or
                       salt['file.file_exists']('/run/.containerenv') %}
+{% set is_wsl = salt['file.file_exists']('/proc/version') and
+                'microsoft' in salt['cmd.run']('cat /proc/version 2>/dev/null || echo ""', python_shell=True).lower() %}
+{# SSH port: 2222 for WSL (avoids Windows SSH on 22), 22 for native Linux #}
+{% set ssh_port = 2222 if is_wsl else salt['pillar.get']('ssh:port', 22) %}
 
 # Deploy skeleton files to /etc/skel for new users
 skel_files:
@@ -106,8 +110,8 @@ include:
 sshd_config_port:
   file.replace:
     - name: /etc/ssh/sshd_config
-    - pattern: '^#?Port 22$'
-    - repl: 'Port 2222'
+    - pattern: '^#?Port \d+$'
+    - repl: 'Port {{ ssh_port }}'
     - backup: .bak
 
 sshd_service:
