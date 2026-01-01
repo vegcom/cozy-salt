@@ -23,8 +23,9 @@ cozy:
   base_path: '/opt/cozy'
 
 # SSH configuration
+# Port auto-detected: 22 for native Linux, 2222 for WSL (avoids Windows SSH conflict)
 ssh:
-  port: 2222  # Non-standard to avoid conflicts with Windows SSH on 22
+  port: 22
 
 # Shell customization
 shell:
