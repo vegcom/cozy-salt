@@ -1,6 +1,6 @@
 # cozy-salt Makefile - shortcuts for common operations
 
-.PHONY: help test test-ubuntu test-apt test-linux test-rhel test-windows test-all test-quick lint lint-shell lint-ps clean clean-keys clean-all up down restart logs status validate perms shell state-check debug-minion logs-minion salt-help salt-key-list salt-key-status salt-key-cleanup-test salt-key-accept salt-key-delete salt-key-reject salt-key-accept-test salt-manage-status salt-jobs-active salt-jobs-list salt-jobs-clear salt-test-ping salt-state-highstate salt-state-highstate-test pytest pytest-ubuntu pytest-rhel pytest-windows pytest-all pytest-lint salt-doc salt-cmd salt-grains salt-state-sls salt-cache-clear salt-clear_cache mamba-create mamba-update mamba-remove mamba-activate
+.PHONY: help test test-ubuntu test-apt test-linux test-rhel test-windows test-all test-quick lint lint-shell lint-ps clean clean-keys clean-all up down restart logs status validate validate-states validate-states-windows perms shell state-check debug-minion logs-minion salt-help salt-key-list salt-key-status salt-key-cleanup-test salt-key-accept salt-key-delete salt-key-reject salt-key-accept-test salt-manage-status salt-jobs-active salt-jobs-list salt-jobs-clear salt-test-ping salt-state-highstate salt-state-highstate-test pytest pytest-ubuntu pytest-rhel pytest-windows pytest-all pytest-lint salt-doc salt-cmd salt-grains salt-state-sls salt-cache-clear salt-clear_cache mamba-create mamba-update mamba-remove mamba-activate
 
 # =========================================================================== #
 # Default target
@@ -44,9 +44,11 @@ help:
 	@echo "  logs-minion   - Tail minion logs (usage: make logs-minion MINION=ubuntu)"
 	@echo ""
 	@echo "Validation/Maintenance:"
-	@echo "  validate      - Run pre-commit validation (permissions + optional linting)"
-	@echo "  perms         - Fix file permissions"
-	@echo "  state-check   - Validate state syntax before applying"
+	@echo "  validate                - Run pre-commit validation (permissions + optional linting)"
+	@echo "  validate-states         - Validate Linux .sls files (YAML/Jinja syntax)"
+	@echo "  validate-states-windows - Validate Windows .sls files (run on Windows)"
+	@echo "  perms                   - Fix file permissions"
+	@echo "  state-check             - Validate state syntax before applying"
 	@echo "  clean         - Clean up test artifacts (*.json)"
 	@echo "  clean-keys    - Delete test minion keys only"
 	@echo "  clean-all     - Full cleanup (containers + keys + artifacts)"
@@ -259,6 +261,55 @@ logs-minion: require-MINION
 
 state-check:
 	docker compose exec -t salt-master salt-call state.show_top 2>/dev/null || echo "Error: Check state syntax in srv/salt/"
+
+# Validate .sls files for YAML/Jinja syntax errors
+# Uses containerized salt-call for consistent validation
+# Note: Windows states skipped on Linux (require Windows Salt modules)
+validate-states:
+	@echo "=== Validating Salt state files (Linux) ==="
+	@echo "(Skipping srv/salt/windows/* - requires Windows Salt)"
+	@failed=0; \
+	for sls in $$(find srv/salt -name "*.sls" -type f ! -path "*/windows/*"); do \
+		salt_path="salt://$$(echo $$sls | sed 's|srv/salt/||')"; \
+		if ! docker compose exec -T salt-master salt-call --local slsutil.renderer "$$salt_path" >/dev/null 2>&1; then \
+			echo "FAIL: $$sls"; \
+			docker compose exec -T salt-master salt-call --local slsutil.renderer "$$salt_path" 2>&1 | tail -5; \
+			failed=$$((failed + 1)); \
+		else \
+			echo "  OK: $$sls"; \
+		fi; \
+	done; \
+	if [ $$failed -gt 0 ]; then \
+		echo ""; \
+		echo "=== $$failed file(s) failed validation ==="; \
+		exit 1; \
+	else \
+		echo ""; \
+		echo "=== All Linux state files valid ==="; \
+	fi
+
+# Validate Windows states (run on Windows host with Salt installed)
+validate-states-windows:
+	@echo "=== Validating Windows state files ==="
+	@failed=0; \
+	for sls in $$(find srv/salt/windows -name "*.sls" -type f); do \
+		salt_path="salt://$$(echo $$sls | sed 's|srv/salt/||')"; \
+		if ! salt-call --local slsutil.renderer "$$salt_path" >/dev/null 2>&1; then \
+			echo "FAIL: $$sls"; \
+			salt-call --local slsutil.renderer "$$salt_path" 2>&1 | tail -5; \
+			failed=$$((failed + 1)); \
+		else \
+			echo "  OK: $$sls"; \
+		fi; \
+	done; \
+	if [ $$failed -gt 0 ]; then \
+		echo ""; \
+		echo "=== $$failed file(s) failed validation ==="; \
+		exit 1; \
+	else \
+		echo ""; \
+		echo "=== All Windows state files valid ==="; \
+	fi
 
 # =========================================================================== #
 # Salt-Master helpers
