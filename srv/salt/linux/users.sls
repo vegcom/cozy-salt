@@ -7,14 +7,17 @@
 {% set users = salt['pillar.get']('users', {}) %}
 
 # Create system groups (must exist before users are added to them)
+# Using order: 1 to ensure groups are created very early in state run
 docker_group:
   group.present:
     - name: docker
+    - order: 1
 
 # Create cozyusers group (for group-based permissions on shared tools)
 cozyusers_group:
   group.present:
     - name: cozyusers
+    - order: 2
     - require:
       - group: docker_group
 
@@ -29,8 +32,10 @@ cozyusers_group:
     - shell: {{ userdata.get('shell', '/bin/bash') }}
     - groups: {{ userdata.get('linux_groups', ['cozyusers']) | tojson }}
     - remove_groups: False
+    - order: 10
     - require:
       - group: cozyusers_group
+      - group: docker_group
 
 # Create {{ username }} home directory
 {{ username }}_home_directory:
