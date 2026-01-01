@@ -12,6 +12,8 @@
   - Append local (10.0.0.1) + Cloudflare (1.1.1.1, 1.0.0.1) after Tailscale DNS
   - Keep Tailscale as primary, add fallbacks
   - Detect via tailscale0 interface presence
+  - Docs: https://tailscale.com/kb/1235/resolv-conf
+  - Docs: https://tailscale.com/kb/1081/magicdns
 
 ### Kali Host (guava) Issues
 
