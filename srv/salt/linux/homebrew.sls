@@ -14,8 +14,10 @@ linuxbrew_directory:
     - group: admin
     - mode: 755
     - makedirs: True
+    - order: 20
     - require:
       - user: admin_user
+      - group: cozyusers_group
 
 # Download and execute Homebrew installer (default supported path)
 # Runs as admin user (Homebrew rejects root execution)
