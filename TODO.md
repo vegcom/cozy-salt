@@ -37,6 +37,15 @@
   - `validate-states-windows`: Windows states (run on Windows host)
   - Catches YAML/Jinja syntax errors before deploy
 
+### User Roles
+
+- [ ] **Add role-based group assignment for users**
+  - Roles: `admin`, `devops`, `user`
+  - admin: full access (docker, kvm, libvirt, sudo)
+  - devops: TBD (subset of admin)
+  - user: basic access (cozyusers only)
+  - Define in pillar, resolve to groups in state
+
 ### Default cmd.run Environment Variables
 
 - [ ] **Create Jinja macro for Windows cmd.run with standard env**
