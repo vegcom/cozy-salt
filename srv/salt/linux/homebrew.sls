@@ -53,9 +53,15 @@ homebrew_profile:
       - cmd: homebrew_acl_permissions
 
 # Update Homebrew after installation (must run as admin, not root)
+# Fix missing git remote if needed, then update
 homebrew_update:
   cmd.run:
-    - name: /home/linuxbrew/.linuxbrew/bin/brew update
+    - name: |
+        cd /home/linuxbrew/.linuxbrew/Homebrew
+        if ! git remote get-url origin >/dev/null 2>&1; then
+          git remote add origin https://github.com/Homebrew/brew.git
+        fi
+        /home/linuxbrew/.linuxbrew/bin/brew update || true
     - runas: admin
     - require:
       - cmd: homebrew_install
