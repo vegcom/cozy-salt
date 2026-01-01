@@ -53,6 +53,16 @@
   - user: basic access (cozyusers only)
   - Define in pillar, resolve to groups in state
 
+### Immutable Linux (Bazzite/SteamOS)
+
+- [ ] **Support Bazzite and SteamOS distros**
+  - **Bazzite**: Read-only `/` filesystem - no changes to system paths
+    - No current strategy for miniforge, nvm, rust (all install to /opt)
+    - Investigate: user-space installs, Flatpak, distrobox/toolbox
+  - **SteamOS**: Can set `/` to read-write, needs investigation
+    - May work with existing states after `steamos-readonly disable`
+  - Detection: Check for `/etc/os-release` with `ID=bazzite` or `ID=steamos`
+
 ### Game Streaming (Sunshine/Moonlight)
 
 - [ ] **Add Sunshine/Moonlight packages with device type distinction**
