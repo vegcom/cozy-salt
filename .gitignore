@@ -16,11 +16,13 @@ credentials/
 
 # Python
 __pycache__/
+**/__pycache__/
 *.py[cod]
 *$py.class
 .venv/
 venv/
 *.egg-info/
+.pytest_cache
 
 # IDE & editors
 .vscode/
