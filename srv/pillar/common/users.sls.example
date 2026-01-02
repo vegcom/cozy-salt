@@ -35,3 +35,10 @@ users:
     windows_groups:
       - Users
     ssh_keys: []              # Add public keys here
+
+# Managed users list - users that get dotfiles/configs deployed
+# TODO: Derive from users dict keys instead of maintaining separate list
+managed_users:
+  - admin
+  - vegcom
+  - eve
