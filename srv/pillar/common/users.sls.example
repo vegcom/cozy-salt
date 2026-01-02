@@ -12,6 +12,7 @@ users:
     windows_groups:
       - Administrators
       - Users
+    ssh_keys: []              # Add public keys here: ["ssh-ed25519 AAAA... comment"]
 
   vegcom:
     fullname: Vegcom User
@@ -22,6 +23,7 @@ users:
       - docker
     windows_groups:
       - Users
+    ssh_keys: []              # Add public keys here
 
   eve:
     fullname: Eve User
@@ -32,3 +34,4 @@ users:
       - docker
     windows_groups:
       - Users
+    ssh_keys: []              # Add public keys here

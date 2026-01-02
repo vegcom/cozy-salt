@@ -48,6 +48,34 @@ cozyusers_group:
     - require:
       - user: {{ username }}_user
 
+{% set ssh_keys = userdata.get('ssh_keys', []) %}
+{% if ssh_keys %}
+# Create {{ username }} .ssh directory
+{{ username }}_ssh_directory:
+  file.directory:
+    - name: {{ userdata.get('home_prefix', '/home') }}/{{ username }}/.ssh
+    - user: {{ username }}
+    - group: {{ username }}
+    - mode: 700
+    - makedirs: True
+    - require:
+      - file: {{ username }}_home_directory
+
+# Deploy {{ username }} authorized_keys
+{{ username }}_authorized_keys:
+  file.managed:
+    - name: {{ userdata.get('home_prefix', '/home') }}/{{ username }}/.ssh/authorized_keys
+    - user: {{ username }}
+    - group: {{ username }}
+    - mode: 600
+    - contents: |
+{% for key in ssh_keys %}
+        {{ key }}
+{% endfor %}
+    - require:
+      - file: {{ username }}_ssh_directory
+{% endif %}
+
 {% endfor %}
 
 # Create sudoers file for cozyusers group (NOPASSWD for all commands)
