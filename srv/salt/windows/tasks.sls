@@ -21,11 +21,11 @@ kubernetes:
     - source: salt://windows/{{ xml }}
     - makedirs: True
 
-# Import task using schtasks
+# Import task using schtasks (only when XML changes)
 {{ task_name }}_task:
   cmd.run:
     - name: schtasks /create /tn "\Cozy\{{ task_display_name }}" /xml "C:\Windows\Temp\{{ task_name }}.xml" /f
-    - require:
+    - onchanges:
       - file: {{ task_name }}_xml
 {% endfor %}
 {% endfor %}
