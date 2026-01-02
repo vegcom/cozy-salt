@@ -33,10 +33,6 @@
 
 {% set merged_paths = ';'.join(paths) %}
 
-nvm_directory_remove:
-  file.absent:
-    - name: {{ nvm_path }}
-
 nvm_download:
   cmd.run:
     - name: >
@@ -52,7 +48,6 @@ nvm_install:
     - creates: {{ nvm_bin }}
     - require:
       - cmd: nvm_download
-      - file: nvm_directory_remove
 
 nvm_npm_settings:
   file.managed:
