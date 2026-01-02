@@ -11,9 +11,13 @@
   - Removed non-existent `azure/setup-powershell` action
 
 - [ ] **Windows SSH authorized_keys path**
-  - Current template has commented `__PROGRAMDATA__/ssh/administrators_authorized_keys`
-  - Should use `%USERPROFILE%\.ssh\authorized_keys` for per-user keys
-  - Update `srv/salt/_templates/sshd_hardening.conf.jinja`
+  - Windows OpenSSH quirk: Administrators group uses `__PROGRAMDATA__/ssh/administrators_authorized_keys`
+  - Non-admin users use `%USERPROFILE%\.ssh\authorized_keys`
+  - Options:
+    1. Populate `administrators_authorized_keys` for admin users (icky but correct)
+    2. Disable admin override in sshd_config (security tradeoff)
+    3. Users drop admin rights (not practical)
+  - Need to handle both paths based on user group membership
 
 - [ ] **Create git token for enrollment** - needed for provisioning new systems
 - [ ] **DNS config: append nameservers when Tailscale present**
