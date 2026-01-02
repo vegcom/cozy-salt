@@ -9,6 +9,8 @@ users:
     linux_groups:
       - cozyusers
       - docker
+      - libvirt
+      - kvm
     windows_groups:
       - Administrators
       - Users
@@ -21,6 +23,8 @@ users:
     linux_groups:
       - cozyusers
       - docker
+      - libvirt
+      - kvm
     windows_groups:
       - Users
     ssh_keys: []              # Add public keys here
@@ -32,6 +36,8 @@ users:
     linux_groups:
       - cozyusers
       - docker
+      - libvirt
+      - kvm
     windows_groups:
       - Users
     ssh_keys: []              # Add public keys here
