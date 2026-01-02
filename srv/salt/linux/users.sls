@@ -1,28 +1,31 @@
 # Linux user and group management
 # Iterates over users defined in pillar (srv/pillar/common/users.sls)
-# Creates system groups (cozyusers, docker) for user membership
-# Creates managed users with appropriate groups (cozyusers, sudo, docker)
+# Dynamically creates groups from user linux_groups definitions
 # Managed users can run docker and sudo commands without password
 
 {% set users = salt['pillar.get']('users', {}) %}
 
-# Create system groups (must exist before users are added to them)
-# Using order: 1 to ensure groups are created very early in state run
-docker_group:
-  group.present:
-    - name: docker
-    - order: 1
+# Collect all unique groups from user definitions
+{% set all_groups = [] %}
+{% for username, userdata in users.items() %}
+  {% for group in userdata.get('linux_groups', ['cozyusers']) %}
+    {% if group not in all_groups %}
+      {% do all_groups.append(group) %}
+    {% endif %}
+  {% endfor %}
+{% endfor %}
 
-# Create cozyusers group (for group-based permissions on shared tools)
-cozyusers_group:
+# Create groups dynamically (must exist before users are added)
+{% for group in all_groups %}
+{{ group }}_group:
   group.present:
-    - name: cozyusers
-    - order: 2
-    - require:
-      - group: docker_group
+    - name: {{ group }}
+    - order: 1
+{% endfor %}
 
 # Iterate over users from pillar and create each one
 {% for username, userdata in users.items() %}
+{% set user_groups = userdata.get('linux_groups', ['cozyusers']) %}
 # Create {{ username }} user
 {{ username }}_user:
   user.present:
@@ -30,12 +33,13 @@ cozyusers_group:
     - fullname: {{ userdata.get('fullname', username) }}
     - home: {{ userdata.get('home_prefix', '/home') }}/{{ username }}
     - shell: {{ userdata.get('shell', '/bin/bash') }}
-    - groups: {{ userdata.get('linux_groups', ['cozyusers']) | tojson }}
+    - groups: {{ user_groups | tojson }}
     - remove_groups: False
     - order: 10
     - require:
-      - group: cozyusers_group
-      - group: docker_group
+{% for group in user_groups %}
+      - group: {{ group }}_group
+{% endfor %}
 
 # Create {{ username }} home directory
 {{ username }}_home_directory:
