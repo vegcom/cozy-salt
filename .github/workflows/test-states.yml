@@ -16,9 +16,7 @@ jobs:
       - name: Lint shell scripts
         run: ./tests/test-shellscripts.sh
 
-      - name: Setup PowerShell
-        uses: azure/setup-powershell@v7
-
+      # pwsh is pre-installed on ubuntu-latest runners
       - name: Lint PowerShell scripts
         run: pwsh -File ./tests/test-psscripts.ps1
 
