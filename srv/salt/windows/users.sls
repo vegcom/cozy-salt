@@ -65,6 +65,15 @@
     - require:
       - file: {{ username }}_home_directory
 
+# Ensure authorized_keys exists with correct ownership
+{{ username }}_authorized_keys_file:
+  file.managed:
+    - name: C:\Users\{{ username }}\.ssh\authorized_keys
+    - user: {{ username }}
+    - replace: False
+    - require:
+      - file: {{ username }}_ssh_directory
+
 {{ username }}_ssh_keys:
   file.append:
     - name: C:\Users\{{ username }}\.ssh\authorized_keys
@@ -73,7 +82,7 @@
       - "{{ key }}"
 {% endfor %}
     - require:
-      - file: {{ username }}_ssh_directory
+      - file: {{ username }}_authorized_keys_file
 {% endif %}
 {% endif %}
 
