@@ -6,9 +6,14 @@
 
 ### Action Items
 
-- [ ] **P1: Fix GitHub Actions workflow errors**
-  - `azure/setup-powershell` action not found - may need different action or removal
-  - `./tests/test-states-json.sh` permission denied - needs chmod +x in workflow or repo
+- [x] **P1: Fix GitHub Actions workflow errors** - Fixed locally, pending push
+  - Fixed script permissions (644 → 755)
+  - Removed non-existent `azure/setup-powershell` action
+
+- [ ] **Windows SSH authorized_keys path**
+  - Current template has commented `__PROGRAMDATA__/ssh/administrators_authorized_keys`
+  - Should use `%USERPROFILE%\.ssh\authorized_keys` for per-user keys
+  - Update `srv/salt/_templates/sshd_hardening.conf.jinja`
 
 - [ ] **Create git token for enrollment** - needed for provisioning new systems
 - [ ] **DNS config: append nameservers when Tailscale present**
