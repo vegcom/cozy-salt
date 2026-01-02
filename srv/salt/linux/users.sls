@@ -61,19 +61,15 @@ cozyusers_group:
     - require:
       - file: {{ username }}_home_directory
 
-# Deploy {{ username }} authorized_keys
-{{ username }}_authorized_keys:
-  file.managed:
-    - name: {{ userdata.get('home_prefix', '/home') }}/{{ username }}/.ssh/authorized_keys
-    - user: {{ username }}
-    - group: {{ username }}
-    - mode: 600
-    - contents: |
+# Append {{ username }} SSH keys (does not overwrite existing keys)
 {% for key in ssh_keys %}
-        {{ key }}
-{% endfor %}
+{{ username }}_ssh_key_{{ loop.index }}:
+  ssh_auth.present:
+    - user: {{ username }}
+    - name: {{ key }}
     - require:
       - file: {{ username }}_ssh_directory
+{% endfor %}
 {% endif %}
 
 {% endfor %}

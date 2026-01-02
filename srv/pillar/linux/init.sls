@@ -2,10 +2,6 @@
 # Linux Pillar Data
 # Configuration values for Linux minions
 
-# Include shared user definitions
-include:
-  - users
-
 # User configuration
 # Auto-detected from login user (defaults to root in containers)
 {% if salt['grains.get']('virtual', '') in ['docker', 'container', 'lxc'] %}
