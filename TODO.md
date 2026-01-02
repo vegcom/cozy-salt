@@ -10,14 +10,10 @@
   - Fixed script permissions (644 → 755)
   - Removed non-existent `azure/setup-powershell` action
 
-- [ ] **Windows SSH authorized_keys path**
-  - Windows OpenSSH quirk: Administrators group uses `__PROGRAMDATA__/ssh/administrators_authorized_keys`
-  - Non-admin users use `%USERPROFILE%\.ssh\authorized_keys`
-  - Options:
-    1. Populate `administrators_authorized_keys` for admin users (icky but correct)
-    2. Disable admin override in sshd_config (security tradeoff)
-    3. Users drop admin rights (not practical)
-  - Need to handle both paths based on user group membership
+- [x] **Windows SSH authorized_keys path** - Implemented in `srv/salt/windows/users.sls`
+  - Admin users: keys appended to `__PROGRAMDATA__/ssh/administrators_authorized_keys`
+  - Non-admin users: keys deployed to `%USERPROFILE%\.ssh\authorized_keys`
+  - Auto-detects via `windows_groups` containing `Administrators`
 
 - [ ] **Create git token for enrollment** - needed for provisioning new systems
 - [ ] **DNS config: append nameservers when Tailscale present**
@@ -56,6 +52,17 @@
   - `validate-states`: Linux states via containerized salt-call
   - `validate-states-windows`: Windows states (run on Windows host)
   - Catches YAML/Jinja syntax errors before deploy
+
+### User Pillar Structure
+
+- [ ] **Consolidate managed_users into users declaration**
+  - Currently have separate `managed_users: [admin, vegcom, eve]` list
+  - Redundant with keys in `users:` dictionary
+  - Options:
+    1. Add `managed: true` field to each user in `users:`
+    2. Generate managed_users list dynamically from users dict
+    3. Remove managed_users entirely, use `users.keys()` everywhere
+  - Affects: `srv/salt/linux/dotfiles.sls`, any state referencing `managed_users`
 
 ### User Roles
 

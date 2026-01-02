@@ -7,6 +7,10 @@ salt-logs/
 # Salt minion keys (generated, not tracked)
 srv/salt/keys/**
 
+# User config with SSH keys (copy from .example)
+srv/pillar/users.sls
+srv/pillar/common/users.sls
+
 # Environment & secrets
 .env
 .env.*
