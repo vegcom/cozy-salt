@@ -1,6 +1,5 @@
 exclude_paths:
   - tests/
-  - .git/
 
 skip_list:
   - 204  # Lines should be no longer than 160 chars
