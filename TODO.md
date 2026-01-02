@@ -6,6 +6,10 @@
 
 ### Action Items
 
+- [ ] **P1: Fix GitHub Actions workflow errors**
+  - `azure/setup-powershell` action not found - may need different action or removal
+  - `./tests/test-states-json.sh` permission denied - needs chmod +x in workflow or repo
+
 - [ ] **Create git token for enrollment** - needed for provisioning new systems
 - [ ] **DNS config: append nameservers when Tailscale present**
   - Tailscale overwrites /etc/resolv.conf with 100.100.100.100
