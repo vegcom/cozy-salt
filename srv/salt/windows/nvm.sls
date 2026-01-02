@@ -18,20 +18,6 @@
 {% set nvm_bin      = 'C:\\opt\\nvm\\nvm.exe' %}
 {% set npm_settings = 'C:\\opt\\nvm\\settings.txt' %}
 {% set node_path    = 'C:\\opt\\nvm\\nodejs' %}
-{% set current_path = salt['reg.read_value']('HKLM',"SYSTEM\CurrentControlSet\Control\Session Manager\Environment",'Path').get('vdata','') %}
-
-# Merge paths if absent - FIX: Use directory, not executable
-{% set paths = current_path.split(';') %}
-
-{% if nvm_path not in paths %}
-  {% do paths.append(nvm_path) %}
-{% endif %}
-
-{% if node_path not in paths %}
-  {% do paths.append(node_path) %}
-{% endif %}
-
-{% set merged_paths = ';'.join(paths) %}
 
 nvm_download:
   cmd.run:
@@ -115,16 +101,8 @@ nvm_use_default:
       - reg: nvm_symlink
     - creates: {{ node_path }}\node.exe
 
-nvm_path_update:
-  reg.present:
-    - name: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
-    - vname: Path
-    - vtype: REG_EXPAND_SZ
-    - vdata: {{ merged_paths }}
-    - require:
-      - cmd: nvm_install
-      - file: nvm_npm_settings
-
 # Install global npm packages via common orchestration
+# PATH updates handled by windows.paths (avoids race conditions)
 include:
   - common.nvm
+  - windows.paths
