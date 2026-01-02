@@ -2,7 +2,7 @@
 # Packages selected based on host_role from pillar (minimal/base/dev/gaming/full)
 # Definitions in provisioning/windows/roles.sls
 
-{% import_yaml 'windows/roles.sls' as roles %}
+{% import_yaml 'provisioning/windows/roles.sls' as roles %}
 
 # Get host role from pillar, default to 'desktop' for standard installations
 {% set host_role = salt['pillar.get']('host_role', 'desktop') %}
