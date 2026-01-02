@@ -40,27 +40,23 @@
 {% if ssh_keys %}
 {% if is_admin %}
 # Admin user {{ username }}: append keys to administrators_authorized_keys
+{{ username }}_admin_ssh_dir:
+  file.directory:
+    - name: C:\ProgramData\ssh
+    - makedirs: True
+
 {{ username }}_admin_ssh_keys:
-  cmd.run:
-    - name: |
-        $sshDir = "$env:ProgramData\ssh"
-        $authKeys = "$sshDir\administrators_authorized_keys"
-        if (-not (Test-Path $sshDir)) { New-Item -ItemType Directory -Path $sshDir -Force }
-        $keys = @"
-# {{ username }}
+  file.append:
+    - name: C:\ProgramData\ssh\administrators_authorized_keys
+    - text:
 {% for key in ssh_keys %}
-{{ key }}
+      - "{{ key }}"
 {% endfor %}
-"@
-        # Append if not already present
-        if (-not (Test-Path $authKeys) -or -not (Select-String -Path $authKeys -Pattern "# {{ username }}" -Quiet)) {
-            Add-Content -Path $authKeys -Value $keys
-        }
-    - shell: pwsh
     - require:
+      - file: {{ username }}_admin_ssh_dir
       - user: {{ username }}_user
 {% else %}
-# Non-admin user {{ username }}: deploy to user's .ssh/authorized_keys
+# Non-admin user {{ username }}: append keys to user's .ssh/authorized_keys
 {{ username }}_ssh_directory:
   file.directory:
     - name: C:\Users\{{ username }}\.ssh
@@ -69,13 +65,12 @@
     - require:
       - file: {{ username }}_home_directory
 
-{{ username }}_authorized_keys:
-  file.managed:
+{{ username }}_ssh_keys:
+  file.append:
     - name: C:\Users\{{ username }}\.ssh\authorized_keys
-    - user: {{ username }}
-    - contents: |
+    - text:
 {% for key in ssh_keys %}
-        {{ key }}
+      - "{{ key }}"
 {% endfor %}
     - require:
       - file: {{ username }}_ssh_directory

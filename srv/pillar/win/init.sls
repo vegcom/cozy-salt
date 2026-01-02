@@ -2,10 +2,6 @@
 # Windows Pillar Data
 # Configuration values for Windows minions
 
-# Include shared user definitions
-include:
-  - users
-
 # User configuration
 # Auto-detected from current user (falls back to Administrator if not detected)
 {% set detected_user = salt['environ.get']('USERNAME') or 'Administrator' %}
