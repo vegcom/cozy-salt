@@ -1,6 +1,7 @@
 base:
   # All systems get common configuration
   '*':
+    - common.users
     - common.network
     - common.paths
     - common.versions
