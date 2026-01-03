@@ -41,6 +41,21 @@ miniforge_clean:
       - cmd: miniforge_install
       - file: miniforge_directory
 
+# Initialize conda for PowerShell in system-wide profile
+# Appends conda-hook.ps1 sourcing to AllUsersAllHosts profile (pwsh7)
+miniforge_powershell_profile:
+  file.append:
+    - name: C:\Program Files\PowerShell\7\profile.ps1
+    - text: |
+        # Conda initialization (managed by Salt)
+        if (Test-Path "{{ miniforge_path }}\shell\condabin\conda-hook.ps1") {
+            . "{{ miniforge_path }}\shell\condabin\conda-hook.ps1"
+        }
+    - makedirs: True
+    - unless: 'pwsh -NoProfile -Command "Test-Path ''C:\Program Files\PowerShell\7\profile.ps1'' -and (Get-Content ''C:\Program Files\PowerShell\7\profile.ps1'' -Raw) -match ''conda-hook''"'
+    - require:
+      - cmd: miniforge_install
+
 # Set system-wide environment variable for Miniforge/Conda
 miniforge_conda_home:
   reg.present:
