@@ -21,11 +21,18 @@ sshd_hardening_config:
 
 # Set PowerShell 7 as default shell for OpenSSH connections
 # This makes SSH sessions drop into pwsh instead of cmd.exe
+# Detects both stable (7) and preview (7-preview) installations
+{% set pwsh_paths = [
+  'C:\\Program Files\\PowerShell\\7\\pwsh.exe',
+  'C:\\Program Files\\PowerShell\\7-preview\\pwsh.exe'
+] %}
+{% set pwsh_path = pwsh_paths[0] if salt['file.file_exists'](pwsh_paths[0]) else pwsh_paths[1] %}
+
 openssh_default_shell:
   reg.present:
     - name: HKEY_LOCAL_MACHINE\SOFTWARE\OpenSSH
     - vname: DefaultShell
-    - vdata: C:\Program Files\PowerShell\7\pwsh.exe
+    - vdata: {{ pwsh_path }}
     - vtype: REG_SZ
 
 # Manage Windows hosts file entries for network services (from pillar.network.hosts)
