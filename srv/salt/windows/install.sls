@@ -43,7 +43,7 @@ choco_{{ pkg | replace('.', '_') | replace('-', '_') }}:
 {% for pkg in packages %}
 winget_{{ pkg | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
-    - name: winget install --id {{ pkg }} --accept-source-agreements --accept-package-agreements -h
+    - name: winget install --id {{ pkg }} --scope system --accept-source-agreements --accept-package-agreements -h
     - unless: winget list --id {{ pkg }} | findstr /C:"{{ pkg }}"
 {% endfor %}
 {% elif packages == 'all' %}
@@ -63,7 +63,7 @@ winget_{{ pkg | replace('.', '_') | replace('-', '_') }}:
 {% for pkg in packages %}
 winget_runtime_{{ pkg | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
-    - name: winget install --id {{ pkg }} --accept-source-agreements --accept-package-agreements -h
+    - name: winget install --id {{ pkg }} --scope system --accept-source-agreements --accept-package-agreements -h
     - unless: winget list --id {{ pkg }} | findstr /C:"{{ pkg }}"
 {% endfor %}
 {% elif packages == 'all' %}
