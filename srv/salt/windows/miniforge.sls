@@ -1,25 +1,11 @@
 # Windows Miniforge system-wide installation
 # Installs Miniforge3 to C:\opt\miniforge3 for all users
+# PATH updates handled by windows.paths (avoids race conditions)
 
 {% set miniforge_versions = salt['pillar.get']('versions:miniforge', {}) %}
 {% set miniforge_version  = miniforge_versions.get('version', '24.11.3-0') %}
 {% set miniforge_path     = 'C:\\opt\\miniforge3' %}
 {% set miniforge_tmp      = '$env:TEMP\\miniforge-install.exe' %}
-{% set miniforge_bin      = 'C:\\opt\\miniforge3\\Scripts' %}
-{% set current_path       = salt['reg.read_value']('HKLM',"SYSTEM\CurrentControlSet\Control\Session Manager\Environment",'Path').get('vdata','') %}
-
-# FIX: Use proper list-based path merging to avoid duplicates
-{% set paths = current_path.split(';') %}
-
-{% if miniforge_bin not in paths %}
-  {% do paths.append(miniforge_bin) %}
-{% endif %}
-
-{% if miniforge_path not in paths %}
-  {% do paths.append(miniforge_path) %}
-{% endif %}
-
-{% set merged_paths = ';'.join(paths) %}
 
 # Create C:\opt\miniforge3 directory for consistency
 miniforge_directory:
@@ -55,6 +41,21 @@ miniforge_clean:
       - cmd: miniforge_install
       - file: miniforge_directory
 
+# Initialize conda for PowerShell in system-wide profile
+# Appends conda-hook.ps1 sourcing to AllUsersAllHosts profile (pwsh7)
+miniforge_powershell_profile:
+  file.append:
+    - name: C:\Program Files\PowerShell\7\profile.ps1
+    - text: |
+        # Conda initialization (managed by Salt)
+        if (Test-Path "{{ miniforge_path }}\shell\condabin\conda-hook.ps1") {
+            . "{{ miniforge_path }}\shell\condabin\conda-hook.ps1"
+        }
+    - makedirs: True
+    - unless: 'pwsh -NoProfile -Command "Test-Path ''C:\Program Files\PowerShell\7\profile.ps1'' -and (Get-Content ''C:\Program Files\PowerShell\7\profile.ps1'' -Raw) -match ''conda-hook''"'
+    - require:
+      - cmd: miniforge_install
+
 # Set system-wide environment variable for Miniforge/Conda
 miniforge_conda_home:
   reg.present:
@@ -66,18 +67,7 @@ miniforge_conda_home:
       - cmd: miniforge_install
       - file: miniforge_directory
 
-# XXX https://docs.saltproject.io/en/latest/ref/modules/all/salt.modules.reg.html
-miniforge_path_update:
-  reg.present:
-    - name: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
-    - vname: Path
-    - vtype: REG_EXPAND_SZ
-    - vdata: {{ merged_paths }}
-    - require:
-      - cmd: miniforge_install
-      - file: miniforge_directory
-
-
 # Install base pip packages via common orchestration
 include:
   - common.miniforge
+  - windows.paths

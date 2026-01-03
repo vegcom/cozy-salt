@@ -15,7 +15,7 @@
 skel_files:
   file.recurse:
     - name: /etc/skel
-    - source: salt://linux/files/etc-skel
+    - source: salt://provisioning/linux/files/etc-skel
     - include_empty: True
     - clean: False
 
@@ -23,26 +23,26 @@ skel_files:
 tmux_system_config:
   file.managed:
     - name: /etc/tmux.conf
-    - source: salt://linux/files/etc/tmux.conf
+    - source: salt://provisioning/linux/files/etc/tmux.conf
     - mode: 644
 
 # Deploy profile.d initialization scripts
 starship_profile:
   file.managed:
     - name: /etc/profile.d/starship.sh
-    - source: salt://linux/files/etc-profile.d/starship.sh
+    - source: salt://provisioning/linux/files/etc-profile.d/starship.sh
     - mode: 644
 
 miniforge_system_profile:
   file.managed:
     - name: /etc/profile.d/miniforge.sh
-    - source: salt://linux/files/etc-profile.d/miniforge.sh
+    - source: salt://provisioning/linux/files/etc-profile.d/miniforge.sh
     - mode: 644
 
 nvm_system_profile:
   file.managed:
     - name: /etc/profile.d/nvm.sh
-    - source: salt://linux/files/etc-profile.d/nvm.sh
+    - source: salt://provisioning/linux/files/etc-profile.d/nvm.sh
     - mode: 644
 
 # Deploy hardened SSH configuration (consolidated template - High-003)

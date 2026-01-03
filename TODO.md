@@ -15,6 +15,17 @@
   - Non-admin users: keys deployed to `%USERPROFILE%\.ssh\authorized_keys`
   - Auto-detects via `windows_groups` containing `Administrators`
 
+- [ ] **P1: Consolidate provisioning file structure**
+  - Duplicate files: `provisioning/packages.sls` vs `srv/salt/provisioning/packages.sls` (content differs!)
+  - Confusing file_roots: `/srv/salt` + `/srv/provisioning` makes `salt://provisioning/...` not work as expected
+  - Files like `provisioning/windows/files/opt-cozy/*.ps1` not accessible via intuitive paths
+  - Options:
+    1. Change docker mount: `./provisioning:/srv/salt/provisioning:ro` (makes `salt://provisioning/...` work)
+    2. Move all provisioning content under `srv/salt/provisioning/`
+    3. Remove duplicate and keep single source of truth
+  - Grep all `salt://` paths to understand current usage before changing
+  - Affects: wsl/init.sls, any state referencing provisioning files
+
 - [ ] **Create git token for enrollment** - needed for provisioning new systems
 - [ ] **DNS config: append nameservers when Tailscale present**
   - Tailscale overwrites /etc/resolv.conf with 100.100.100.100
