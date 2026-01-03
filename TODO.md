@@ -1,30 +1,10 @@
 # cozy-salt TODO - Active Work
 
-**Status:** Active Development | **Last Updated:** 2025-12-31
+**Status:** Active Development | **Last Updated:** 2026-01-02
 
 ## Active Work
 
 ### Action Items
-
-- [x] **P1: Fix GitHub Actions workflow errors** - Fixed locally, pending push
-  - Fixed script permissions (644 → 755)
-  - Removed non-existent `azure/setup-powershell` action
-
-- [x] **Windows SSH authorized_keys path** - Implemented in `srv/salt/windows/users.sls`
-  - Admin users: keys appended to `__PROGRAMDATA__/ssh/administrators_authorized_keys`
-  - Non-admin users: keys deployed to `%USERPROFILE%\.ssh\authorized_keys`
-  - Auto-detects via `windows_groups` containing `Administrators`
-
-- [ ] **P1: Consolidate provisioning file structure**
-  - Duplicate files: `provisioning/packages.sls` vs `srv/salt/provisioning/packages.sls` (content differs!)
-  - Confusing file_roots: `/srv/salt` + `/srv/provisioning` makes `salt://provisioning/...` not work as expected
-  - Files like `provisioning/windows/files/opt-cozy/*.ps1` not accessible via intuitive paths
-  - Options:
-    1. Change docker mount: `./provisioning:/srv/salt/provisioning:ro` (makes `salt://provisioning/...` work)
-    2. Move all provisioning content under `srv/salt/provisioning/`
-    3. Remove duplicate and keep single source of truth
-  - Grep all `salt://` paths to understand current usage before changing
-  - Affects: wsl/init.sls, any state referencing provisioning files
 
 - [ ] **Create git token for enrollment** - needed for provisioning new systems
 - [ ] **DNS config: append nameservers when Tailscale present**
@@ -35,34 +15,9 @@
   - Docs: https://tailscale.com/kb/1235/resolv-conf
   - Docs: https://tailscale.com/kb/1081/magicdns
 
-### Kali Host (guava) Issues
-
-- [x] **Docker repo 404 on Kali** - Fixed: Kali/WSL detection uses Ubuntu `noble` repo
-
-- [x] **cozyusers group not created before user states**
-  - Fixed: Added explicit `order:` parameters (groups: 1-2, users: 10)
-
-- [x] **Homebrew installation chain fails**
-  - Fixed: Added order: 20 and explicit require for cozyusers_group
-
-### Windows Issues
-
-- [x] **Windows user creation** - PowerShell group workaround tested, working
-- [x] **nvm PATH issue** - Fixed to use full path `C:\opt\nvm\nvm.exe`
-- [x] **OpenSSH default shell** - Added registry key for pwsh.exe
-- [x] **miniforge pip_base packages** - Added uv/uvx via common.miniforge
-- [x] **NVM_SYMLINK env var** - Added to registry + inline env for nvm use/npm commands
-
 ---
 
 ## Future Improvements
-
-### Makefile Validation Targets
-
-- [x] **Add `make validate-states` target** (implemented)
-  - `validate-states`: Linux states via containerized salt-call
-  - `validate-states-windows`: Windows states (run on Windows host)
-  - Catches YAML/Jinja syntax errors before deploy
 
 ### User Pillar Structure
 
@@ -133,9 +88,15 @@
 
 ---
 
-## Completed Work Summary (2025-12-31)
+## Completed Work Summary
 
-All items from consolidation phase have been completed and merged to main:
+**2026-01-02:**
+- Provisioning mount consolidated to `/srv/salt/provisioning`
+- Windows PATH race condition fixed (consolidated `windows/paths.sls`)
+- Conda PowerShell init added to system profile (pwsh7)
+- All salt:// paths updated for new structure
+
+**2025-12-31:**
 - P0+P1 Consolidation (150+ lines bloat reduction)
 - P2 Linux & Windows package organization
 - Critical security fixes (auto_accept removal, pre-shared keys)
