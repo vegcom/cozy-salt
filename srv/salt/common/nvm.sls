@@ -2,7 +2,7 @@
 # Installs global npm packages (cross-platform)
 # Platform-specific NVM installation delegated to linux.nvm or windows.nvm
 
-{% import_yaml "provisioning/packages.sls" as packages %}
+{% import_yaml "packages.sls" as packages %}
 {% set nvm_config = salt['pillar.get']('nvm', {}) %}
 
 # nvm on windows does not accept wildcards

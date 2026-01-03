@@ -2,7 +2,7 @@
 # Selects package capabilities based on workstation_role pillar
 # Detects and sets GPU type grain for specialized package selection
 
-{% import_yaml "provisioning/packages.sls" as packages %}
+{% import_yaml "packages.sls" as packages %}
 
 {% set workstation_role = salt['pillar.get']('workstation_role', 'workstation-base') %}
 {% set os_name = 'ubuntu' if grains['os_family'] == 'Debian' else 'rhel' %}
