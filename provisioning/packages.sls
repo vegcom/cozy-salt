@@ -261,6 +261,14 @@ kvm:
     - virt-install
 
 # =============================================================================
+# PIP BASE PACKAGES (via miniforge)
+# =============================================================================
+# Installed in miniforge base environment - same across all platforms
+# uvx = npx for Python (run CLI tools in isolated envs)
+pip_base:
+  - uv
+
+# =============================================================================
 # NPM GLOBAL PACKAGES (via nvm)
 # =============================================================================
 # Same across all platforms - applied after nvm installs Node.js
@@ -372,7 +380,6 @@ winget:
     - Beyond-All-Reason.Beyond-All-Reason
     - SpecialK.SpecialK
     - mtkennerly.ludusavi
-    - IridiumIO.CompactGUI
   media_creative:
     - Audacity.Audacity
     - KDE.Krita

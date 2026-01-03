@@ -4,6 +4,11 @@
 
 ## Active Work
 
+Eval
+```
+New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" ` -Name DefaultShell ` -Value "C:\Program Files\PowerShell\7-preview\pwsh.exe" ` -PropertyType String -Force
+```
+
 ### Action Items
 
 - [x] **P1: Fix GitHub Actions workflow errors** - Fixed locally, pending push
