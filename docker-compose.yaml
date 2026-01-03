@@ -30,8 +30,8 @@ services:
       # Salt file roots - use bind mount with subpath
       - ./srv/salt:/srv/salt:ro
       - ./srv/pillar:/srv/pillar:ro
-      # Provisioning files - mount to separate location, configure via file_roots
-      - ./provisioning:/srv/salt/provisioning:ro
+      # Provisioning files - separate mount point
+      - ./provisioning:/provisioning:ro
       # Persistent data
       - salt-cache:/var/cache/salt
       - salt-logs:/var/log/salt
