@@ -23,12 +23,14 @@ sshd_hardening_config:
 # This makes SSH sessions drop into pwsh instead of cmd.exe
 # Prefers stable (7) if available, falls back to preview (7-preview)
 openssh_default_shell:
-  reg.present:
-    - name: HKEY_LOCAL_MACHINE\SOFTWARE\OpenSSH
-    - vname: DefaultShell
-    - vdata: C:\Program Files\PowerShell\7-preview\pwsh.exe
-    - vtype: REG_SZ
-    - unless: 'powershell -Command "Test-Path ''C:\\Program Files\\PowerShell\\7\\pwsh.exe''"'
+  cmd.run:
+    - name: |
+        if (Test-Path 'C:\Program Files\PowerShell\7\pwsh.exe') {
+          New-ItemProperty -Path 'HKLM:\SOFTWARE\OpenSSH' -Name DefaultShell -Value 'C:\Program Files\PowerShell\7\pwsh.exe' -PropertyType String -Force | Out-Null
+        } else {
+          New-ItemProperty -Path 'HKLM:\SOFTWARE\OpenSSH' -Name DefaultShell -Value 'C:\Program Files\PowerShell\7-preview\pwsh.exe' -PropertyType String -Force | Out-Null
+        }
+    - shell: pwsh
 
 # Manage Windows hosts file entries for network services (from pillar.network.hosts)
 windows_hosts_entries:
