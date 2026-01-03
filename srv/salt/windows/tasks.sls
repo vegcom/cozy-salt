@@ -18,7 +18,7 @@ kubernetes:
 {{ task_name }}_xml:
   file.managed:
     - name: C:\Windows\Temp\{{ task_name }}.xml
-    - source: salt://provisioning/windows/{{ xml }}
+    - source: salt://windows/{{ xml }}
     - makedirs: True
 
 # Import task using schtasks (only when XML changes)

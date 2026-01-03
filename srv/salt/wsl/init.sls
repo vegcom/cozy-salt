@@ -17,7 +17,7 @@ detect_wsl:
 deploy_configure_docker_wsl_context:
   file.managed:
     - name: C:\opt\cozy\configure-docker-wsl-context.ps1
-    - source: salt://provisioning/windows/files/opt-cozy/configure-docker-wsl-context.ps1
+    - source: salt://windows/files/opt-cozy/configure-docker-wsl-context.ps1
     - makedirs: True
 
 # Run Docker WSL context configuration script
