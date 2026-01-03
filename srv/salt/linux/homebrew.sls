@@ -47,7 +47,7 @@ homebrew_acl_permissions:
 homebrew_profile:
   file.managed:
     - name: /etc/profile.d/homebrew.sh
-    - source: salt://linux/files/etc-profile.d/homebrew.sh
+    - source: salt://provisioning/linux/files/etc-profile.d/homebrew.sh
     - mode: 644
     - require:
       - cmd: homebrew_acl_permissions

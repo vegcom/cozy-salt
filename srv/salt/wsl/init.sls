@@ -17,12 +17,13 @@ detect_wsl:
 deploy_configure_docker_wsl_context:
   file.managed:
     - name: C:\opt\cozy\configure-docker-wsl-context.ps1
-    - source: salt://windows/files/opt-cozy/configure-docker-wsl-context.ps1
+    - source: salt://provisioning/windows/files/opt-cozy/configure-docker-wsl-context.ps1
     - makedirs: True
 
-# Run Docker WSL context configuration script (idempotent - only re-runs if script changes)
+# Run Docker WSL context configuration script
 run_configure_docker_wsl_context:
   cmd.run:
     - name: powershell -ExecutionPolicy Bypass -File C:\opt\cozy\configure-docker-wsl-context.ps1
-    - onchanges:
+    - unless: docker context ls --format "{{ '{{.Name}}' }}" | findstr /C:"wsl"
+    - require:
       - file: deploy_configure_docker_wsl_context

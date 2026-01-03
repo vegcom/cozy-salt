@@ -31,7 +31,7 @@ services:
       - ./srv/salt:/srv/salt:ro
       - ./srv/pillar:/srv/pillar:ro
       # Provisioning files - mount to separate location, configure via file_roots
-      - ./provisioning:/srv/provisioning:ro
+      - ./provisioning:/srv/salt/provisioning:ro
       # Persistent data
       - salt-cache:/var/cache/salt
       - salt-logs:/var/log/salt

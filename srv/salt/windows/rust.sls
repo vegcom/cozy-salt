@@ -1,19 +1,9 @@
 # Windows Rust installation via rustup-init
 # System-wide installation to C:\opt\rust (consistent with Linux /opt/rust)
 # Environment variables configured as system-wide for all users
+# PATH updates handled by windows.paths (avoids race conditions)
 
 {% set rust_path = 'C:\\opt\\rust' %}
-{% set rust_bin = 'C:\\opt\\rust\\bin' %}
-{% set current_path = salt['reg.read_value']('HKLM',"SYSTEM\CurrentControlSet\Control\Session Manager\Environment",'Path').get('vdata','') %}
-
-# FIX: Add rust bin directory to PATH
-{% set paths = current_path.split(';') %}
-
-{% if rust_bin not in paths %}
-  {% do paths.append(rust_bin) %}
-{% endif %}
-
-{% set merged_paths = ';'.join(paths) %}
 
 # Create C:\opt\rust directory
 rust_directory:
@@ -63,12 +53,6 @@ rust_cargo_home:
     - require:
       - cmd: rust_install
 
-# FIX: Add Rust bin to system PATH
-rust_path_update:
-  reg.present:
-    - name: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
-    - vname: Path
-    - vtype: REG_EXPAND_SZ
-    - vdata: {{ merged_paths }}
-    - require:
-      - cmd: rust_install
+# PATH updates handled by windows.paths
+include:
+  - windows.paths
