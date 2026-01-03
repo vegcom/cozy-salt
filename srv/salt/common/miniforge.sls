@@ -2,7 +2,7 @@
 # Installs pip packages in miniforge base environment (cross-platform)
 # Platform-specific miniforge installation delegated to linux.miniforge or windows.miniforge
 
-{% import_yaml "provisioning/packages.sls" as packages %}
+{% import_yaml "packages.sls" as packages %}
 
 # Install pip base packages in miniforge base environment
 {% for package in packages.get('pip_base', []) %}

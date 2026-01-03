@@ -2,7 +2,7 @@
 # Packages organized by capability/purpose with per-distro mappings
 # See provisioning/packages.sls for full package definitions
 
-{% import_yaml 'provisioning/packages.sls' as packages %}
+{% import_yaml 'packages.sls' as packages %}
 {% set os_family = grains['os_family'] %}
 {% set os_name = 'ubuntu' if os_family == 'Debian' else 'rhel' %}
 
