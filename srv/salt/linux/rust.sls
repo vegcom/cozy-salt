@@ -34,7 +34,7 @@ rust_download_and_install:
 rust_profile:
   file.managed:
     - name: /etc/profile.d/rust.sh
-    - source: salt://provisioning/linux/files/etc-profile.d/rust.sh
+    - source: salt://linux/files/etc-profile.d/rust.sh
     - mode: 644
 
 # Install additional Rust components (clippy, rustfmt)

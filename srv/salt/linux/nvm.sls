@@ -32,7 +32,7 @@ nvm_download_and_install:
 nvm_profile:
   file.managed:
     - name: /etc/profile.d/nvm.sh
-    - source: salt://provisioning/linux/files/etc-profile.d/nvm.sh
+    - source: salt://linux/files/etc-profile.d/nvm.sh
     - mode: 644
 
 # Install default Node.js version system-wide

@@ -10,7 +10,7 @@
 docker_proxy_file:
   file.managed:
     - name: /opt/cozy/docker-proxy.yaml
-    - source: salt://provisioning/linux/files/opt-cozy/docker-proxy.yaml
+    - source: salt://linux/files/opt-cozy/docker-proxy.yaml
     - mode: 644
     - user: root
     - group: root
