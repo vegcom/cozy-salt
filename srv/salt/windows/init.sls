@@ -8,4 +8,5 @@ include:
   - windows.nvm
   - windows.rust
   - windows.miniforge
+  - windows.windhawk
   - windows.tasks
