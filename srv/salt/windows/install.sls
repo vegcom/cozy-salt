@@ -22,9 +22,39 @@ winget_runtime_{{ pkg | replace('.', '_') | replace('-', '_') }}:
 winget_{{ pkg | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
     - name: winget install --accept-source-agreements --accept-package-agreements -h --scope machine --id {{ pkg }}
-    - unless: winget list --scope machine --id {{ pkg }} | findstr "{{ pkg }}"
+    - unless: >
+        pwsh -NoLogo -NoProfile -Command "
+          if (winget list --scope machine --exact --id {{ pkg }} | Select-String -Quiet '{{ pkg }}') {
+            exit 0
+          } else {
+            exit 1
+          }
+        "
 {% endfor %}
 {% endfor %}
+{% endif %}
+
+# PWSH Modules
+{% if pwsh_modules is defined %}
+{% for module in pwsh_modules %}
+pwsh_module_{{ module | replace('.', '_') | replace('-', '_') }}:
+  cmd.run:
+    - name: >
+        pwsh -NoLogo -NoProfile -Command "
+          if (-not (Get-InstalledModule -Name '{{ module }}' -ErrorAction SilentlyContinue)) {
+            Install-Module -Name '{{ module }}' -Scope AllUsers -AllowClobber -SkipPublisherCheck -Force
+          }
+        "
+    - unless: >
+        pwsh -NoLogo -NoProfile -Command "
+          if (Get-InstalledModule -Name '{{ module }}' -ErrorAction SilentlyContinue) {
+            exit 0
+          } else {
+            exit 1
+          }
+        "
+{% endfor %}
+
 {% endif %}
 
 # Enable Chocolatey feature for remembered arguments on upgrades

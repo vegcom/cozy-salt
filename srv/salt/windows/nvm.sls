@@ -1,15 +1,5 @@
 # Windows Node.js version management via nvm-windows
 # System-wide installation to C:\\opt\\nvm (consistent with Linux /opt/nvm)
-# nvm-windows Chocolatey package installs to AppData, then configure for C:\\opt\\nvm
-# Global npm packages installed via common.nvm orchestration
-# ref: https://jrsoftware.org/ishelp/index.php?topic=setupcmdline
-# nvm on windows does not accept wildcards
-# FIXME: Need to swap to https://github.com/coreybutler/nvm-windows/releases/download/1.2.2/nvm-noinstall.zip. current flags not working safely.
-# TODO: nvm-setup.exe needs to be changed for nvm-noinstall.zip
-# XXX: nvm alias - does not work on NVM for Windows
-# Set system-wide environment variable for NVM_HOME
-# nvm-windows will use this location for Node.js versions
-
 {% set nvm_config   = salt['pillar.get']('nvm', {}) %}
 {% set nvm_version  = nvm_config.get('default_version', 'lts') %}
 {% set npm_pkg      = "https://github.com/coreybutler/nvm-windows/releases/download/1.2.2/nvm-noinstall.zip" %}
