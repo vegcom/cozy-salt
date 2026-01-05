@@ -344,7 +344,6 @@ winget:
   shells:
     - Starship.Starship
     - JanDeDobbeleer.OhMyPosh
-    - Microsoft.WindowsTerminal
     - Microsoft.PowerShell
     - Microsoft.AIShell
   system_utilities:
