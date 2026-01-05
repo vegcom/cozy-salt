@@ -84,7 +84,8 @@ services:
 
   # Windows Desktop test minion via Dockur (requires KVM on Linux host)
   # This runs actual Windows 11 Desktop in a VM-like container using QEMU+KVM
-  # Access via web interface at http://localhost:8006 (login: Docker/admin)
+  # Auto-enrolls in Salt via Autounattend.xml + FirstLogonCommands
+  # Access via web interface at http://localhost:8006 (login: admin/admin123!)
   salt-minion-windows:
     image: dockurr/windows
     container_name: salt-minion-windows-test
@@ -94,7 +95,7 @@ services:
       RAM_SIZE: "4G"          # 4GB RAM
       CPU_CORES: "2"          # 2 vCPUs
       DISK_SIZE: "64G"        # 64GB virtual disk
-      # MANUAL: "N"           # Unattended install (requires Autounattend.xml)
+      MANUAL: "N"             # Unattended install with Autounattend.xml
     devices:
       - /dev/kvm              # Requires KVM support (Linux only)
       - /dev/net/tun          # Required for networking
@@ -104,9 +105,9 @@ services:
       - 8006:8006             # Web VNC interface
       - 3389:3389             # RDP (optional, for direct access)
     volumes:
-      - ./windows-test:/storage                          # Persistent Windows storage
-      - ./scripts:/mnt/scripts:ro                        # Mount scripts for Salt install
-      # Windows VM requires manual enrollment - keys not baked in
+      #- ./windows-test:/storage                          # Persistent Windows storage
+      - ./scripts:/mnt/scripts:ro                        # Mount scripts for Salt enrollment
+      - ./provisioning/windows/Autounattend.xml:/Autounattend.xml:ro  # Unattended install config
     networks:
       - salt-net
     depends_on:

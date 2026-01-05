@@ -66,4 +66,4 @@ tests/output/*.json
 # OPT
 .claude/
 CLAUDE.md
-tests/archive-2025-12-30
+**/*archive*

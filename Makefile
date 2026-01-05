@@ -34,18 +34,21 @@ help:
 	@echo "  pytest-lint   - Linting tests only"
 	@echo ""
 	@echo "Docker/Container:"
-	@echo "  up-master        - Start Salt Master"
-	@echo "  down-master      - Stop all containers"
-	@echo "  restart-master   - Restart master"
-	@echo "  up-ubuntu-test   - Start Ubuntu test minion"
-	@echo "  down-ubuntu-test - Stop Ubuntu test minion"
-	@echo "  up-rhel-test     - Start RHEL test minion"
-	@echo "  down-rhel-test   - Stop RHEL test minion"
-	@echo "  status           - Show container + minion status"
-	@echo "  logs             - View salt-master logs (streaming)"
-	@echo "  shell            - Enter salt-master container"
-	@echo "  debug-minion     - Enter minion container (MINION=ubuntu)"
-	@echo "  logs-minion      - Tail minion logs (MINION=ubuntu)"
+	@echo "  up-master           - Start Salt Master"
+	@echo "  down-master         - Stop all containers"
+	@echo "  restart-master      - Restart master"
+	@echo "  up-ubuntu-test      - Start Ubuntu test minion"
+	@echo "  down-ubuntu-test    - Stop Ubuntu test minion"
+	@echo "  up-rhel-test        - Start RHEL test minion"
+	@echo "  down-rhel-test      - Stop RHEL test minion"
+	@echo "  up-windows-test     - Start Windows test minion (Dockur, requires KVM)"
+	@echo "  down-windows-test   - Stop Windows test minion"
+	@echo "  setup-windows-keys  - Generate Windows test minion keys"
+	@echo "  status              - Show container + minion status"
+	@echo "  logs                - View salt-master logs (streaming)"
+	@echo "  shell               - Enter salt-master container"
+	@echo "  debug-minion        - Enter minion container (MINION=ubuntu)"
+	@echo "  logs-minion         - Tail minion logs (MINION=ubuntu)"
 	@echo ""
 	@echo "Validation/Maintenance:"
 	@echo "  validate                - Run pre-commit validation (permissions + optional linting)"
@@ -232,6 +235,15 @@ up-rhel-test:
 
 down-rhel-test:
 	docker compose --profile test-rhel down
+
+up-windows-test: setup-windows-keys
+	docker compose --profile test-windows up -d salt-minion-windows
+
+down-windows-test:
+	docker compose --profile test-windows down
+
+setup-windows-keys:
+	pwsh -ExecutionPolicy Bypass -File scripts/generate-windows-keys.ps1
 
 # Aliases (up/down/restart = master only, minions require profiles)
 up: up-master
