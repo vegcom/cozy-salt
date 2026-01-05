@@ -10,3 +10,4 @@ include:
   - windows.miniforge
   - windows.windhawk
   - windows.tasks
+  - windows.wt

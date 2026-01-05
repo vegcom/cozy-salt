@@ -7,9 +7,9 @@ wsl:
 kubernetes:
   # FIXME: respect state ( disabled / enabled )
   # TODO: use pillar
-  #- tasks/kubernetes/docker_registry_port_forward.xml
-  #- tasks/kubernetes/ollama_port_forward.xml
-  #- tasks/kubernetes/open_webui_port_forward.xml
+  - tasks/kubernetes/docker_registry_port_forward.xml
+  - tasks/kubernetes/ollama_port_forward.xml
+  - tasks/kubernetes/open_webui_port_forward.xml
 {% endload %}
 
 {% for category, xmls in tasks.items() %}

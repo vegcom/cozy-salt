@@ -35,8 +35,8 @@ winget_{{ pkg | replace('.', '_') | replace('-', '_') }}:
 {% endif %}
 
 # PWSH Modules
-{% if pwsh_modules is defined %}
-{% for module in pwsh_modules %}
+{% if packages.pwsh_modules is defined %}
+{% for module in packages.pwsh_modules %}
 pwsh_module_{{ module | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
     - name: >
@@ -72,3 +72,11 @@ choco_{{ pkg | replace('.', '_') | replace('-', '_') }}:
     - name: {{ pkg }}
 {% endfor %}
 {% endif %}
+
+# refreshenv:
+#   cmd.run:
+#     - name: refreshenv
+#     - name: >
+#         pwsh -NoLogo -NoProfile -Command "
+#           Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1 ; refreshenv
+#         "
