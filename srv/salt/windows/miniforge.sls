@@ -52,7 +52,7 @@ miniforge_powershell_profile:
             . "{{ miniforge_path }}\shell\condabin\conda-hook.ps1"
         }
     - makedirs: True
-    - unless: 'pwsh -NoProfile -Command "Test-Path ''C:\Program Files\PowerShell\7\profile.ps1'' -and (Get-Content ''C:\Program Files\PowerShell\7\profile.ps1'' -Raw) -match ''conda-hook''"'
+    # - unless: 'pwsh -NoProfile -Command "Test-Path ''C:\Program Files\PowerShell\7\profile.ps1'' -and (Get-Content ''C:\Program Files\PowerShell\7\profile.ps1'' -Raw) -match ''conda-hook''"'
     - require:
       - cmd: miniforge_install
 
