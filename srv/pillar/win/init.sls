@@ -2,6 +2,8 @@
 # Windows Pillar Data
 # Configuration values for Windows minions
 
+# TODO: Audit all states levearage pillar and all pillar is present.
+
 # User configuration
 # Auto-detected from current user (falls back to Administrator if not detected)
 {% set detected_user = salt['environ.get']('USERNAME') or 'Administrator' %}
@@ -46,4 +48,4 @@ miniforge:
 
 # Windhawk
 windhawk:
-  enabled: False
+  enabled: True
