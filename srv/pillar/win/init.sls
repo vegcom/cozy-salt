@@ -23,16 +23,17 @@ tasks:
   enabled: True
   categories:
     - wsl
-    - kubernetes
+    # FIXME: needs to respect state ( enabeld / disabled )
+    #- kubernetes
 
 # Package management preferences (P2 - Role-based selection)
 packages:
   manager: chocolatey  # Primary: chocolatey, secondary: winget
   auto_update: False
 
-# Host role determines which packages to install (minimal/base/dev/gaming/full)
-# Role definitions in provisioning/windows/roles.sls (imported by states)
-host_role: desktop  # Default: desktop (base + dev_tools + shells + communication)
+# Host role (currently unused - all packages from provisioning/packages.sls are installed)
+# TODO: Implement role-based filtering to selectively install package categories
+host_role: desktop
 
 # Node.js version management via nvm
 nvm:

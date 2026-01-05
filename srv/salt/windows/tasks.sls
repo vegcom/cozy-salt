@@ -5,9 +5,11 @@
 wsl:
   - tasks/wsl/wsl_autostart.xml
 kubernetes:
-  - tasks/kubernetes/docker_registry_port_forward.xml
-  - tasks/kubernetes/ollama_port_forward.xml
-  - tasks/kubernetes/open_webui_port_forward.xml
+  # FIXME: respect state ( disabled / enabled )
+  # TODO: use pillar
+  #- tasks/kubernetes/docker_registry_port_forward.xml
+  #- tasks/kubernetes/ollama_port_forward.xml
+  #- tasks/kubernetes/open_webui_port_forward.xml
 {% endload %}
 
 {% for category, xmls in tasks.items() %}
@@ -24,7 +26,7 @@ kubernetes:
 # Import task using schtasks (only when XML changes)
 {{ task_name }}_task:
   cmd.run:
-    - name: schtasks /create /tn "\Cozy\{{ task_display_name }}" /xml "C:\Windows\Temp\{{ task_name }}.xml" /f
+    - name: schtasks /create /tn "\Cozy\{{ task_display_name }}" /xml "C:\Windows\Temp\{{ task_name }}.xml"
     - onchanges:
       - file: {{ task_name }}_xml
 {% endfor %}

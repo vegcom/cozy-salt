@@ -17,7 +17,7 @@ RUN apt-get update && \
 
 # Generate RSA keys for test minions (Salt-compatible format)
 WORKDIR /keys
-RUN for minion in ubuntu-test rhel-test; do \
+RUN for minion in ubuntu-test rhel-test windows-test; do \
       openssl genrsa -out ${minion}.pem 4096 2>/dev/null && \
       openssl rsa -in ${minion}.pem -pubout -out ${minion}.pub 2>/dev/null; \
     done && \

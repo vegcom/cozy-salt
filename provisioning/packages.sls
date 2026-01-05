@@ -40,7 +40,7 @@ core_utils:
     - unzip
 
 # =============================================================================
-# CAPABILITY: System Monitoring & Diagnostics  
+# CAPABILITY: System Monitoring & Diagnostics
 # =============================================================================
 monitoring:
   ubuntu:
@@ -261,6 +261,15 @@ kvm:
     - virt-install
 
 # =============================================================================
+# PIP BASE PACKAGES (via miniforge)
+# =============================================================================
+# Installed in miniforge base environment - same across all platforms
+# uvx = npx for Python (run CLI tools in isolated envs)
+pip_base:
+  - uv
+  - git-filter-repo
+
+# =============================================================================
 # NPM GLOBAL PACKAGES (via nvm)
 # =============================================================================
 # Same across all platforms - applied after nvm installs Node.js
@@ -275,6 +284,14 @@ npm_global:
   - 'eslint'
 
 # =============================================================================
+# Add-AppxPackage (Windows Primary)
+# =============================================================================
+appx_package:
+  # FIXME: May not be required https://github.com/microsoft/terminal/issues/18033
+  # TODO: Eval for Microsoft.UI.Xaml.2.8 requirement here rather than winget
+  - stub_item
+
+# =============================================================================
 # CHOCOLATEY PACKAGES (Windows Primary)
 # =============================================================================
 choco:
@@ -285,7 +302,6 @@ choco:
   - docker-cli
   - docker-compose
   - vim
-  - FiraCode
   - nerd-fonts-FiraCode
   - nerd-fonts-Hack
   - Cygwin
@@ -293,18 +309,16 @@ choco:
   - rsync
   - cheatengine
   - make
+  - syncthingtray
 
 # =============================================================================
 # WINGET PACKAGES (Windows Secondary)
 # =============================================================================
 winget:
   dev_tools:
-    - CoreyButler.NVMforWindows
     - DenoLand.Deno
-    - Anaconda.Miniconda3
     - Git.Git
     - GitHub.cli
-    - Neovim.Neovim
     - Microsoft.VisualStudioCode.Insiders
     - Hashicorp.Terraform
     - Hashicorp.TerraformLanguageServer
@@ -315,7 +329,6 @@ winget:
     - waterlan.dos2unix
   kubernetes:
     - Kubernetes.kubectl
-    - Kubernetes.minikube
     - Helm.Helm
     - Kubecolor.kubecolor
     - stern.stern
@@ -337,10 +350,8 @@ winget:
     - Microsoft.Sysinternals.ProcessExplorer
     - Microsoft.PowerToys
   hardware:
-    - REALiX.HWiNFO
     - LibreHardwareMonitor.LibreHardwareMonitor
     - Rem0o.FanControl
-    - Guru3D.Afterburner
     - Guru3D.RTSS
     - BitSum.ProcessLasso
     - BitSum.ParkControl
@@ -366,13 +377,10 @@ winget:
     - Apple.Bonjour
   gaming:
     - Valve.Steam
-    - Valve.SteamCMD
     - Playnite.Playnite
     - HeroicGamesLauncher.HeroicGamesLauncher
-    - Beyond-All-Reason.Beyond-All-Reason
     - SpecialK.SpecialK
     - mtkennerly.ludusavi
-    - IridiumIO.CompactGUI
   media_creative:
     - Audacity.Audacity
     - KDE.Krita
@@ -382,14 +390,12 @@ winget:
     - rocksdanister.LivelyWallpaper
   communication:
     - Vencord.Vesktop
-    - Proton.ProtonMailBridge
     - Microsoft.Teams
     - Obsidian.Obsidian
     - hoppscotch.Hoppscotch
   file_transfer:
     - DelugeTeam.Deluge
   sync_backup:
-    - Martchus.syncthingtray
     - Microsoft.OneDrive
   desktop_customization:
     - AutoHotkey.AutoHotkey
@@ -423,10 +429,12 @@ winget_runtimes:
     - Microsoft.VCRedist.2015+.x86
     - Microsoft.VCRedist.2015+.x64
   ui_libraries:
-    - Microsoft.UI.Xaml.2.7
+    #- Microsoft.UI.Xaml.2.7
     - Microsoft.UI.Xaml.2.8
     - Microsoft.VCLibs.Desktop.14
   sdks:
+    - Microsoft.AppInstaller
+    - Microsoft.AppInstallerFileBuilder
     - Microsoft.WindowsSDK.10.0.18362
     - Microsoft.WindowsADK
     - Microsoft.NuGet

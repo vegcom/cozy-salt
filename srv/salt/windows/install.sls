@@ -1,22 +1,31 @@
-# Windows package installation - Role-Based (P2)
-# Packages selected based on host_role from pillar (minimal/base/dev/gaming/full)
-# Definitions in provisioning/windows/roles.sls
+# Windows package installation
+# Packages defined in provisioning/packages.sls
 
-{% import_yaml 'windows/roles.sls' as roles %}
+{% import_yaml 'packages.sls' as packages %}
 
-# Get host role from pillar, default to 'desktop' for standard installations
-{% set host_role = salt['pillar.get']('host_role', 'desktop') %}
-{% if host_role not in roles %}
-  # Invalid role, fallback to base
-  {% set host_role = 'base' %}
+# Install Winget runtime packages
+{% if packages.winget_runtimes is defined %}
+{% for category, pkgs in packages.winget_runtimes.items() %}
+{% for pkg in pkgs %}
+winget_runtime_{{ pkg | replace('.', '_') | replace('-', '_') }}:
+  cmd.run:
+    - name: winget install --accept-source-agreements --accept-package-agreements -h --scope machine --id {{ pkg }}
+    - unless: winget list --scope machine --id {{ pkg }} | findstr "{{ pkg }}"
+{% endfor %}
+{% endfor %}
 {% endif %}
 
-{% set selected_role = roles[host_role] %}
-
-windows_package_role_{{ host_role }}:
+# Install Winget packages by category
+{% if packages.winget is defined %}
+{% for category, pkgs in packages.winget.items() %}
+{% for pkg in pkgs %}
+winget_{{ pkg | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
-    - name: 'echo "Installing packages for role: {{ host_role }}"'
-    - shell: powershell
+    - name: winget install --accept-source-agreements --accept-package-agreements -h --scope machine --id {{ pkg }}
+    - unless: winget list --scope machine --id {{ pkg }} | findstr "{{ pkg }}"
+{% endfor %}
+{% endfor %}
+{% endif %}
 
 # Enable Chocolatey feature for remembered arguments on upgrades
 choco_feature_remembered_args:
@@ -25,51 +34,11 @@ choco_feature_remembered_args:
     - shell: powershell
     - unless: powershell -Command "choco feature list | Select-String -Pattern 'useRememberedArgumentsForUpgrades.*Enabled' -Quiet"
 
-# Install Chocolatey packages for selected role
-{% if selected_role.choco is defined %}
-{% for pkg in selected_role.choco %}
+# Install Chocolatey packages
+{% if packages.choco is defined %}
+{% for pkg in packages.choco %}
 choco_{{ pkg | replace('.', '_') | replace('-', '_') }}:
   chocolatey.installed:
     - name: {{ pkg }}
-{% endfor %}
-{% endif %}
-
-# Install Winget packages for selected role
-# Handles list-of-dicts structure from roles.sls
-{% if selected_role.winget is defined %}
-{% for category_dict in selected_role.winget %}
-{% for category, packages in category_dict.items() %}
-{% if packages is not string and packages is iterable and packages != 'all' %}
-{% for pkg in packages %}
-winget_{{ pkg | replace('.', '_') | replace('-', '_') }}:
-  cmd.run:
-    - name: winget install --id {{ pkg }} --scope system --accept-source-agreements --accept-package-agreements -h
-    - unless: winget list --id {{ pkg }} | findstr /C:"{{ pkg }}"
-{% endfor %}
-{% elif packages == 'all' %}
-# Note: 'all' marker means install entire category from base provisioning/packages.sls
-# Implementation: iterate full category from packages.sls when role is 'full'
-{% endif %}
-{% endfor %}
-{% endfor %}
-{% endif %}
-
-# Install Winget runtime packages for selected role
-# Handles list-of-dicts structure from roles.sls
-{% if selected_role.winget_runtimes is defined %}
-{% for category_dict in selected_role.winget_runtimes %}
-{% for category, packages in category_dict.items() %}
-{% if packages is not string and packages is iterable and packages != 'all' %}
-{% for pkg in packages %}
-winget_runtime_{{ pkg | replace('.', '_') | replace('-', '_') }}:
-  cmd.run:
-    - name: winget install --id {{ pkg }} --scope system --accept-source-agreements --accept-package-agreements -h
-    - unless: winget list --id {{ pkg }} | findstr /C:"{{ pkg }}"
-{% endfor %}
-{% elif packages == 'all' %}
-# Note: 'all' marker means install entire category from base provisioning/packages.sls
-# Implementation: iterate full category from packages.sls when role is 'full'
-{% endif %}
-{% endfor %}
 {% endfor %}
 {% endif %}
