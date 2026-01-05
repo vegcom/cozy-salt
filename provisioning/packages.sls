@@ -292,6 +292,15 @@ appx_package:
   - stub_item
 
 # =============================================================================
+# Power Shell system modules
+# =============================================================================
+
+pwsh_modules:
+  - Terminal-Icons
+  - PSReadLine
+  - Microsoft.WinGet.CommandNotFound
+
+# =============================================================================
 # CHOCOLATEY PACKAGES (Windows Primary)
 # =============================================================================
 choco:
@@ -368,7 +377,6 @@ winget:
     - Nefarius.HidHide
     - namazso.PawnIO
   networking:
-    - Tailscale.Tailscale
     - SSHFS-Win.SSHFS-Win
     - evsar3.sshfs-win-manager
     - WinFsp.WinFsp

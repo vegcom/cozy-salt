@@ -7,7 +7,8 @@
   'C:\\opt\\nvm\\nodejs',
   'C:\\opt\\rust\\bin',
   'C:\\opt\\miniforge3\\Scripts',
-  'C:\\opt\\miniforge3'
+  'C:\\opt\\miniforge3',
+  'C:\\opt\\windhawk'
 ] %}
 
 {% set current_path = salt['reg.read_value']('HKLM',"SYSTEM\CurrentControlSet\Control\Session Manager\Environment",'Path').get('vdata','') %}
