@@ -62,8 +62,9 @@ nul
 
 # Tests
 tests/output/*.json
+windows-tests
 
 # OPT
 .claude/
 CLAUDE.md
-**/*archive*
+**/*archive/*
