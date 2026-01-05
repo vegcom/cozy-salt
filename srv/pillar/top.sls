@@ -9,7 +9,7 @@ base:
   # Windows systems
   'G@os_family:Windows':
     - match: compound
-    - win
+    - windows
 
   # Linux systems
   'G@os_family:Debian or G@os_family:RedHat':
