@@ -42,3 +42,8 @@ nvm:
 # Miniforge package management
 miniforge:
   enabled: True
+
+
+# Windhawk
+windhawk:
+  enabled: False
