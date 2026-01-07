@@ -1,0 +1,13 @@
+# Simple unit to forward Open WebUI pod port
+# ~/.config/systemd/user/open-webui-port-forward.service
+[Unit]
+Description=Kubectl Port Forward OpenWebUI
+
+[Service]
+ExecStart=/usr/bin/kubectl port-forward --context lab -n inference statefulsets/open-webui 3000:3000
+Restart=always
+RestartSec=5
+KillMode=process
+
+[Install]
+WantedBy=default.target

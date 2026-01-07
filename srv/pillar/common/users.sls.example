@@ -1,0 +1,50 @@
+# Common user definitions shared across all platforms
+# Each user can have OS-specific configuration (linux_groups, windows_groups, etc)
+
+users:
+  admin:
+    fullname: Admin User
+    shell: /bin/bash
+    home_prefix: /home        # Linux: /home/admin, Windows: C:\Users\admin
+    linux_groups:
+      - cozyusers
+      - docker
+      - libvirt
+      - kvm
+    windows_groups:
+      - Administrators
+      - Users
+    ssh_keys: []              # Add public keys here: ["ssh-ed25519 AAAA... comment"]
+
+  vegcom:
+    fullname: Vegcom User
+    shell: /bin/bash
+    home_prefix: /home        # Linux: /home/vegcom, Windows: C:\Users\vegcom
+    linux_groups:
+      - cozyusers
+      - docker
+      - libvirt
+      - kvm
+    windows_groups:
+      - Users
+    ssh_keys: []              # Add public keys here
+
+  eve:
+    fullname: Eve User
+    shell: /bin/bash
+    home_prefix: /home        # Linux: /home/eve, Windows: C:\Users\eve
+    linux_groups:
+      - cozyusers
+      - docker
+      - libvirt
+      - kvm
+    windows_groups:
+      - Users
+    ssh_keys: []              # Add public keys here
+
+# Managed users list - users that get dotfiles/configs deployed
+# TODO: Derive from users dict keys instead of maintaining separate list
+managed_users:
+  - admin
+  - vegcom
+  - eve

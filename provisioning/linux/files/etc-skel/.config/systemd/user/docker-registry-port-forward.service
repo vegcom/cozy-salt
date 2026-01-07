@@ -1,0 +1,13 @@
+# Simple unit to forward Docker registry
+# ~/.config/systemd/user/docker-registry-forward.service
+[Unit]
+Description=Kubectl Port Forward Docker Registry
+
+[Service]
+ExecStart=/usr/bin/kubectl port-forward --context lab -n core deployment.apps/registry 5000:5000
+Restart=always
+RestartSec=5
+KillMode=process
+
+[Install]
+WantedBy=default.target

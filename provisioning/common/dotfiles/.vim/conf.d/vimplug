@@ -1,0 +1,34 @@
+" Plugin location, and list
+call plug#begin('~/.vim/plugged')
+  Plug 'vim-airline/vim-airline'
+  Plug 'dracula/vim', { 'as': 'dracula' }
+  Plug 'kien/ctrlp.vim'
+  Plug 'sheerun/vim-polyglot'
+  Plug 'tpope/vim-sleuth'
+  Plug 'nathanaelkane/vim-indent-guides'
+  Plug 'junegunn/vim-easy-align'
+  Plug 'Shougo/vimproc.vim', { 'do': 'make' }
+  Plug 'ycm-core/YouCompleteMe', { 'do': './install.py' }
+  Plug 'vim-syntastic/syntastic', {'do': 'g:syntastic_python_python_exec = python3'}
+  Plug 'tpope/vim-surround'
+  Plug 'scrooloose/nerdcommenter',
+  Plug 'scrooloose/nerdtree'
+  Plug 'majutsushi/tagbar',
+  Plug 'pseewald/nerdtree-tagbar-combined',
+  Plug 'universal-ctags/ctags'
+  Plug 'aperezdc/vim-template'
+  Plug 'hattya/license.vim'
+  Plug 'thinca/vim-themis'
+  Plug 'mileszs/ack.vim'
+  Plug 'fidian/hexmode',
+  Plug 'heavenshell/vim-pydocstring', { 'do': 'make install', 'for': 'python' },
+  Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' },
+  " mess about
+  Plug 'mhinz/vim-startify',
+  Plug 'skanehira/docker-compose.vim',
+  Plug 'mattn/emmet-vim',
+  Plug 'Shougo/vimproc.vim', {'do' : 'make'},
+,
+call plug#end()
+
+" vi: ft=vim
