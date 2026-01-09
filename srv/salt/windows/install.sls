@@ -49,7 +49,7 @@ winget_{{ pkg | replace('.', '_') | replace('-', '_') }}:
     {% for pkg in pkgs %}
 winget_userland_{{ user | replace('.', '_') | replace('-', '_') }}_{{ pkg | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
-    - name: winget install --scope user --accept-source-agreements --accept-package-agreements  --exact --id {{ pkg }}
+    - name: winget install --force --scope user --accept-source-agreements --accept-package-agreements  --exact --id {{ pkg }}
     - runas: {{ user }}
     - shell: pwsh
     # - unless: >
