@@ -1,0 +1,17 @@
+.claude/
+.vscode/
+**/__pycache__/
+
+tests/archive-2025-12-30/
+tests/archive-2025-12-30/parse-state-results.py
+tests/archive-2025-12-30/test-shellscripts.sh
+tests/archive-2025-12-30/test-states-json.sh
+CLAUDE.md
+srv/salt/keys/master/master.pem
+srv/salt/keys/master/master.pub
+srv/salt/keys/minion/rhel-test.pem
+srv/salt/keys/minion/rhel-test.pub
+srv/salt/keys/minion/ubuntu-test.pem
+srv/salt/keys/minion/ubuntu-test.pub
+srv/pillar/common/users.sls
+provisioning/common/dotfiles/.git_template/.DS_Store
