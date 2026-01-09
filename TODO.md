@@ -1,24 +1,110 @@
 # cozy-salt TODO - Active Work
 
-**Status:** Active Development | **Last Updated:** 2025-12-31
+**Status:** Active Development | **Last Updated:** 2026-01-09
 
-## Active Work
+---
 
-Eval
-```
-New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" ` -Name DefaultShell ` -Value "C:\Program Files\PowerShell\7-preview\pwsh.exe" ` -PropertyType String -Force
-```
+## P0: Critical / Blocking
 
-### Action Items
+- [x] **Merge history from feat/windows-self-enrollment** - Done 2026-01-09
+  - Full merge to preserve 50+ commits of work
+  - Local working Windows config preserved
 
-- [x] **P1: Fix GitHub Actions workflow errors** - Fixed locally, pending push
-  - Fixed script permissions (644 → 755)
-  - Removed non-existent `azure/setup-powershell` action
+- [ ] **Fix Windows VM path bloat**
+  - VM data currently stored in git-tracked path
+  - Move VM storage outside repo (e.g., `/var/lib/cozy-salt/vms/`)
+  - Add path to `.gitignore` if remnants exist
 
-- [x] **Windows SSH authorized_keys path** - Implemented in `srv/salt/windows/users.sls`
-  - Admin users: keys appended to `__PROGRAMDATA__/ssh/administrators_authorized_keys`
-  - Non-admin users: keys deployed to `%USERPROFILE%\.ssh\authorized_keys`
-  - Auto-detects via `windows_groups` containing `Administrators`
+---
+
+## P1: High Priority - Path Parameterization
+
+All `/opt/*` and `C:\opt\*` paths should be pillar-driven:
+
+| Tool | Linux Path | Windows Path | Pillar Key |
+|------|------------|--------------|------------|
+| NVM | `/opt/nvm` | `C:\opt\nvm` | `paths:nvm` |
+| Rust | `/opt/rust` | `C:\opt\rust` | `paths:rust` |
+| Miniforge | `/opt/miniforge3` | `C:\opt\miniforge3` | `paths:miniforge` |
+| Homebrew | `/home/linuxbrew` | N/A | `paths:homebrew` |
+| Docker Proxy | `/opt/cozy/docker-proxy.yaml` | N/A | `paths:docker_proxy` |
+
+**Files to update:**
+- [ ] `srv/salt/linux/nvm.sls` (lines 14, 26, 34, 45, 52)
+- [ ] `srv/salt/windows/nvm.sls` (lines 7, 8, 10)
+- [ ] `srv/salt/linux/rust.sls` (lines 10, 28, 29, 36, 45, 49)
+- [ ] `srv/salt/windows/rust.sls` (lines 6, 17, 27)
+- [ ] `srv/salt/linux/miniforge.sls` (lines 11, 21)
+- [ ] `srv/salt/windows/miniforge.sls` (line 7)
+- [ ] `srv/salt/linux/homebrew.sls` (lines 10, 12, 32, 42, 60, 68)
+- [ ] `srv/salt/linux/docker-proxy.sls` (lines 12, 24)
+- [ ] Create `srv/pillar/common/paths.sls` with defaults
+
+### Windows Test Output
+
+- [ ] **Add Windows test output path** similar to Linux
+  - Create `tests/output/windows/` for Windows state results
+  - Parse Windows state failures same as Linux
+  - Update `tests/fixtures/docker.py` for Windows log collection
+
+---
+
+## P2: Medium Priority - Deduplication
+
+### Package Installation Logic
+
+- [ ] **Consolidate workstation_roles.sls into install.sls**
+  - `srv/salt/linux/install.sls` (lines 63-173)
+  - `srv/salt/linux/workstation_roles.sls` (lines 44-152)
+  - Both iterate categories and install packages
+  - Make `install.sls` role-aware via pillar instead
+
+### Windows Registry Constants
+
+- [ ] **Extract Windows registry path constant**
+  - `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment`
+  - Repeated 6 times in: `nvm.sls`, `rust.sls`, `miniforge.sls`
+  - Create macro or pillar variable
+
+### Cross-Platform Rust
+
+- [ ] **Create common/rust.sls**
+  - Linux has component installation (clippy, rustfmt)
+  - Windows lacks component installation
+  - Unify in common module like nvm/miniforge
+
+---
+
+## P3: Low Priority - Organization
+
+### Scripts Reorganization
+
+Current flat structure at `scripts/` root. Proposed:
+- [ ] Create `scripts/ci/` - move `fix-permissions.sh`
+- [ ] Create `scripts/setup/` - move `generate-windows-keys.*`
+- [ ] Update references in Makefile, .github/workflows, CONTRIBUTING.md
+- [ ] Grep all paths before moving (Rule 3)
+
+### Tests Docker Modularization
+
+- [ ] **Split docker-compose.yaml into tests/docker/**
+  - `tests/docker/docker-compose.yml` - Base services (master)
+  - `tests/docker/docker-compose.ubuntu.yml` - Ubuntu minion
+  - `tests/docker/docker-compose.rhel.yml` - RHEL minion
+  - `tests/docker/docker-compose.windows.yml` - Windows minion (KVM)
+  - Update Makefile to use `-f` flags for compose files
+
+### Version Pillar
+
+- [ ] **Move Windhawk version to pillar**
+  - Currently hardcoded to `1.7.3` in `srv/salt/windows/windhawk.sls`
+  - Add to `srv/pillar/common/versions.sls`
+
+---
+
+## Future Improvements
+
+### Enrollment & DNS
 
 - [ ] **Create git token for enrollment** - needed for provisioning new systems
 - [ ] **DNS config: append nameservers when Tailscale present**
@@ -28,35 +114,6 @@ New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" ` -Name DefaultShell ` -Value "C
   - Detect via tailscale0 interface presence
   - Docs: https://tailscale.com/kb/1235/resolv-conf
   - Docs: https://tailscale.com/kb/1081/magicdns
-
-### Kali Host (guava) Issues
-
-- [x] **Docker repo 404 on Kali** - Fixed: Kali/WSL detection uses Ubuntu `noble` repo
-
-- [x] **cozyusers group not created before user states**
-  - Fixed: Added explicit `order:` parameters (groups: 1-2, users: 10)
-
-- [x] **Homebrew installation chain fails**
-  - Fixed: Added order: 20 and explicit require for cozyusers_group
-
-### Windows Issues
-
-- [x] **Windows user creation** - PowerShell group workaround tested, working
-- [x] **nvm PATH issue** - Fixed to use full path `C:\opt\nvm\nvm.exe`
-- [x] **OpenSSH default shell** - Added registry key for pwsh.exe
-- [x] **miniforge pip_base packages** - Added uv/uvx via common.miniforge
-- [x] **NVM_SYMLINK env var** - Added to registry + inline env for nvm use/npm commands
-
----
-
-## Future Improvements
-
-### Makefile Validation Targets
-
-- [x] **Add `make validate-states` target** (implemented)
-  - `validate-states`: Linux states via containerized salt-call
-  - `validate-states-windows`: Windows states (run on Windows host)
-  - Catches YAML/Jinja syntax errors before deploy
 
 ### User Pillar Structure
 
@@ -127,9 +184,14 @@ New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" ` -Name DefaultShell ` -Value "C
 
 ---
 
-## Completed Work Summary (2025-12-31)
+## Completed Work Summary
 
-All items from consolidation phase have been completed and merged to main:
+### 2026-01-09
+- [x] Merge history from feat/windows-self-enrollment (50+ commits recovered)
+- [x] Linux states refactored (local versions kept)
+
+### 2025-12-31
+All items from consolidation phase completed:
 - P0+P1 Consolidation (150+ lines bloat reduction)
 - P2 Linux & Windows package organization
 - Critical security fixes (auto_accept removal, pre-shared keys)
@@ -137,5 +199,25 @@ All items from consolidation phase have been completed and merged to main:
 - Code consolidation (Dockerfiles, YAML anchors, macros, common modules)
 - Architecture documentation (10 ADRs)
 - Pre-commit hooks for automated validation
+- GitHub Actions workflow errors fixed
+- Windows SSH authorized_keys path implemented
+- Docker repo 404 on Kali fixed
+- cozyusers group ordering fixed
+- Homebrew installation chain fixed
+- Windows user creation working
+- nvm PATH issue fixed
+- OpenSSH default shell configured
+- miniforge pip_base packages added
+- NVM_SYMLINK env var configured
+- Makefile validate-states target added
 
 See git history for implementation details.
+
+---
+
+## Notes
+
+- Before moving ANY file: `grep -Hnr "path" srv/salt/ srv/pillar/ provisioning/ scripts/ .github/ tests/`
+- Salt runs as uid 999, needs read access to all .sls/.yml
+- Run `./scripts/fix-permissions.sh` if permission issues
+- NVM default version: Linux uses `lts/*`, Windows/common use `lts` (verify if intentional)
