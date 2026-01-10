@@ -404,6 +404,8 @@ winget_system:
     - WiresharkFoundation.Wireshark
   gaming:
     - Valve.Steam
+  sync_backup:
+    - Microsoft.OneDrive
   media_creative:
     - Audacity.Audacity
     #- Cockos.REAPER

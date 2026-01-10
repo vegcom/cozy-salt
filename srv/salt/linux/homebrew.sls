@@ -3,35 +3,38 @@
 # ACL permissions allow multiple users to manage packages via cozyusers group
 # Requires git and build-essential (already in packages)
 # Requires acl package (for setfacl permissions)
-# Note: cozyusers group and admin user created in linux.users state
+# Note: cozyusers group created in linux.users state
 
 {# Path configuration from pillar with defaults #}
 {% set homebrew_base = salt['pillar.get']('install_paths:homebrew:linux', '/home/linuxbrew/.linuxbrew') %}
 {# Extract parent directory for initial creation #}
 {% set homebrew_parent = homebrew_base.rsplit('/', 1)[0] if '/' in homebrew_base else '/home/linuxbrew' %}
+{# Use first managed user for homebrew operations (homebrew rejects root) #}
+{% set managed_users = salt['pillar.get']('managed_users', []) %}
+{% set homebrew_user = managed_users[0] if managed_users else 'nobody' %}
 
-# Create parent directory owned by admin user
+# Create parent directory owned by homebrew_user
 # Homebrew installer will create .linuxbrew subdirectory
 linuxbrew_directory:
   file.directory:
     - name: {{ homebrew_parent }}
-    - user: admin
-    - group: admin
+    - user: {{ homebrew_user }}
+    - group: {{ homebrew_user }}
     - mode: 755
     - makedirs: True
     - order: 20
     - require:
-      - user: admin_user
+      - user: {{ homebrew_user }}_user
       - group: cozyusers_group
 
 # Download and execute Homebrew installer (default supported path)
-# Runs as admin user (Homebrew rejects root execution)
+# Runs as homebrew_user (Homebrew rejects root execution)
 # NONINTERACTIVE=1 suppresses prompts
 homebrew_install:
   cmd.run:
     - name: |
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    - runas: admin
+    - runas: {{ homebrew_user }}
     - env:
       - NONINTERACTIVE: 1
     - creates: {{ homebrew_base }}/bin/brew
@@ -57,7 +60,7 @@ homebrew_profile:
     - require:
       - cmd: homebrew_acl_permissions
 
-# Update Homebrew after installation (must run as admin, not root)
+# Update Homebrew after installation (must run as non-root user)
 # Fix missing git remote if needed, then update
 homebrew_update:
   cmd.run:
@@ -67,7 +70,7 @@ homebrew_update:
           git remote add origin https://github.com/Homebrew/brew.git
         fi
         {{ homebrew_base }}/bin/brew update || true
-    - runas: admin
+    - runas: {{ homebrew_user }}
     - require:
       - cmd: homebrew_install
     - unless: test -f {{ homebrew_base }}/var/homebrew/.last_update_timestamp

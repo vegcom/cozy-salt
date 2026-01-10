@@ -2,15 +2,49 @@
 # Iterates over users defined in pillar (srv/pillar/common/users.sls)
 # Creates managed users with appropriate Windows groups (Administrators, Users)
 
-{% set users = salt['pillar.get']('users', {}) %}
+# Profile health check - detect corrupted/temp profiles before proceeding
+# Temp profiles have .MACHINENAME suffix (e.g., user.DESKTOP-ABC123)
+windows_profile_health_check:
+  cmd.run:
+    - name: |
+        $tempProfiles = Get-ChildItem C:\Users -Directory -ErrorAction SilentlyContinue |
+          Where-Object { $_.Name -match '\.\w+-\w+$' }
+        if ($tempProfiles) {
+          Write-Host "WARNING: Detected temporary/corrupted profiles:"
+          $tempProfiles | ForEach-Object { Write-Host "  - $($_.FullName)" }
+          Write-Host ""
+          Write-Host "These indicate profile corruption (SID mismatch or failed profile load)."
+          Write-Host "Fix manually before proceeding:"
+          Write-Host "  1. Check HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList"
+          Write-Host "  2. Remove orphaned registry entries"
+          Write-Host "  3. Delete or rename duplicate profile folders"
+          exit 1
+        }
+        Write-Host "Profile health check passed - no temp profiles detected"
+    - shell: pwsh
+    - order: 1
 
-# Iterate over users from pillar and create each one on Windows
-{% for username, userdata in users.items() %}
+{% set users = salt['pillar.get']('users', {}) %}
+{% set managed_users = salt['pillar.get']('managed_users', []) %}
+
+# Iterate over managed_users only (admin excluded on Windows, uses built-in Administrator)
+{% for username in managed_users %}
+{% set userdata = users.get(username, {}) %}
 # Create {{ username }} user on Windows
 {{ username }}_user:
   user.present:
     - name: {{ username }}
     - fullname: {{ userdata.get('fullname', username) }}
+
+# Force profile creation by running a command as the user
+# This ensures Windows creates the profile before we try to manage files in it
+{{ username }}_initialize_profile:
+  cmd.run:
+    - name: whoami
+    - runas: {{ username }}
+    - shell: cmd
+    - require:
+      - user: {{ username }}_user
 
 # Add {{ username }} to Windows groups using PowerShell
 # Salt's user.present groups parameter has a bug on Windows (ValueError: list.remove)
@@ -22,15 +56,6 @@
         Add-LocalGroupMember -Group "{{ group }}" -Member "{{ username }}" -ErrorAction SilentlyContinue
         {% endfor %}
     - shell: pwsh
-    - require:
-      - user: {{ username }}_user
-
-# Create {{ username }} home directory
-{{ username }}_home_directory:
-  file.directory:
-    - name: C:\Users\{{ username }}
-    - user: {{ username }}
-    - makedirs: True
     - require:
       - user: {{ username }}_user
 
@@ -63,7 +88,7 @@
     - user: {{ username }}
     - makedirs: True
     - require:
-      - file: {{ username }}_home_directory
+      - cmd: {{ username }}_initialize_profile
 
 # Ensure authorized_keys exists with correct ownership
 {{ username }}_authorized_keys_file:

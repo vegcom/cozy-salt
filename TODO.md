@@ -1,26 +1,6 @@
 # cozy-salt TODO - Active Work
 
-**Status:** Active Development | **Last Updated:** 2026-01-09
-
----
-
-## P0: Critical / Blocking
-
-- [ ] **Fix Windows VM path bloat**
-  - VM data currently stored in git-tracked path
-  - Move VM storage outside repo (e.g., `/var/lib/cozy-salt/vms/`)
-  - Add path to `.gitignore` if remnants exist
-
----
-
-## P1: High Priority
-
-### Windows Test Output
-
-- [ ] **Add Windows test output path** similar to Linux
-  - Create `tests/output/windows/` for Windows state results
-  - Parse Windows state failures same as Linux
-  - Update `tests/fixtures/docker.py` for Windows log collection
+**Status:** Active Development | **Last Updated:** 2026-01-10
 
 ---
 
@@ -49,13 +29,25 @@ Current flat structure at `scripts/` root. Proposed:
   - Currently hardcoded to `1.7.3` in `srv/salt/windows/windhawk.sls`
   - Add to `srv/pillar/common/versions.sls`
 
+### Homebrew Admin Hardcoding
+
+- [x] **Parameterize `admin` user in homebrew.sls** ✓ 2026-01-10
+  - Uses first user from `managed_users` pillar
+  - Fallback to `nobody` if no managed users defined
+
 ---
 
 ## Future / Backlog
 
+### Windows Test Output
+
+- [ ] **Add Windows test output path** similar to Linux
+  - Create `tests/output/windows/` for Windows state results
+  - Parse Windows state failures same as Linux
+  - Update `tests/fixtures/docker.py` for Windows log collection
+
 ### Enrollment & DNS
 
-- [ ] **Create git token for enrollment** - needed for provisioning new systems
 - [ ] **DNS config: append nameservers when Tailscale present**
   - Tailscale overwrites /etc/resolv.conf with 100.100.100.100
   - Append local (10.0.0.1) + Cloudflare (1.1.1.1, 1.0.0.1) after Tailscale DNS
@@ -130,41 +122,6 @@ Current flat structure at `scripts/` root. Proposed:
     2. Custom state module extending `cmd.run`
     3. Pillar-based defaults with `| default(pillar.get('win_env'))` pattern
   - Benefits: DRY, consistent env across all states, easier debugging
-
----
-
-## Completed Work Summary
-
-### 2026-01-09
-- [x] Merge history from feat/windows-self-enrollment (50+ commits recovered)
-- [x] Linux states refactored (local versions kept)
-- [x] P1: Path parameterization - all hardcoded paths now pillar-driven
-- [x] P2: Consolidated workstation_roles.sls into role-aware install.sls
-- [x] P2: Created common/rust.sls for cross-platform component installation
-- [x] P2: Windows registry constant extracted to pillar
-
-### 2025-12-31
-All items from consolidation phase completed:
-- P0+P1 Consolidation (150+ lines bloat reduction)
-- P2 Linux & Windows package organization
-- Critical security fixes (auto_accept removal, pre-shared keys)
-- Infrastructure hardening (SSH, healthchecks, base images)
-- Code consolidation (Dockerfiles, YAML anchors, macros, common modules)
-- Architecture documentation (10 ADRs)
-- Pre-commit hooks for automated validation
-- GitHub Actions workflow errors fixed
-- Windows SSH authorized_keys path implemented
-- Docker repo 404 on Kali fixed
-- cozyusers group ordering fixed
-- Homebrew installation chain fixed
-- Windows user creation working
-- nvm PATH issue fixed
-- OpenSSH default shell configured
-- miniforge pip_base packages added
-- NVM_SYMLINK env var configured
-- Makefile validate-states target added
-
-See git history for implementation details.
 
 ---
 
