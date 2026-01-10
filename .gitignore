@@ -16,3 +16,7 @@ srv/salt/keys/minion/ubuntu-test.pub
 srv/pillar/common/users.sls
 provisioning/common/dotfiles/.git_template/.DS_Store
 .coverage
+docs/tidy/egirl-ops-makefile-naming-review.md
+docs/tidy/egirl-ops-test-infrastructure-review.md
+docs/tidy/plan-agent-architecture-deliberation.md
+docs/tidy/test-invocation-paths.md
