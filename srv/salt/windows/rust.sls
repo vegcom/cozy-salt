@@ -52,5 +52,7 @@ rust_cargo_home:
       - cmd: rust_install
 
 # PATH updates handled by windows.paths
+# Rust components (clippy, rustfmt) via common orchestration
 include:
   - windows.paths
+  - common.rust

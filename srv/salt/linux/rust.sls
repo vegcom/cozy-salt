@@ -40,13 +40,6 @@ rust_profile:
     - source: salt://linux/files/etc-profile.d/rust.sh
     - mode: 644
 
-# Install additional Rust components (clippy, rustfmt)
-# These are installed via rustup after initial Rust setup
-rust_install_components:
-  cmd.run:
-    - name: |
-        RUSTUP_HOME={{ rust_path }} CARGO_HOME={{ rust_path }} {{ rust_path }}/bin/rustup component add clippy rustfmt
-    - require:
-      - cmd: rust_download_and_install
-      - file: rust_profile
-    - unless: test -f {{ rust_path }}/bin/clippy-driver
+# Install Rust components via common orchestration
+include:
+  - common.rust

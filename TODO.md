@@ -55,27 +55,29 @@
 
 ## P2: Medium Priority - Deduplication
 
+- [x] **P2 Deduplication complete** - Done 2026-01-09
+
 ### Package Installation Logic
 
-- [ ] **Consolidate workstation_roles.sls into install.sls**
-  - `srv/salt/linux/install.sls` (lines 63-173)
-  - `srv/salt/linux/workstation_roles.sls` (lines 44-152)
-  - Both iterate categories and install packages
-  - Make `install.sls` role-aware via pillar instead
+- [x] **Consolidated workstation_roles.sls into install.sls**
+  - `install.sls` now role-aware via `workstation_role` pillar
+  - Roles: `workstation-minimal`, `workstation-base`, `workstation-developer`, `workstation-full` (default)
+  - Each role defines capability sets (core_utils, shell_enhancements, monitoring, etc.)
+  - Deleted redundant `workstation_roles.sls` - GPU detection moved to install.sls
+  - ~100 lines of duplicate code eliminated
 
 ### Windows Registry Constants
 
-- [ ] **Extract Windows registry path constant**
-  - `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment`
-  - Repeated 6 times in: `nvm.sls`, `rust.sls`, `miniforge.sls`
-  - Create macro or pillar variable
+- [x] **Extracted Windows registry path constant** (Done in P1)
+  - Added `windows:env_registry` to `srv/pillar/common/paths.sls`
+  - All Windows states now use `salt['pillar.get']('windows:env_registry', ...)`
 
 ### Cross-Platform Rust
 
-- [ ] **Create common/rust.sls**
-  - Linux has component installation (clippy, rustfmt)
-  - Windows lacks component installation
-  - Unify in common module like nvm/miniforge
+- [x] **Created common/rust.sls**
+  - Both Linux and Windows now include `common.rust` for component installation
+  - Installs clippy and rustfmt on both platforms
+  - Pattern matches common/nvm.sls and common/miniforge.sls
 
 ---
 
@@ -193,6 +195,10 @@ Current flat structure at `scripts/` root. Proposed:
 ### 2026-01-09
 - [x] Merge history from feat/windows-self-enrollment (50+ commits recovered)
 - [x] Linux states refactored (local versions kept)
+- [x] P1: Path parameterization - all hardcoded paths now pillar-driven
+- [x] P2: Consolidated workstation_roles.sls into role-aware install.sls
+- [x] P2: Created common/rust.sls for cross-platform component installation
+- [x] P2: Windows registry constant extracted to pillar
 
 ### 2025-12-31
 All items from consolidation phase completed:
