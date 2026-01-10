@@ -6,10 +6,6 @@
 
 ## P0: Critical / Blocking
 
-- [x] **Merge history from feat/windows-self-enrollment** - Done 2026-01-09
-  - Full merge to preserve 50+ commits of work
-  - Local working Windows config preserved
-
 - [ ] **Fix Windows VM path bloat**
   - VM data currently stored in git-tracked path
   - Move VM storage outside repo (e.g., `/var/lib/cozy-salt/vms/`)
@@ -17,32 +13,7 @@
 
 ---
 
-## P1: High Priority - Path Parameterization
-
-- [x] **Path parameterization complete** - Done 2026-01-09
-  - All `/opt/*` and `C:\opt\*` paths now use pillar lookups with defaults
-  - Pattern: `{% set path = salt['pillar.get']('install_paths:tool:platform', 'default') %}`
-
-| Tool | Linux Path | Windows Path | Pillar Key |
-|------|------------|--------------|------------|
-| NVM | `/opt/nvm` | `C:\opt\nvm` | `install_paths:nvm` |
-| Rust | `/opt/rust` | `C:\opt\rust` | `install_paths:rust` |
-| Miniforge | `/opt/miniforge3` | `C:\opt\miniforge3` | `install_paths:miniforge` |
-| Homebrew | `/home/linuxbrew/.linuxbrew` | N/A | `install_paths:homebrew` |
-| Cozy | `/opt/cozy` | `C:\opt\cozy` | `install_paths:cozy` |
-
-**Files updated:**
-- [x] `srv/salt/linux/nvm.sls`
-- [x] `srv/salt/windows/nvm.sls`
-- [x] `srv/salt/linux/rust.sls`
-- [x] `srv/salt/windows/rust.sls`
-- [x] `srv/salt/linux/miniforge.sls`
-- [x] `srv/salt/windows/miniforge.sls`
-- [x] `srv/salt/linux/homebrew.sls`
-- [x] `srv/salt/linux/docker-proxy.sls`
-- [x] `srv/salt/common/nvm.sls`
-- [x] `srv/salt/common/miniforge.sls`
-- [x] `srv/pillar/common/paths.sls` (already existed, now used)
+## P1: High Priority
 
 ### Windows Test Output
 
@@ -53,35 +24,7 @@
 
 ---
 
-## P2: Medium Priority - Deduplication
-
-- [x] **P2 Deduplication complete** - Done 2026-01-09
-
-### Package Installation Logic
-
-- [x] **Consolidated workstation_roles.sls into install.sls**
-  - `install.sls` now role-aware via `workstation_role` pillar
-  - Roles: `workstation-minimal`, `workstation-base`, `workstation-developer`, `workstation-full` (default)
-  - Each role defines capability sets (core_utils, shell_enhancements, monitoring, etc.)
-  - Deleted redundant `workstation_roles.sls` - GPU detection moved to install.sls
-  - ~100 lines of duplicate code eliminated
-
-### Windows Registry Constants
-
-- [x] **Extracted Windows registry path constant** (Done in P1)
-  - Added `windows:env_registry` to `srv/pillar/common/paths.sls`
-  - All Windows states now use `salt['pillar.get']('windows:env_registry', ...)`
-
-### Cross-Platform Rust
-
-- [x] **Created common/rust.sls**
-  - Both Linux and Windows now include `common.rust` for component installation
-  - Installs clippy and rustfmt on both platforms
-  - Pattern matches common/nvm.sls and common/miniforge.sls
-
----
-
-## P3: Low Priority - Organization
+## P2: Medium Priority - Organization
 
 ### Scripts Reorganization
 
@@ -108,7 +51,7 @@ Current flat structure at `scripts/` root. Proposed:
 
 ---
 
-## Future Improvements
+## Future / Backlog
 
 ### Enrollment & DNS
 
