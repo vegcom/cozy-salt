@@ -15,3 +15,4 @@ srv/salt/keys/minion/ubuntu-test.pem
 srv/salt/keys/minion/ubuntu-test.pub
 srv/pillar/common/users.sls
 provisioning/common/dotfiles/.git_template/.DS_Store
+.coverage

@@ -25,9 +25,9 @@ Current flat structure at `scripts/` root. Proposed:
 
 ### Version Pillar
 
-- [ ] **Move Windhawk version to pillar**
-  - Currently hardcoded to `1.7.3` in `srv/salt/windows/windhawk.sls`
-  - Add to `srv/pillar/common/versions.sls`
+- [x] **Move Windhawk version to pillar** ✓ 2026-01-10
+  - Added to `srv/pillar/common/versions.sls`
+  - State already reads from pillar with fallback default
 
 ### Homebrew Admin Hardcoding
 

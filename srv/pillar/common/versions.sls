@@ -21,3 +21,9 @@ versions:
   rust:
     version: stable
     description: Rust toolchain (always latest stable)
+
+  # Windhawk - Windows customization tool
+  # https://github.com/ramensoftware/windhawk/releases
+  windhawk:
+    version: 1.7.3
+    description: Windows system-level customization (portable install)
