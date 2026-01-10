@@ -19,26 +19,30 @@
 
 ## P1: High Priority - Path Parameterization
 
-All `/opt/*` and `C:\opt\*` paths should be pillar-driven:
+- [x] **Path parameterization complete** - Done 2026-01-09
+  - All `/opt/*` and `C:\opt\*` paths now use pillar lookups with defaults
+  - Pattern: `{% set path = salt['pillar.get']('install_paths:tool:platform', 'default') %}`
 
 | Tool | Linux Path | Windows Path | Pillar Key |
 |------|------------|--------------|------------|
-| NVM | `/opt/nvm` | `C:\opt\nvm` | `paths:nvm` |
-| Rust | `/opt/rust` | `C:\opt\rust` | `paths:rust` |
-| Miniforge | `/opt/miniforge3` | `C:\opt\miniforge3` | `paths:miniforge` |
-| Homebrew | `/home/linuxbrew` | N/A | `paths:homebrew` |
-| Docker Proxy | `/opt/cozy/docker-proxy.yaml` | N/A | `paths:docker_proxy` |
+| NVM | `/opt/nvm` | `C:\opt\nvm` | `install_paths:nvm` |
+| Rust | `/opt/rust` | `C:\opt\rust` | `install_paths:rust` |
+| Miniforge | `/opt/miniforge3` | `C:\opt\miniforge3` | `install_paths:miniforge` |
+| Homebrew | `/home/linuxbrew/.linuxbrew` | N/A | `install_paths:homebrew` |
+| Cozy | `/opt/cozy` | `C:\opt\cozy` | `install_paths:cozy` |
 
-**Files to update:**
-- [ ] `srv/salt/linux/nvm.sls` (lines 14, 26, 34, 45, 52)
-- [ ] `srv/salt/windows/nvm.sls` (lines 7, 8, 10)
-- [ ] `srv/salt/linux/rust.sls` (lines 10, 28, 29, 36, 45, 49)
-- [ ] `srv/salt/windows/rust.sls` (lines 6, 17, 27)
-- [ ] `srv/salt/linux/miniforge.sls` (lines 11, 21)
-- [ ] `srv/salt/windows/miniforge.sls` (line 7)
-- [ ] `srv/salt/linux/homebrew.sls` (lines 10, 12, 32, 42, 60, 68)
-- [ ] `srv/salt/linux/docker-proxy.sls` (lines 12, 24)
-- [ ] Create `srv/pillar/common/paths.sls` with defaults
+**Files updated:**
+- [x] `srv/salt/linux/nvm.sls`
+- [x] `srv/salt/windows/nvm.sls`
+- [x] `srv/salt/linux/rust.sls`
+- [x] `srv/salt/windows/rust.sls`
+- [x] `srv/salt/linux/miniforge.sls`
+- [x] `srv/salt/windows/miniforge.sls`
+- [x] `srv/salt/linux/homebrew.sls`
+- [x] `srv/salt/linux/docker-proxy.sls`
+- [x] `srv/salt/common/nvm.sls`
+- [x] `srv/salt/common/miniforge.sls`
+- [x] `srv/pillar/common/paths.sls` (already existed, now used)
 
 ### Windows Test Output
 
