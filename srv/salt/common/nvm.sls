@@ -11,9 +11,15 @@
 # Install global npm packages (if defined)
 # All packages installed in single command for efficiency
 {% set npm_packages = packages.get('npm_global', []) %}
-{% set nvm_path = 'C:\\opt\\nvm' %}
-{% set node_path = nvm_path + '\\nodejs' %}
-{% set npm_bin = node_path + '\\npm.cmd' %}
+
+{# Path configuration from pillar with defaults - platform-specific #}
+{% if grains['os_family'] == 'Windows' %}
+{% set nvm_path = salt['pillar.get']('install_paths:nvm:windows', 'C:\\opt\\nvm') %}
+{% set node_path = nvm_path ~ '\\nodejs' %}
+{% set npm_bin = node_path ~ '\\npm.cmd' %}
+{% else %}
+{% set nvm_path = salt['pillar.get']('install_paths:nvm:linux', '/opt/nvm') %}
+{% endif %}
 
 {% if npm_packages %}
 install_npm_global_packages:
@@ -27,11 +33,11 @@ install_npm_global_packages:
     - require:
       - cmd: nvm_use_default
     {% else %}
-    - name: NPM_CONFIG_PREFIX=/opt/nvm npm install -g {{ npm_packages | join(' ') }}
+    - name: NPM_CONFIG_PREFIX={{ nvm_path }} npm install -g {{ npm_packages | join(' ') }}
     - shell: /bin/bash
     - env:
       - BASH_ENV: /etc/profile.d/nvm.sh
-      - NVM_DIR: /opt/nvm
+      - NVM_DIR: {{ nvm_path }}
     - require:
       - cmd: nvm_install_default_version
     {% endif %}

@@ -1,6 +1,6 @@
 # cozy-salt Makefile - shortcuts for common operations
 
-.PHONY: help test test-ubuntu test-apt test-linux test-rhel test-windows test-all test-quick lint lint-shell lint-ps clean clean-keys clean-all up up-master down down-master restart restart-master up-ubuntu-test down-ubuntu-test up-rhel-test down-rhel-test logs status validate validate-states validate-states-windows perms shell state-check debug-minion logs-minion salt-help salt-key-list salt-key-status salt-key-cleanup-test salt-key-accept salt-key-delete salt-key-reject salt-key-accept-test salt-manage-status salt-jobs-active salt-jobs-list salt-jobs-clear salt-test-ping salt-state-highstate salt-state-highstate-test pytest pytest-ubuntu pytest-rhel pytest-windows pytest-all pytest-lint salt-doc salt-cmd salt-grains salt-state-sls salt-cache-clear salt-clear_cache mamba-create mamba-update mamba-remove mamba-activate
+.PHONY: help test test-ubuntu test-apt test-linux test-rhel test-windows test-all test-quick lint lint-shell lint-ps clean clean-keys clean-all up up-master down down-master restart restart-master up-ubuntu-test down-ubuntu-test up-rhel-test down-rhel-test logs status validate validate-states validate-states-windows perms shell state-check debug-minion logs-minion salt-docs salt-key-list salt-key-status salt-key-cleanup-test salt-key-accept salt-key-delete salt-key-reject salt-key-accept-test salt-manage-status salt-jobs-active salt-jobs-list salt-jobs-clear salt-test-ping salt-state-highstate salt-state-highstate-test pytest pytest-ubuntu pytest-rhel pytest-windows pytest-all pytest-lint salt-doc salt-cmd salt-grains salt-state-sls salt-cache-clear salt-clear_cache mamba-create mamba-update mamba-remove mamba-activate
 
 # =========================================================================== #
 # Default target
@@ -61,7 +61,7 @@ help:
 	@echo "  clean-all     - Full cleanup (containers + keys + artifacts)"
 	@echo ""
 	@echo "Salt Discovery:"
-	@echo "  salt-help              - Show Salt documentation links"
+	@echo "  salt-docs              - Show Salt documentation links"
 	@echo "  salt-doc               - Show all module documentation"
 	@echo "  salt-doc-module        - Show docs for MODULE (make salt-doc-module MODULE=pkg)"
 	@echo "  salt-grains            - Show all grains on all minions"
@@ -306,9 +306,9 @@ validate-states:
 	@failed=0; \
 	for sls in $$(find srv/salt -name "*.sls" -type f ! -path "*/windows/*"); do \
 		salt_path="salt://$$(echo $$sls | sed 's|srv/salt/||')"; \
-		if ! docker compose exec -T salt-master salt-call --local slsutil.renderer "$$salt_path" >/dev/null 2>&1; then \
+		if ! docker compose exec -T salt-master salt-call --local --file-root=/srv/salt --file-root=/provisioning slsutil.renderer "$$salt_path" >/dev/null 2>&1; then \
 			echo "FAIL: $$sls"; \
-			docker compose exec -T salt-master salt-call --local slsutil.renderer "$$salt_path" 2>&1 | tail -5; \
+			docker compose exec -T salt-master salt-call --local --file-root=/srv/salt --file-root=/provisioning slsutil.renderer "$$salt_path" 2>&1 | tail -5; \
 			failed=$$((failed + 1)); \
 		else \
 			echo "  OK: $$sls"; \
@@ -350,7 +350,7 @@ validate-states-windows:
 # Salt-Master helpers
 # =========================================================================== #
 
-salt-help:
+salt-docs:
 	@echo "=== Salt documentation... ==="
 	@echo ""
 	@echo ""

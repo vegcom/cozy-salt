@@ -4,8 +4,10 @@
 
 {% set miniforge_versions = salt['pillar.get']('versions:miniforge', {}) %}
 {% set miniforge_version  = miniforge_versions.get('version', '24.11.3-0') %}
-{% set miniforge_path     = 'C:\\opt\\miniforge3' %}
+{# Path configuration from pillar with defaults #}
+{% set miniforge_path     = salt['pillar.get']('install_paths:miniforge:windows', 'C:\\opt\\miniforge3') %}
 {% set miniforge_tmp      = '$env:TEMP\\miniforge-install.exe' %}
+{% set env_registry = salt['pillar.get']('windows:env_registry', 'HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment') %}
 
 # Create C:\opt\miniforge3 directory for consistency
 miniforge_directory:
@@ -60,7 +62,7 @@ miniforge_powershell_profile:
 # Set system-wide environment variable for Miniforge/Conda
 miniforge_conda_home:
   reg.present:
-    - name: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
+    - name: {{ env_registry }}
     - vname: CONDA_HOME
     - vdata: {{ miniforge_path }}
     - vtype: REG_SZ

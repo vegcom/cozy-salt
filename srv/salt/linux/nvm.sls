@@ -7,24 +7,26 @@
 {% set nvm_versions = salt['pillar.get']('versions:nvm', {}) %}
 {% set default_version = nvm_config.get('default_version', 'lts/*') %}
 {% set nvm_version = nvm_versions.get('version', 'v0.40.1') %}
+{# Path configuration from pillar with defaults #}
+{% set nvm_path = salt['pillar.get']('install_paths:nvm:linux', '/opt/nvm') %}
 
-# Create /opt/nvm directory first (NVM installer requires it to exist)
+# Create nvm directory first (NVM installer requires it to exist)
 nvm_directory:
   file.directory:
-    - name: /opt/nvm
+    - name: {{ nvm_path }}
     - mode: 755
     - makedirs: True
 
-# Download and install NVM to /opt/nvm system-wide
-# NVM_DIR=/opt/nvm - custom installation path (no trailing slash!)
+# Download and install NVM system-wide
+# NVM_DIR - custom installation path (no trailing slash!)
 # PROFILE=/dev/null - prevents auto-modification of shell profiles
 # Note: Runs as root (needed for /opt directory ownership) but in clean environment
 nvm_download_and_install:
   cmd.run:
     - name: |
         curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_version }}/install.sh | \
-          NVM_DIR=/opt/nvm PROFILE=/dev/null bash
-    - creates: /opt/nvm/nvm.sh
+          NVM_DIR={{ nvm_path }} PROFILE=/dev/null bash
+    - creates: {{ nvm_path }}/nvm.sh
     - require:
       - file: nvm_directory
 
@@ -44,13 +46,13 @@ nvm_install_default_version:
     - name: |
         nvm install {{ default_version }} && nvm alias default {{ default_version }}
     - shell: /bin/bash
-    - creates: /opt/nvm/versions/node/v*/bin/node
+    - creates: {{ nvm_path }}/versions/node/v*/bin/node
     - require:
       - cmd: nvm_download_and_install
       - file: nvm_profile
     - env:
       - BASH_ENV: /etc/profile.d/nvm.sh
-      - NVM_DIR: /opt/nvm
+      - NVM_DIR: {{ nvm_path }}
 
 # Install global npm packages via common orchestration
 include:

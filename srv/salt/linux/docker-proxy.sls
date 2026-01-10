@@ -4,12 +4,15 @@
 
 {% set is_container = salt['file.file_exists']('/.dockerenv') or
                       salt['file.file_exists']('/run/.containerenv') %}
+{# Path configuration from pillar with defaults #}
+{% set cozy_path = salt['pillar.get']('install_paths:cozy:linux', '/opt/cozy') %}
+{% set docker_proxy_config = cozy_path ~ '/docker-proxy.yaml' %}
 
 {% if not is_container %}
 # Deploy docker-proxy docker-compose file
 docker_proxy_file:
   file.managed:
-    - name: /opt/cozy/docker-proxy.yaml
+    - name: {{ docker_proxy_config }}
     - source: salt://linux/files/opt-cozy/docker-proxy.yaml
     - mode: 644
     - user: root
@@ -21,7 +24,7 @@ docker_proxy_file:
 # Start docker-proxy service
 docker_proxy_service:
   cmd.run:
-    - name: docker compose -f /opt/cozy/docker-proxy.yaml up -d
+    - name: docker compose -f {{ docker_proxy_config }} up -d
     - require:
       - file: docker_proxy_file
     - unless: docker ps | grep -q docker-socket-proxy

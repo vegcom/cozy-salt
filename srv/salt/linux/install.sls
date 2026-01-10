@@ -1,10 +1,27 @@
-# Linux package installation (P2 - Capability-based)
+# Linux package installation (Role-Aware)
 # Packages organized by capability/purpose with per-distro mappings
+# Role-based selection via workstation_role pillar:
+#   - workstation-minimal: core + shell
+#   - workstation-base: minimal + monitoring, compression, vcs, modern-cli, security, acl
+#   - workstation-developer: base + build tools, networking, kvm
+#   - workstation-full (default): all capabilities
 # See provisioning/packages.sls for full package definitions
 
 {% import_yaml 'packages.sls' as packages %}
 {% set os_family = grains['os_family'] %}
 {% set os_name = 'ubuntu' if os_family == 'Debian' else 'rhel' %}
+{% set workstation_role = salt['pillar.get']('workstation_role', 'workstation-full') %}
+
+# Define capability sets per role
+{% set role_capabilities = {
+  'workstation-minimal': ['core_utils', 'shell_enhancements'],
+  'workstation-base': ['core_utils', 'shell_enhancements', 'monitoring', 'compression', 'vcs_extras', 'modern_cli', 'security', 'acl'],
+  'workstation-developer': ['core_utils', 'shell_enhancements', 'monitoring', 'compression', 'vcs_extras', 'modern_cli', 'security', 'acl', 'build_tools', 'networking', 'kvm'],
+  'workstation-full': ['core_utils', 'shell_enhancements', 'monitoring', 'compression', 'vcs_extras', 'modern_cli', 'security', 'acl', 'build_tools', 'networking', 'kvm']
+} %}
+
+# Get capabilities for current role (default to full if unknown)
+{% set capabilities = role_capabilities.get(workstation_role, role_capabilities['workstation-full']) %}
 
 # Install Docker using official installer script (handles repo setup and GPG keys automatically)
 # Works on Debian, Ubuntu, CentOS, RHEL, Fedora via get.docker.com
@@ -56,10 +73,12 @@ apt_update_with_override:
 {% endif %}
 
 # ============================================================================
-# Install packages by capability (grouped and distro-aware)
+# Install packages by capability (role-aware, distro-aware)
+# Only installs capabilities defined for the current workstation_role
 # ============================================================================
 
-# Core utilities required on all systems
+# Core utilities - always first, required by others
+{% if 'core_utils' in capabilities %}
 core_utils_packages:
   pkg.installed:
     - pkgs: {{ packages.core_utils[os_name] | tojson }}
@@ -67,83 +86,100 @@ core_utils_packages:
     - require:
       - cmd: apt_update_with_override
 {% endif %}
-
-# System monitoring and diagnostics tools
-monitoring_packages:
-  pkg.installed:
-    - pkgs: {{ packages.monitoring[os_name] | tojson }}
-    - require:
-      - pkg: core_utils_packages
-    - onfail_stop: True
+{% endif %}
 
 # Shell customization and enhancements
+{% if 'shell_enhancements' in capabilities %}
 shell_packages:
   pkg.installed:
     - pkgs: {{ packages.shell_enhancements[os_name] | tojson }}
     - require:
       - pkg: core_utils_packages
     - onfail_stop: True
+{% endif %}
 
-# Build tools and compilers
-build_packages:
+# System monitoring and diagnostics tools
+{% if 'monitoring' in capabilities %}
+monitoring_packages:
   pkg.installed:
-    - pkgs: {{ packages.build_tools[os_name] | tojson }}
+    - pkgs: {{ packages.monitoring[os_name] | tojson }}
     - require:
       - pkg: core_utils_packages
     - onfail_stop: True
-
-# Networking tools
-networking_packages:
-  pkg.installed:
-    - pkgs: {{ packages.networking[os_name] | tojson }}
-    - require:
-      - pkg: core_utils_packages
-    - onfail_stop: True
+{% endif %}
 
 # Compression and archive tools
+{% if 'compression' in capabilities %}
 compression_packages:
   pkg.installed:
     - pkgs: {{ packages.compression[os_name] | tojson }}
     - require:
       - pkg: core_utils_packages
     - onfail_stop: True
+{% endif %}
 
 # Version control extras (git-lfs, gh, tig)
+{% if 'vcs_extras' in capabilities %}
 vcs_packages:
   pkg.installed:
     - pkgs: {{ packages.vcs_extras[os_name] | tojson }}
     - require:
       - pkg: core_utils_packages
     - onfail_stop: True
+{% endif %}
 
 # Modern CLI tools (ripgrep, fd, bat, fzf)
-# Note: Some not available in RHEL base repos
+{% if 'modern_cli' in capabilities %}
 modern_cli_packages:
   pkg.installed:
     - pkgs: {{ packages.modern_cli[os_name] | tojson }}
     - require:
       - pkg: core_utils_packages
     - onfail_stop: True
+{% endif %}
 
 # Security and certificates
+{% if 'security' in capabilities %}
 security_packages:
   pkg.installed:
     - pkgs: {{ packages.security[os_name] | tojson }}
     - require:
       - pkg: core_utils_packages
     - onfail_stop: True
+{% endif %}
 
 # Access control lists
+{% if 'acl' in capabilities %}
 acl_packages:
   pkg.installed:
     - pkgs: {{ packages.acl[os_name] | tojson }}
     - require:
       - pkg: core_utils_packages
     - onfail_stop: True
+{% endif %}
 
-# Install KVM/Virtualization packages (only on designated test hosts)
-# To enable, set pillar: host:capabilities:kvm: true
-{% if salt['pillar.get']('host:capabilities:kvm', False) %}
+# Build tools and compilers (developer+ roles)
+{% if 'build_tools' in capabilities %}
+build_packages:
+  pkg.installed:
+    - pkgs: {{ packages.build_tools[os_name] | tojson }}
+    - require:
+      - pkg: core_utils_packages
+    - onfail_stop: True
+{% endif %}
+
+# Networking tools (developer+ roles)
+{% if 'networking' in capabilities %}
+networking_packages:
+  pkg.installed:
+    - pkgs: {{ packages.networking[os_name] | tojson }}
+    - require:
+      - pkg: core_utils_packages
+    - onfail_stop: True
+{% endif %}
+
+# KVM/Virtualization packages (developer+ roles AND host:capabilities:kvm pillar)
+{% if 'kvm' in capabilities and salt['pillar.get']('host:capabilities:kvm', False) %}
 kvm_packages:
   pkg.installed:
     - pkgs: {{ packages.kvm[os_name] | tojson }}
@@ -171,3 +207,28 @@ kvm_user_groups:
     - require:
       - pkg: kvm_packages
 {% endif %}
+
+# ============================================================================
+# GPU Detection (for future targeting)
+# ============================================================================
+
+# Detect GPU type and set grain for future targeting
+# Supports: nvidia, amd (Steam Deck), other (intel/generic/none)
+detect_gpu_type:
+  cmd.run:
+    - name: |
+        if lspci 2>/dev/null | grep -qi "NVIDIA"; then
+          echo "nvidia"
+        elif lspci 2>/dev/null | grep -qi "AMD\|Radeon\|AMDGPU"; then
+          echo "amd"
+        else
+          echo "other"
+        fi
+    - stateful: False
+
+set_gpu_grain:
+  grains.present:
+    - name: linux_gpu
+    - value: other
+    - require:
+      - cmd: detect_gpu_type
