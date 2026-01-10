@@ -5,11 +5,16 @@
 # Requires acl package (for setfacl permissions)
 # Note: cozyusers group and admin user created in linux.users state
 
-# Create /home/linuxbrew directory owned by admin user
+{# Path configuration from pillar with defaults #}
+{% set homebrew_base = salt['pillar.get']('install_paths:homebrew:linux', '/home/linuxbrew/.linuxbrew') %}
+{# Extract parent directory for initial creation #}
+{% set homebrew_parent = homebrew_base.rsplit('/', 1)[0] if '/' in homebrew_base else '/home/linuxbrew' %}
+
+# Create parent directory owned by admin user
 # Homebrew installer will create .linuxbrew subdirectory
 linuxbrew_directory:
   file.directory:
-    - name: /home/linuxbrew
+    - name: {{ homebrew_parent }}
     - user: admin
     - group: admin
     - mode: 755
@@ -29,7 +34,7 @@ homebrew_install:
     - runas: admin
     - env:
       - NONINTERACTIVE: 1
-    - creates: /home/linuxbrew/.linuxbrew/bin/brew
+    - creates: {{ homebrew_base }}/bin/brew
     - require:
       - file: linuxbrew_directory
 
@@ -38,8 +43,8 @@ homebrew_install:
 homebrew_acl_permissions:
   cmd.run:
     - name: |
-        setfacl -R -m g:cozyusers:rwx /home/linuxbrew/.linuxbrew
-        setfacl -R -d -m g:cozyusers:rwx /home/linuxbrew/.linuxbrew
+        setfacl -R -m g:cozyusers:rwx {{ homebrew_base }}
+        setfacl -R -d -m g:cozyusers:rwx {{ homebrew_base }}
     - require:
       - cmd: homebrew_install
 
@@ -57,12 +62,12 @@ homebrew_profile:
 homebrew_update:
   cmd.run:
     - name: |
-        cd /home/linuxbrew/.linuxbrew/Homebrew
+        cd {{ homebrew_base }}/Homebrew
         if ! git remote get-url origin >/dev/null 2>&1; then
           git remote add origin https://github.com/Homebrew/brew.git
         fi
-        /home/linuxbrew/.linuxbrew/bin/brew update || true
+        {{ homebrew_base }}/bin/brew update || true
     - runas: admin
     - require:
       - cmd: homebrew_install
-    - unless: test -f /home/linuxbrew/.linuxbrew/var/homebrew/.last_update_timestamp
+    - unless: test -f {{ homebrew_base }}/var/homebrew/.last_update_timestamp

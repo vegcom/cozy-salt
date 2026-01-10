@@ -4,10 +4,13 @@
 # Note: rustup rejects RUSTUP_HOME/CARGO_HOME in environment during installation
 # Use inline env vars in commands only
 
-# Create /opt/rust directory first (rustup installer requires it to exist)
+{# Path configuration from pillar with defaults #}
+{% set rust_path = salt['pillar.get']('install_paths:rust:linux', '/opt/rust') %}
+
+# Create rust directory first (rustup installer requires it to exist)
 rust_directory:
   file.directory:
-    - name: /opt/rust
+    - name: {{ rust_path }}
     - mode: 755
     - makedirs: True
 
@@ -19,14 +22,14 @@ rust_download_script:
     - require:
       - file: rust_directory
 
-# Install Rust to /opt/rust system-wide
-# RUSTUP_HOME=/opt/rust - custom installation path for rustup
-# CARGO_HOME=/opt/rust - cargo home directory
+# Install Rust system-wide
+# RUSTUP_HOME - custom installation path for rustup
+# CARGO_HOME - cargo home directory
 # --no-modify-path - prevents auto-modification of shell profiles (we handle via /etc/profile.d)
 rust_download_and_install:
   cmd.run:
-    - name: RUSTUP_HOME=/opt/rust CARGO_HOME=/opt/rust /tmp/rustup-init.sh --no-modify-path -y
-    - creates: /opt/rust/bin/rustc
+    - name: RUSTUP_HOME={{ rust_path }} CARGO_HOME={{ rust_path }} /tmp/rustup-init.sh --no-modify-path -y
+    - creates: {{ rust_path }}/bin/rustc
     - require:
       - cmd: rust_download_script
 
@@ -42,8 +45,8 @@ rust_profile:
 rust_install_components:
   cmd.run:
     - name: |
-        RUSTUP_HOME=/opt/rust CARGO_HOME=/opt/rust /opt/rust/bin/rustup component add clippy rustfmt
+        RUSTUP_HOME={{ rust_path }} CARGO_HOME={{ rust_path }} {{ rust_path }}/bin/rustup component add clippy rustfmt
     - require:
       - cmd: rust_download_and_install
       - file: rust_profile
-    - unless: test -f /opt/rust/bin/clippy-driver
+    - unless: test -f {{ rust_path }}/bin/clippy-driver

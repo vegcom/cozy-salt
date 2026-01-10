@@ -4,6 +4,11 @@
 
 {% set is_windows = grains['os_family'] == 'Windows' %}
 
+# Windows-specific constants
+windows:
+  # System environment registry path (used by nvm, rust, miniforge)
+  env_registry: 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment'
+
 install_paths:
   # Node.js version manager
   nvm:
