@@ -55,9 +55,10 @@ function Script-Loader {
     foreach ($script in $scripts) {
         if (Test-Path $script) {
             Mark-Time "$script"
+            $global:LASTEXITCODE = 0
             . $script
             Show-Elapsed "$script" -Clear
-            if (${LASTEXITCODE} -ne 0) {
+            if (-not $?) {
                 logging "load failed $script" "WARN"
             } else {
                 logging "load passed $script" "DEBUG"

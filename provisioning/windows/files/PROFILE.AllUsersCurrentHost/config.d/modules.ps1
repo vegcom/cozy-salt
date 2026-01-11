@@ -5,10 +5,16 @@ logging "Importing: $($modulesToImport -join ', ')" "DEBUG"
 foreach ($module in $modulesToImport) {
     logging "Importing: $module" "DEBUG"
 
-    # Ensure installed
-    (Get-InstalledModule -Name $module -ErrorAction SilentlyContinue`
-    ||Install-Module -Scope AllUsers -AllowClobber -SkipPublisherCheck `
-    -Force -Name $module -ErrorAction SilentlyContinue) 
-    # Import module
-    Import-Module -Scope Global -Force -Name $module
+    try {
+        # Import module with error handling
+        Import-Module -Scope Global -Force -Name $module -ErrorAction Stop
+        logging "Imported: $module" "DEBUG"
+    } catch {
+        # Silently ignore already-registered subsystems
+        if ($_.Exception.Message -match "already registered|already imported|FeedbackProvider") {
+            logging "Module $module already loaded, skipping" "DEBUG"
+        } else {
+            logging "Failed to import $module - $_" "WARN"
+        }
+    }
 }

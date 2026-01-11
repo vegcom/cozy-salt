@@ -1,5 +1,4 @@
 # Windows-specific Jinja macros for consistent environment setup
-# Usage: {%- from "macros/windows.sls" import win_cmd %}
 
 {#-
 Macro: win_cmd
@@ -52,5 +51,5 @@ Example with extra environment variables:
     {%- do env_lines.append('$env:' ~ key ~ ' = "' ~ value ~ '"') -%}
   {%- endfor -%}
 
-{{ env_lines | join('; '); }}; {{ command }}
+{{ env_lines | join('; ') }}; {{ command }}
 {%- endmacro -%}
