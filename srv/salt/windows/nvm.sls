@@ -1,5 +1,6 @@
 # Windows Node.js version management via nvm-windows
 # System-wide installation to C:\opt\nvm (consistent with Linux /opt/nvm)
+{%- from "macros/windows.sls" import win_cmd %}
 {% set nvm_config   = salt['pillar.get']('nvm', {}) %}
 {% set nvm_version  = nvm_config.get('default_version', 'lts') %}
 {% set npm_pkg      = "https://github.com/coreybutler/nvm-windows/releases/download/1.2.2/nvm-noinstall.zip" %}
@@ -59,12 +60,9 @@ nvm_symlink:
 
 install_default_node_version:
   cmd.run:
-    - name: {{ nvm_bin }} install {{ nvm_version }}
+    - name: {{ win_cmd(nvm_bin ~ ' install ' ~ nvm_version) }}
     - shell: pwsh
     - unless: {{ nvm_bin }} list | findstr "{{ nvm_version }}"
-    - env:
-      - NVM_HOME: {{ nvm_path }}
-      - NVM_SYMLINK: {{ node_path }}
     - require:
       - cmd: nvm_install
       - file: nvm_npm_settings
@@ -83,11 +81,8 @@ nvm_nodejs_dir_cleanup:
 # Activate the installed node version (creates symlink)
 nvm_use_default:
   cmd.run:
-    - name: {{ nvm_bin }} use {{ nvm_version }}
+    - name: {{ win_cmd(nvm_bin ~ ' use ' ~ nvm_version) }}
     - shell: pwsh
-    - env:
-      - NVM_HOME: {{ nvm_path }}
-      - NVM_SYMLINK: {{ node_path }}
     - require:
       - cmd: nvm_nodejs_dir_cleanup
       - reg: nvm_symlink

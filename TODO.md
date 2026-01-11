@@ -14,15 +14,6 @@ Current flat structure at `scripts/` root. Proposed:
 - [ ] Update references in Makefile, .github/workflows, CONTRIBUTING.md
 - [ ] Grep all paths before moving (Rule 3)
 
-### Tests Docker Modularization
-
-- [ ] **Split docker-compose.yaml into tests/docker/**
-  - `tests/docker/docker-compose.yml` - Base services (master)
-  - `tests/docker/docker-compose.ubuntu.yml` - Ubuntu minion
-  - `tests/docker/docker-compose.rhel.yml` - RHEL minion
-  - `tests/docker/docker-compose.windows.yml` - Windows minion (KVM)
-  - Update Makefile to use `-f` flags for compose files
-
 ### Version Pillar
 
 - [x] **Move Windhawk version to pillar** ✓ 2026-01-10
@@ -113,15 +104,13 @@ Current flat structure at `scripts/` root. Proposed:
 
 ### Default cmd.run Environment Variables
 
-- [ ] **Create Jinja macro for Windows cmd.run with standard env**
-  - Wrap cmd.run with consistent NVM_HOME, NVM_SYMLINK, CONDA_HOME, etc.
-  - Single source of truth for Windows tool paths
-  - Example: `{% from "macros/windows.sls" import win_cmd %}`
-  - Options:
-    1. Jinja macro in `srv/salt/macros/windows.sls`
-    2. Custom state module extending `cmd.run`
-    3. Pillar-based defaults with `| default(pillar.get('win_env'))` pattern
-  - Benefits: DRY, consistent env across all states, easier debugging
+- [x] **Create Jinja macro for Windows cmd.run with standard env** ✓ 2026-01-11
+  - Created `srv/salt/macros/windows.sls` with `win_cmd` macro (Jinja macro approach selected)
+  - Sets NVM_HOME, NVM_SYMLINK, CONDA_HOME from pillar with defaults
+  - Refactored 3 Windows states: `windows/nvm.sls` (2 cmd.run), `common/nvm.sls` (1 cmd.run)
+  - Syntax validation passes: `make validate-states`
+  - Created CONTRIBUTING.md with usage guide and examples
+  - Benefits: DRY, single source of truth, consistent env across all states
 
 ---
 

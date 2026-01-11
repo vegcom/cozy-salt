@@ -2,6 +2,7 @@
 # Installs global npm packages (cross-platform)
 # Platform-specific NVM installation delegated to linux.nvm or windows.nvm
 
+{%- from "macros/windows.sls" import win_cmd %}
 {% import_yaml "packages.sls" as packages %}
 {% set nvm_config = salt['pillar.get']('nvm', {}) %}
 
@@ -25,11 +26,8 @@
 install_npm_global_packages:
   cmd.run:
     {% if grains['os_family'] == 'Windows' %}
-    - name: {{ npm_bin }} install -g {{ npm_packages | join(' ') }}
+    - name: {{ win_cmd(npm_bin ~ ' install -g ' ~ npm_packages | join(' ')) }}
     - shell: pwsh
-    - env:
-      - NVM_HOME: {{ nvm_path }}
-      - NVM_SYMLINK: {{ node_path }}
     - require:
       - cmd: nvm_use_default
     {% else %}
