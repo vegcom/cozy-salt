@@ -46,7 +46,7 @@ while IFS= read -r -d '' file; do
 done < <(find . -type f \( -name "*.yml" -o -name "*.yaml" \) -print0 2>/dev/null)
 
 # Fix .sh files (shell scripts) - need to be executable
-echo -e "${GREEN}[3/4]${NC} Checking .sh files..."
+echo -e "${GREEN}[3/5]${NC} Checking .sh files..."
 while IFS= read -r -d '' file; do
     current_perms=$(stat -c '%a' "$file")
     if [[ "$current_perms" != "755" ]]; then
@@ -56,8 +56,31 @@ while IFS= read -r -d '' file; do
     fi
 done < <(find . -type f -name "*.sh" -print0 2>/dev/null)
 
+# Fix provisioning files - need to be readable for Salt deployment
+# Executable scripts (.sh, .ps1) stay 755, others become 644
+echo -e "${GREEN}[4/5]${NC} Checking provisioning files..."
+# Non-executable provisioning files (.xml, .toml, .conf, etc.) → 644
+while IFS= read -r -d '' file; do
+    current_perms=$(stat -c '%a' "$file")
+    if [[ "$current_perms" != "644" ]]; then
+        chmod 644 "$file"
+        echo -e "  ${YELLOW}→${NC} $file ($current_perms → 644)"
+        ((CHANGED++))
+    fi
+done < <(find ./provisioning -type f ! -name "*.sh" ! -name "*.ps1" -print0 2>/dev/null)
+
+# Executable provisioning scripts (.sh, .ps1 in *opt-cozy* or *bootstrap*) → 755
+while IFS= read -r -d '' file; do
+    current_perms=$(stat -c '%a' "$file")
+    if [[ "$current_perms" != "755" ]]; then
+        chmod 755 "$file"
+        echo -e "  ${YELLOW}→${NC} $file ($current_perms → 755)"
+        ((CHANGED++))
+    fi
+done < <(find ./provisioning \( -path "*/opt-cozy/*.sh" -o -path "*/opt-cozy/*.ps1" \) -type f -print0 2>/dev/null)
+
 # Fix critical directories - ensure they're readable/searchable
-echo -e "${GREEN}[4/4]${NC} Checking critical directories..."
+echo -e "${GREEN}[5/5]${NC} Checking critical directories..."
 for dir in srv/salt srv/pillar provisioning scripts tests; do
     if [[ -d "$dir" ]]; then
         find "$dir" -type d -exec chmod 755 {} \; 2>/dev/null || true

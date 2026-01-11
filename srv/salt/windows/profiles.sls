@@ -1,8 +1,8 @@
 # Windows PowerShell 7 System-Wide Profile Deployment
-# Deploys comprehensive PowerShell configuration to C:\Program Files\PowerShell\7\
+# Deploys comprehensive PowerShell configuration to C:\Program Files\PowerShell\7
 # Profile includes: init, time, logging, aliases, functions, modules, npm, conda, choco, code, starship
 
-{% set pwsh_profile_dir = 'C:\Program Files\PowerShell\7' %}
+{% set pwsh_profile_dir = 'C:\\Program Files\\PowerShell\\7' %}
 
 # Create PowerShell 7 profile directory structure
 powershell_profile_directory:
@@ -16,8 +16,6 @@ powershell_profile_files:
   file.recurse:
     - name: {{ pwsh_profile_dir }}
     - source: salt://windows/files/PROFILE.AllUsersCurrentHost/
-    - file_mode: 644
-    - dir_mode: 755
     - makedirs: True
     - require:
       - file: powershell_profile_directory

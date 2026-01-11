@@ -484,13 +484,14 @@ winget_userland:
 # Installed in miniforge base environment - same across all platforms
 # uvx = npx for Python (run CLI tools in isolated envs)
 pip_base:
-  - 'git-filter-repo'
-  - 'uv'
-  - 'ipython'
-  - 'ruff'
-  - 'pylint'
-  - 'yamllint'
   - 'black'
+  - 'git-filter-repo'
+  - 'ipython'
+  - 'pylance'
+  - 'pylint'
+  - 'ruff'
+  - 'uv'
+  - 'yamllint'
 
 # =============================================================================
 # NPM GLOBAL PACKAGES (via nvm)
@@ -500,11 +501,11 @@ npm_global:
   - '@anthropic-ai/claude-code@latest'
   - '@types/node'
   - 'eslint'
+  - 'markdownlint'
   - 'pnpm'
+  - 'prettier'
   - 'prettier'
   - 'ts-node'
   - 'typescript-language-server'
   - 'typescript'
   - 'yarn'
-  - 'markdownlint'
-  - 'prettier'
