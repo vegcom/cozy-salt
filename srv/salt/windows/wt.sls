@@ -15,7 +15,7 @@ wt_download:
   cmd.run:
     - name: >
         pwsh -NoLogo -NoProfile -Command
-        "Invoke-WebRequest -Uri 'https://github.com/microsoft/terminal/releases/download/v{{ wt_version }}/Microsoft.WindowsTerminal_{{ wt_version }}_x64.zip' -OutFile {{ wt_tmp }}"
+        "Invoke-WebRequest -Uri 'https://github.com/microsoft/terminal/releases/download/v{{ wt_version }}/Microsoft.WindowsTerminal_{{ wt_version }}_x64.zip' -OutFile '{{ wt_tmp }}'"
     - creates: {{ wt_tmp }}
     - require:
       - file: wt_directory
