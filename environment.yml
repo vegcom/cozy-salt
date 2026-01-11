@@ -15,6 +15,7 @@ dependencies:
     - ansible-lint
     - pylint
     - black
+    - ruff
     - isort
     - pytest
     - pytest-cov

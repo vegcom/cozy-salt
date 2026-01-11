@@ -58,6 +58,7 @@ miniforge_powershell_profile:
     # - unless: 'pwsh -NoProfile -Command "Test-Path ''C:\Program Files\PowerShell\7\profile.ps1'' -and (Get-Content ''C:\Program Files\PowerShell\7\profile.ps1'' -Raw) -match ''conda-hook''"'
     - require:
       - cmd: miniforge_install
+      - cmd: powershell_profile_deployed
 
 # Set system-wide environment variable for Miniforge/Conda
 miniforge_conda_home:

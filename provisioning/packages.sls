@@ -408,13 +408,15 @@ winget_system:
     - Microsoft.OneDrive
   media_creative:
     - Audacity.Audacity
-    #- Cockos.REAPER
+    - Cockos.REAPER
     - Inkscape.Inkscape
     - KDE.Krita
     - rocksdanister.LivelyWallpaper
   browsers:
     - Google.Chrome.EXE
     - Microsoft.Edge
+  ricing:
+    - Rainmeter.Rainmeter
 
 # =============================================================================
 # WINGET: Userland Configuration for Winget Package Manager
@@ -476,26 +478,33 @@ winget_userland:
   office:
     - Obsidian.Obsidian
 
-
 # =============================================================================
 # PIP BASE PACKAGES (via miniforge)
 # =============================================================================
 # Installed in miniforge base environment - same across all platforms
 # uvx = npx for Python (run CLI tools in isolated envs)
 pip_base:
-  - git-filter-repo
-  - uv
+  - 'git-filter-repo'
+  - 'uv'
+  - 'ipython'
+  - 'ruff'
+  - 'pylint'
+  - 'yamllint'
+  - 'black'
 
 # =============================================================================
 # NPM GLOBAL PACKAGES (via nvm)
 # =============================================================================
 # Same across all platforms - applied after nvm installs Node.js
 npm_global:
-  - '@anthropic-ai/claude-code'
+  - '@anthropic-ai/claude-code@latest'
   - '@types/node'
   - 'eslint'
   - 'pnpm'
   - 'prettier'
   - 'ts-node'
+  - 'typescript-language-server'
   - 'typescript'
   - 'yarn'
+  - 'markdownlint'
+  - 'prettier'

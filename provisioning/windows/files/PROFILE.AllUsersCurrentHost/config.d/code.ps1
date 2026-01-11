@@ -1,4 +1,4 @@
-# Code
+# VS Code
 $candidatePaths = @(
     (Join-Path $env:PROGRAMFILES "Microsoft VS Code/Code.exe"),
     (Join-Path $env:LOCALAPPDATA "Programs\Microsoft VS Code/Code.exe")
@@ -11,33 +11,20 @@ foreach ($p in $candidatePaths) {
 
 if ($found.Count -eq 0) {
     if (Get-Command logging -ErrorAction SilentlyContinue) {
-        logging "No code executable found in candidate paths: $($candidatePaths -join '; ')" "WARN"
-    } else {
-        Write-Host "WARN: No code executable found in candidate paths: $($candidatePaths -join '; ')"
+        logging "No VS Code executable found" "DEBUG"
     }
     return
 }
 
 if ($found.Count -gt 1) {
     if (Get-Command logging -ErrorAction SilentlyContinue) {
-        logging "Multiple code executables found: $($found -join ', ') - using first: $($found[0])" "WARN"
-    } else {
-        Write-Host "WARN: Multiple code executables found: $($found -join ', ') - using first: $($found[0])"
+        logging "Multiple VS Code executables found - using first: $($found[0])" "WARN"
     }
-}
-
-if ($found.Count -eq 0) {
-    if (Get-Command logging -ErrorAction SilentlyContinue) {
-        logging "No code executable found in candidate paths: $($candidatePaths -join '; ')" "WARN"
-    } else {
-        Write-Host "WARN: No code executable found in candidate paths: $($candidatePaths -join '; ')"
-    }
-    return
 }
 
 $env:CODE_EXE = $found[0]
 
-# Code Insiders
+# VS Code Insiders
 $candidatePathsInsiders = @(
     (Join-Path $env:PROGRAMFILES "Microsoft VS Code Insiders/Code - Insiders.exe"),
     (Join-Path $env:LOCALAPPDATA "Programs\Microsoft VS Code Insiders/Code - Insiders.exe")
@@ -50,59 +37,32 @@ foreach ($p in $candidatePathsInsiders) {
 
 if ($foundInsiders.Count -eq 0) {
     if (Get-Command logging -ErrorAction SilentlyContinue) {
-        logging "No code insiders executable found in candidate paths: $($candidatePathsInsiders -join '; ')" "WARN"
-    } else {
-        Write-Host "WARN: No code insiders executable found in candidate paths: $($candidatePathsInsiders -join '; ')"
+        logging "VS Code Insiders not found" "DEBUG"
     }
     return
 }
 
 if ($foundInsiders.Count -gt 1) {
     if (Get-Command logging -ErrorAction SilentlyContinue) {
-        logging "Multiple code insiders executables found: $($found -join ', ') - using first: $($found[0])" "WARN"
-    } else {
-        Write-Host "WARN: Multiple code insiders executables found: $($found -join ', ') - using first: $($found[0])"
+        logging "Multiple VS Code Insiders executables found - using first: $($foundInsiders[0])" "WARN"
     }
 }
 
 $env:CODE_INSIDERS_EXE = $foundInsiders[0]
 
-if ($foundInsiders.Count -gt 1) {
-    if (Get-Command logging -ErrorAction SilentlyContinue) {
-        logging "Multiple code executables found: $($foundInsiders -join ', ') - using first: $($foundInsiders[0])" "WARN"
-    } else {
-        Write-Host "WARN: Multiple code executables found: $($foundInsiders -join ', ') - using first: $($foundInsiders[0])"
-    }
-}
-
-
-
-
-
-# Eval code-insiders if present for code cmdline
-
-
-
-
-if (Test-Path $codeInsidersPath) {
-    logging "vscode insiders detected at: $codeInsidersPath" "DEBUG"
+# Load shell integration if running in VS Code
+if ($env:TERM_PROGRAM -eq "vscode") {
     try {
-        code version use $codeInsidersPath --install-dir $codeInsidersPath 1>$null 2>$null
-    } catch {
-        logging "failed to set code version: $_" "WARN"
-    }
-
-    if ($env:TERM_PROGRAM -eq "vscode") {
-        try {
-            $shellIntegration = code -- --locate-shell-integration-path pwsh 1>$null 2>$null
-            if ($shellIntegration -and (Test-Path $shellIntegration)) {
-                . $shellIntegration
-                logging "vscode shell integration loaded" "DEBUG"
+        $shellIntegration = & $env:CODE_EXE --locate-shell-integration-path pwsh 2>$null
+        if ($shellIntegration -and (Test-Path $shellIntegration)) {
+            . $shellIntegration
+            if (Get-Command logging -ErrorAction SilentlyContinue) {
+                logging "VS Code shell integration loaded" "DEBUG"
             }
-        } catch {
-            logging "vscode shell integration failed: $_" "WARN"
+        }
+    } catch {
+        if (Get-Command logging -ErrorAction SilentlyContinue) {
+            logging "VS Code shell integration failed: $_" "WARN"
         }
     }
-} else {
-    logging "vscode insiders not found at: $codeInsidersPath" "DEBUG"
 }

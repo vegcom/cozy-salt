@@ -50,7 +50,6 @@ function logging {
     }
 }
 
-if (-not $script:timeMarkers) { $script:timeMarkers = @{} }
 function Script-Loader {
     param([Parameter(Position=0)][array]$scripts)
     foreach ($script in $scripts) {
@@ -74,35 +73,6 @@ function To-Bool($val, $default=$false) {
     if ($str -eq 'true' -or $str -eq '1') { return $true }
     if ($str -eq 'false' -or $str -eq '0') { return $false }
     return $default
-}
-
-function Mark-Time { 
-    param(
-        [Parameter(Position=0)]
-        [string]$name = "default"
-    )
-    $script:timeMarkers[$name] = [System.Diagnostics.Stopwatch]::GetTimestamp()
-}
-
-function Show-Elapsed {
-    param(
-        [Parameter(Position=0)]
-        [string]$name = "default",
-        [switch]$Clear
-    )
-
-    if ($script:timeMarkers.ContainsKey($name)) {
-        $elapsed = [System.Diagnostics.Stopwatch]::GetElapsedTime($script:timeMarkers[$name])
-        $truncatedName = if ($name.Length -gt 90) { $name.Substring(0, 87) + "..." } else { $name }
-        $nameCol = $truncatedName.PadRight(90).Substring(0, 90)
-        $timerCol = "⏲️"
-        $msCol = ([math]::Round($elapsed.TotalMilliseconds,2).ToString() + " ms").PadLeft(12)
-
-        if ($env:PWSH_LOG_LEVEL -and $env:PWSH_LOG_LEVEL -ne "DEBUG") { logging "$nameCol $timerCol $msCol" "INFO" }
-        if ($Clear) { $script:timeMarkers.Remove($name) }
-    } else {
-        logging "No time marker found with name: $name" "WARN"
-    }
 }
 
 
