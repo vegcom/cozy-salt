@@ -4,7 +4,6 @@ function logging {
         [Parameter(Position=0)]
         [string]$message,
         [Parameter(Position=1)]
-        # TODO: convert to int to support 
         [string]$level = "DEBUG"
     )
     $glyphs = @{

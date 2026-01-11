@@ -8,4 +8,5 @@ docs/tidy/
 srv/pillar/common/users.sls
 srv/salt/keys/master/
 srv/salt/keys/minion/
+scripts/pki/
 **/*archive*
