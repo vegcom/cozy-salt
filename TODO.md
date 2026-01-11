@@ -1,122 +1,184 @@
 # cozy-salt TODO - Active Work
 
-**Status:** Active Development | **Last Updated:** 2026-01-10
+**Status:** Active Development | **Last Updated:** 2026-01-11
 
 ---
 
-## P2: Medium Priority - Organization
+## P1: High Priority - Code Quality
 
-### Scripts Reorganization
+### Duplicate Invoke-WebRequest Patterns
 
-Current flat structure at `scripts/` root. Proposed:
-- [ ] Create `scripts/ci/` - move `fix-permissions.sh`
-- [ ] Create `scripts/setup/` - move `generate-windows-keys.*`
-- [ ] Update references in Makefile, .github/workflows, CONTRIBUTING.md
-- [ ] Grep all paths before moving (Rule 3)
+**Files:** `windows/nvm.sls`, `windows/wt.sls`, `windows/windhawk.sls`, `windows/miniforge.sls`, `windows/rust.sls`
 
-### Version Pillar
+- [ ] Extract Invoke-WebRequest to reusable macro `win_download()` in `macros/windows.sls`
+  - Current: 5 separate states with nearly identical download logic
+  - Impact: HIGH - Reduces duplication, improves maintainability
+  - Effort: 2 hours
+  - Pattern: `pwsh -NoLogo -NoProfile -Command "Invoke-WebRequest -Uri ... -OutFile ..."`
 
-- [x] **Move Windhawk version to pillar** ✓ 2026-01-10
-  - Added to `srv/pillar/common/versions.sls`
-  - State already reads from pillar with fallback default
+### Disabled Miniforge PowerShell Test Condition
 
-### Homebrew Admin Hardcoding
+**File:** `windows/miniforge.sls` lines 57-58
 
-- [x] **Parameterize `admin` user in homebrew.sls** ✓ 2026-01-10
-  - Uses first user from `managed_users` pillar
-  - Fallback to `nobody` if no managed users defined
+- [ ] Fix commented FIXME: `-and` operator in PowerShell `Test-Path`
+  - Current: File append isn't idempotent (runs every time)
+  - Fix: Use `-And` (capitalized) or rewrite test logic
+  - Impact: MEDIUM - Idempotency issue
+  - Effort: 1 hour
+
+### Disabled Windows Install Unless Conditions
+
+**File:** `windows/install.sls` lines 55-62
+
+- [ ] Implement working `unless` condition for user-scope winget packages
+  - Current: Commented out, packages install every run
+  - Investigation: Machine scope works, user scope needs different approach
+  - Impact: MEDIUM - Non-idempotent package installation
+  - Effort: 1 hour
+
+---
+
+## P2: Medium Priority - Architecture
+
+### Hardcoded Windows Paths Inconsistency
+
+**Files:** Multiple Windows states (`config.sls`, `miniforge.sls`, `tasks.sls`)
+
+- [ ] Parameterize hardcoded Windows paths via pillar
+  - `C:\Program Files\PowerShell\7\` (PowerShell install location)
+  - `C:\ProgramData\ssh\sshd_config.d\` (SSH config location)
+  - `C:\Windows\Temp\` (temp directory)
+  - Impact: MEDIUM - Increases flexibility for alternate installations
+  - Effort: 1.5 hours
+  - Related: Already parameterized `C:\opt\nvm`, `C:\opt\miniforge3`
+
+### Duplicate Winget Installation Patterns
+
+**File:** `windows/install.sls` lines 8-104
+
+- [ ] Create macro for repeated winget install loops (winget_runtimes, winget_system, winget_userland)
+  - Current: Three nearly identical blocks with identical check logic
+  - Pattern: Parameterize as `win_package(packages, scope, description)`
+  - Impact: MEDIUM - Reduces code duplication
+  - Effort: 1 hour
+
+### Duplicate File Append Patterns
+
+**Files:** `windows/users.sls`, `windows/miniforge.sls`
+
+- [ ] Create macro for repeated `file.append` + directory creation patterns
+  - Current: 3-4 similar SSH key appends in users.sls
+  - Pattern: `file_append_with_directory(path, content, user, group)`
+  - Impact: MEDIUM - Reduces bug surface area
+  - Effort: 1.5 hours
+
+### Git Environment Variables - Windows Implementation
+
+**File:** `common/git_env.sls` lines 15-32
+
+- [ ] Fix disabled Windows git env section or document why unsupported
+  - Current: Entire Windows section commented out as non-working
+  - Issue: Users can't export git credentials on Windows
+  - Options: Fix implementation or add `skip_windows_gitenv` flag
+  - Impact: MEDIUM - Feature gap for Windows
+  - Effort: 1 hour
+
+---
+
+## P3: Low Priority - Features & Polish
+
+### Windows Scheduled Tasks Flexibility
+
+**File:** `windows/tasks.sls`
+
+- [ ] Move task definitions from hardcoded to pillar-driven
+  - FIXME comment: "use pillar" for task definitions
+  - Include enable/disable state management (currently hardcoded)
+  - Impact: LOW - Better configuration management
+  - Effort: 30 minutes
+
+### Inconsistent State Dependencies
+
+**Files:** Multiple Windows states
+
+- [ ] Audit and standardize `require:` vs `require_in:` vs `onchanges:`
+  - Current: Mixed patterns throughout codebase
+  - Standardize on `require:` for clarity and consistency
+  - Impact: LOW - Improves readability and maintenance
+  - Effort: 2 hours
+
+### Potentially Unused Import
+
+**File:** `common/miniforge.sls` line 5
+
+- [ ] Verify if `{% import_yaml "packages.sls" as packages %}` is necessary
+  - Investigation needed: Only uses `pip_base`, check if needed or redundant
+  - Impact: LOW - Code clarity
+  - Effort: 15 minutes
+
+### Windows Environment Refresh
+
+**Integration point:** Windows highstate final step
+
+- [ ] Add Chocolatey `refreshenv` as last Windows state
+  - Currently: New PATH/env vars not available until next session
+  - Implementation: Final state runs `refreshenv` to reload environment
+  - Benefits: Immediately available tools after installation
+  - Effort: 30 minutes
+
+### NVM Version Default Clarification
+
+**Note in codebase:** `TODO.md:122` (now resolved)
+
+- [ ] Document why Linux uses `lts/*` vs Windows/common using `lts`
+  - Status: Still unresolved - either intentional or bug
+  - Recommendation: Test and document or unify across platforms
+  - Effort: 1 hour
 
 ---
 
 ## Future / Backlog
 
-### Windows Test Output
+### Windows Test Output Collection
 
-- [ ] **Add Windows test output path** similar to Linux
-  - Create `tests/output/windows/` for Windows state results
-  - Parse Windows state failures same as Linux
+- [ ] Add Windows test output path similar to Linux
+  - Create `tests/output/windows/` for state results
+  - Parse Windows failures same as Linux logs
   - Update `tests/fixtures/docker.py` for Windows log collection
 
-### Enrollment & DNS
+### DNS Configuration with Tailscale
 
-- [ ] **DNS config: append nameservers when Tailscale present**
+- [ ] Append nameservers when Tailscale is present
   - Tailscale overwrites /etc/resolv.conf with 100.100.100.100
-  - Append local (10.0.0.1) + Cloudflare (1.1.1.1, 1.0.0.1) after Tailscale DNS
-  - Keep Tailscale as primary, add fallbacks
-  - Detect via tailscale0 interface presence
-  - Docs: https://tailscale.com/kb/1235/resolv-conf
-  - Docs: https://tailscale.com/kb/1081/magicdns
+  - Keep as primary, append fallbacks (local + Cloudflare)
+  - Detect via `tailscale0` interface presence
 
-### User Pillar Structure
+### User Pillar Structure Consolidation
 
-- [ ] **Consolidate managed_users into users declaration**
-  - Currently have separate `managed_users: [admin, vegcom, eve]` list
-  - Redundant with keys in `users:` dictionary
-  - Options:
-    1. Add `managed: true` field to each user in `users:`
-    2. Generate managed_users list dynamically from users dict
-    3. Remove managed_users entirely, use `users.keys()` everywhere
-  - Affects: `srv/salt/linux/dotfiles.sls`, any state referencing `managed_users`
+- [ ] Consolidate `managed_users` into `users:` declaration
+  - Currently redundant: separate `managed_users: [...]` list + `users: {...}` dict
+  - Options: Add `managed: true` field OR generate list dynamically OR remove entirely
 
-### User Roles
+### User Roles & Group Assignment
 
-- [ ] **Add role-based group assignment for users**
+- [ ] Add role-based access control for users
   - Roles: `admin`, `devops`, `user`
-  - admin: full access (docker, kvm, libvirt, sudo)
-  - devops: TBD (subset of admin)
-  - user: basic access (cozyusers only)
-  - Define in pillar, resolve to groups in state
+  - Resolve to group assignments in states
+  - Define role hierarchy and capabilities in pillar
 
-### Immutable Linux (Bazzite/SteamOS)
+### Immutable Linux Support (Bazzite/SteamOS)
 
-- [ ] **Support Bazzite and SteamOS distros**
-  - **Bazzite**: Read-only `/` filesystem - no changes to system paths
-    - No current strategy for miniforge, nvm, rust (all install to /opt)
-    - Investigate: user-space installs, Flatpak, distrobox/toolbox
-  - **SteamOS**: Can set `/` to read-write, needs investigation
-    - May work with existing states after `steamos-readonly disable`
-  - Detection: Check for `/etc/os-release` with `ID=bazzite` or `ID=steamos`
-
-### Game Streaming (Sunshine/Moonlight)
-
-- [ ] **Add Sunshine/Moonlight packages with device type distinction**
-  - Separate desktop (host) vs steamdeck/portable (client) package sets
-  - Existing roles: `minimal`, `base`, `dev`, `gaming`, `full`
-  - New device types: `desktop` (Sunshine host) vs `portable` (Moonlight client)
-  - **Sunshine** (host/streaming server):
-    - Windows: `winget://LizardByte.Sunshine`
-    - Source: https://github.com/LizardByte/Sunshine
-  - **Vibeshine** (Moonlight + optimizations for Steam Deck):
-    - Windows MSI: https://github.com/Nonary/vibeshine/releases/download/1.13.0/Vibeshine.msi
-    - Source: https://github.com/Nonary/vibeshine
-    - Silent install (all users): `msiexec /i Vibeshine.msi /quiet /norestart ALLUSERS=1`
-    - Force reinstall/update: `msiexec /i Vibeshine.msi /quiet /norestart ALLUSERS=1 REINSTALLMODE=vomus REINSTALL=ALL`
-    - TODO: Check GitHub releases API for new tags, version pin in pillar
-    - Releases API: `https://api.github.com/repos/Nonary/vibeshine/releases/latest`
-
-### Windows Environment Refresh
-
-- [ ] **Add refreshenv as final Windows highstate step**
-  - Chocolatey's `refreshenv` reloads PATH and env vars in current session
-  - Requires: `Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"; refreshenv`
-  - Should be last state to run after all installs complete
-  - Ensures new tools are immediately available without logout/reboot
-
-### Default cmd.run Environment Variables
-
-- [x] **Create Jinja macro for Windows cmd.run with standard env** ✓ 2026-01-11
-  - Created `srv/salt/macros/windows.sls` with `win_cmd` macro (Jinja macro approach selected)
-  - Sets NVM_HOME, NVM_SYMLINK, CONDA_HOME from pillar with defaults
-  - Refactored 3 Windows states: `windows/nvm.sls` (2 cmd.run), `common/nvm.sls` (1 cmd.run)
-  - Syntax validation passes: `make validate-states`
-  - Created CONTRIBUTING.md with usage guide and examples
-  - Benefits: DRY, single source of truth, consistent env across all states
+- [ ] Support Bazzite and SteamOS read-only filesystems
+  - Bazzite: Investigate user-space installs, Flatpak, distrobox
+  - SteamOS: Test after enabling read-write mode
+  - Detection: Check `/etc/os-release` for distro ID
 
 ---
 
 ## Notes
 
-- Before moving ANY file: `grep -Hnr "path" srv/salt/ srv/pillar/ provisioning/ scripts/ .github/ tests/`
-- Salt runs as uid 999, needs read access to all .sls/.yml
-- Run `./scripts/fix-permissions.sh` if permission issues
-- NVM default version: Linux uses `lts/*`, Windows/common use `lts` (verify if intentional)
+- Before moving ANY file: `grep -Hnr "pattern" srv/salt/ srv/pillar/ provisioning/ scripts/ .github/ tests/` (Rule 3)
+- Salt runs as uid 999, needs read access to all .sls/.yml files
+- Run `./scripts/fix-permissions.sh` if permission issues occur
+- New macros should follow `macros/windows.sls` pattern (Jinja for consistency)
+- Recent documentation: `scripts/README.md` and `provisioning/windows/README.md`
