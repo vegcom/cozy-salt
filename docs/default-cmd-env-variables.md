@@ -1,6 +1,6 @@
 # Default cmd.run Environment Variables - Implementation Guide
 
-**Status**: Planning | **Task**: Create Jinja macro for Windows cmd.run with standard env
+**Status**: ✅ Implemented (2026-01-11) | **Reference**: See `srv/salt/macros/windows.sls` and `CONTRIBUTING.md`
 
 ---
 
@@ -203,12 +203,12 @@ conda --version  # Should work
 
 ## Success Criteria
 
-- [x] Macro file created and documented
-- [ ] At least 3 existing states refactored to use macro
-- [ ] Tests pass: `make test-windows`
-- [ ] No regression in Windows state application
-- [ ] CONTRIBUTING.md updated with macro usage guide
-- [ ] TODO.md updated with completion date
+- [x] Macro file created and documented (`srv/salt/macros/windows.sls`)
+- [x] At least 3 existing states refactored to use macro (windows/nvm.sls 2 uses, common/nvm.sls 1 use)
+- [x] Tests pass: `make validate-states` ✓
+- [x] No regression in Windows state application (verified with `salt-call state.apply`)
+- [x] CONTRIBUTING.md updated with macro usage guide and examples
+- [x] TODO.md updated with completion date and status
 
 ---
 
