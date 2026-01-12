@@ -301,11 +301,17 @@ appx_package:
 # =============================================================================
 # Power Shell system modules
 # =============================================================================
-pwsh_modules:
-  - Microsoft.WinGet.CommandNotFound
-  - Microsoft.WinGet.Client
+powershell_modules:
   - PSReadLine
+  - powershell-yaml
+
+powershell_gallery:
   - Terminal-Icons
+  - PSWindowsUpdate
+  - PowerShellGet
+  - Microsoft.WinGet.Client
+  - Microsoft.WinGet.CommandNotFound
+  - PSFzf
 
 # =============================================================================
 # CHOCOLATEY PACKAGES
@@ -374,12 +380,12 @@ winget_system:
   dev_tools:
     - Git.Git
     - GitHub.cli
+    - MSYS2.MSYS2
   kubernetes:
     - Kubecolor.kubecolor
   shells:
     - Microsoft.PowerShell
     - Starship.Starship
-    - Microsoft.WindowsTerminal
   system_utilities:
     - 7zip.7zip
     - CodeSector.TeraCopy
@@ -442,6 +448,7 @@ winget_userland:
   shells:
     - JanDeDobbeleer.OhMyPosh
     - Microsoft.AIShell
+    - Microsoft.WindowsTerminal
   system_utilities:
     - AntibodySoftware.WizTree
     - Microsoft.PowerToys
@@ -498,12 +505,9 @@ pip_base:
 # =============================================================================
 # Same across all platforms - applied after nvm installs Node.js
 npm_global:
-  - '@anthropic-ai/claude-code@latest'
   - '@types/node'
   - 'eslint'
   - 'markdownlint'
-  - 'pnpm'
-  - 'prettier'
   - 'prettier'
   - 'ts-node'
   - 'typescript-language-server'

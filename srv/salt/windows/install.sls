@@ -3,6 +3,12 @@
 
 {% import_yaml 'packages.sls' as packages %}
 
+# TODO: pillar this
+{% enable_choco_features = [ "allowGlobalConfirmation", "allowEmptyChecksumsSecure",
+    "useEnhancedExitCodes", "failOnStandardError", "failOnAutoUninstaller",
+    "exitOnRebootDetected", "removePackageInformationOnUninstall",
+] %}
+
 
 # Install Winget runtime packages, system scope
 {% if packages.winget_runtimes is defined %}
@@ -52,28 +58,26 @@ winget_userland_{{ user | replace('.', '_') | replace('-', '_') }}_{{ pkg | repl
     - name: winget install --scope user --accept-source-agreements --accept-package-agreements  --exact --id {{ pkg }}
     - runas: {{ user }}
     - shell: pwsh
-    # - unless: >
-    #     pwsh -NoLogo -NoProfile -Command "
-    #       if (winget list --scope user --exact --id {{ pkg }} | Select-String -Quiet -Pattern '{{ pkg }}') {
-    #         exit 0
-    #       } else {
-    #         exit 1
-    #       }
-    #     "
+    - unless: >
+        pwsh -NoLogo -NoProfile -Command "
+          if (winget list --scope user --exact --id {{ pkg }} | Select-String -Quiet -Pattern '{{ pkg }}') {
+            exit 0
+          } else {
+            exit 1
+          }
+        "
     {% endfor %}
   {% endfor %}
 {% endfor %}
 
-# PWSH Modules
-{% if packages.pwsh_modules is defined %}
-{% for module in packages.pwsh_modules %}
+# Powershell Modules
+{% if packages.powershell_modules is defined %}
+{% for module in packages.powershell_modules %}
 pwsh_module_{{ module | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
     - name: >
         pwsh -NoLogo -NoProfile -Command "
-          if (-not (Get-InstalledModule -Name '{{ module }}' -ErrorAction SilentlyContinue)) {
-            Install-Module -Name '{{ module }}' -Scope AllUsers -AllowClobber -SkipPublisherCheck -Force
-          }
+          Install-Module -Name '{{ module }}' -Scope AllUsers -AllowClobber -SkipPublisherCheck -Force -Repository PSGallery
         "
     - unless: >
         pwsh -NoLogo -NoProfile -Command "
@@ -86,12 +90,33 @@ pwsh_module_{{ module | replace('.', '_') | replace('-', '_') }}:
 {% endfor %}
 {% endif %}
 
-# Enable Chocolatey feature for remembered arguments on upgrades
-choco_feature_remembered_args:
+# PowerShell Gallery Modules
+{% if packages.powershell_gallery is defined %}
+{% for module in packages.powershell_gallery %}
+pwsh_module_{{ module | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
-    - name: choco feature enable -n=useRememberedArgumentsForUpgrades
+    - name: >
+        pwsh -NoLogo -NoProfile -Command "
+          Install-Module -Name '{{ module }}' -Scope AllUsers -AllowClobber -SkipPublisherCheck -Force -Repository PSGallery
+        "
+    - unless: >
+        pwsh -NoLogo -NoProfile -Command "
+          if (Get-InstalledModule -Name '{{ module }}' -ErrorAction SilentlyContinue|Select-String -Quiet -Pattern "{{ module }}") {
+            exit 0
+          } else {
+            exit 1
+          }
+        "
+{% endfor %}
+{% endif %}
+
+# Enable Chocolatey features
+{% for feature in enable_choco_features %}
+choco_feature_{{ feature }}_enabled:
+  cmd.run:
+    - name: choco feature enable -n={{ feature }}
     - shell: powershell
-    - unless: powershell -Command "choco feature list | Select-String -Pattern 'useRememberedArgumentsForUpgrades.*Enabled' -Quiet"
+{% endfor %}
 
 # Install Chocolatey packages
 {% if packages.choco is defined %}

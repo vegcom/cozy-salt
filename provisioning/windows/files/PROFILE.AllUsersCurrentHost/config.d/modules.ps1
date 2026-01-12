@@ -1,4 +1,7 @@
-$modulesToImport = @('Terminal-Icons', 'PSReadLine', 'Microsoft.WinGet.CommandNotFound')
+$modulesToImport = @(
+    'Terminal-Icons', 'PSReadLine', 'Microsoft.WinGet.CommandNotFound',
+    'powershell-yaml'
+)
 
 logging "Importing: $($modulesToImport -join ', ')" "DEBUG"
 
