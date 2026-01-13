@@ -32,11 +32,6 @@ Complete documentation for the cozy-salt project.
   - Scheduled tasks and automation
   - Adding new tools to profile
 
-- **[CLAUDE.md](../CLAUDE.md)** - AI assistant guide (in repo root)
-  - How the project works with Claude Code
-  - Key architectural patterns
-  - Debugging and testing strategy
-
 ### Reference & Implementation Details
 
 - **[default-cmd-env-variables.md](default-cmd-env-variables.md)** - Windows cmd.run environment macro (✅ Implemented)
@@ -60,7 +55,6 @@ The following files document the overall project:
 | File | Location | Purpose |
 |------|----------|---------|
 | CONTRIBUTING.md | Root | Contribution guidelines and architecture patterns |
-| CLAUDE.md | Root | AI assistant project guide |
 | README.md | Root | Project overview and getting started |
 | Makefile | Root | Build automation and common tasks |
 
@@ -101,7 +95,6 @@ make validate    # Run all validation
 
 For debugging guides, see:
 - **CONTRIBUTING.md** - "When it breaks" section
-- **CLAUDE.md** - "Assess for breaks" section
 
 ## Reference Files
 
@@ -125,7 +118,7 @@ When adding documentation:
 
 ## Questions?
 
-- **About project architecture:** See CONTRIBUTING.md and CLAUDE.md
+- **About project architecture:** See CONTRIBUTING.md
 - **About running tests:** See Makefile and tests/README.md (once created)
 - **About Windows setup:** See WINDOWS-ENROLLMENT.md
 - **About scripts:** See scripts/README.md

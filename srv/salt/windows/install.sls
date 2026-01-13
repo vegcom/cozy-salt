@@ -4,9 +4,14 @@
 {% import_yaml 'packages.sls' as packages %}
 
 # TODO: pillar this
-{% enable_choco_features = [ "allowGlobalConfirmation", "allowEmptyChecksumsSecure",
-    "useEnhancedExitCodes", "failOnStandardError", "failOnAutoUninstaller",
-    "exitOnRebootDetected", "removePackageInformationOnUninstall",
+{% set enable_choco_features = [
+    "allowGlobalConfirmation",
+    "allowEmptyChecksumsSecure",
+    "useEnhancedExitCodes",
+    "failOnStandardError",
+    "failOnAutoUninstaller",
+    "exitOnRebootDetected",
+    "removePackageInformationOnUninstall",
 ] %}
 
 
