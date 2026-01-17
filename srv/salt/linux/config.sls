@@ -100,13 +100,15 @@ skip_dns_config:
 # Implementation delegated to common.git_env module (platform-specific)
 include:
   - common.git_env
+  - linux.config-steamdeck
 
 # ============================================================================
 # Service Management (merged from services.sls)
 # ============================================================================
 
-# SSH service management (skip in containers - sshd not available)
-{% if not is_container %}
+# SSH service management - controlled by pillar host:services:ssh_enabled
+{% set ssh_enabled = salt['pillar.get']('host:services:ssh_enabled', not is_container) %}
+{% if ssh_enabled %}
 sshd_config_port:
   file.replace:
     - name: /etc/ssh/sshd_config
@@ -123,5 +125,5 @@ sshd_service:
 {% else %}
 sshd_service:
   test.nop:
-    - name: Skipping SSH service in container
+    - name: SSH service disabled (host:services:ssh_enabled = false)
 {% endif %}

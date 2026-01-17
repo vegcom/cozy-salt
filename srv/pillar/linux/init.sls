@@ -25,13 +25,16 @@ nvm:
 # - workstation-developer: Base + build tools + networking + KVM (for developers/testing)
 workstation_role: 'workstation-base'
 
-# Host capabilities (optional - enable specific features)
-# Uncomment the capabilities needed for this host:
+# Host capabilities and services (optional - enable specific features)
 host:
   capabilities:
     # KVM virtualization (required for Dockur Windows testing)
     # Enabled automatically when 'kvm-host' role is set in grains
     kvm: {{ 'kvm-host' in salt['grains.get']('roles', []) }}
+  
+  services:
+    # SSH service - enabled by default on native systems, disabled in containers
+    ssh_enabled: {{ not (salt['file.file_exists']('/.dockerenv') or salt['file.file_exists']('/run/.containerenv')) }}
 
 # =============================================================================
 # Capability Installation Metadata

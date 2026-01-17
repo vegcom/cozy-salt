@@ -15,3 +15,9 @@ base:
   'G@os_family:Debian or G@os_family:RedHat':
     - match: compound
     - linux
+
+  # Hardware class: Valve Galileo (Steam Deck)
+  # Detection: Check minion ID or hostname
+  'guava':
+    - class.galileo
+    - host.guava

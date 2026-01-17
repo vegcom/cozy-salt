@@ -6,11 +6,10 @@
 #   - workstation-developer: base + build tools, networking, kvm
 #   - workstation-full (default): all capabilities
 # See provisioning/packages.sls for full package definitions
-# See srv/pillar/arch/init.sls for capability_meta (installation behavior)
+# See srv/pillar/linux/init.sls for capability_meta (installation behavior)
 
 {% import_yaml 'packages.sls' as packages %}
-{% set os_family = grains['os_family'] %}
-{% set os_name = 'arch' if os_family == 'Arch' else 'arch' %}
+{% set os_name = 'arch' %}
 {% set workstation_role = salt['pillar.get']('workstation_role', 'workstation-full') %}
 {% set capability_meta = salt['pillar.get']('capability_meta', {}) %}
 
