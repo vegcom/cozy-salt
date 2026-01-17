@@ -182,3 +182,153 @@
 - Run `./scripts/fix-permissions.sh` if permission issues occur
 - New macros should follow `macros/windows.sls` pattern (Jinja for consistency)
 - Recent documentation: `scripts/README.md` and `provisioning/windows/README.md`
+
+
+---
+
+include:
+  - winget.system
+  - winget.user
+  - winget.portable
+
+
+winget-user-msix:
+  cmd.run:
+    - name: >
+        winget install {{ item }} --source winget --accept-package-agreements --accept-source-agreements
+    - runas: {{ pillar['user'] }}
+    - loop: {{ pillar['winget']['msix'] }}
+
+portable-tools:
+  archive.extracted:
+    - name: C:\Tools
+    - source: https://winget-cache/{{ item }}.zip
+    - loop: {{ pillar['winget']['portable'] }}
+
+
+=== BURN ===
+  Microsoft.DotNet.AspNetCore.9
+  Microsoft.DotNet.DesktopRuntime.10
+  Microsoft.DotNet.DesktopRuntime.8
+  Microsoft.DotNet.DesktopRuntime.9
+  Microsoft.DotNet.Framework.DeveloperPack.4.6
+  Microsoft.DotNet.HostingBundle.8
+  Microsoft.DotNet.Runtime.10
+  Microsoft.DotNet.Runtime.8
+  Microsoft.PowerToys
+  Microsoft.VCRedist.2012.x64
+  Microsoft.VCRedist.2012.x86
+  Microsoft.VCRedist.2013.x64
+  Microsoft.VCRedist.2013.x86
+  Microsoft.VCRedist.2015+.x64
+  Microsoft.VCRedist.2015+.x86
+
+=== EXE ===
+  7zip.7zip
+  AutoHotkey.AutoHotkey
+  Cockos.REAPER
+  CodeSector.TeraCopy
+  Google.Chrome.EXE
+  Microsoft.OneDrive
+  Microsoft.OneDrive
+  Microsoft.VCRedist.2008.x64
+  Microsoft.VCRedist.2008.x86
+  Microsoft.VCRedist.2010.x64
+  Microsoft.VCRedist.2010.x86
+  Microsoft.WindowsADK
+  Microsoft.WindowsSDK.10.0.18362
+  MSYS2.MSYS2
+  namazso.PawnIO
+  Nefarius.HidHide
+  Nefarius.HidHide
+  ViGEm.ViGEmBus
+
+=== INNO ===
+  AntibodySoftware.WizTree
+  Audacity.Audacity
+  Git.Git
+  Microsoft.VisualStudioCode
+  Microsoft.VisualStudioCode.Insiders
+  Playnite.Playnite
+  Rem0o.FanControl
+  SpecialK.SpecialK
+  TechPowerUp.NVCleanstall
+  WinSCP.WinSCP
+
+=== MSI ===
+  Microsoft.Edge
+  Olivia.VIA
+
+=== MSIX ===
+  File-New-Project.EarTrumpet
+  JanDeDobbeleer.OhMyPosh
+  Microsoft.AppInstaller
+  Microsoft.AppInstallerFileBuilder
+  Microsoft.Teams
+  Microsoft.UI.Xaml.2.7
+  Microsoft.UI.Xaml.2.8
+  Microsoft.WindowsTerminal
+
+=== MSIX (ZIP) ===
+  Microsoft.VCLibs.Desktop.14
+
+=== NULLSOFT ===
+  BitSum.ParkControl
+  BitSum.ProcessLasso
+  evsar3.sshfs-win-manager
+  HeroicGamesLauncher.HeroicGamesLauncher
+  Insecure.Nmap
+  KDE.Krita
+  Obsidian.Obsidian
+  Rainmeter.Rainmeter
+  Valve.Steam
+  Vencord.Vesktop
+  Wagnardsoft.DisplayDriverUninstaller
+  WiresharkFoundation.Wireshark
+
+=== NULLSOFT (ZIP) ===
+  Guru3D.RTSS
+
+=== PORTABLE ===
+  direnv.direnv
+  jqlang.jq
+  Kubernetes.kubectl
+  Microsoft.NuGet
+  Rufus.Rufus
+  yt-dlp.yt-dlp
+
+=== PORTABLE (ZIP) ===
+  DenoLand.Deno
+  Gyan.FFmpeg
+  Hashicorp.Terraform
+  Hashicorp.TerraformLanguageServer
+  Helm.Helm
+  junegunn.fzf
+  Kubecolor.kubecolor
+  LibreHardwareMonitor.LibreHardwareMonitor
+  Martchus.syncthingtray
+  Microsoft.AIShell
+  Microsoft.Sysinternals.Autoruns
+  Microsoft.Sysinternals.ProcessExplorer
+  Microsoft.VisualStudioCode.CLI
+  Microsoft.VisualStudioCode.Insiders.CLI
+  mtkennerly.ludusavi
+  nektos.act
+  Rclone.Rclone
+  stern.stern
+  Ventoy.Ventoy
+  waterlan.dos2unix
+
+=== UNKNOWN ===
+  rocksdannister.LivelyWallpaper
+
+=== WIX ===
+  Apple.Bonjour
+  GitHub.cli
+  hoppscotch.Hoppscotch
+  Inkscape.Inkscape
+  Microsoft.PowerShell
+  OpenRGB.OpenRGB
+  SSHFS-Win.SSHFS-Win
+  Starship.Starship
+  WinFsp.WinFsp

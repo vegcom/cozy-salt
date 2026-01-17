@@ -303,15 +303,15 @@ appx_package:
 # =============================================================================
 powershell_modules:
   - PSReadLine
-  - powershell-yaml
 
 powershell_gallery:
-  - Terminal-Icons
-  - PSWindowsUpdate
-  - PowerShellGet
   - Microsoft.WinGet.Client
   - Microsoft.WinGet.CommandNotFound
+  - powershell-yaml
+  - PowerShellGet
   - PSFzf
+  - PSWindowsUpdate
+  - Terminal-Icons
 
 # =============================================================================
 # CHOCOLATEY PACKAGES
@@ -374,116 +374,145 @@ winget_runtimes:
     - Microsoft.WindowsSDK.10.0.18362
 
 # =============================================================================
-# WINGET PACKAGES
-# =============================================================================
-winget_system:
-  dev_tools:
-    - Git.Git
-    - GitHub.cli
-    - MSYS2.MSYS2
-  kubernetes:
-    - Kubecolor.kubecolor
-  shells:
-    - Microsoft.PowerShell
-    - Starship.Starship
-  system_utilities:
-    - 7zip.7zip
-    - CodeSector.TeraCopy
-  hardware:
-    - BitSum.ParkControl
-    - BitSum.ProcessLasso
-    - Guru3D.RTSS
-    - Rem0o.FanControl
-    - TechPowerUp.NVCleanstall
-    - Wagnardsoft.DisplayDriverUninstaller
-  rgb_peripherals:
-    - namazso.PawnIO
-    - Nefarius.HidHide
-    - Olivia.VIA
-    - OpenRGB.OpenRGB
-    - ViGEm.ViGEmBus
-  networking:
-    - Apple.Bonjour
-    - Insecure.Nmap
-    - SSHFS-Win.SSHFS-Win
-    - WinFsp.WinFsp
-    - WiresharkFoundation.Wireshark
-  gaming:
-    - Valve.Steam
-  sync_backup:
-    - Microsoft.OneDrive
-  media_creative:
-    - Audacity.Audacity
-    - Cockos.REAPER
-    - Inkscape.Inkscape
-    - KDE.Krita
-    - rocksdanister.LivelyWallpaper
-  browsers:
-    - Google.Chrome.EXE
-    - Microsoft.Edge
-  ricing:
-    - Rainmeter.Rainmeter
-
-# =============================================================================
-# WINGET: Userland Configuration for Winget Package Manager
+# WINGET
 # =============================================================================
 winget_userland:
+  sync_backup:
+    - Microsoft.OneDrive
+    - Martchus.syncthingtray
+  hardware: 
+    - LibreHardwareMonitor.LibreHardwareMonitor
+  networking: 
+    - evsar3.sshfs-win-manager
+  shells:
+    - Microsoft.AIShell
+    - JanDeDobbeleer.OhMyPosh
+    - Microsoft.WindowsTerminal
+  communication:
+    - hoppscotch.Hoppscotch
+    - Vencord.Vesktop
+    - Microsoft.Teams
+  rgb_peripherals:
+    - Nefarius.HidHide
+  office:
+    - Obsidian.Obsidian
   dev_tools:
-    - DenoLand.Deno
+    - Microsoft.VisualStudioCode
+    - Microsoft.VisualStudioCode.Insiders
     - direnv.direnv
+    - jqlang.jq
+    - DenoLand.Deno
     - Hashicorp.Terraform
     - Hashicorp.TerraformLanguageServer
-    - jqlang.jq
     - junegunn.fzf
-    - Microsoft.VisualStudioCode
     - Microsoft.VisualStudioCode.CLI
-    - Microsoft.VisualStudioCode.Insiders
     - Microsoft.VisualStudioCode.Insiders.CLI
     - nektos.act
     - waterlan.dos2unix
-  kubernetes:
-    - Helm.Helm
-    - Kubernetes.kubectl
-    - stern.stern
-  shells:
-    - JanDeDobbeleer.OhMyPosh
-    - Microsoft.AIShell
-    - Microsoft.WindowsTerminal
   system_utilities:
-    - AntibodySoftware.WizTree
     - Microsoft.PowerToys
+    - AntibodySoftware.WizTree
+    - WinSCP.WinSCP
+    - Rufus.Rufus
     - Microsoft.Sysinternals.Autoruns
     - Microsoft.Sysinternals.ProcessExplorer
     - Rclone.Rclone
-    - Rufus.Rufus
     - Ventoy.Ventoy
-    - WinSCP.WinSCP
-  hardware:
-    - LibreHardwareMonitor.LibreHardwareMonitor
-  rgb_peripherals:
-    - Nefarius.HidHide
-  networking:
-  - evsar3.sshfs-win-manager
   gaming:
-    - HeroicGamesLauncher.HeroicGamesLauncher
-    - mtkennerly.ludusavi
     - Playnite.Playnite
     - SpecialK.SpecialK
-  media_creative:
-    - Gyan.FFmpeg
-    - yt-dlp.yt-dlp
-  communication:
-    - hoppscotch.Hoppscotch
-    - Microsoft.Teams
-    - Vencord.Vesktop
-  sync_backup:
-    - Martchus.syncthingtray
-    - Microsoft.OneDrive
+    - HeroicGamesLauncher.HeroicGamesLauncher
+    - mtkennerly.ludusavi
+  kubernetes:
+    - Kubernetes.kubectl
+    - Helm.Helm
+    - stern.stern
   desktop_customization:
     - AutoHotkey.AutoHotkey
     - File-New-Project.EarTrumpet
-  office:
-    - Obsidian.Obsidian
+  media_creative:
+    - yt-dlp.yt-dlp
+    - Gyan.FFmpeg
+
+winget_runtimes:
+  ui_libraries:
+    - Microsoft.UI.Xaml.2.7
+    - Microsoft.UI.Xaml.2.8
+    - Microsoft.VCLibs.Desktop.14
+  vcredist:
+    - Microsoft.VCRedist.2012.x64
+    - Microsoft.VCRedist.2012.x86
+    - Microsoft.VCRedist.2013.x64
+    - Microsoft.VCRedist.2013.x86
+    - Microsoft.VCRedist.2015+.x64
+    - Microsoft.VCRedist.2015+.x86
+    - Microsoft.VCRedist.2008.x64
+    - Microsoft.VCRedist.2008.x86
+    - Microsoft.VCRedist.2010.x64
+    - Microsoft.VCRedist.2010.x86
+  sdks:
+    - Microsoft.WindowsADK
+    - Microsoft.WindowsSDK.10.0.18362
+    - Microsoft.NuGet
+    - Microsoft.AppInstaller
+    - Microsoft.AppInstallerFileBuilder
+  dotnet:
+    - Microsoft.DotNet.AspNetCore.9
+    - Microsoft.DotNet.DesktopRuntime.10
+    - Microsoft.DotNet.DesktopRuntime.8
+    - Microsoft.DotNet.DesktopRuntime.9
+    - Microsoft.DotNet.Framework.DeveloperPack.4.6
+    - Microsoft.DotNet.HostingBundle.8
+    - Microsoft.DotNet.Runtime.10
+    - Microsoft.DotNet.Runtime.8
+
+winget_system:
+  sync_backup:
+    - Microsoft.OneDrive
+  hardware:
+    - Guru3D.RTSS
+    - Rem0o.FanControl
+    - TechPowerUp.NVCleanstall
+    - BitSum.ParkControl
+    - BitSum.ProcessLasso
+    - Wagnardsoft.DisplayDriverUninstaller
+  networking:
+    - Apple.Bonjour
+    - SSHFS-Win.SSHFS-Win
+    - WinFsp.WinFsp
+    - Insecure.Nmap
+    - WiresharkFoundation.Wireshark
+  shells:
+    - Microsoft.PowerShell
+    - Starship.Starship
+  rgb_peripherals:
+    - OpenRGB.OpenRGB
+    - Olivia.VIA
+    - namazso.PawnIO
+    - Nefarius.HidHide
+    - ViGEm.ViGEmBus
+  ricing:
+    - Rainmeter.Rainmeter
+  dev_tools:
+    - GitHub.cli
+    - MSYS2.MSYS2
+    - Git.Git
+  system_utilities:
+    - 7zip.7zip
+    - CodeSector.TeraCopy
+  gaming:
+    - Valve.Steam
+  browsers:
+    - Microsoft.Edge
+    - Google.Chrome.EXE
+  kubernetes:
+    - Kubecolor.kubecolor
+  media_creative:
+    - Inkscape.Inkscape
+    - Cockos.REAPER
+    - Audacity.Audacity
+    - rocksdanister.LivelyWallpaper
+    - KDE.Krita
 
 # =============================================================================
 # PIP BASE PACKAGES (via miniforge)

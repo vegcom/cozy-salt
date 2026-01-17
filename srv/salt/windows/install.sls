@@ -21,6 +21,8 @@
 {% for pkg in pkgs %}
 winget_runtime_{{ pkg | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
+    - shell: pwsh
+    - runas: SYSTEM
     - name: winget install --scope machine --accept-source-agreements --accept-package-agreements --exact --id {{ pkg }}
     - unless: >
         pwsh -NoLogo -NoProfile -Command "
@@ -40,6 +42,8 @@ winget_runtime_{{ pkg | replace('.', '_') | replace('-', '_') }}:
 {% for pkg in pkgs %}
 winget_{{ pkg | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
+    - shell: pwsh
+    - runas: SYSTEM
     - name: winget install --scope machine --accept-source-agreements --accept-package-agreements  --exact --id {{ pkg }}
     - unless: >
         pwsh -NoLogo -NoProfile -Command "
@@ -80,6 +84,7 @@ winget_userland_{{ user | replace('.', '_') | replace('-', '_') }}_{{ pkg | repl
 {% for module in packages.powershell_modules %}
 pwsh_module_{{ module | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
+    - shell: pwsh
     - name: >
         pwsh -NoLogo -NoProfile -Command "
           Install-Module -Name '{{ module }}' -Scope AllUsers -AllowClobber -SkipPublisherCheck -Force -Repository PSGallery
@@ -120,7 +125,7 @@ pwsh_module_{{ module | replace('.', '_') | replace('-', '_') }}:
 choco_feature_{{ feature }}_enabled:
   cmd.run:
     - name: choco feature enable -n={{ feature }}
-    - shell: powershell
+    - shell: pwsh
 {% endfor %}
 
 # Install Chocolatey packages
