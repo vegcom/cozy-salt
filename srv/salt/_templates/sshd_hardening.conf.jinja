@@ -1,6 +1,8 @@
 # Hardened SSH configuration for production
 # Generated from srv/salt/_templates/sshd_hardening.conf.jinja
 # Deployed by Salt - cozy-salt project
+# NOTE: Port is managed in /etc/ssh/sshd_config via file.replace (linux/config.sls)
+# Do NOT set Port here to avoid dual-port binding issues
 
 # Authentication
 PasswordAuthentication no
@@ -25,12 +27,6 @@ MaxSessions 10
 
 # Protocol
 Protocol 2
-
-# Port: 2222 for WSL (avoids Windows SSH on 22), otherwise from pillar or default 22
-{% set is_wsl = grains.get('kernel_release', '').find('WSL') != -1 or grains.get('kernel_release', '').find('Microsoft') != -1 %}
-{% if grains['os_family'] != 'Windows' %}
-{{ Port  2222 if is_wsl }}
-{% endif %}
 
 {% if grains['os_family'] == 'Windows' %}
 # Windows-specific: Administrators group authorization (optional)

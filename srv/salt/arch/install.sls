@@ -1,16 +1,16 @@
-# Linux package installation (Role-Aware)
-# Packages organized by capability/purpose with per-distro mappings
+# Arch Linux package installation (Role-Aware)
+# Packages organized by capability/purpose using Arch pacman packages
 # Role-based selection via workstation_role pillar:
 #   - workstation-minimal: core + shell
 #   - workstation-base: minimal + monitoring, compression, vcs, modern-cli, security, acl
 #   - workstation-developer: base + build tools, networking, kvm
 #   - workstation-full (default): all capabilities
 # See provisioning/packages.sls for full package definitions
-# See srv/pillar/linux/init.sls for capability_meta (installation behavior)
+# See srv/pillar/arch/init.sls for capability_meta (installation behavior)
 
 {% import_yaml 'packages.sls' as packages %}
 {% set os_family = grains['os_family'] %}
-{% set os_name = 'ubuntu' if os_family == 'Debian' else 'rhel' %}
+{% set os_name = 'arch' if os_family == 'Arch' else 'arch' %}
 {% set workstation_role = salt['pillar.get']('workstation_role', 'workstation-full') %}
 {% set capability_meta = salt['pillar.get']('capability_meta', {}) %}
 
@@ -30,6 +30,14 @@ include:
   - common.gpu
 
 # ============================================================================
+# PACMAN DATABASE SYNC - Run before any package installation
+# ============================================================================
+pacman_sync:
+  cmd.run:
+    - name: pacman -Sy --noconfirm
+    - unless: test $(find /var/lib/pacman/sync -mmin -60 2>/dev/null | wc -l) -gt 0
+
+# ============================================================================
 # FOUNDATION: core_utils (runs first, others depend on this)
 # ============================================================================
 {% if 'core_utils' in capabilities and 'core_utils' in packages.get(os_name, {}) %}
@@ -37,10 +45,8 @@ include:
 {{ core_meta.state_name }}:
   pkg.installed:
     - pkgs: {{ packages[os_name].core_utils | tojson }}
-{% if os_family == 'Debian' %}
     - require:
-      - cmd: apt_update_with_override
-{% endif %}
+      - cmd: pacman_sync
 {% endif %}
 
 # ============================================================================
@@ -75,7 +81,7 @@ include:
 
 {# Post-install: Add user to groups if specified #}
 {% if cap_meta.get('has_user_groups') %}
-{% set user = salt['pillar.get']('user:name', 'admin') %}
+{% set user = salt['pillar.get']('user:name', 'alarm') %}
 {{ cap_key }}_user_groups:
   user.present:
     - name: {{ user }}

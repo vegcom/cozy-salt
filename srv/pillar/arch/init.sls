@@ -1,15 +1,15 @@
 #!jinja|yaml
-# Linux Pillar Data
-# Configuration values for Linux minions
+# Arch Linux Pillar Data
+# Configuration values for Arch Linux minions (including Steam Deck)
 
 # User configuration
 # Auto-detected from login user (defaults to root in containers)
 {% if salt['grains.get']('virtual', '') in ['docker', 'container', 'lxc'] %}
-  {# In containers, default to root unless minion_id suggests otherwise #}
+  {# In containers, default to root #}
   {% set detected_user = 'root' %}
 {% else %}
-  {# On bare metal/VMs, try to detect actual user #}
-  {% set detected_user = salt['environ.get']('SUDO_USER') or salt['environ.get']('LOGNAME') or 'root' %}
+  {# On bare metal/Steam Deck, try to detect actual user #}
+  {% set detected_user = salt['environ.get']('SUDO_USER') or salt['environ.get']('LOGNAME') or 'alarm' %}
 {% endif %}
 user:
   name: {{ detected_user }}
@@ -26,7 +26,6 @@ nvm:
 workstation_role: 'workstation-base'
 
 # Host capabilities (optional - enable specific features)
-# Uncomment the capabilities needed for this host:
 host:
   capabilities:
     # KVM virtualization (required for Dockur Windows testing)
@@ -39,17 +38,10 @@ host:
 # Defines HOW each capability installs (state names, dependencies, extras)
 # Keys MUST match capability names in packages.sls and role_capabilities
 #
-# Supported flags:
-#   state_name:      Salt state ID for pkg.installed (required)
-#   is_foundation:   true = installs first, requires apt_update (only core_utils)
-#   pillar_gate:     dot-path pillar key that must be True to install
-#   has_service:     service name to enable after pkg install
-#   has_user_groups: list of groups to add user to after pkg install
+# Arch-specific note: pacman doesn't have a separate "update" step like apt
+# All package lists are installed after pacman -Sy syncs the database
 #
-# To add a new capability:
-#   1. Add packages to provisioning/packages.sls under each distro
-#   2. Add entry here with state_name (and any flags)
-#   3. Add to role_capabilities in srv/salt/linux/install.sls
+# For more details, see srv/pillar/linux/init.sls
 # =============================================================================
 capability_meta:
   core_utils:

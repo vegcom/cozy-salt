@@ -79,33 +79,13 @@ winget_userland_{{ user | replace('.', '_') | replace('-', '_') }}_{{ pkg | repl
   {% endfor %}
 {% endfor %}
 
-# Powershell Modules
-{% if packages.powershell_modules is defined %}
-{% for module in packages.powershell_modules %}
+# PowerShell Modules (from both powershell_modules and powershell_gallery sources)
+{% set all_pwsh_modules = packages.get('powershell_modules', []) + packages.get('powershell_gallery', []) %}
+{% if all_pwsh_modules %}
+{% for module in all_pwsh_modules %}
 pwsh_module_{{ module | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
     - shell: pwsh
-    - runas: SYSTEM
-    - name: >
-        pwsh -NoLogo -NoProfile -Command "
-          Install-Module -Name '{{ module }}' -Scope AllUsers -AllowClobber -SkipPublisherCheck -Force -Repository PSGallery
-        "
-    - unless: >
-        pwsh -NoLogo -NoProfile -Command "
-          if (Get-InstalledModule -Name '{{ module }}' -ErrorAction SilentlyContinue|Select-String -Quiet -Pattern "{{ module }}") {
-            exit 0
-          } else {
-            exit 1
-          }
-        "
-{% endfor %}
-{% endif %}
-
-# PowerShell Gallery Modules
-{% if packages.powershell_gallery is defined %}
-{% for module in packages.powershell_gallery %}
-pwsh_module_{{ module | replace('.', '_') | replace('-', '_') }}:
-  cmd.run:
     - runas: SYSTEM
     - name: >
         pwsh -NoLogo -NoProfile -Command "
