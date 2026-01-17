@@ -4,6 +4,8 @@
 
 ---
 
+docker_enabled: False
+
 # =============================================================================
 # PACMAN REPOSITORIES
 # =============================================================================
@@ -12,14 +14,14 @@
 pacman:
   repos:
     # Jupiter repository (SteamOS packages) - DISABLED by default
-    # Uncomment in host/guava.sls or class override to enable
+    # Uncomment in host/bokchoy.sls or class override to enable
     # jupiter-main:
     #   enabled: false
     #   server: "https://steamdeck-packages.steamos.cloud/archlinux-mirror/$repo/os/$arch"
     #   siglevel: "Never"
     
     # Chaotic-AUR mirror - DISABLED by default
-    # Uncomment in host/guava.sls to enable
+    # Uncomment in host/bokchoy.sls to enable
     # chaotic-aur:
     #   enabled: false
     #   server: "https://chaotic.cx/arch/x86_64"

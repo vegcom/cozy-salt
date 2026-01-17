@@ -93,3 +93,18 @@ capability_meta:
     has_user_groups:
       - kvm
       - libvirt
+  
+  interpreters:
+    state_name: interpreter_packages
+  
+  shell_history:
+    state_name: shell_history_packages
+  
+  modern_cli_extras:
+    state_name: modern_cli_extras_packages
+  
+  fonts:
+    state_name: font_packages
+  
+  theming:
+    state_name: theming_packages

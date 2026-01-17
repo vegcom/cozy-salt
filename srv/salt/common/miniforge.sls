@@ -11,6 +11,20 @@
   {% set uv_bin = miniforge_path ~ '/bin/uv' %}
 {% endif %}
 
+{% if grains['os_family'] != 'Windows' %}
+# Fix miniforge3 permissions for admin user to install packages
+miniforge_permissions:
+  file.directory:
+    - name: {{ miniforge_path }}
+    - user: admin
+    - group: cozyusers
+    - recurse:
+      - user
+      - group
+    - require:
+      - cmd: miniforge_install
+{% endif %}
+
 # Install uvx packages in miniforge base environment
 install_pip_uv:
   cmd.run:
@@ -24,6 +38,9 @@ install_pip_uv:
     - unless: {{ pip_bin }} show uv
     - require:
       - cmd: miniforge_install
+      {% if grains['os_family'] != 'Windows' %}
+      - file: miniforge_permissions
+      {% endif %}
 
 # Install pip base packages in miniforge base environment
 {% for package in packages.get('pip_base', []) %}

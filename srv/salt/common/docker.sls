@@ -27,7 +27,7 @@ docker_repo_cleanup:
 docker_repo_fix:
   file.managed:
     - name: /etc/apt/sources.list.d/docker.list
-    - contents: |\
+    - contents: |
         # Docker repo for Kali/WSL - using Ubuntu noble (official supported)
         deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu noble stable
     - require:

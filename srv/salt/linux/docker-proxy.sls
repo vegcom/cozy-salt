@@ -6,9 +6,11 @@
                       salt['file.file_exists']('/run/.containerenv') %}
 {# Path configuration from pillar with defaults #}
 {% set cozy_path = salt['pillar.get']('install_paths:cozy:linux', '/opt/cozy') %}
+{% set docker_enabled = salt['pillar.get']('docker_enabled', False) %}
 {% set docker_proxy_config = cozy_path ~ '/docker-proxy.yaml' %}
 
 {% if not is_container %}
+{% if docker_enabled %}
 # Deploy docker-proxy docker-compose file
 docker_proxy_file:
   file.managed:
@@ -37,4 +39,5 @@ docker_proxy_file:
 docker_proxy_service:
   test.nop:
     - name: Skipping Docker proxy service
+{% endif %}
 {% endif %}

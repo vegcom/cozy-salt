@@ -1,45 +1,9 @@
-# =============================================================================
-# CAPABILITY-BASED PACKAGE CONFIGURATION
-# =============================================================================
-# Organized by PURPOSE/ROLE, with per-distro package mapping.
-#
-# USAGE IN STATES:
-#   {% import_yaml 'packages.sls' as packages %}
-#   {% set os_name = distro_aliases.get(grains['os']|lower, grains['os_family']|lower) %}
-#   Then: packages[os_name].core_utils
-#
-# STRUCTURE:
-#   1. distro_aliases    - Maps variant distros to canonical package sets
-#   2. package_metadata  - Conflicts, optional, required, provides definitions
-#   3. Per-distro lists  - ubuntu, debian, rhel, arch
-#   4. Windows/macOS     - Platform-specific (choco, winget, etc.)
-#   5. Cross-platform    - pip_base, npm_global
-#
-# MAINTAINER NOTES:
-#   - ubuntu/debian are currently IDENTICAL - see consolidation TODO below
-#   - Arch uses unified packages (openssh = client+server, libvirt = all-in-one)
-#   - base-devel on Arch is a GROUP, not a package (Salt handles this correctly)
-#   - gh (GitHub CLI) is 'github-cli' on Arch, 'gh' elsewhere
-# =============================================================================
-
-# =============================================================================
-# DISTRO ALIASES
-# =============================================================================
-# Maps variant/derivative distros to their canonical package set.
-# Use in states: packages[distro_aliases.get(os_lower, os_family_lower)]
-#
-# This allows Kali to use Ubuntu packages, Rocky to use RHEL, etc.
-# =============================================================================
 distro_aliases:
-  # Debian derivatives -> ubuntu packages (use ubuntu repos anyway)
   kali: ubuntu
   linuxmint: ubuntu
   pop: ubuntu
   elementary: ubuntu
   zorin: ubuntu
-  # Note: actual Debian uses 'debian' key directly
-  
-  # RHEL derivatives -> rhel packages
   rocky: rhel
   alma: rhel
   almalinux: rhel
@@ -47,194 +11,130 @@ distro_aliases:
   fedora: rhel
   oracle: rhel
   scientific: rhel
-  
-  # Arch derivatives -> arch packages
   manjaro: arch
   endeavouros: arch
   garuda: arch
   artix: arch
   arcolinux: arch
-
-# =============================================================================
-# PACKAGE METADATA
-# =============================================================================
-# Defines package relationships, conflicts, and classification.
-# States can use this for smarter package management.
-# =============================================================================
 package_metadata:
-  # ---------------------------------------------------------------------------
-  # CONFLICTS: Mutually exclusive packages (can't install both)
-  # ---------------------------------------------------------------------------
   conflicts:
-    # Database servers - only one MySQL-compatible server at a time
     database_mysql:
       - mysql
       - mariadb
       - percona-server
-    
-    # Java JDK versions - typically want only one
     java_17_jdk:
-      - openjdk-17-jdk          # Debian/Ubuntu
-      - java-17-openjdk-devel   # RHEL
-      - jdk17-openjdk           # Arch
+      - openjdk-17-jdk Debian/Ubuntu
+      - java-17-openjdk-devel RHEL
+      - jdk17-openjdk Arch
     java_21_jdk:
       - openjdk-21-jdk
       - java-21-openjdk-devel
       - jdk21-openjdk
-    
-    # Netcat variants - functionally similar, pick one
     netcat_variants:
-      - netcat-openbsd          # Ubuntu/Debian preferred
-      - nmap-ncat               # RHEL (comes with nmap)
-      - openbsd-netcat          # Arch preferred
-      - gnu-netcat              # Legacy
-    
-    # Mail Transfer Agents - only one MTA
+      - netcat-openbsd Ubuntu/Debian preferred
+      - nmap-ncat RHEL (comes with nmap)
+      - openbsd-netcat Arch preferred
+      - gnu-netcat Legacy
     mta:
       - postfix
       - sendmail
       - exim4
-    
-    # Container runtimes
     container_runtime:
       - docker-ce
       - podman
       - containerd
-    
-    # Firewall managers
     firewall:
       - ufw
       - firewalld
       - iptables-persistent
-
-  # ---------------------------------------------------------------------------
-  # OPTIONAL: Nice-to-have packages (may not be in all repos)
-  # ---------------------------------------------------------------------------
   optional:
-    # Modern CLI replacements - not always in base repos
     modern_cli_tools:
-      - bat           # cat replacement
-      - fd            # find replacement (fd-find on Debian)
-      - ripgrep       # grep replacement
-      - fzf           # fuzzy finder
-      - duf           # df replacement
-      - ncdu          # du replacement
-      - eza           # ls replacement (formerly exa)
-      - delta         # diff replacement
-      - zoxide        # cd replacement
-    
-    # Development conveniences
+      - bat cat replacement
+      - fd find replacement (fd-find on Debian)
+      - ripgrep grep replacement
+      - fzf fuzzy finder
+      - duf df replacement
+      - ncdu du replacement
+      - eza ls replacement (formerly exa)
+      - delta diff replacement
+      - zoxide cd replacement
     dev_extras:
-      - gh            # GitHub CLI
-      - git-lfs       # Large file support
-      - tig           # Git TUI
-      - lazygit       # Git TUI alternative
-    
-    # Shell enhancements (might need extra repos)
+      - gh GitHub CLI
+      - git-lfs Large file support
+      - tig Git TUI
+      - lazygit Git TUI alternative
     shell_extras:
       - zsh-autosuggestions
       - zsh-syntax-highlighting
-      - starship      # Cross-shell prompt
-
-  # ---------------------------------------------------------------------------
-  # REQUIRED: Packages that MUST be present for basic functionality
-  # ---------------------------------------------------------------------------
+      - starship Cross-shell prompt
   required:
-    # Absolute minimum for any system
     core:
       - curl
       - git
-      - openssh       # Or openssh-client on Debian
+      - openssh Or openssh-client on Debian
       - ca-certificates
-    
-    # Build essentials
     build:
       - gcc
       - make
-    
-    # Network diagnostics
     network:
-      - ping          # Or iputils-ping
+      - ping Or iputils-ping
       - traceroute
-      - dig           # Or bind-utils/dnsutils
-
-  # ---------------------------------------------------------------------------
-  # EXCLUDE: Per-distro exclusions (packages that don't exist/work)
-  # ---------------------------------------------------------------------------
+      - dig Or bind-utils/dnsutils
   exclude:
     arch:
-      - cpu-checker           # Doesn't exist on Arch
-      - build-essential       # Use base-devel group instead
-      - openssh-client        # Use unified openssh
-      - openssh-server        # Use unified openssh
-      - vim-enhanced          # Just use vim
-      - fd-find               # Just use fd
-      - gnupg2                # Just use gnupg
+      - cpu-checker Doesn't exist on Arch
+      - build-essential Use base-devel group instead
+      - openssh-client Use unified openssh
+      - openssh-server Use unified openssh
+      - vim-enhanced Just use vim
+      - fd-find Just use fd
+      - gnupg2 Just use gnupg
     rhel:
-      - duf                   # Not in base RHEL repos (needs EPEL)
-      - ncdu                  # Not in base RHEL repos (needs EPEL)
+      - duf Not in base RHEL repos (needs EPEL)
+      - ncdu Not in base RHEL repos (needs EPEL)
     debian:
-      - github-cli            # Use gh (from GitHub's repo)
-
-  # ---------------------------------------------------------------------------
-  # PROVIDES: Virtual package -> actual package mapping
-  # ---------------------------------------------------------------------------
-  # Use when you need a capability but package name varies
+      - github-cli Use gh (from GitHub's repo)
   provides:
     vim:
       ubuntu: vim
       debian: vim
       rhel: vim-enhanced
       arch: vim
-    
     netcat:
       ubuntu: netcat-openbsd
       debian: netcat-openbsd
       rhel: nmap-ncat
       arch: openbsd-netcat
-    
     build_essentials:
       ubuntu: build-essential
       debian: build-essential
       rhel: ['gcc', 'gcc-c++', 'make', 'autoconf', 'automake']
-      arch: base-devel        # This is a GROUP on Arch
-    
+      arch: base-devel This is a GROUP on Arch
     ssh_client:
       ubuntu: openssh-client
       debian: openssh-client
       rhel: openssh-clients
-      arch: openssh           # Unified package
-    
+      arch: openssh Unified package
     ssh_server:
       ubuntu: openssh-server
       debian: openssh-server
       rhel: openssh-server
-      arch: openssh           # Unified package
-    
+      arch: openssh Unified package
     dns_utils:
       ubuntu: bind9-dnsutils
       debian: bind9-dnsutils
       rhel: bind-utils
       arch: bind
-    
     compression_7z:
       ubuntu: 7zip
       debian: 7zip
       rhel: p7zip
-      arch: p7zip             # Or 7zip (both work)
-    
+      arch: p7zip Or 7zip (both work)
     github_cli:
       ubuntu: gh
       debian: gh
       rhel: gh
-      arch: github-cli        # Different name on Arch!
-
-# =============================================================================
-# CAPABILITY: Ubuntu (Debian-family with Ubuntu repos)
-# =============================================================================
-# Used for: Ubuntu, Kali, Linux Mint, Pop!_OS, Elementary, Zorin
-# NOTE: Currently identical to debian section - future consolidation possible
-# =============================================================================
+      arch: github-cli Different name on Arch!
 ubuntu:
   core_utils:
     - curl
@@ -245,7 +145,6 @@ ubuntu:
     - unzip
     - vim
     - wget
-  
   monitoring:
     - duf
     - htop
@@ -254,7 +153,6 @@ ubuntu:
     - ncdu
     - strace
     - sysstat
-  
   shell_enhancements:
     - bash-completion
     - screen
@@ -262,14 +160,12 @@ ubuntu:
     - zsh
     - zsh-autosuggestions
     - zsh-syntax-highlighting
-  
   build_tools:
     - autoconf
     - automake
     - build-essential
     - cmake
     - pkg-config
-  
   networking:
     - bind9-dnsutils
     - iputils-ping
@@ -281,30 +177,24 @@ ubuntu:
     - socat
     - tcpdump
     - traceroute
-  
   compression:
     - 7zip
     - bzip2
     - xz-utils
     - zip
-  
   vcs_extras:
     - gh
     - git-lfs
     - tig
-  
   modern_cli:
     - bat
     - fd-find
     - fzf
     - ripgrep
-  
   security:
     - ca-certificates
-  
   acl:
     - acl
-  
   kvm:
     - cpu-checker
     - libvirt-clients
@@ -312,13 +202,6 @@ ubuntu:
     - qemu-system-x86
     - qemu-utils
     - virtinst
-
-# =============================================================================
-# CAPABILITY: Debian (Pure Debian, not derivatives)
-# =============================================================================
-# NOTE: Currently identical to ubuntu - could merge into apt_common in future
-# Kept separate for: potential Debian-specific packages, clarity, easy override
-# =============================================================================
 debian:
   core_utils:
     - curl
@@ -329,7 +212,6 @@ debian:
     - unzip
     - vim
     - wget
-  
   monitoring:
     - duf
     - htop
@@ -338,7 +220,6 @@ debian:
     - ncdu
     - strace
     - sysstat
-  
   shell_enhancements:
     - bash-completion
     - screen
@@ -346,14 +227,12 @@ debian:
     - zsh
     - zsh-autosuggestions
     - zsh-syntax-highlighting
-  
   build_tools:
     - autoconf
     - automake
     - build-essential
     - cmake
     - pkg-config
-  
   networking:
     - bind9-dnsutils
     - iputils-ping
@@ -365,30 +244,24 @@ debian:
     - socat
     - tcpdump
     - traceroute
-  
   compression:
     - 7zip
     - bzip2
     - xz-utils
     - zip
-  
   vcs_extras:
     - gh
     - git-lfs
     - tig
-  
   modern_cli:
     - bat
     - fd-find
     - fzf
     - ripgrep
-  
   security:
     - ca-certificates
-  
   acl:
     - acl
-  
   kvm:
     - cpu-checker
     - libvirt-clients
@@ -396,13 +269,6 @@ debian:
     - qemu-system-x86
     - qemu-utils
     - virtinst
-
-# =============================================================================
-# CAPABILITY: RHEL (Red Hat Enterprise Linux family)
-# =============================================================================
-# Used for: RHEL, CentOS, Rocky Linux, AlmaLinux, Oracle Linux, Fedora
-# NOTE: Some packages (duf, ncdu, bat) require EPEL repository
-# =============================================================================
 rhel:
   core_utils:
     - curl
@@ -413,22 +279,17 @@ rhel:
     - unzip
     - vim-enhanced
     - wget
-  
   monitoring:
-    # NOTE: duf/ncdu need EPEL on RHEL/CentOS
     - htop
     - lsof
     - ltrace
     - strace
     - sysstat
-  
   shell_enhancements:
     - bash-completion
     - screen
     - tmux
     - zsh
-    # NOTE: zsh plugins typically need manual install or COPR on RHEL
-  
   build_tools:
     - autoconf
     - automake
@@ -436,7 +297,6 @@ rhel:
     - gcc
     - gcc-c++
     - make
-  
   networking:
     - bind-utils
     - iputils
@@ -448,33 +308,25 @@ rhel:
     - socat
     - tcpdump
     - traceroute
-  
   compression:
     - bzip2
     - p7zip
     - p7zip-plugins
     - xz
     - zip
-  
   vcs_extras:
-    # NOTE: gh needs GitHub's official repo
     - git-lfs
     - tig
-  
   modern_cli:
-    # NOTE: These need EPEL or manual install on RHEL
     - bat
     - fd-find
     - fzf
     - ripgrep
-  
   security:
     - ca-certificates
     - gnupg2
-  
   acl:
     - acl
-  
   kvm:
     - libvirt
     - libvirt-client
@@ -482,20 +334,6 @@ rhel:
     - qemu-img
     - qemu-kvm
     - virt-install
-
-# =============================================================================
-# CAPABILITY: Arch Linux
-# =============================================================================
-# Used for: Arch, Manjaro, EndeavourOS, Garuda, Artix, ArcoLinux
-#
-# GOTCHAS:
-#   - openssh is UNIFIED (includes both client and server)
-#   - libvirt is UNIFIED (includes client and daemon)
-#   - base-devel is a PACKAGE GROUP (Salt handles this correctly)
-#   - GitHub CLI is 'github-cli', not 'gh'
-#   - Use 'fd' not 'fd-find', 'vim' not 'vim-enhanced'
-#   - gnupg not gnupg2
-# =============================================================================
 arch:
   core_utils:
     - curl
@@ -504,127 +342,112 @@ arch:
     - rsync
     - tree
     - unzip
-    - vim              # Not vim-enhanced
     - wget
-  
   monitoring:
-    - duf              # Available in extra repo
+    - duf
     - htop
     - lsof
     - ltrace
-    - ncdu             # Available in extra repo
+    - ncdu
     - strace
     - sysstat
-  
   shell_enhancements:
     - bash-completion
     - screen
     - tmux
     - zsh
-    - zsh-autosuggestions      # Available in extra repo
-    - zsh-syntax-highlighting  # Available in extra repo
-  
+    - zsh-autosuggestions
+    - zsh-syntax-highlighting 
   build_tools:
-    # NOTE: Could just use 'base-devel' group instead of individual packages
-    # Salt can install groups: pkg.installed with name: base-devel
     - autoconf
     - automake
-    - base-devel       # GROUP: includes gcc, make, binutils, etc.
+    - base-devel
     - cmake
-  
   networking:
-    - bind             # Provides dig, host, nslookup
-    - iputils          # Provides ping
+    - bind
+    - iputils
     - net-tools
     - nmap
-    - openbsd-netcat   # Preferred netcat on Arch
-    - openssh          # UNIFIED: client + server + sftp
+    - openbsd-netcat
+    - openssh
     - socat
     - tcpdump
     - traceroute
-  
   compression:
     - bzip2
-    - p7zip            # Single package (or use 7zip)
+    - p7zip
     - xz
     - zip
-  
   vcs_extras:
-    - github-cli       # NOT 'gh' - different package name on Arch!
+    - github-cli
     - git-lfs
     - tig
-  
   modern_cli:
     - bat
-    - fd               # NOT fd-find
+    - fd
     - fzf
     - ripgrep
-  
   security:
     - ca-certificates
-    - gnupg            # NOT gnupg2
-  
+    - gnupg
   acl:
     - acl
-  
   kvm:
-    # NOTE: No cpu-checker on Arch (use /proc/cpuinfo directly)
-    # qemu-desktop includes most QEMU components
-    - dnsmasq          # Required for libvirt NAT networking
-    - edk2-ovmf        # UEFI firmware for VMs
-    - libvirt          # UNIFIED: includes daemon, client, etc.
-    - qemu-desktop     # Or qemu-full for all architectures
+    - dnsmasq
+    - edk2-ovmf
+    - libvirt
+    - qemu-desktop
     - virt-install
-    - virt-manager     # GUI for libvirt
-
-
-# =============================================================================
-# POWERSHELL GALLERY MODULES
-# =============================================================================
-# Installed via Install-Module from PowerShell Gallery
-# Merged: includes both system modules and user modules
-# =============================================================================
+    - virt-manager
+  interpreters:
+    - lua
+    - perl
+    - python
+    - python-pip
+  shell_history:
+    - atuin
+  modern_cli_extras:
+    - bottom
+    - delta git diff pager (better diffs)
+    - eza ls replacement (replaces exa)
+    - hyperfine Benchmarking tool
+    - procs ps replacement
+    - tealdeer tldr pages alternative (tldr command)
+    - tokei Code stats / line counter
+    - zoxide cd replacement with frecency
+  fonts:
+    - noto-fonts
+    - noto-fonts-emoji
+    - ttf-fira-code Developer font
+    - ttf-hack Developer font
+    - ttf-jetbrains-mono Developer font
+  theming:
+    - arc-gtk-theme GTK theme
+    - kvantum Qt theme engine
+    - papirus-icon-theme Icon theme
 powershell_gallery:
-  # Core system modules
-  - PSReadLine                    # Command-line editing, history, syntax highlighting
-  - PowerShellGet                 # Module management (v3+)
-  # Winget integration
-  - Microsoft.WinGet.Client       # WinGet PowerShell interface
-  - Microsoft.WinGet.CommandNotFound  # Command not found suggestions
-  # Development & utilities
-  - powershell-yaml               # YAML parsing
-  - PSFzf                         # Fuzzy finder integration
-  - PSWindowsUpdate               # Windows Update management
-  - Terminal-Icons                # File icons in terminal
-
-# =============================================================================
-# CHOCOLATEY PACKAGES
-# =============================================================================
+  - PSReadLine Command-line editing, history, syntax highlighting
+  - PowerShellGet Module management (v3+)
+  - Microsoft.WinGet.Client WinGet PowerShell interface
+  - Microsoft.WinGet.CommandNotFound Command not found suggestions
+  - powershell-yaml YAML parsing
+  - PSFzf Fuzzy finder integration
+  - PSWindowsUpdate Windows Update management
+  - Terminal-Icons File icons in terminal
 choco:
-  # Core extensions
   - chocolatey-core.extension
   - chocolatey-compatibility.extension
   - chocolatey-font-helpers.extension
-  # Container
   - dive
   - docker-cli
   - docker-compose
-  # Editor / Font
   - vim
   - nerd-fonts-FiraCode
   - nerd-fonts-Hack
   - Cygwin
   - colortool
-  # FIXME: Rsync fails every time not sure why may be build
-  # - rsync
-  # Gaming
   - cheatengine
-  # Build
   - make
-
-# =============================================================================
-# WINGET RUNTIMES
-# =============================================================================
 winget_runtimes:
   ui_libraries:
     - Microsoft.UI.Xaml.2.7
@@ -656,10 +479,6 @@ winget_runtimes:
     - Microsoft.DotNet.HostingBundle.8
     - Microsoft.DotNet.Runtime.10
     - Microsoft.DotNet.Runtime.8
-
-# =============================================================================
-# WINGET SYSTEM PACKAGES ( EXE )
-# =============================================================================
 winget_system:
   sync_backup:
     - Microsoft.OneDrive
@@ -707,10 +526,6 @@ winget_system:
     - Audacity.Audacity
     - rocksdanister.LivelyWallpaper
     - KDE.Krita
-
-# =============================================================================
-# WINGET USERLAND PACKAGES ( MSXI )
-# =============================================================================
 winget_userland:
   sync_backup:
     - Microsoft.OneDrive
@@ -768,11 +583,6 @@ winget_userland:
   media_creative:
     - yt-dlp.yt-dlp
     - Gyan.FFmpeg
-
-# =============================================================================
-# PIP PACKAGES (via miniforge/uv)
-# =============================================================================
-# Installed in miniforge base environment - same across all platforms via uv
 pip_base:
   - 'uv'
   - 'git-filter-repo'
@@ -781,11 +591,6 @@ pip_base:
   - 'pylint'
   - 'ruff'
   - 'yamllint'
-
-# =============================================================================
-# NPM GLOBAL PACKAGES (via nvm)
-# =============================================================================
-# Same across all platforms - applied after nvm installs Node.js
 npm_global:
   - '@types/node'
   - 'eslint'

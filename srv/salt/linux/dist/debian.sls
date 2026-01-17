@@ -32,7 +32,7 @@ include:
   pkg.installed:
     - pkgs: {{ packages[os_name].core_utils | tojson }}
     - require:
-      - cmd: apt_update_with_override
+      - cmd: docker_apt_update
 {% endif %}
 
 # ============================================================================

@@ -27,6 +27,15 @@ steam_input:
 ---
 
 # =============================================================================
+# SDDM / AUTOLOGIN CONFIGURATION
+# =============================================================================
+steamdeck:
+  autologin:
+    user: vegcom  # Uncomment/change to enable autologin
+
+---
+
+# =============================================================================
 # BLUETOOTH CONFIGURATION
 # =============================================================================
 bluetooth:
@@ -35,21 +44,22 @@ bluetooth:
 ---
 
 # =============================================================================
-# PACMAN REPOSITORIES (guava specific)
+# PACMAN REPOSITORIES
 # =============================================================================
 # All disabled by default - uncomment to enable
 pacman:
-  repos: {}
+  repos: {
   # Uncomment below to enable Jupiter or Chaotic repositories
   
-  # jupiter:
-  #   enabled: true
-  #   server: "https://steamdeck-packages.steamos.cloud/archlinux-mirror/$repo/os/$arch"
-  #   siglevel: "Never"
+  jupiter:
+    enabled: true
+    server: "https://steamdeck-packages.steamos.cloud/archlinux-mirror/$repo/os/$arch"
+    siglevel: "Never"
   
-  # chaotic_aur:
-  #   enabled: false
-  #   server: "https://chaotic.cx/arch/x86_64"
+  chaotic_aur:
+    enabled: false
+    server: "https://chaotic.cx/arch/x86_64"
+}
 
 ---
 

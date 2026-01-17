@@ -1,3 +1,7 @@
+#!jinja|yaml
+{% set hostname = grains.get('id', '') %}
+{% set host_file = '/srv/salt/pillar/host/' + hostname + '.sls' %}
+
 base:
   # All systems get common configuration
   '*':
@@ -17,7 +21,12 @@ base:
     - linux
 
   # Hardware class: Valve Galileo (Steam Deck)
-  # Detection: Check minion ID or hostname
-  'guava':
+  'G@dmi:System Information:Manufacturer:Valve and G@dmi:System Information:Product Name:Galileo':
+    - match: compound
     - class.galileo
-    - host.guava
+
+  # Host-specific configuration (if file exists)
+  {% if salt['file.file_exists'](host_file) %}
+  '*':
+    - host.{{ hostname }}
+  {% endif %}

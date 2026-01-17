@@ -3,6 +3,36 @@
 
 {% import_yaml 'packages.sls' as packages %}
 
+# ============================================================================
+# BOOTSTRAP: Download and install winget (Windows Package Manager)
+# ============================================================================
+
+{% set winget_url = 'https://github.com/microsoft/winget-cli/releases/download/v1.12.440/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle' %}
+{% set winget_bundle = 'C:\\Windows\\Temp\\AppInstaller.msixbundle' %}
+
+winget-bundle-fetch:
+  file.managed:
+    - name: {{ winget_bundle }}
+    - source: {{ winget_url }}
+    - makedirs: True
+    - skip_verify: True
+
+winget-install-system:
+  cmd.run:
+    - name: Add-AppxPackage -Path "{{ winget_bundle }}"
+    - shell: powershell
+    - runas: SYSTEM
+    - unless: |
+        powershell -NoProfile -Command "
+          if (Get-AppxPackage Microsoft.DesktopAppInstaller -ErrorAction SilentlyContinue) {
+            exit 0
+          } else {
+            exit 1
+          }
+        "
+    - require:
+      - file: winget-bundle-fetch
+
 # TODO: pillar this
 {% set enable_choco_features = [
     "allowGlobalConfirmation",
@@ -32,6 +62,8 @@ winget_runtime_{{ pkg | replace('.', '_') | replace('-', '_') }}:
             exit 1
           }
         "
+    - require:
+      - cmd: winget-install-system
 {% endfor %}
 {% endfor %}
 {% endif %}
@@ -53,6 +85,8 @@ winget_{{ pkg | replace('.', '_') | replace('-', '_') }}:
             exit 1
           }
         "
+    - require:
+      - cmd: winget-install-system
 {% endfor %}
 {% endfor %}
 {% endif %}
@@ -75,6 +109,8 @@ winget_userland_{{ user | replace('.', '_') | replace('-', '_') }}_{{ pkg | repl
             exit 1
           }
         "
+    # - require:
+    #   - cmd: winget-install-system
     {% endfor %}
   {% endfor %}
 {% endfor %}
@@ -93,7 +129,7 @@ pwsh_module_{{ module | replace('.', '_') | replace('-', '_') }}:
         "
     - unless: >
         pwsh -NoLogo -NoProfile -Command "
-          if (Get-InstalledModule -Name '{{ module }}' -ErrorAction SilentlyContinue|Select-String -Quiet -Pattern "{{ module }}") {
+          if (Get-InstalledModule -Name '{{ module }}' -ErrorAction SilentlyContinue) {
             exit 0
           } else {
             exit 1

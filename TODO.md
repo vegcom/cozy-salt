@@ -129,6 +129,14 @@ cd yay-bin && makepkg -si
 - [ ] Move to pillar-driven configuration
   - Effort: 30 minutes
 
+### Steam Deck SDDM Theme
+
+- [ ] Install and configure SDDM Astronaut theme
+  - https://github.com/Keyitdev/sddm-astronaut-theme
+  - Instead of running their script, use Salt file.managed to deploy theme files
+  - Add pillar gate: `steamdeck:sddm:theme` (default: sugar-dark, option: astronaut)
+  - Effort: 1-2 hours
+
 ---
 
 ## Future / Backlog
