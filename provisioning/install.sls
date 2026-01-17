@@ -31,7 +31,7 @@ apt_update_with_override:
 # Core utilities required on all systems
 core_utils_packages:
   pkg.installed:
-    - pkgs: {{ packages[os_name].core_utils[os_name] | tojson }}
+    - pkgs: {{ packages[os_name].core_utils | tojson }}
 {% if os_family == 'Debian' %}
     - require:
       - cmd: apt_update_with_override
@@ -40,7 +40,7 @@ core_utils_packages:
 # System monitoring and diagnostics tools
 monitoring_packages:
   pkg.installed:
-    - pkgs: {{ packages[os_name].monitoring[os_name] | tojson }}
+    - pkgs: {{ packages[os_name].monitoring | tojson }}
     - require:
       - pkg: core_utils_packages
     - onfail_stop: True
@@ -48,7 +48,7 @@ monitoring_packages:
 # Shell customization and enhancements
 shell_packages:
   pkg.installed:
-    - pkgs: {{ packages[os_name].shell_enhancements[os_name] | tojson }}
+    - pkgs: {{ packages[os_name].shell_enhancements | tojson }}
     - require:
       - pkg: core_utils_packages
     - onfail_stop: True
@@ -56,7 +56,7 @@ shell_packages:
 # Build tools and compilers
 build_packages:
   pkg.installed:
-    - pkgs: {{ packages[os_name].build_tools[os_name] | tojson }}
+    - pkgs: {{ packages[os_name].build_tools | tojson }}
     - require:
       - pkg: core_utils_packages
     - onfail_stop: True
@@ -64,7 +64,7 @@ build_packages:
 # Networking tools
 networking_packages:
   pkg.installed:
-    - pkgs: {{ packages[os_name].networking[os_name] | tojson }}
+    - pkgs: {{ packages[os_name].networking | tojson }}
     - require:
       - pkg: core_utils_packages
     - onfail_stop: True
@@ -72,7 +72,7 @@ networking_packages:
 # Compression and archive tools
 compression_packages:
   pkg.installed:
-    - pkgs: {{ packages[os_name].compression[os_name] | tojson }}
+    - pkgs: {{ packages[os_name].compression | tojson }}
     - require:
       - pkg: core_utils_packages
     - onfail_stop: True
@@ -80,7 +80,7 @@ compression_packages:
 # Version control extras (git-lfs, gh, tig)
 vcs_packages:
   pkg.installed:
-    - pkgs: {{ packages[os_name].vcs_extras[os_name] | tojson }}
+    - pkgs: {{ packages[os_name].vcs_extras | tojson }}
     - require:
       - pkg: core_utils_packages
     - onfail_stop: True
@@ -89,7 +89,7 @@ vcs_packages:
 # Note: Some not available in RHEL base repos
 modern_cli_packages:
   pkg.installed:
-    - pkgs: {{ packages[os_name].modern_cli[os_name] | tojson }}
+    - pkgs: {{ packages[os_name].modern_cli | tojson }}
     - require:
       - pkg: core_utils_packages
     - onfail_stop: True
@@ -97,7 +97,7 @@ modern_cli_packages:
 # Security and certificates
 security_packages:
   pkg.installed:
-    - pkgs: {{ packages[os_name].security[os_name] | tojson }}
+    - pkgs: {{ packages[os_name].security | tojson }}
     - require:
       - pkg: core_utils_packages
     - onfail_stop: True
@@ -105,7 +105,7 @@ security_packages:
 # Access control lists
 acl_packages:
   pkg.installed:
-    - pkgs: {{ packages[os_name].acl[os_name] | tojson }}
+    - pkgs: {{ packages[os_name].acl | tojson }}
     - require:
       - pkg: core_utils_packages
     - onfail_stop: True
@@ -115,7 +115,7 @@ acl_packages:
 {% if salt['pillar.get']('host:capabilities:kvm', False) %}
 kvm_packages:
   pkg.installed:
-    - pkgs: {{ packages[os_name].kvm[os_name] | tojson }}
+    - pkgs: {{ packages[os_name].kvm | tojson }}
     - require:
       - pkg: core_utils_packages
     - onfail_stop: True

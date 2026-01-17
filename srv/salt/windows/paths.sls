@@ -9,7 +9,9 @@
   'C:\\opt\\miniforge3\\Scripts',
   'C:\\opt\\miniforge3',
   'C:\\opt\\windhawk',
-  'C:\\opt\\wt'
+  'C:\\opt\\wt',
+  'C:\\opt\\msys',
+  'C:\\opt\\cozy'
 ] %}
 
 {% set current_path = salt['reg.read_value']('HKLM',"SYSTEM\CurrentControlSet\Control\Session Manager\Environment",'Path').get('vdata','') %}

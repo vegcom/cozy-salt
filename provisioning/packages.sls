@@ -7,6 +7,7 @@
 # =============================================================================
 # CAPABILITY: Ubuntu
 # =============================================================================
+
 ubuntu:
   core_utils:
     - curl
@@ -220,9 +221,9 @@ rhel:
 
 # =============================================================================
 # CAPABILITY: Archlinux
-# =============================================================================
 # FIXME: actually a 1:1 copy of rhel names not evaluated at this time
-archlinux:
+# =============================================================================
+arch:
   core_utils:
     - curl
     - git
@@ -339,100 +340,8 @@ choco:
   - make
 
 # =============================================================================
-# WINGET: RUNTIMES & FRAMEWORKS
-# =============================================================================
-winget_runtimes:
-  dotnet:
-    - Microsoft.DotNet.AspNetCore.9
-    - Microsoft.DotNet.DesktopRuntime.10
-    - Microsoft.DotNet.DesktopRuntime.8
-    - Microsoft.DotNet.DesktopRuntime.9
-    - Microsoft.DotNet.Framework.DeveloperPack.4.6
-    - Microsoft.DotNet.HostingBundle.8
-    - Microsoft.DotNet.Runtime.10
-    - Microsoft.DotNet.Runtime.8
-  vcredist:
-    - Microsoft.VCRedist.2008.x64
-    - Microsoft.VCRedist.2008.x86
-    - Microsoft.VCRedist.2010.x64
-    - Microsoft.VCRedist.2010.x86
-    - Microsoft.VCRedist.2012.x64
-    - Microsoft.VCRedist.2012.x86
-    - Microsoft.VCRedist.2013.x64
-    - Microsoft.VCRedist.2013.x86
-    - Microsoft.VCRedist.2015+.x64
-    - Microsoft.VCRedist.2015+.x86
-  ui_libraries:
-    - Microsoft.UI.Xaml.2.7
-    - Microsoft.UI.Xaml.2.8
-    - Microsoft.VCLibs.Desktop.14
-  sdks:
-    - Microsoft.AppInstaller
-    - Microsoft.AppInstallerFileBuilder
-    - Microsoft.NuGet
-    - Microsoft.WindowsADK
-    - Microsoft.WindowsSDK.10.0.18362
-
-# =============================================================================
 # WINGET
 # =============================================================================
-winget_userland:
-  sync_backup:
-    - Microsoft.OneDrive
-    - Martchus.syncthingtray
-  hardware: 
-    - LibreHardwareMonitor.LibreHardwareMonitor
-  networking: 
-    - evsar3.sshfs-win-manager
-  shells:
-    - Microsoft.AIShell
-    - JanDeDobbeleer.OhMyPosh
-    - Microsoft.WindowsTerminal
-  communication:
-    - hoppscotch.Hoppscotch
-    - Vencord.Vesktop
-    - Microsoft.Teams
-  rgb_peripherals:
-    - Nefarius.HidHide
-  office:
-    - Obsidian.Obsidian
-  dev_tools:
-    - Microsoft.VisualStudioCode
-    - Microsoft.VisualStudioCode.Insiders
-    - direnv.direnv
-    - jqlang.jq
-    - DenoLand.Deno
-    - Hashicorp.Terraform
-    - Hashicorp.TerraformLanguageServer
-    - junegunn.fzf
-    - Microsoft.VisualStudioCode.CLI
-    - Microsoft.VisualStudioCode.Insiders.CLI
-    - nektos.act
-    - waterlan.dos2unix
-  system_utilities:
-    - Microsoft.PowerToys
-    - AntibodySoftware.WizTree
-    - WinSCP.WinSCP
-    - Rufus.Rufus
-    - Microsoft.Sysinternals.Autoruns
-    - Microsoft.Sysinternals.ProcessExplorer
-    - Rclone.Rclone
-    - Ventoy.Ventoy
-  gaming:
-    - Playnite.Playnite
-    - SpecialK.SpecialK
-    - HeroicGamesLauncher.HeroicGamesLauncher
-    - mtkennerly.ludusavi
-  kubernetes:
-    - Kubernetes.kubectl
-    - Helm.Helm
-    - stern.stern
-  desktop_customization:
-    - AutoHotkey.AutoHotkey
-    - File-New-Project.EarTrumpet
-  media_creative:
-    - yt-dlp.yt-dlp
-    - Gyan.FFmpeg
 
 winget_runtimes:
   ui_libraries:
@@ -514,19 +423,76 @@ winget_system:
     - rocksdanister.LivelyWallpaper
     - KDE.Krita
 
+winget_userland:
+  sync_backup:
+    - Microsoft.OneDrive
+    - Martchus.syncthingtray
+  hardware: 
+    - LibreHardwareMonitor.LibreHardwareMonitor
+  networking: 
+    - evsar3.sshfs-win-manager
+  shells:
+    - Microsoft.AIShell
+    - JanDeDobbeleer.OhMyPosh
+    - Microsoft.WindowsTerminal
+  communication:
+    - hoppscotch.Hoppscotch
+    - Vencord.Vesktop
+    - Microsoft.Teams
+  rgb_peripherals:
+    - Nefarius.HidHide
+  office:
+    - Obsidian.Obsidian
+  dev_tools:
+    - Microsoft.VisualStudioCode
+    - Microsoft.VisualStudioCode.Insiders
+    - direnv.direnv
+    - jqlang.jq
+    - DenoLand.Deno
+    - Hashicorp.Terraform
+    - Hashicorp.TerraformLanguageServer
+    - junegunn.fzf
+    - Microsoft.VisualStudioCode.CLI
+    - Microsoft.VisualStudioCode.Insiders.CLI
+    - nektos.act
+    - waterlan.dos2unix
+  system_utilities:
+    - Microsoft.PowerToys
+    - AntibodySoftware.WizTree
+    - WinSCP.WinSCP
+    - Rufus.Rufus
+    - Microsoft.Sysinternals.Autoruns
+    - Microsoft.Sysinternals.ProcessExplorer
+    - Rclone.Rclone
+    - Ventoy.Ventoy
+  gaming:
+    - Playnite.Playnite
+    - SpecialK.SpecialK
+    - HeroicGamesLauncher.HeroicGamesLauncher
+    - mtkennerly.ludusavi
+  kubernetes:
+    - Kubernetes.kubectl
+    - Helm.Helm
+    - stern.stern
+  desktop_customization:
+    - AutoHotkey.AutoHotkey
+    - File-New-Project.EarTrumpet
+  media_creative:
+    - yt-dlp.yt-dlp
+    - Gyan.FFmpeg
+
+
 # =============================================================================
-# PIP BASE PACKAGES (via miniforge)
+# PIP PACKAGES (via miniforge)
 # =============================================================================
-# Installed in miniforge base environment - same across all platforms
-# uvx = npx for Python (run CLI tools in isolated envs)
+# Installed in miniforge base environment - same across all platforms via uv
 pip_base:
-  - 'black'
+  - 'uv'
   - 'git-filter-repo'
   - 'ipython'
   - 'pylance'
   - 'pylint'
   - 'ruff'
-  - 'uv'
   - 'yamllint'
 
 # =============================================================================

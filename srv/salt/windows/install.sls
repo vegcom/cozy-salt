@@ -85,6 +85,7 @@ winget_userland_{{ user | replace('.', '_') | replace('-', '_') }}_{{ pkg | repl
 pwsh_module_{{ module | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
     - shell: pwsh
+    - runas: SYSTEM
     - name: >
         pwsh -NoLogo -NoProfile -Command "
           Install-Module -Name '{{ module }}' -Scope AllUsers -AllowClobber -SkipPublisherCheck -Force -Repository PSGallery
@@ -105,6 +106,7 @@ pwsh_module_{{ module | replace('.', '_') | replace('-', '_') }}:
 {% for module in packages.powershell_gallery %}
 pwsh_module_{{ module | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
+    - runas: SYSTEM
     - name: >
         pwsh -NoLogo -NoProfile -Command "
           Install-Module -Name '{{ module }}' -Scope AllUsers -AllowClobber -SkipPublisherCheck -Force -Repository PSGallery

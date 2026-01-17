@@ -81,7 +81,7 @@ apt_update_with_override:
 {% if 'core_utils' in capabilities %}
 core_utils_packages:
   pkg.installed:
-    - pkgs: {{ packages.core_utils[os_name] | tojson }}
+    - pkgs: {{ packages[os_name].core_utils | tojson }}
 {% if os_family == 'Debian' %}
     - require:
       - cmd: apt_update_with_override
@@ -92,7 +92,7 @@ core_utils_packages:
 {% if 'shell_enhancements' in capabilities %}
 shell_packages:
   pkg.installed:
-    - pkgs: {{ packages.shell_enhancements[os_name] | tojson }}
+    - pkgs: {{ packages[os_name].shell_enhancements | tojson }}
     - require:
       - pkg: core_utils_packages
     - onfail_stop: True
@@ -102,7 +102,7 @@ shell_packages:
 {% if 'monitoring' in capabilities %}
 monitoring_packages:
   pkg.installed:
-    - pkgs: {{ packages.monitoring[os_name] | tojson }}
+    - pkgs: {{ packages[os_name].monitoring | tojson }}
     - require:
       - pkg: core_utils_packages
     - onfail_stop: True
@@ -112,7 +112,7 @@ monitoring_packages:
 {% if 'compression' in capabilities %}
 compression_packages:
   pkg.installed:
-    - pkgs: {{ packages.compression[os_name] | tojson }}
+    - pkgs: {{ packages[os_name].compression | tojson }}
     - require:
       - pkg: core_utils_packages
     - onfail_stop: True
@@ -122,7 +122,7 @@ compression_packages:
 {% if 'vcs_extras' in capabilities %}
 vcs_packages:
   pkg.installed:
-    - pkgs: {{ packages.vcs_extras[os_name] | tojson }}
+    - pkgs: {{ packages[os_name].vcs_extras | tojson }}
     - require:
       - pkg: core_utils_packages
     - onfail_stop: True
@@ -132,7 +132,7 @@ vcs_packages:
 {% if 'modern_cli' in capabilities %}
 modern_cli_packages:
   pkg.installed:
-    - pkgs: {{ packages.modern_cli[os_name] | tojson }}
+    - pkgs: {{ packages[os_name].modern_cli | tojson }}
     - require:
       - pkg: core_utils_packages
     - onfail_stop: True
@@ -142,7 +142,7 @@ modern_cli_packages:
 {% if 'security' in capabilities %}
 security_packages:
   pkg.installed:
-    - pkgs: {{ packages.security[os_name] | tojson }}
+    - pkgs: {{ packages[os_name].security | tojson }}
     - require:
       - pkg: core_utils_packages
     - onfail_stop: True
@@ -152,7 +152,7 @@ security_packages:
 {% if 'acl' in capabilities %}
 acl_packages:
   pkg.installed:
-    - pkgs: {{ packages.acl[os_name] | tojson }}
+    - pkgs: {{ packages[os_name].acl | tojson }}
     - require:
       - pkg: core_utils_packages
     - onfail_stop: True
@@ -162,7 +162,7 @@ acl_packages:
 {% if 'build_tools' in capabilities %}
 build_packages:
   pkg.installed:
-    - pkgs: {{ packages.build_tools[os_name] | tojson }}
+    - pkgs: {{ packages[os_name].build_tools | tojson }}
     - require:
       - pkg: core_utils_packages
     - onfail_stop: True
@@ -172,7 +172,7 @@ build_packages:
 {% if 'networking' in capabilities %}
 networking_packages:
   pkg.installed:
-    - pkgs: {{ packages.networking[os_name] | tojson }}
+    - pkgs: {{ packages[os_name].networking | tojson }}
     - require:
       - pkg: core_utils_packages
     - onfail_stop: True
@@ -182,7 +182,7 @@ networking_packages:
 {% if 'kvm' in capabilities and salt['pillar.get']('host:capabilities:kvm', False) %}
 kvm_packages:
   pkg.installed:
-    - pkgs: {{ packages.kvm[os_name] | tojson }}
+    - pkgs: {{ packages[os_name].kvm | tojson }}
     - require:
       - pkg: core_utils_packages
     - onfail_stop: True
