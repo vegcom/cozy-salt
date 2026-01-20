@@ -10,3 +10,4 @@ srv/salt/keys/minion/
 scripts/pki/
 docs/
 .env
+scripts/enrollment

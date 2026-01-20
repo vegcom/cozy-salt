@@ -13,9 +13,7 @@ dependencies:
       - salt
       - salt-lint
       - yamllint
-      - ansible-lint
       - pylint
-      - black
       - ruff
       - isort
       - pytest
