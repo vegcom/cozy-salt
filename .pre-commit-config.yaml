@@ -1,0 +1,51 @@
+# Pre-commit hooks for cozy-salt
+# Install: pip install pre-commit && pre-commit install
+# Run manually: pre-commit run --all-files
+
+repos:
+  # Shell script linting
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.10.0.1
+    hooks:
+      - id: shellcheck
+        args: ["--severity=warning"]
+
+  # YAML linting (catches Salt state syntax issues early)
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.35.1
+    hooks:
+      - id: yamllint
+        args: ["--strict", "-d", "{extends: relaxed, rules: {line-length: {max: 200}}}"]
+        files: \.(yaml|yml|sls)$
+
+  # Python linting (for Salt modules)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.6
+    hooks:
+      - id: ruff
+        args: ["--fix"]
+      - id: ruff-format
+
+  # General file hygiene
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: \.md$
+      - id: end-of-file-fixer
+      - id: check-yaml
+        args: ["--unsafe"]  # Allow custom YAML tags (Salt uses Jinja)
+        exclude: \.sls$     # Skip .sls files (Jinja templates break YAML parser)
+      - id: check-added-large-files
+        args: ["--maxkb=500"]
+      - id: check-merge-conflict
+
+  # Fix permissions (Salt needs specific file modes)
+  - repo: local
+    hooks:
+      - id: fix-permissions
+        name: Fix file permissions
+        entry: ./scripts/fix-permissions.sh
+        language: script
+        pass_filenames: false
+        always_run: true

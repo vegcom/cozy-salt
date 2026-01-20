@@ -1,6 +1,6 @@
 # cozy-salt Makefile - shortcuts for common operations
 
-.PHONY: help test test-ubuntu test-apt test-linux test-rhel test-windows test-all test-quick lint lint-shell lint-ps clean clean-keys clean-all up up-master down down-master restart restart-master up-ubuntu-test down-ubuntu-test up-rhel-test down-rhel-test logs status validate validate-states validate-states-windows perms shell state-check debug-minion logs-minion salt-docs salt-key-list salt-key-status salt-key-cleanup-test salt-key-accept salt-key-delete salt-key-reject salt-key-accept-test salt-manage-status salt-jobs-active salt-jobs-list salt-jobs-clear salt-test-ping salt-state-highstate salt-state-highstate-test pytest pytest-ubuntu pytest-rhel pytest-windows pytest-all pytest-lint salt-doc salt-cmd salt-grains salt-state-sls salt-cache-clear salt-clear_cache mamba-create mamba-update mamba-remove mamba-activate
+.PHONY: help test test-ubuntu test-apt test-linux test-rhel test-windows test-all test-quick lint lint-shell lint-ps pre-commit pre-commit-install clean clean-keys clean-all up up-master down down-master restart restart-master up-ubuntu-test down-ubuntu-test up-rhel-test down-rhel-test logs status validate validate-states validate-states-windows perms shell state-check debug-minion logs-minion salt-docs salt-key-list salt-key-status salt-key-cleanup-test salt-key-accept salt-key-delete salt-key-reject salt-key-accept-test salt-manage-status salt-jobs-active salt-jobs-list salt-jobs-clear salt-test-ping salt-state-highstate salt-state-highstate-test pytest pytest-ubuntu pytest-rhel pytest-windows pytest-all pytest-lint salt-doc salt-cmd salt-grains salt-state-sls salt-cache-clear salt-clear_cache mamba-create mamba-update mamba-remove mamba-activate
 
 # =========================================================================== #
 # Default target
@@ -25,6 +25,8 @@ help:
 	@echo "  test-all      - Run all distro tests"
 	@echo "  test-quick    - Quick test without docker rebuild"
 	@echo "  lint          - Run linting via pytest"
+	@echo "  pre-commit    - Run pre-commit hooks on all files"
+	@echo "  pre-commit-install - Install pre-commit hooks"
 	@echo ""
 	@echo "pytest (direct):"
 	@echo "  pytest        - Run all tests with verbose output"
@@ -189,6 +191,17 @@ pytest-lint:
 # Linting
 # =========================================================================== #
 lint: pytest-lint
+
+# Pre-commit hooks (recommended for local development)
+pre-commit-install:
+	@echo "=== Installing pre-commit hooks ==="
+	pip install pre-commit
+	pre-commit install
+	@echo "Pre-commit hooks installed! They will run automatically on git commit."
+
+pre-commit:
+	@echo "=== Running pre-commit on all files ==="
+	pre-commit run --all-files
 
 # Legacy lint targets (still available for direct use)
 lint-legacy: lint-shell lint-ps

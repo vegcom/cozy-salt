@@ -8,17 +8,18 @@ on:
 
 jobs:
   lint:
-    name: Lint Scripts
+    name: Lint (pre-commit)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Lint shell scripts
-        run: ./tests/test-shellscripts.sh
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
 
-      # pwsh is pre-installed on ubuntu-latest runners
-      - name: Lint PowerShell scripts
-        run: pwsh -File ./tests/test-psscripts.ps1
+      - name: Run pre-commit
+        uses: pre-commit/action@v3.0.1
 
   test-states:
     name: Test States - ${{ matrix.distro }}
