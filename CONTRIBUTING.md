@@ -21,13 +21,13 @@ make test-windows      # Windows (requires KVM)
 
 ## When It Breaks
 
-| Problem | Fix |
-|---------|-----|
-| State not found | Check `top.sls` matches filename |
-| File not found | Check `provisioning/` mounted |
+| Problem         | Fix                                                             |
+| --------------- | --------------------------------------------------------------- |
+| State not found | Check `top.sls` matches filename                                |
+| File not found  | Check `provisioning/` mounted                                   |
 | Jinja undefined | Add `{% import_yaml "provisioning/packages.sls" as packages %}` |
-| Minion hanging | Master needs 15s after restart |
-| Permissions | Run `./scripts/fix-permissions.sh` |
+| Minion hanging  | Master needs 15s after restart                                  |
+| Permissions     | Run `./scripts/fix-permissions.sh`                              |
 
 ## Windows `win_cmd` Macro
 
@@ -50,3 +50,8 @@ Sets `NVM_HOME`, `NVM_SYMLINK`, `CONDA_HOME` automatically.
 2. Make changes following the 3 rules
 3. Run tests
 4. Commit, push, PR
+
+## Submodules
+
+- [git@github.com:vegcom/cozy-salt-enrollment.git](https://github.com/vegcom/cozy-salt-enrollment)
+  - [scripts/enrollment/](./scripts/enrollment/)
