@@ -223,6 +223,6 @@ git commit -m "feat: Add new script description"
 ## Related Documentation
 
 - **Docker setup**: See `docker-compose.yaml` and Docker entrypoint usage
-- **Windows enrollment**: See `docs/WINDOWS-ENROLLMENT.md` for complete flow
+- **Windows enrollment**: See `scripts/enrollment/WINDOWS.md` for complete flow
 - **File permissions**: See `scripts/fix-permissions.sh` comments
 - **Salt configuration**: See `srv/salt/` and `srv/pillar/`

@@ -435,5 +435,5 @@ If tasks don't run:
 
 - **Deployment states**: `srv/salt/windows/`
 - **Script organization**: `scripts/README.md`
-- **Windows enrollment**: `docs/WINDOWS-ENROLLMENT.md`
+- **Windows enrollment**: `scripts/enrollment/WINDOWS.md`
 - **PowerShell profile source**: Source files in this directory
