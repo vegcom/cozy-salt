@@ -37,17 +37,17 @@ test_minion() {
 
     echo -e "${YELLOW}=== Testing ${minion_type} minion ===${NC}"
 
-    echo "Starting containers..."
-    # Explicitly include salt-master to ensure it starts (profiles can be finicky in CI)
-    if ! docker compose --profile "test-${service_name}" up -d --build salt-master "salt-minion-${service_name}"; then
-        echo -e "${RED}Failed to start containers${NC}"
+    # Start master first (minion depends_on: service_healthy fails if started together)
+    echo "Building and starting salt-master..."
+    if ! docker compose up -d --build salt-master; then
+        echo -e "${RED}Failed to start salt-master${NC}"
         return 1
     fi
 
-    # Wait for salt-master to be healthy before proceeding
+    # Wait for salt-master to be healthy before starting minion
     echo "Waiting for salt-master to be healthy..."
     local master_wait=0
-    while [ $master_wait -lt 60 ]; do
+    while [ $master_wait -lt 90 ]; do
         if docker inspect --format='{{.State.Health.Status}}' salt-master 2>/dev/null | grep -q "healthy"; then
             echo -e "${GREEN}Salt master is healthy${NC}"
             break
@@ -56,9 +56,17 @@ test_minion() {
         master_wait=$((master_wait + 2))
     done
 
-    if [ $master_wait -ge 60 ]; then
+    if [ $master_wait -ge 90 ]; then
         echo -e "${RED}Salt master failed to become healthy${NC}"
         docker logs salt-master
+        docker compose down
+        return 1
+    fi
+
+    # Now start the minion (master is already healthy, depends_on will pass)
+    echo "Starting salt-minion-${service_name}..."
+    if ! docker compose --profile "test-${service_name}" up -d --build "salt-minion-${service_name}"; then
+        echo -e "${RED}Failed to start minion${NC}"
         docker compose --profile "test-${service_name}" down
         return 1
     fi
