@@ -1,3 +1,4 @@
+#!/bin/bash
 # Starship shell prompt initialization
 # Managed by Salt - DO NOT EDIT MANUALLY
 

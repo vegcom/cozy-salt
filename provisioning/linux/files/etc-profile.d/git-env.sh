@@ -5,6 +5,8 @@
 
 # Only set if git is installed and user has global git config
 if command -v git &> /dev/null; then
-  export GIT_NAME="$(git config --global user.name 2>/dev/null)"
-  export GIT_EMAIL="$(git config --global user.email 2>/dev/null)"
+  GIT_NAME="$(git config --global user.name 2>/dev/null)"
+  GIT_EMAIL="$(git config --global user.email 2>/dev/null)"
+  export GIT_EMAIL
+  export GIT_NAME
 fi

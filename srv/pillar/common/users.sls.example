@@ -5,7 +5,7 @@ users:
   admin:
     fullname: Admin User
     shell: /bin/bash
-    home_prefix: /home        # Linux: /home/admin, Windows: C:\Users\admin
+    home_prefix: /home
     linux_groups:
       - cozyusers
       - docker
@@ -14,12 +14,12 @@ users:
     windows_groups:
       - Administrators
       - Users
-    ssh_keys: []              # Add public keys here: ["ssh-ed25519 AAAA... comment"]
+    ssh_keys: []
 
   vegcom:
     fullname: Vegcom User
     shell: /bin/bash
-    home_prefix: /home        # Linux: /home/vegcom, Windows: C:\Users\vegcom
+    home_prefix: /home
     linux_groups:
       - cozyusers
       - docker
@@ -27,12 +27,12 @@ users:
       - kvm
     windows_groups:
       - Users
-    ssh_keys: []              # Add public keys here
+    ssh_keys: []
 
   eve:
     fullname: Eve User
     shell: /bin/bash
-    home_prefix: /home        # Linux: /home/eve, Windows: C:\Users\eve
+    home_prefix: /home
     linux_groups:
       - cozyusers
       - docker
@@ -40,10 +40,8 @@ users:
       - kvm
     windows_groups:
       - Users
-    ssh_keys: []              # Add public keys here
+    ssh_keys: []
 
-# Managed users list - users that get dotfiles/configs deployed
-# TODO: Derive from users dict keys instead of maintaining separate list
 managed_users:
   - admin
   - vegcom

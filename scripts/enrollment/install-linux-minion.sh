@@ -69,6 +69,7 @@ echo ""
 
 # Detect OS
 if [ -f /etc/os-release ]; then
+    # shellcheck disable=SC1091
     . /etc/os-release
     OS=$ID
     VER=$VERSION_ID
@@ -130,6 +131,7 @@ EOF
 
     *)
         echo "Error: Unsupported OS: $OS"
+        echo "  version: $VER"
         echo "Please install Salt Minion manually: https://docs.saltproject.io/salt/install-guide/en/latest/"
         exit 1
         ;;

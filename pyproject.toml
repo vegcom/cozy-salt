@@ -38,19 +38,6 @@ exclude_lines = [
     "if TYPE_CHECKING:",
 ]
 
-[tool.black]
-line-length = 100
-target-version = ["py311"]
-include = '\.pyi?$'
-exclude = '''
-/(
-    \.git
-    | \.venv
-    | tests/archive-.*
-    | tests/output
-)/
-'''
-
 [tool.isort]
 profile = "black"
 line_length = 100
@@ -103,9 +90,11 @@ exclude = [
     "site-packages",
     "venv",
 ]
+fix = false
+builtins = ["__salt__", "__grains__"]
 line-length = 88
 indent-width = 2
-target-version = "py39"
+target-version = "py311"
 [tool.ruff.lint]
 select = ["E4", "E7", "E9", "F"]
 ignore = []
@@ -119,3 +108,6 @@ skip-magic-trailing-comma = false
 line-ending = "auto"
 docstring-code-format = false
 docstring-code-line-length = "dynamic"
+[tool.ruff.lint.per-file-ignores]
+"./srv/salt/_states/pacman.py" = ["F821"]
+"./srv/salt/_states/yay.py" = ["F821"]

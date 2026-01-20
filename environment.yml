@@ -10,13 +10,14 @@ dependencies:
   - shellcheck
   - pip-tools
   - pip:
-    - salt-lint
-    - yamllint
-    - ansible-lint
-    - pylint
-    - black
-    - ruff
-    - isort
-    - pytest
-    - pytest-cov
-    - jinja2
+      - salt
+      - salt-lint
+      - yamllint
+      - ansible-lint
+      - pylint
+      - black
+      - ruff
+      - isort
+      - pytest
+      - pytest-cov
+      - jinja2

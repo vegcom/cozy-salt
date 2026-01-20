@@ -5,12 +5,15 @@
 Before making changes, follow these essential rules:
 
 ### Rule 1: Packages in `provisioning/packages.sls`
+
 All software package definitions go in `provisioning/packages.sls`. States import packages, never hardcode them.
 
 ### Rule 2: Files in `provisioning/`
+
 Configuration files, scripts, and data files belong in `provisioning/`. States orchestrate, files deploy.
 
 ### Rule 3: Grep Before Moving Anything
+
 Before renaming, moving, or deleting files, search for all references:
 
 ```bash
@@ -30,6 +33,7 @@ All Windows `cmd.run` states that depend on custom tool installations (NVM, Cond
 **`win_cmd(command, extra_env=None)`** - Wrap PowerShell commands with standard Windows environment variables
 
 **Default environment variables:**
+
 - `NVM_HOME`: C:\opt\nvm (or from `pillar.install_paths.nvm.windows`)
 - `NVM_SYMLINK`: C:\opt\nvm\nodejs (symlink target for active Node.js version)
 - `CONDA_HOME`: C:\opt\miniforge3 (or from `pillar.install_paths.miniforge.windows`)
@@ -75,12 +79,14 @@ This ensures that any subsequent tool invocations can find their home directorie
 ### When to Use win_cmd
 
 **Always use `win_cmd` when:**
+
 - Invoking NVM: `nvm install`, `nvm use`, `nvm list`
 - Invoking Conda/Mamba: `conda init`, `conda install`
 - Any command that reads `NVM_HOME`, `CONDA_HOME`, or `NVM_SYMLINK`
 - Running npm packages installed by NVM
 
 **Do NOT use `win_cmd` for:**
+
 - Simple system commands (where, whoami, Get-ChildItem)
 - Commands that don't depend on custom tool paths
 - Registry operations (`reg.present`, `reg.absent`)
@@ -161,21 +167,22 @@ This is also run automatically via pre-commit hooks.
 6. Push and create a pull request
 
 Before merging to main:
+
 - All tests must pass
-- TODO.md must be cleaned (remove completed task sections)
+- `TODO.md` must be cleaned (remove completed task sections)
 - Commit cleanup separately to keep history clean
 
 ---
 
 ## Common Issues
 
-| Problem | Solution |
-|---------|----------|
-| State not found | Check `top.sls` - state name must match filename |
-| File not found | Check `provisioning/` is mounted and readable |
+| Problem                     | Solution                                                                         |
+| --------------------------- | -------------------------------------------------------------------------------- |
+| State not found             | Check `top.sls` - state name must match filename                                 |
+| File not found              | Check `provisioning/` is mounted and readable                                    |
 | Jinja undefined on packages | Add `{% import_yaml "provisioning/packages.sls" as packages %}` at top of `.sls` |
-| Minion hanging | Salt master needs 15s after restart |
-| Permission errors | Run `./scripts/fix-permissions.sh` |
+| Minion hanging              | Salt master needs 15s after restart                                              |
+| Permission errors           | Run `./scripts/fix-permissions.sh`                                               |
 
 ---
 

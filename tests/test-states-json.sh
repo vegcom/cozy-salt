@@ -130,7 +130,8 @@ parse_json_results() {
         return 1
     fi
 
-    local json_content=$(sed -n '/^{/,$p' "$json_file")
+    local json_content
+    json_content=$(sed -n '/^{/,$p' "$json_file")
     if [ -z "$json_content" ]; then
         echo -e "${RED}No valid JSON found in output${NC}"
         return 1

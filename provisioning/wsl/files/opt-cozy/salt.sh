@@ -45,6 +45,8 @@ for i in {1..30}; do
     if docker compose exec -T salt-master salt-run manage.status &> /dev/null; then
         echo "Salt Master is ready!"
         break
+    else
+        echo "Salt Master pending $i"
     fi
     echo -n "."
     sleep 2
