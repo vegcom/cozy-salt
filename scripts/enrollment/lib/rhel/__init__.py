@@ -28,7 +28,7 @@ def install(master: str, minion_id: str, roles: list[str]) -> None:
     bootstrap.chmod(0o755)
 
     # Run bootstrap with onedir flag
-    run_command(["sh", str(bootstrap), "-P", "onedir"])
+    run_command(["sh", str(bootstrap), "-D", "onedir", "latest"])
   finally:
     # Cleanup
     bootstrap.unlink(missing_ok=True)

@@ -14,9 +14,9 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
   from typing import Sequence
 
-# Bootstrap script URL (new location as of Oct 2024)
-BOOTSTRAP_URL = "https://github.com/saltstack/salt-bootstrap/releases/latest/download/bootstrap-salt.sh"
-BOOTSTRAP_PS1_URL = "https://github.com/saltstack/salt-bootstrap/releases/latest/download/bootstrap-salt.ps1"
+# Bootstrap script URL (vegcom fork with Arch/Python 3.13+ fixes)
+BOOTSTRAP_URL = "https://raw.githubusercontent.com/vegcom/salt-bootstrap/refs/heads/develop/bootstrap-salt.sh"
+BOOTSTRAP_PS1_URL = "https://raw.githubusercontent.com/vegcom/salt-bootstrap/refs/heads/develop/bootstrap-salt.ps1"
 
 
 def detect_os() -> tuple[str, str, str]:
