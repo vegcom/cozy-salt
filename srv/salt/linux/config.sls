@@ -11,13 +11,7 @@
 {# SSH port: 2222 for WSL (avoids Windows SSH on 22), 22 for native Linux #}
 {% set ssh_port = 2222 if is_wsl else salt['pillar.get']('ssh:port', 22) %}
 
-# Deploy skeleton files to /etc/skel for new users
-skel_files:
-  file.recurse:
-    - name: /etc/skel
-    - source: salt://linux/files/etc-skel
-    - include_empty: True
-    - clean: False
+# NOTE: /etc/skel is now managed in linux/users.sls (must run before user.present)
 
 # Deploy system-wide tmux configuration (Twilite theme)
 tmux_system_config:
@@ -108,6 +102,9 @@ include:
 
 # SSH service management - controlled by pillar host:services:ssh_enabled
 {% set ssh_enabled = salt['pillar.get']('host:services:ssh_enabled', not is_container) %}
+{# SSH service name varies by distro: Arch=sshd, Debian/RHEL=ssh #}
+{% set ssh_service_name = 'sshd' if grains['os_family'] == 'Arch' else 'ssh' %}
+
 {% if ssh_enabled %}
 sshd_config_port:
   file.replace:
@@ -118,7 +115,7 @@ sshd_config_port:
 
 sshd_service:
   service.running:
-    - name: ssh
+    - name: {{ ssh_service_name }}
     - enable: True
     - watch:
       - file: sshd_config_port

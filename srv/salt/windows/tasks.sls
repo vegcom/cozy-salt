@@ -3,13 +3,13 @@
 
 {% load_yaml as tasks %}
 wsl:
-  - tasks/wsl/wsl_autostart.xml
+  - provisioning/windows/tasks/wsl/wsl_autostart.xml
 kubernetes:
   # FIXME: respect state ( disabled / enabled )
   # TODO: use pillar
-  - tasks/kubernetes/docker_registry_port_forward.xml
-  - tasks/kubernetes/ollama_port_forward.xml
-  - tasks/kubernetes/open_webui_port_forward.xml
+  - provisioning/windows/tasks/kubernetes/docker_registry_port_forward.xml
+  - provisioning/windows/tasks/kubernetes/ollama_port_forward.xml
+  - provisioning/windows/tasks/kubernetes/open_webui_port_forward.xml
 {% endload %}
 
 {% for category, xmls in tasks.items() %}
@@ -20,7 +20,7 @@ kubernetes:
 {{ task_name }}_xml:
   file.managed:
     - name: C:\Windows\Temp\{{ task_name }}.xml
-    - source: salt://windows/{{ xml }}
+    - source: salt://{{ xml }}
     - makedirs: True
 
 # Import task using schtasks (only when XML changes)

@@ -14,16 +14,9 @@
 {% set capability_meta = salt['pillar.get']('capability_meta', {}) %}
 {% set yay_user = salt['pillar.get']('aur_user', 'admin') %}
 
-# Define capability sets per role (orchestration logic - stays in state)
-{% set role_capabilities = {
-  'workstation-minimal': ['core_utils', 'shell_enhancements'],
-  'workstation-base': ['core_utils', 'shell_enhancements', 'monitoring', 'compression', 'vcs_extras', 'modern_cli', 'security', 'acl'],
-  'workstation-developer': ['core_utils', 'shell_enhancements', 'monitoring', 'compression', 'vcs_extras', 'modern_cli', 'security', 'acl', 'build_tools', 'networking', 'kvm'],
-  'workstation-full': ['core_utils', 'shell_enhancements', 'monitoring', 'compression', 'vcs_extras', 'modern_cli', 'security', 'acl', 'build_tools', 'networking', 'kvm', 'interpreters', 'shell_history', 'modern_cli_extras', 'fonts', 'theming']
-} %}
-
-# Get capabilities for current role (default to full if unknown)
-{% set capabilities = role_capabilities.get(workstation_role, role_capabilities['workstation-full']) %}
+# Get role capabilities from pillar (centralized in srv/pillar/linux/init.sls)
+{% set role_capabilities = salt['pillar.get']('role_capabilities', {}) %}
+{% set capabilities = role_capabilities.get(workstation_role, role_capabilities.get('workstation-full', [])) %}
 
 include:
   - common.gpu
@@ -59,6 +52,7 @@ yay_build_dir:
     - makedirs: True
     - require:
       - pacman: bootstrap_packages
+      - user: {{ yay_user }}_user
 
 yay_clone:
   git.latest:

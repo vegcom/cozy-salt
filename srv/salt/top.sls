@@ -7,7 +7,6 @@ base:
   'os_family:Windows':
     - match: grain
     - windows
-    - wsl
 
   # Debian-based Linux (Ubuntu, Debian, etc.)
   'os_family:Debian':

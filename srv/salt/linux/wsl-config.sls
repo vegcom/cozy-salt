@@ -9,7 +9,7 @@
 wsl_config:
   file.managed:
     - name: /etc/wsl.conf
-    - source: salt://linux/files/etc/wsl.conf.jinja
+    - source: salt://provisioning/wsl/files/etc/wsl.conf.jinja
     - template: jinja
     - mode: 644
     - makedirs: True

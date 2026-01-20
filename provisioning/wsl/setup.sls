@@ -9,16 +9,26 @@
     - group: {{ grains['username'] }}
     - makedirs: True
 
-{% for script in ['docker.sh', 'salt.sh', 'enable-openssh.sh', 'docker-proxy.yaml'] %}
+{% for script in ['docker.sh', 'salt.sh', 'enable-openssh.sh'] %}
 /opt/cozy/{{ script }}:
   file.managed:
-    - source: salt://wsl/files/opt-cozy/{{ script }}
+    - source: salt://provisioning/wsl/files/opt-cozy/{{ script }}
     - user: {{ grains['username'] }}
     - group: {{ grains['username'] }}
-    - mode: {% if script.endswith('.sh') %}755{% else %}644{% endif %}
+    - mode: 755
     - require:
       - file: /opt/cozy
 {% endfor %}
+
+# Docker proxy config (shared with linux)
+/opt/cozy/docker-proxy.yaml:
+  file.managed:
+    - source: salt://provisioning/common/files/opt-cozy/docker-proxy.yaml
+    - user: {{ grains['username'] }}
+    - group: {{ grains['username'] }}
+    - mode: 644
+    - require:
+      - file: /opt/cozy
 
 # Instructions state (just outputs what to do next)
 wsl_setup_instructions:

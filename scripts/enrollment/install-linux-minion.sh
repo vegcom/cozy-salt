@@ -195,7 +195,7 @@ EOF
 echo "Starting salt-minion service..."
 systemctl enable salt-minion
 systemctl restart salt-minion
-salt-call test.ping -l warning
+timeout 3s salt-call test.ping -l warning
 
 
 # Verify

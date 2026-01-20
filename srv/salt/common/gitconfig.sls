@@ -30,6 +30,8 @@ deploy_gitconfig_local:
     - mode: 644
     - makedirs: True
     - create: False
+    - require:
+      - user: {{ username }}_user
 
 # Deploy .gitignore.local (user customizations - only create if doesn't exist)
 deploy_gitignore_local:
@@ -40,6 +42,8 @@ deploy_gitignore_local:
     - mode: 644
     - makedirs: True
     - create: False
+    - require:
+      - user: {{ username }}_user
 
 # Deploy .git_template directory
 {{ dotfiles.deploy_directory('deploy_git_template', user_home, '.git_template', 'salt://common/dotfiles/.git_template', username) }}

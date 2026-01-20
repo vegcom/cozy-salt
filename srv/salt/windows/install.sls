@@ -6,9 +6,15 @@
 # ============================================================================
 # BOOTSTRAP: Download and install winget (Windows Package Manager)
 # ============================================================================
+# NOTE: AppX/MSIX packages CANNOT be installed by SYSTEM account.
+# We must install as a real user. Once installed for one user, winget.exe
+# becomes available system-wide at C:\Program Files\WindowsApps\...
+# SYSTEM can then invoke winget for --scope machine installs.
 
 {% set winget_url = 'https://github.com/microsoft/winget-cli/releases/download/v1.12.440/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle' %}
 {% set winget_bundle = 'C:\\Windows\\Temp\\AppInstaller.msixbundle' %}
+{% set managed_users = salt['pillar.get']('managed_users', []) %}
+{% set bootstrap_user = managed_users[0] if managed_users else 'Administrator' %}
 
 winget-bundle-fetch:
   file.managed:
@@ -17,11 +23,12 @@ winget-bundle-fetch:
     - makedirs: True
     - skip_verify: True
 
-winget-install-system:
+# Install winget as real user (SYSTEM cannot install AppX packages)
+winget-install-user:
   cmd.run:
     - name: Add-AppxPackage -Path "{{ winget_bundle }}"
     - shell: powershell
-    - runas: SYSTEM
+    - runas: {{ bootstrap_user }}
     - unless: |
         powershell -NoProfile -Command "
           if (Get-AppxPackage Microsoft.DesktopAppInstaller -ErrorAction SilentlyContinue) {
@@ -32,6 +39,7 @@ winget-install-system:
         "
     - require:
       - file: winget-bundle-fetch
+      - user: {{ bootstrap_user }}_user
 
 # TODO: pillar this
 {% set enable_choco_features = [
@@ -63,7 +71,7 @@ winget_runtime_{{ pkg | replace('.', '_') | replace('-', '_') }}:
           }
         "
     - require:
-      - cmd: winget-install-system
+      - cmd: winget-install-user
 {% endfor %}
 {% endfor %}
 {% endif %}
@@ -86,7 +94,7 @@ winget_{{ pkg | replace('.', '_') | replace('-', '_') }}:
           }
         "
     - require:
-      - cmd: winget-install-system
+      - cmd: winget-install-user
 {% endfor %}
 {% endfor %}
 {% endif %}

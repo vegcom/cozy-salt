@@ -37,6 +37,57 @@ host:
     ssh_enabled: {{ not (salt['file.file_exists']('/.dockerenv') or salt['file.file_exists']('/run/.containerenv')) }}
 
 # =============================================================================
+# Role-based Capability Mapping
+# =============================================================================
+# Each role defines a list of capabilities to install
+# Capabilities correspond to package groups in provisioning/packages.sls
+role_capabilities:
+  workstation-minimal:
+    - core_utils
+    - shell_enhancements
+
+  workstation-base:
+    - core_utils
+    - shell_enhancements
+    - monitoring
+    - compression
+    - vcs_extras
+    - modern_cli
+    - security
+    - acl
+
+  workstation-developer:
+    - core_utils
+    - shell_enhancements
+    - monitoring
+    - compression
+    - vcs_extras
+    - modern_cli
+    - security
+    - acl
+    - build_tools
+    - networking
+    - kvm
+
+  workstation-full:
+    - core_utils
+    - shell_enhancements
+    - monitoring
+    - compression
+    - vcs_extras
+    - modern_cli
+    - security
+    - acl
+    - build_tools
+    - networking
+    - kvm
+    - interpreters
+    - shell_history
+    - modern_cli_extras
+    - fonts
+    - theming
+
+# =============================================================================
 # Capability Installation Metadata
 # =============================================================================
 # Defines HOW each capability installs (state names, dependencies, extras)

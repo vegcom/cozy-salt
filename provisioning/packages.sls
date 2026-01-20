@@ -80,6 +80,7 @@ package_metadata:
       - ping Or iputils-ping
       - traceroute
       - dig Or bind-utils/dnsutils
+      - avahi
   exclude:
     arch:
       - cpu-checker Doesn't exist on Arch
@@ -100,6 +101,11 @@ package_metadata:
       debian: vim
       rhel: vim-enhanced
       arch: vim
+    avahi:
+      ubuntu: avahi-daemon
+      debian: avahi-daemon
+      rhel: avahi
+      arch: avahi
     netcat:
       ubuntu: netcat-openbsd
       debian: netcat-openbsd
@@ -177,6 +183,7 @@ ubuntu:
     - socat
     - tcpdump
     - traceroute
+    - avahi
   compression:
     - 7zip
     - bzip2
@@ -244,6 +251,7 @@ debian:
     - socat
     - tcpdump
     - traceroute
+    - avahi
   compression:
     - 7zip
     - bzip2
@@ -308,6 +316,7 @@ rhel:
     - socat
     - tcpdump
     - traceroute
+    - avahi
   compression:
     - bzip2
     - p7zip
@@ -373,6 +382,7 @@ arch:
     - socat
     - tcpdump
     - traceroute
+    - avahi
   compression:
     - bzip2
     - p7zip

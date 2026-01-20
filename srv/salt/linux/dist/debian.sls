@@ -9,15 +9,9 @@
 {% set workstation_role = salt['pillar.get']('workstation_role', 'workstation-full') %}
 {% set capability_meta = salt['pillar.get']('capability_meta', {}) %}
 
-# Define capability sets per role
-{% set role_capabilities = {
-  'workstation-minimal': ['core_utils', 'shell_enhancements'],
-  'workstation-base': ['core_utils', 'shell_enhancements', 'monitoring', 'compression', 'vcs_extras', 'modern_cli', 'security', 'acl'],
-  'workstation-developer': ['core_utils', 'shell_enhancements', 'monitoring', 'compression', 'vcs_extras', 'modern_cli', 'security', 'acl', 'build_tools', 'networking', 'kvm'],
-  'workstation-full': ['core_utils', 'shell_enhancements', 'monitoring', 'compression', 'vcs_extras', 'modern_cli', 'security', 'acl', 'build_tools', 'networking', 'kvm']
-} %}
-
-{% set capabilities = role_capabilities.get(workstation_role, role_capabilities['workstation-full']) %}
+# Get role capabilities from pillar (centralized in srv/pillar/linux/init.sls)
+{% set role_capabilities = salt['pillar.get']('role_capabilities', {}) %}
+{% set capabilities = role_capabilities.get(workstation_role, role_capabilities.get('workstation-full', [])) %}
 
 include:
   - common.docker
