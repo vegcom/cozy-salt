@@ -7,6 +7,7 @@
 
 ## Backlog
 
+- [ ] Rewrite tests/test-states-json.sh in Python (pytest integration, better error handling)
 - [ ] Windows: parameterize hardcoded paths via pillar (PowerShell, sshd_config.d)
 - [ ] Windows: pillar-driven scheduled tasks
 - [ ] SDDM astronaut theme (pillar gate: `steamdeck:sddm:theme`)
