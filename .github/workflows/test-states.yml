@@ -22,12 +22,8 @@ jobs:
         uses: pre-commit/action@v3.0.1
 
   test-states:
-    name: Test States - ${{ matrix.distro }}
+    name: Test Salt States
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        distro: [linux, rhel]
 
     steps:
       - uses: actions/checkout@v4
@@ -35,14 +31,14 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Test Salt states on ${{ matrix.distro }}
-        run: ./tests/test-states-json.sh ${{ matrix.distro }}
+      - name: Test Salt states (ubuntu + rhel with shared master)
+        run: ./tests/test-states-json.sh ci
 
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: state-results-${{ matrix.distro }}
+          name: state-results
           path: tests/output/*.json
           retention-days: 30
 
@@ -55,9 +51,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download all test results
+      - name: Download test results
         uses: actions/download-artifact@v4
         with:
+          name: state-results
           path: test-results
 
       - name: Generate test summary
@@ -65,10 +62,10 @@ jobs:
           echo "# Salt State Test Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
-          for distro in linux rhel; do
+          for distro in ubuntu rhel; do
             echo "## $distro" >> $GITHUB_STEP_SUMMARY
 
-            json_file=$(find test-results/state-results-$distro -name "*.json" 2>/dev/null | head -1)
+            json_file=$(find test-results -name "${distro}_*.json" 2>/dev/null | head -1)
 
             if [ -f "$json_file" ]; then
               python3 tests/parse-state-results.py "$json_file" >> $GITHUB_STEP_SUMMARY 2>&1 || true
