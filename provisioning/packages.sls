@@ -603,7 +603,6 @@ pip_base:
   - 'yamllint'
 npm_global:
   - '@types/node'
-  - 'eslint'
   - 'markdownlint'
   - 'prettier'
   - 'ts-node'

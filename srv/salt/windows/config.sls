@@ -7,7 +7,7 @@
 # WSL-specific configuration (detection and Docker context setup)
 # Export git user config as environment variables for vim
 include:
-  - wsl
+  - windows.wsl-integration
   - common.git_env
 
 # Deploy hardened SSH configuration (consolidated template - High-003)

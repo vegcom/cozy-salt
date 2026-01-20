@@ -54,15 +54,27 @@ skel_files:
 {% endfor %}
 
 # Create {{ username }} home directory
+{% set user_home = userdata.get('home_prefix', '/home') ~ '/' ~ username %}
 {{ username }}_home_directory:
   file.directory:
-    - name: {{ userdata.get('home_prefix', '/home') }}/{{ username }}
+    - name: {{ user_home }}
     - user: {{ username }}
     - group: {{ username }}
     - mode: 755
     - makedirs: True
     - require:
       - user: {{ username }}_user
+
+# Deploy {{ username }} .bashrc
+{{ username }}_bashrc:
+  file.managed:
+    - name: {{ user_home }}/.bashrc
+    - source: salt://linux/files/etc-skel/.bashrc
+    - user: {{ username }}
+    - group: {{ username }}
+    - mode: 644
+    - require:
+      - file: {{ username }}_home_directory
 
 {% set ssh_keys = userdata.get('ssh_keys', []) %}
 {% if ssh_keys %}
