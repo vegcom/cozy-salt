@@ -52,7 +52,6 @@ disable = [
     "C0116",  # missing-function-docstring (for test functions)
 ]
 ignore-paths = [
-    "tests/archive-.*",
     "tests/output",
 ]
 

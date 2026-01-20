@@ -30,22 +30,14 @@ provisioning/      # Files to deploy (configs, scripts, templates)
 scripts/           # Enrollment, Docker entrypoints, utilities
 ```
 
-## Testing
-
-```bash
-make help          # List all targets
-make test          # Run all tests (ubuntu + rhel)
-make test-ubuntu   # Ubuntu only
-make test-rhel     # RHEL only
-make test-windows  # Windows via Dockur (requires KVM)
-```
-
 ## Enrollment
 
 - **Linux**: `scripts/enrollment/install-minion.py`
+  - [install-minion.py](scripts/enrollment/install-minion.py)
 - **Windows**: `scripts/enrollment/install-minion.ps1`
-- **Windows (Dockur)**: See `scripts/enrollment/WINDOWS.md`
+  - [install-minion.ps1](scripts/enrollment/install-minion.ps1)
+- **Windows (Dockur)**: See [scripts/enrollment/WINDOWS.md](scripts/enrollment/WINDOWS.md)
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the 3 rules and development workflow.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the **3 rules** and development workflow.
