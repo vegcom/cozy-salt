@@ -3,10 +3,14 @@ set -e
 
 # Generate master keys if they don't exist (CI environment)
 # Local dev bind-mounts keys from host, so this only runs in CI
+# Note: Docker creates empty directories when bind-mounting non-existent files
 master_pki="/etc/salt/pki/master"
 if [ ! -f "$master_pki/master.pem" ]; then
     echo "=== Generating master keys ==="
     mkdir -p "$master_pki"
+    # Remove empty directories Docker may have created from missing bind mounts
+    [ -d "$master_pki/master.pem" ] && rmdir "$master_pki/master.pem" 2>/dev/null || true
+    [ -d "$master_pki/master.pub" ] && rmdir "$master_pki/master.pub" 2>/dev/null || true
     openssl genrsa -out "$master_pki/master.pem" 4096 2>/dev/null
     openssl rsa -in "$master_pki/master.pem" -pubout -out "$master_pki/master.pub" 2>/dev/null
     chmod 600 "$master_pki/master.pem"
