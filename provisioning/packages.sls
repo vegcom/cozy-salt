@@ -352,6 +352,7 @@ arch:
     - tree
     - unzip
     - wget
+    - sed
   monitoring:
     - duf
     - htop

@@ -1,19 +1,19 @@
 #!/bin/bash
 # ~/.bashrc :  Managed by salt
 #------------------------------------------------------------------------------
-if [ -r /etc/profile ]; then
-  # shellcheck disable=SC1091
-  source /etc/profile
-fi
-if [ -d /etc/profile.d ]; then
-  for _i in /etc/profile.d/*.sh; do
-    if [ -r "${_i}" ]; then
-      # shellcheck disable=SC1090
-      source "${_i}"
-    fi
-  done
-  unset _i
-fi
+# if [ -r /etc/profile ]; then
+#   # shellcheck disable=SC1091
+#   source /etc/profile
+# fi
+# if [ -d /etc/profile.d ]; then
+#   for _i in /etc/profile.d/*.sh; do
+#     if [ -r "${_i}" ]; then
+#       # shellcheck disable=SC1090
+#       source "${_i}"
+#     fi
+#   done
+#   unset _i
+# fi
 #------------------------------------------------------------------------------
 export HISTFILE="$HOME/.bash_history"
 export HISTCONTROL=ignoredups:erasedups
