@@ -11,7 +11,7 @@ qmk_msysdirectory:
   file.directory:
     - name: {{ qmk_msys_path }}
     - makedirs: True
-    
+
 # Download wt installer
 qmk_msys_download:
   cmd.run:

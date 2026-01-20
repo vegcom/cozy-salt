@@ -18,7 +18,7 @@ base:
   'os_family:RedHat':
     - match: grain
     - linux
-  
+
   # Archlinux-based ( Arch, steamos, etc.)
   'os_family:Arch':
     - match: grain

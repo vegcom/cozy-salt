@@ -357,7 +357,7 @@ arch:
     - tmux
     - zsh
     - zsh-autosuggestions
-    - zsh-syntax-highlighting 
+    - zsh-syntax-highlighting
   build_tools:
     - autoconf
     - automake

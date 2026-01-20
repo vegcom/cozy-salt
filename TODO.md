@@ -1,7 +1,6 @@
 # cozy-salt TODO
 
 ## Active
-
 - [ ] Expand `provisioning/packages.sls` arch section: interpreters, atuin, modern_cli_extras
 - [ ] Debug atuin integration (check: installed? PATH? .bashrc init? bash-preexec?)
 - [ ] Add `package_metadata` to packages.sls (distro_aliases, conflicts, provides)

@@ -134,7 +134,7 @@ bluetooth_main_config:
         DiscoverableTimeout = 0
         Discoverable = false
         AlwaysPairable = true
-        
+
         [Policy]
         AutoEnable = true
     - require:

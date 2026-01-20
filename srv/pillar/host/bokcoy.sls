@@ -11,7 +11,7 @@ display:
   rotation:
     enabled: false  # Set to true to enable xrandr rotation
     angle: "right"  # 90-degree rotation for tablet mode
-  
+
   touch_mapping:
     enabled: false  # Set to true to map touchscreen to rotated display
 
@@ -50,12 +50,12 @@ bluetooth:
 pacman:
   repos: {
   # Uncomment below to enable Jupiter or Chaotic repositories
-  
+
   jupiter:
     enabled: true
     server: "https://steamdeck-packages.steamos.cloud/archlinux-mirror/$repo/os/$arch"
     siglevel: "Never"
-  
+
   chaotic_aur:
     enabled: false
     server: "https://chaotic.cx/arch/x86_64"

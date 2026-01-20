@@ -38,7 +38,7 @@ $env:CONDA_EXE = $found[0]
 try {
     $hook = (& $env:CONDA_EXE shell.powershell hook) | Out-String
     if ($hook) { Invoke-Expression $hook }
-    if (Get-Command logging -ErrorAction SilentlyContinue) { logging "Initialized conda from $env:CONDA_EXE" "DEBUG" } 
+    if (Get-Command logging -ErrorAction SilentlyContinue) { logging "Initialized conda from $env:CONDA_EXE" "DEBUG" }
 } catch {
     if (Get-Command logging -ErrorAction SilentlyContinue) { logging "Failed to initialize conda from $env:CONDA_EXE - $_" "ERROR" } else { Write-Host "ERROR: Failed to initialize conda from $env:CONDA_EXE - $_" }
 }

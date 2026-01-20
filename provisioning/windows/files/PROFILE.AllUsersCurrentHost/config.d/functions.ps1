@@ -29,7 +29,7 @@ function Playnite-Extention-Logs {
         Write-Host "Playnite extensions log not found at:"
         Write-Host "    $logPath"
     }
-   
+
 }
 
 function Playnite-Logs {
@@ -40,7 +40,7 @@ function Playnite-Logs {
         Write-Host "Playnite log not found at:"
         Write-Host "    $logPath"
     }
-   
+
 }
 
 function Edit-PowerShellProfile {
@@ -76,7 +76,7 @@ function ChkVars {
 function Check-Vars {
     $varNames = @(
         "PWSH_LOG_LEVEL",
-        "PWSH_TIMESTAMPS", 
+        "PWSH_TIMESTAMPS",
         "PWSH_GLYPH",
         "ENABLE_MODULES",
         "ENABLE_CHOCOLATEY",
@@ -91,27 +91,27 @@ function Check-Vars {
 
 function Get-VSCodeLatestExthostLog {
     $base = "$env:APPDATA\Code - Insiders\logs"
-    
+
     $latestSession = Get-ChildItem $base -Directory |
                      Sort-Object LastWriteTime -Descending |
                      Select-Object -First 1
-    
+
     if (-not $latestSession) {
         Write-Warning "No VS Code log session found"
         return
     }
-    
+
     $latestWindow = Get-ChildItem $latestSession.FullName -Directory -Filter "window*" |
                     Sort-Object LastWriteTime -Descending |
                     Select-Object -First 1
-    
+
     if (-not $latestWindow) {
         Write-Warning "No window folder found in $($latestSession.Name)"
         return
     }
-    
+
     $logFile = Join-Path $latestWindow.FullName "exthost\exthost.log"
-    
+
     if (Test-Path $logFile) {
         Write-Host "Tailing latest exthost log:" -ForegroundColor Green
         Write-Host $logFile -ForegroundColor Blue

@@ -106,7 +106,7 @@ help:
 
 SHELL := /bin/bash
 
-# salt-call 
+# salt-call
 SALT_CALL = sh -c 'salt-call "$$@" 2>/dev/null || exec sudo salt-call "$$@"' --
 
 # Generic required-argument checker (used by parameterized targets)

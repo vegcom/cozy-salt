@@ -19,7 +19,7 @@ pacman:
     #   enabled: false
     #   server: "https://steamdeck-packages.steamos.cloud/archlinux-mirror/$repo/os/$arch"
     #   siglevel: "Never"
-    
+
     # Chaotic-AUR mirror - DISABLED by default
     # Uncomment in host/bokchoy.sls to enable
     # chaotic-aur:
@@ -41,7 +41,7 @@ display:
     angle: "right"  # Options: left, right, inverted, normal
     # Device detection: looks for FTS3528 or similar touchscreen
     # Only applies if device is detected AND enabled is true
-  
+
   # Xinput touch mapping (coordinates to rotated display)
   touch_mapping:
     enabled: false  # Set to true in host/ to enable
@@ -75,7 +75,7 @@ pipewire:
     # Set in host/ to override
     # min_quantum: 256
     # max_quantum: 2048
-  
+
   # Config location (don't manage here - user edits ~/.config/pipewire/pipewire.conf)
   # Example: echo "default.clock.min-quantum = 256" > ~/.config/pipewire/pipewire.conf
 

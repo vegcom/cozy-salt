@@ -9,7 +9,7 @@ wt_directory:
   file.directory:
     - name: {{ wt_path }}
     - makedirs: True
-    
+
 # Download wt installer
 wt_download:
   cmd.run:

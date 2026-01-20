@@ -31,5 +31,3 @@ if [ -f "/opt/miniforge3/etc/profile.d/mamba.sh" ]; then
     . "/opt/miniforge3/etc/profile.d/mamba.sh"
 fi
 # <<< mamba initialize <<<
-
-

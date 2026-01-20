@@ -51,34 +51,34 @@ capability_meta:
   core_utils:
     state_name: core_utils_packages
     is_foundation: true
-  
+
   shell_enhancements:
     state_name: shell_packages
-  
+
   monitoring:
     state_name: monitoring_packages
-  
+
   compression:
     state_name: compression_packages
-  
+
   vcs_extras:
     state_name: vcs_packages
-  
+
   modern_cli:
     state_name: modern_cli_packages
-  
+
   security:
     state_name: security_packages
-  
+
   acl:
     state_name: acl_packages
-  
+
   build_tools:
     state_name: build_packages
-  
+
   networking:
     state_name: networking_packages
-  
+
   kvm:
     state_name: kvm_packages
     pillar_gate: host:capabilities:kvm
@@ -86,18 +86,18 @@ capability_meta:
     has_user_groups:
       - kvm
       - libvirt
-  
+
   interpreters:
     state_name: interpreter_packages
-  
+
   shell_history:
     state_name: shell_history_packages
-  
+
   modern_cli_extras:
     state_name: modern_cli_extras_packages
-  
+
   fonts:
     state_name: font_packages
-  
+
   theming:
     state_name: theming_packages

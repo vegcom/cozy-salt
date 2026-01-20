@@ -8,7 +8,7 @@ windhawk_directory:
   file.directory:
     - name: {{ windhawk_path }}
     - makedirs: True
-    
+
 # Download windhawk installer
 windhawk_download:
   cmd.run:

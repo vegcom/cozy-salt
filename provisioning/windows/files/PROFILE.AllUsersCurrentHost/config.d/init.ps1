@@ -23,7 +23,7 @@ function logging {
     if ($env:PWSH_GLYPH) {
         $return += "$glyph"
     }
-    
+
     if ($message) {
         $return += "$message"
     }
@@ -36,12 +36,12 @@ function logging {
             "WARN"  = 2
             "ERROR" = 3
         }
-        
+
         # Get current log level threshold (default to INFO if not set)
         $currentLevel = if ($env:PWSH_LOG_LEVEL) {
             $logLevels[[string]$env:PWSH_LOG_LEVEL] ?? 1
         } else { 1 }
-        
+
         # Only print if message level >= current threshold
         if ($logLevels[$level] -gt $currentLevel) {
             Write-Host ($return -join '  ')
@@ -74,5 +74,3 @@ function To-Bool($val, $default=$false) {
     if ($str -eq 'false' -or $str -eq '0') { return $false }
     return $default
 }
-
-

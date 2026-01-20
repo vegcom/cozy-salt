@@ -23,7 +23,7 @@ $starship = Join-Path (Split-Path -Parent $PROFILE.AllUsersCurrentHost) 'config.
 . $init
 
 # 🪺 optional imports:
-. $functions 
+. $functions
 . $aliases
 
 # ⌨️ evaluation:
