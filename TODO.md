@@ -8,6 +8,10 @@
   - Pending approval <https://github.com/saltstack/salt-bootstrap/pull/2101>
   - install on linux as `salt-bootstrap.sh onedir latest`
   - `curl -fsSL https://raw.githubusercontent.com/vegcom/salt-bootstrap/refs/heads/develop/bootstrap-salt.sh | bash -s -- -D onedir latest`
+  - [x] Break out enrollment scripts into submodule
+    - [ ] add submodule helpers to `Makefile`
+      - [ ]`git submodule update --init --recursive`
+      - [ ]`git submodule update --recursive --remote`
 
 ## Backlog
 

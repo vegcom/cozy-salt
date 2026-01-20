@@ -5,6 +5,12 @@ SaltStack IaC for Windows/Linux workstation provisioning. Master runs in Docker.
 ## Quick Start
 
 ```bash
+# Pull repo and submodules
+git pull --recursive git@github.com:vegcom/cozy-salt.git
+cd cozy-salt
+```
+
+```bash
 # Start master
 make up-master
 
@@ -31,6 +37,10 @@ scripts/           # Enrollment, Docker entrypoints, utilities
 ```
 
 ## Enrollment
+
+`git submodule update --recursive --remote`
+
+[vegcom/cozy-salt-enrollment.git](https://github.com/vegcom/cozy-salt-enrollment)
 
 - **Linux**: `scripts/enrollment/install-minion.py`
   - [install-minion.py](scripts/enrollment/install-minion.py)

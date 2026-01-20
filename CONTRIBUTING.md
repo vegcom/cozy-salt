@@ -53,5 +53,6 @@ Sets `NVM_HOME`, `NVM_SYMLINK`, `CONDA_HOME` automatically.
 
 ## Submodules
 
-- [git@github.com:vegcom/cozy-salt-enrollment.git](https://github.com/vegcom/cozy-salt-enrollment)
-  - [scripts/enrollment/](./scripts/enrollment/)
+|                                       repo                                        |                     path                     |
+| :-------------------------------------------------------------------------------: | :------------------------------------------: |
+| [vegcom/cozy-salt-enrollment.git](https://github.com/vegcom/cozy-salt-enrollment) | [scripts/enrollment/](./scripts/enrollment/) |
