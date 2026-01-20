@@ -4,30 +4,13 @@
 
 ---
 
-docker_enabled: False
-
-# =============================================================================
-# PACMAN REPOSITORIES
-# =============================================================================
-# Repository configuration for Steam Deck
-# Currently disabled - enable in host/ override if needed
-pacman:
-  repos:
-    # Jupiter repository (SteamOS packages) - DISABLED by default
-    # Uncomment in host/bokchoy.sls or class override to enable
-    # jupiter-main:
-    #   enabled: false
-    #   server: "https://steamdeck-packages.steamos.cloud/archlinux-mirror/$repo/os/$arch"
-    #   siglevel: "Never"
-
-    # Chaotic-AUR mirror - DISABLED by default
-    # Uncomment in host/bokchoy.sls to enable
-    # chaotic-aur:
-    #   enabled: false
-    #   server: "https://chaotic.cx/arch/x86_64"
-    #   key: "chaotic-aur"
+#steamdeck:
+#  autologin:
+#    user: deck  # Replace with real username in host/
 
 ---
+
+docker_enabled: False
 
 # =============================================================================
 # DISPLAY CONFIGURATION
@@ -47,20 +30,6 @@ display:
     enabled: false  # Set to true in host/ to enable
     # Device pattern: pointer:FTS3528 or similar
     # Automatically detected from xinput list output
-
----
-
-# =============================================================================
-# STEAM INPUT CONFIGURATION
-# =============================================================================
-# Steam Deck controller/input configuration
-steam_input:
-  # Steam controller config directory setup
-  hardware_config:
-    enabled: false  # Set to true in host/ to enable
-    # Creates: ~/.config/Steam/hardware/steam_controller/
-    # Symlinks: /dev/null → steam.input (disable Steam input detection)
-    config_dir: "{{ pillar.get('user:name', 'deck') }}/.config/Steam/hardware/steam_controller"
 
 ---
 
@@ -113,3 +82,38 @@ bluetooth:
 #   rbenv:
 #     enabled: false
 #     versions: []  # Install specific Ruby versions if enabled
+
+---
+
+pacman:
+  repos: {
+
+  kde-unstable:
+    enabled: true
+    Include: /etc/pacman.d/mirrorlist
+
+  core:
+    enabled: true
+    Include: /etc/pacman.d/mirrorlist
+
+  extra:
+    enabled: true
+    Include: /etc/pacman.d/mirrorlist
+
+  multilib:
+    enabled: true
+    Include: /etc/pacman.d/mirrorlist
+
+  multilib:
+    enabled: true
+    Include: /etc/pacman.d/mirrorlist
+
+  jupiter:
+    enabled: true
+    server: "https://steamdeck-packages.steamos.cloud/archlinux-mirror/$repo/os/$arch"
+    siglevel: "Never"
+
+  chaotic_aur:
+    enabled: false
+    server: "https://chaotic.cx/arch/x86_64"
+}
