@@ -1,131 +1,131 @@
 # -*- coding: utf-8 -*-
 """
-Salt execution module for yay (AUR helper) package management.
+Salt execution module for pacman package management with clean environment.
 
 :maintainer: cozy-salt
 :maturity: production
 :platform: Arch Linux
 
-yay CANNOT run as root - all operations require runas parameter.
-Uses sanitized environment to prevent user shell pollution during AUR builds.
+Uses sanitized environment to prevent user shell pollution during package operations.
+Unlike yay, pacman CAN run as root - but clean env is still beneficial.
 
-Usage from states:
-    core_packages:
-      yay.installed:
+Usage from states (or use Salt's built-in pkg module):
+    system_packages:
+      pacman.installed:
         - pkgs:
-          - package1
-          - package2
-        - runas: admin
+          - base-devel
+          - git
 """
 
 import logging
 
 log = logging.getLogger(__name__)
 
-__virtualname__ = "yay"
+__virtualname__ = "pacman"
 
 
 def __virtual__():
     """
-    Only load on Arch Linux systems where yay is available.
+    Only load on Arch Linux systems.
     """
     if __grains__.get("os") not in ("Arch ARM", "Arch"):
         if __grains__.get("os_family") != "Arch":
-            return (False, "yay module only works on Arch Linux")
+            return (False, "pacman module only works on Arch Linux")
 
-    # Check if yay binary exists
-    if not __salt__["cmd.which"]("yay"):
-        return (False, "yay binary not found - bootstrap yay first")
+    # Check if pacman binary exists
+    if not __salt__["cmd.which"]("pacman"):
+        return (False, "pacman binary not found")
 
     return __virtualname__
 
 
-def _clean_env(runas):
+def _clean_env(runas=None):
     """
     Build a sanitized environment for package operations.
 
     Strips user shell pollution (custom PATH, env vars) that can
-    interfere with AUR builds and package compilation.
+    interfere with package operations and post-install scripts.
 
     Args:
-        runas: Username for home directory paths
+        runas: Optional username for home directory paths (defaults to root)
 
     Returns:
         dict: Clean environment variables
     """
+    if runas:
+        home = f"/home/{runas}"
+    else:
+        home = "/root"
+
     return {
-        "HOME": f"/home/{runas}",
-        "USER": runas,
-        "LOGNAME": runas,
+        "HOME": home,
+        "USER": runas or "root",
+        "LOGNAME": runas or "root",
         "LANG": "C.UTF-8",
         "LC_ALL": "C.UTF-8",
         "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
-        "XDG_CACHE_HOME": f"/home/{runas}/.cache",
-        "XDG_CONFIG_HOME": f"/home/{runas}/.config",
-        "XDG_DATA_HOME": f"/home/{runas}/.local/share",
-        # Prevent gpg issues in builds
-        "GNUPGHOME": f"/home/{runas}/.gnupg",
+        "XDG_CACHE_HOME": f"{home}/.cache",
+        "XDG_CONFIG_HOME": f"{home}/.config",
+        "XDG_DATA_HOME": f"{home}/.local/share",
     }
 
 
-def _run_yay(cmd, runas, **kwargs):
+def _run_pacman(cmd, runas=None, **kwargs):
     """
-    Execute a yay command as the specified user with clean environment.
-
-    yay cannot run as root, so runas is mandatory.
-    Uses sanitized env to prevent build pollution from user shell config.
+    Execute a pacman command with clean environment.
 
     Args:
-        cmd: The yay command to run
-        runas: Username to run as (required)
+        cmd: The pacman command to run
+        runas: Optional username to run as (defaults to root)
         **kwargs: Additional args passed to cmd.run_all
 
     Returns:
         dict: Command result with stdout, stderr, retcode
     """
-    if not runas:
-        return {
-            "retcode": 1,
-            "stdout": "",
-            "stderr": "yay cannot run as root - runas parameter is required",
-        }
+    run_kwargs = {
+        "python_shell": True,
+        "env": _clean_env(runas),
+    }
+    if runas:
+        run_kwargs["runas"] = runas
 
-    result = __salt__["cmd.run_all"](
-        cmd,
-        runas=runas,
-        python_shell=True,
-        env=_clean_env(runas),
-        **kwargs,
-    )
+    run_kwargs.update(kwargs)
 
+    result = __salt__["cmd.run_all"](cmd, **run_kwargs)
     return result
+
+
+def sync(runas=None):
+    """
+    Synchronize package databases.
+
+    Args:
+        runas: Optional user to run as
+
+    Returns:
+        dict: Command result
+
+    CLI Example:
+        salt '*' pacman.sync
+    """
+    return _run_pacman("pacman -Sy --noconfirm", runas=runas)
 
 
 def is_installed(name, runas=None):
     """
-    Check if a package is installed via pacman/yay.
+    Check if a package is installed.
 
     Args:
         name: Package name to check
-        runas: User to run as (optional for query, but good practice)
+        runas: Optional user to run as
 
     Returns:
         bool: True if installed, False otherwise
 
     CLI Example:
-        salt '*' yay.is_installed firefox runas=admin
+        salt '*' pacman.is_installed firefox
     """
-    # yay -Q queries local database, works as any user
-    # but we still use runas for consistency
-    user = runas or "nobody"
-
-    result = __salt__["cmd.run_all"](
-        f"yay -Q {name}",
-        runas=user,
-        python_shell=True,
-        ignore_retcode=True,
-    )
-
+    result = _run_pacman(f"pacman -Q {name}", runas=runas, ignore_retcode=True)
     return result["retcode"] == 0
 
 
@@ -134,21 +134,15 @@ def list_installed(runas=None):
     List all installed packages.
 
     Args:
-        runas: User to run as
+        runas: Optional user to run as
 
     Returns:
         dict: Package names mapped to versions
 
     CLI Example:
-        salt '*' yay.list_installed runas=admin
+        salt '*' pacman.list_installed
     """
-    user = runas or "nobody"
-
-    result = __salt__["cmd.run_all"](
-        "yay -Q",
-        runas=user,
-        python_shell=True,
-    )
+    result = _run_pacman("pacman -Q", runas=runas)
 
     if result["retcode"] != 0:
         return {}
@@ -165,29 +159,19 @@ def list_installed(runas=None):
 
 def install(name, runas=None, refresh=False):
     """
-    Install a single package using yay.
-
-    Uses --needed to skip if already installed.
-    Uses --noconfirm for non-interactive operation.
+    Install a single package using pacman.
 
     Args:
         name: Package name to install
-        runas: User to run as (REQUIRED)
+        runas: Optional user to run as
         refresh: Whether to refresh package database first
 
     Returns:
         dict: Result with success, changes, and output
 
     CLI Example:
-        salt '*' yay.install firefox runas=admin
+        salt '*' pacman.install firefox
     """
-    if not runas:
-        return {
-            "success": False,
-            "changes": {},
-            "comment": "runas parameter is required - yay cannot run as root",
-        }
-
     # Check if already installed
     if is_installed(name, runas=runas):
         return {
@@ -197,13 +181,13 @@ def install(name, runas=None, refresh=False):
         }
 
     # Build command
-    cmd = "yay -S --needed --noconfirm"
+    cmd = "pacman -S --needed --noconfirm"
     if refresh:
-        cmd = "yay -Sy --needed --noconfirm"
+        cmd = "pacman -Sy --needed --noconfirm"
 
     cmd = f"{cmd} {name}"
 
-    result = _run_yay(cmd, runas=runas)
+    result = _run_pacman(cmd, runas=runas)
 
     if result["retcode"] == 0:
         return {
@@ -225,45 +209,30 @@ def install(name, runas=None, refresh=False):
 
 def installed(name=None, pkgs=None, runas=None, refresh=False, **kwargs):
     """
-    Ensure packages are installed using yay.
-
-    This is the main function called by states.
-    Supports both single package and list of packages.
+    Ensure packages are installed using pacman.
 
     Args:
         name: Single package name (for simple states)
         pkgs: List of package names
-        runas: User to run as (REQUIRED - yay cannot run as root)
+        runas: Optional user to run as
         refresh: Whether to refresh package database first
 
     Returns:
         dict: State-compatible result with name, result, changes, comment
 
     State Example:
-        core_packages:
-          yay.installed:
+        system_packages:
+          pacman.installed:
             - pkgs:
-              - firefox
-              - chromium
-            - runas: vegcom
-
-        single_package:
-          yay.installed:
-            - name: neovim
-            - runas: vegcom
+              - base-devel
+              - git
     """
     ret = {
-        "name": name or "yay.installed",
+        "name": name or "pacman.installed",
         "result": True,
         "changes": {},
         "comment": "",
     }
-
-    # Validate runas
-    if not runas:
-        ret["result"] = False
-        ret["comment"] = "runas parameter is required - yay cannot run as root"
-        return ret
 
     # Build package list
     packages = []
@@ -295,15 +264,15 @@ def installed(name=None, pkgs=None, runas=None, refresh=False, **kwargs):
         ret["comment"] = f"All {len(already_installed)} package(s) already installed"
         return ret
 
-    # Install all needed packages in one yay call (more efficient)
-    cmd = "yay -S --needed --noconfirm"
+    # Install all needed packages in one pacman call
+    cmd = "pacman -S --needed --noconfirm"
     if refresh:
-        cmd = "yay -Sy --needed --noconfirm"
+        cmd = "pacman -Sy --needed --noconfirm"
 
     pkg_str = " ".join(to_install)
     cmd = f"{cmd} {pkg_str}"
 
-    result = _run_yay(cmd, runas=runas, timeout=600)
+    result = _run_pacman(cmd, runas=runas, timeout=600)
 
     if result["retcode"] == 0:
         # Verify what actually got installed
@@ -312,10 +281,9 @@ def installed(name=None, pkgs=None, runas=None, refresh=False, **kwargs):
                 installed_pkgs.append(pkg)
                 ret["changes"][pkg] = {"old": "", "new": "installed"}
             else:
-                # Package didn't install despite success retcode (weird but possible)
                 failed_pkgs.append(pkg)
     else:
-        # Batch install failed - try individually to see what works
+        # Batch install failed - try individually
         log.warning(f"Batch install failed, trying packages individually: {to_install}")
 
         for pkg in to_install:
@@ -339,7 +307,6 @@ def installed(name=None, pkgs=None, runas=None, refresh=False, **kwargs):
 
     ret["comment"] = ". ".join(comments)
 
-    # Add stdout/stderr for debugging if there were issues
     if failed_pkgs:
         if errors:
             ret["comment"] += f"\nErrors: {'; '.join(errors)}"
@@ -351,25 +318,18 @@ def installed(name=None, pkgs=None, runas=None, refresh=False, **kwargs):
 
 def remove(name, runas=None):
     """
-    Remove a package using yay.
+    Remove a package using pacman.
 
     Args:
         name: Package name to remove
-        runas: User to run as (REQUIRED)
+        runas: Optional user to run as
 
     Returns:
         dict: Result with success, changes, and output
 
     CLI Example:
-        salt '*' yay.remove firefox runas=admin
+        salt '*' pacman.remove firefox
     """
-    if not runas:
-        return {
-            "success": False,
-            "changes": {},
-            "comment": "runas parameter is required - yay cannot run as root",
-        }
-
     # Check if installed
     if not is_installed(name, runas=runas):
         return {
@@ -378,7 +338,7 @@ def remove(name, runas=None):
             "comment": f"Package {name} is not installed",
         }
 
-    result = _run_yay(f"yay -R --noconfirm {name}", runas=runas)
+    result = _run_pacman(f"pacman -R --noconfirm {name}", runas=runas)
 
     if result["retcode"] == 0:
         return {
@@ -396,27 +356,21 @@ def remove(name, runas=None):
 
 def upgrade(runas=None, refresh=True):
     """
-    Upgrade all packages using yay.
+    Upgrade all packages using pacman.
 
     Args:
-        runas: User to run as (REQUIRED)
+        runas: Optional user to run as
         refresh: Whether to refresh package database first (default: True)
 
     Returns:
         dict: Result with stdout/stderr
 
     CLI Example:
-        salt '*' yay.upgrade runas=admin
+        salt '*' pacman.upgrade
     """
-    if not runas:
-        return {
-            "success": False,
-            "comment": "runas parameter is required - yay cannot run as root",
-        }
+    cmd = "pacman -Syu --noconfirm" if refresh else "pacman -Su --noconfirm"
 
-    cmd = "yay -Syu --noconfirm" if refresh else "yay -Su --noconfirm"
-
-    result = _run_yay(cmd, runas=runas, timeout=1800)
+    result = _run_pacman(cmd, runas=runas, timeout=1800)
 
     return {
         "success": result["retcode"] == 0,
@@ -428,37 +382,30 @@ def upgrade(runas=None, refresh=True):
 
 def search(query, runas=None):
     """
-    Search for packages in repos and AUR.
+    Search for packages in repos.
 
     Args:
         query: Search query
-        runas: User to run as
+        runas: Optional user to run as
 
     Returns:
         list: Matching package names
 
     CLI Example:
-        salt '*' yay.search firefox runas=admin
+        salt '*' pacman.search firefox
     """
-    user = runas or "nobody"
-
-    result = __salt__["cmd.run_all"](
-        f"yay -Ss {query}",
-        runas=user,
-        python_shell=True,
-    )
+    result = _run_pacman(f"pacman -Ss {query}", runas=runas)
 
     if result["retcode"] != 0:
         return []
 
-    # Parse yay -Ss output (package lines start with repo/name)
+    # Parse pacman -Ss output
     packages = []
     for line in result["stdout"].split("\n"):
         if "/" in line and not line.startswith(" "):
-            # Line format: "repo/package-name version (optional info)"
             parts = line.split()
             if parts:
-                pkg_full = parts[0]  # repo/package
+                pkg_full = parts[0]
                 if "/" in pkg_full:
                     pkg_name = pkg_full.split("/")[1]
                     packages.append(pkg_name)
@@ -472,26 +419,19 @@ def info(name, runas=None):
 
     Args:
         name: Package name
-        runas: User to run as
+        runas: Optional user to run as
 
     Returns:
         dict: Package information
 
     CLI Example:
-        salt '*' yay.info firefox runas=admin
+        salt '*' pacman.info firefox
     """
-    user = runas or "nobody"
-
-    result = __salt__["cmd.run_all"](
-        f"yay -Si {name}",
-        runas=user,
-        python_shell=True,
-    )
+    result = _run_pacman(f"pacman -Si {name}", runas=runas)
 
     if result["retcode"] != 0:
         return {}
 
-    # Parse yay -Si output
     info_dict = {}
     for line in result["stdout"].split("\n"):
         if ":" in line:
