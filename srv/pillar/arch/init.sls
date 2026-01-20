@@ -14,6 +14,10 @@
 user:
   name: {{ detected_user }}
 
+# AUR helper user (yay cannot run as root)
+# Defaults to detected user, override in host pillar if needed
+aur_user: {{ detected_user }}
+
 # Node.js version management via nvm
 nvm:
   default_version: 'lts/*'

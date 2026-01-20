@@ -1,17 +1,18 @@
 # Arch Linux package installation (Role-Aware)
-# Packages organized by capability/purpose using Arch pacman packages
+# Packages organized by capability/purpose using yay (AUR helper)
 # Role-based selection via workstation_role pillar:
 #   - workstation-minimal: core + shell
 #   - workstation-base: minimal + monitoring, compression, vcs, modern-cli, security, acl
 #   - workstation-developer: base + build tools, networking, kvm
 #   - workstation-full (default): all capabilities + interpreters, shells, CLI extras, fonts, theming
 # See provisioning/packages.sls for full package definitions
-# See srv/pillar/linux/init.sls for capability_meta (installation behavior)
+# See srv/pillar/arch/init.sls for capability_meta and aur_user
 
 {% import_yaml 'packages.sls' as packages %}
 {% set os_name = 'arch' %}
 {% set workstation_role = salt['pillar.get']('workstation_role', 'workstation-full') %}
 {% set capability_meta = salt['pillar.get']('capability_meta', {}) %}
+{% set yay_user = salt['pillar.get']('aur_user', 'admin') %}
 
 # Define capability sets per role (orchestration logic - stays in state)
 {% set role_capabilities = {
@@ -31,25 +32,57 @@ include:
 # PACMAN DATABASE SYNC - Run before any package installation
 # ============================================================================
 pacman_sync:
-  cmd.run:
-    - name: pacman -Sy --noconfirm
-    - unless: test $(find /var/lib/pacman/sync -mmin -60 2>/dev/null | wc -l) -gt 0
+  pacman.sync
 
 # ============================================================================
 # BOOTSTRAP: git + base-devel via pacman (required for yay bootstrap)
+# These MUST use pacman directly since yay isn't installed yet
 # ============================================================================
 bootstrap_packages:
-  pkg.installed:
+  pacman.installed:
     - pkgs:
       - git
       - base-devel
     - require:
-      - cmd: pacman_sync
+      - pacman: pacman_sync
 
 # ============================================================================
-# Get user for yay (use admin user for Arch package management)
+# YAY BOOTSTRAP: Clone and build yay-bin from AUR
+# Runs as aur_user since makepkg cannot run as root
 # ============================================================================
-{% set yay_user = 'admin' %}
+yay_build_dir:
+  file.directory:
+    - name: /home/{{ yay_user }}/.cache/yay-bootstrap
+    - user: {{ yay_user }}
+    - group: {{ yay_user }}
+    - mode: 755
+    - makedirs: True
+    - require:
+      - pacman: bootstrap_packages
+
+yay_clone:
+  git.latest:
+    - name: https://aur.archlinux.org/yay-bin.git
+    - target: /home/{{ yay_user }}/.cache/yay-bootstrap/yay-bin
+    - user: {{ yay_user }}
+    - force_clone: True
+    - require:
+      - file: yay_build_dir
+    - unless: which yay
+
+yay_install:
+  cmd.run:
+    - name: makepkg -si --noconfirm
+    - cwd: /home/{{ yay_user }}/.cache/yay-bootstrap/yay-bin
+    - runas: {{ yay_user }}
+    - env:
+      - HOME: /home/{{ yay_user }}
+      - USER: {{ yay_user }}
+      - LANG: C.UTF-8
+      - PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    - require:
+      - git: yay_clone
+    - unless: which yay
 
 # ============================================================================
 # FOUNDATION: core_utils via yay (runs first, others depend on this)
@@ -61,7 +94,7 @@ bootstrap_packages:
     - pkgs: {{ packages[os_name].core_utils | tojson }}
     - runas: {{ yay_user }}
     - require:
-      - pkg: bootstrap_packages
+      - cmd: yay_install
 {% endif %}
 
 # ============================================================================

@@ -30,6 +30,60 @@ import logging
 log = logging.getLogger(__name__)
 
 
+def sync(name="pacman.sync", runas=None, **kwargs):
+    """
+    Synchronize package databases (pacman -Sy).
+
+    Only syncs if database is older than 60 minutes.
+
+    Args:
+        name: State name (defaults to pacman.sync)
+        runas: Optional user to run as
+
+    Returns:
+        dict: State result
+
+    Example:
+        sync_repos:
+          pacman.sync
+    """
+    ret = {
+        "name": name,
+        "result": True,
+        "changes": {},
+        "comment": "",
+    }
+
+    # Check if sync is needed (database older than 60 min)
+    check_result = __salt__["cmd.run_all"](
+        "test $(find /var/lib/pacman/sync -mmin -60 2>/dev/null | wc -l) -gt 0",
+        python_shell=True,
+        ignore_retcode=True,
+    )
+
+    if check_result["retcode"] == 0:
+        ret["comment"] = "Package database is up to date (synced within last 60 minutes)"
+        return ret
+
+    # Test mode
+    if __opts__["test"]:
+        ret["result"] = None
+        ret["comment"] = "Would synchronize package databases"
+        return ret
+
+    # Run sync
+    result = __salt__["pacman.sync"](runas=runas)
+
+    if result["retcode"] == 0:
+        ret["changes"]["synced"] = True
+        ret["comment"] = "Package databases synchronized"
+    else:
+        ret["result"] = False
+        ret["comment"] = f"Failed to sync: {result.get('stderr', 'unknown error')}"
+
+    return ret
+
+
 def installed(name=None, pkgs=None, runas=None, refresh=False, **kwargs):
     """
     Ensure packages are installed using pacman.
