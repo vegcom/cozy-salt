@@ -38,10 +38,34 @@ test_minion() {
     echo -e "${YELLOW}=== Testing ${minion_type} minion ===${NC}"
 
     echo "Starting containers..."
-    if ! docker compose --profile "test-${service_name}" up -d --build; then
+    # Explicitly include salt-master to ensure it starts (profiles can be finicky in CI)
+    if ! docker compose --profile "test-${service_name}" up -d --build salt-master "salt-minion-${service_name}"; then
         echo -e "${RED}Failed to start containers${NC}"
         return 1
     fi
+
+    # Wait for salt-master to be healthy before proceeding
+    echo "Waiting for salt-master to be healthy..."
+    local master_wait=0
+    while [ $master_wait -lt 60 ]; do
+        if docker inspect --format='{{.State.Health.Status}}' salt-master 2>/dev/null | grep -q "healthy"; then
+            echo -e "${GREEN}Salt master is healthy${NC}"
+            break
+        fi
+        sleep 2
+        master_wait=$((master_wait + 2))
+    done
+
+    if [ $master_wait -ge 60 ]; then
+        echo -e "${RED}Salt master failed to become healthy${NC}"
+        docker logs salt-master
+        docker compose --profile "test-${service_name}" down
+        return 1
+    fi
+
+    # Show running containers for debugging
+    echo "Running containers:"
+    docker ps --format "table {{.Names}}\t{{.Status}}"
 
     echo "Waiting for state application (max 600s)..."
     local timeout=600
