@@ -12,7 +12,7 @@ scripts/
 ├── enrollment/           Manual system provisioning scripts
 │   ├── install-linux-minion.sh
 │   ├── install-windows-minion.ps1
-│   └── windows-enroll.ps1
+│   └── entrypoint-minion.ps1
 ├── fix-permissions.sh    Permission management utility
 ├── generate-windows-keys.sh & .ps1  Key generation utilities
 └── pki/                  Generated at runtime (see below)
@@ -23,6 +23,7 @@ scripts/
 ### Docker Entrypoints
 
 **`docker/entrypoint-master.sh`**
+
 - Purpose: Initialize Salt master in Docker container
 - Pre-accepts all pending minion keys
 - Starts Salt master daemon in foreground
@@ -30,6 +31,7 @@ scripts/
 - Requires: Pre-shared minion keys in `/etc/salt/pki/master/minions/`
 
 **`docker/entrypoint-minion.sh`**
+
 - Purpose: Initialize Salt minion in Docker container
 - Loads pre-shared master and minion keys
 - Starts minion daemon and immediately applies highstate
@@ -42,6 +44,7 @@ scripts/
 These scripts enroll existing systems (not in containers) as Salt minions.
 
 **`enrollment/install-linux-minion.sh`**
+
 - Purpose: Provision existing Linux systems as Salt minions
 - Auto-detects OS: Ubuntu, Debian, RHEL, CentOS, Fedora
 - Installs Salt minion package from official repos
@@ -54,6 +57,7 @@ These scripts enroll existing systems (not in containers) as Salt minions.
 - Sets master address (default: `salt.local`)
 
 **`enrollment/install-windows-minion.ps1`**
+
 - Purpose: Provision existing Windows systems as Salt minions
 - Downloads Salt MSI installer from GitHub releases
 - Installs to `C:\Program Files\Salt Project\Salt`
@@ -66,7 +70,8 @@ These scripts enroll existing systems (not in containers) as Salt minions.
 - Requirements: PowerShell 5.0+, Admin privileges, internet
 - Restarts Salt minion service after installation
 
-**`enrollment/windows-enroll.ps1`**
+**`enrollment/entrypoint-minion.ps1`**
+
 - Purpose: First-boot provisioning for Windows VMs (Dockur-specific)
 - Runs as SYSTEM during initial Windows setup (via Autounattend.xml)
 - Waits for network connectivity
@@ -79,6 +84,7 @@ These scripts enroll existing systems (not in containers) as Salt minions.
 ### Utilities
 
 **`fix-permissions.sh`**
+
 - Purpose: Ensure correct file permissions for Salt deployment
 - Sets 644 on configuration files (.sls, .yml, .yaml)
 - Sets 755 on executable scripts (.sh)
@@ -89,6 +95,7 @@ These scripts enroll existing systems (not in containers) as Salt minions.
 - Related: `make perms` target
 
 **`generate-windows-keys.sh` & `generate-windows-keys.ps1`**
+
 - Purpose: Generate RSA key pairs for Windows Salt minion
 - Both scripts do the same thing in different languages (bash/PowerShell)
 - Creates key pair: `scripts/pki/minion/{minion.pem, minion.pub}`
@@ -113,6 +120,7 @@ These scripts enroll existing systems (not in containers) as Salt minions.
 ### Docker Integration
 
 Scripts are mounted into containers via `docker-compose.yaml`:
+
 ```yaml
 volumes:
   - ./scripts:/scripts:ro
@@ -128,6 +136,7 @@ volumes:
 ### When to Create a Script
 
 Add a script when you need to:
+
 1. Initialize containers (place in `docker/`)
 2. Provision new systems manually (place in `enrollment/`)
 3. Perform maintenance tasks (place in root `scripts/`)
@@ -183,13 +192,15 @@ git commit -m "feat: Add new script description"
 ### Linux vs Windows Provisioning
 
 **Linux** (`install-linux-minion.sh`):
+
 - Installs from official package repos
 - Simple package manager integration
 - No extra bootstrapping needed
 
-**Windows** (`install-windows-minion.ps1` and `windows-enroll.ps1`):
+**Windows** (`install-windows-minion.ps1` and `entrypoint-minion.ps1`):
+
 - Downloads MSI installer
-- `windows-enroll.ps1` is Dockur-specific (VM first-boot)
+- `entrypoint-minion.ps1` is Dockur-specific (VM first-boot)
 - `install-windows-minion.ps1` is for manual installation on existing Windows
 
 ### Orchestration Flow

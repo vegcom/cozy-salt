@@ -56,6 +56,17 @@ while IFS= read -r -d '' file; do
     fi
 done < <(find . -type f -name "*.sh" -print0 2>/dev/null)
 
+# Fix .py files (python scripts) - need to be executable
+echo -e "${GREEN}[3/5]${NC} Checking .py files..."
+while IFS= read -r -d '' file; do
+    current_perms=$(stat -c '%a' "$file")
+    if [[ "$current_perms" != "755" ]]; then
+        chmod 755 "$file"
+        echo -e "  ${YELLOW}→${NC} $file ($current_perms → 755)"
+        ((CHANGED++))
+    fi
+done < <(find . -type f -name "*.py" -print0 2>/dev/null)
+
 # Fix provisioning files - need to be readable for Salt deployment
 # Executable scripts (.sh, .ps1) stay 755, others become 644
 echo -e "${GREEN}[4/5]${NC} Checking provisioning files..."

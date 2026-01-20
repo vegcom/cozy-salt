@@ -21,9 +21,10 @@ base:
     - linux
 
   # Hardware class: Valve Galileo (Steam Deck)
-  'G@dmi:System Information:Manufacturer:Valve and G@dmi:System Information:Product Name:Galileo':
+  'G@biosvendor:Valve and G@boardname:Galileo':
     - match: compound
     - class.galileo
+
 
   # Host-specific configuration (if file exists)
   {% if salt['file.file_exists'](host_file) %}

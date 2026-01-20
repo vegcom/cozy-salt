@@ -12,7 +12,7 @@ set -e
 
 # Default values
 MASTER="salt-master"
-MINION_ID=$(hostname -f)
+MINION_ID=$(hostnamectl hostname)
 SALT_VERSION="latest"
 ROLES="server"
 
@@ -40,7 +40,7 @@ while [[ $# -gt 0 ]]; do
             echo ""
             echo "Options:"
             echo "  --master, -m       Salt Master hostname or IP (default: salt-master)"
-            echo "  --minion-id, -i    Minion ID (default: $(hostname -f))"
+            echo "  --minion-id, -i    Minion ID (default: $(hostnamectl hostname)"
             echo "  --version, -v      Salt version (default: latest)"
             echo "  --roles, -r        Comma-separated roles (default: server)"
             echo "                     Use 'kvm-host' to enable KVM packages"
@@ -129,6 +129,29 @@ EOF
         yum install -y salt-minion
         ;;
 
+    arch|archlinux)
+        build_user=${build_user:-buildgirl}
+        userdel "$build_user" || true
+        useradd -M -r -s /usr/bin/nologin "$build_user"
+        echo "$build_user ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/"$build_user"
+        rm -rf /tmp/yay-bin || true
+
+        git clone https://aur.archlinux.org/salt.git /tmp/yay-bin
+        chown -R "$build_user":"$build_user" /tmp/yay-bin
+        sudo -u "$build_user" env -i \
+            HOME=/tmp \
+            PATH=/usr/bin:/bin:/usr/sbin:/sbin \
+            MAKEFLAGS="-j$(nproc)" \
+            LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 \
+            makepkg -CcsiD /tmp/yay-bin \
+            --noconfirm --needed \
+            --noprogressbar
+
+        rm -f /etc/sudoers.d/"$build_user"
+        userdel "$build_user"
+        ;;
+
+
     *)
         echo "Error: Unsupported OS: $OS"
         echo "  version: $VER"
@@ -172,6 +195,8 @@ EOF
 echo "Starting salt-minion service..."
 systemctl enable salt-minion
 systemctl restart salt-minion
+salt-call test.ping -l warning
+
 
 # Verify
 sleep 3

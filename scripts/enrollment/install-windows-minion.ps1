@@ -118,6 +118,7 @@ Set-Content -Path $minionConfig -Value $configContent -Force
 # Start the service
 Write-Host "Starting salt-minion service..." -ForegroundColor Green
 Start-Service -Name "salt-minion"
+salt-call test.ping -l warning
 
 # Verify
 Start-Sleep -Seconds 3

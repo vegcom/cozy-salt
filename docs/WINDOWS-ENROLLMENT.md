@@ -5,6 +5,7 @@ This document describes how the Windows test minion (via Dockur) auto-enrolls in
 ## Overview
 
 The Windows minion uses **Dockur** (QEMU-based Windows container) with:
+
 - **Unattended Windows 11 installation** via `Autounattend.xml`
 - **FirstLogonCommands** running an enrollment script on first admin login
 - **Pre-shared RSA keys** mounted from host for immediate authentication
@@ -23,9 +24,9 @@ The Windows minion uses **Dockur** (QEMU-based Windows container) with:
    - Windows unattended installation configuration
    - Skips OOBE (Out-of-Box Experience)
    - Creates local admin account (`admin`/`admin123!`)
-   - Runs `windows-enroll.ps1` via FirstLogonCommands
+   - Runs `entrypoint-minion.ps1` via FirstLogonCommands
 
-3. **Enrollment Script** (`scripts/enrollment/windows-enroll.ps1`)
+3. **Enrollment Script** (`scripts/docker/entrypoint-minion.ps1`)
    - Runs as SYSTEM from FirstLogonCommands
    - Waits for network connectivity
    - Copies pre-shared keys from mounted `/mnt/scripts`
@@ -42,32 +43,38 @@ The Windows minion uses **Dockur** (QEMU-based Windows container) with:
 5. **Docker Compose Volume Mounts**
    ```yaml
    volumes:
-     - ./scripts:/mnt/scripts:ro                                 # Scripts + keys
+     - ./scripts:/mnt/scripts:ro # Scripts + keys
      - ./provisioning/windows/Autounattend.xml:/Autounattend.xml:ro
    ```
 
 ## How It Works
 
 ### 1. Build Phase
+
 ```bash
 docker compose build
 ```
+
 - Keygen stage generates `windows-test.{pem,pub}`
 - Keys are copied into master image at `/etc/salt/pki/master/minions-preload/`
 - Master's entrypoint pre-accepts all keys from preload directory
 
 ### 2. Key Setup Phase
+
 ```bash
 make setup-windows-keys
 # or (on Windows): pwsh -ExecutionPolicy Bypass -File scripts/generate-windows-keys.ps1
 ```
+
 - Generates keys at `scripts/pki/minion/minion.{pem,pub}`
 - Keys must exist before starting Dockur for mounting
 
 ### 3. Container Startup Phase
+
 ```bash
 make up-windows-test
 ```
+
 - Starts master (if not running)
 - Generates keys (if needed)
 - Starts Dockur Windows container with:
@@ -76,14 +83,16 @@ make up-windows-test
   - Mounted `/mnt/scripts` (contains enrollment script + keys)
 
 ### 4. Windows Boot Phase
+
 - QEMU boots Windows 11
 - Runs unattended setup with Autounattend.xml
 - Automatically logs in as admin
-- FirstLogonCommands executes `windows-enroll.ps1`
+- FirstLogonCommands executes `entrypoint-minion.ps1`
 
 ### 5. Enrollment Phase
+
 ```powershell
-# windows-enroll.ps1 runs as SYSTEM:
+# entrypoint-minion.ps1 runs as SYSTEM:
 
 # 1. Wait for network (up to 5 minutes)
 # 2. Wait for mounted keys at D:\scripts\pki\minion\ (up to 2 minutes)
@@ -99,6 +108,7 @@ make up-windows-test
 ```
 
 ### 6. Ready for Management
+
 - Minion is registered as `windows-test`
 - Master has pre-accepted the key
 - Can receive Salt commands immediately
@@ -147,10 +157,12 @@ docker compose exec -t salt-master salt 'windows-test' test.ping
 ## Accessing the Windows Container
 
 ### Via Web VNC
+
 - URL: `http://localhost:8006`
 - Credentials: `admin` / `admin123!` (local account created by Autounattend.xml)
 
 ### Via RDP
+
 ```bash
 # From Linux/macOS:
 rdesktop -u admin -p admin123! localhost:3389
@@ -163,47 +175,53 @@ rdesktop -u admin -p admin123! localhost:3389
 
 ## Key Files
 
-| File | Purpose |
-|------|---------|
-| `Dockerfile` | Keygen stage generates windows-test RSA keys |
-| `docker-compose.yaml` | Dockur service config with mounts + MANUAL=N |
-| `provisioning/windows/Autounattend.xml` | Windows unattended setup + FirstLogonCommands |
-| `scripts/enrollment/windows-enroll.ps1` | Salt enrollment script (runs on first boot) |
-| `scripts/generate-windows-keys.sh` | Generate keys (bash) |
-| `scripts/generate-windows-keys.ps1` | Generate keys (PowerShell) |
-| `scripts/pki/minion/` | Pre-shared key storage for Docker mount |
-| `Makefile` | `make up-windows-test` / `make setup-windows-keys` |
+| File                                    | Purpose                                            |
+| --------------------------------------- | -------------------------------------------------- |
+| `Dockerfile`                            | Keygen stage generates windows-test RSA keys       |
+| `docker-compose.yaml`                   | Dockur service config with mounts + MANUAL=N       |
+| `provisioning/windows/Autounattend.xml` | Windows unattended setup + FirstLogonCommands      |
+| `scripts/docker/entrypoint-minion.ps1`  | Salt enrollment script (runs on first boot)        |
+| `scripts/generate-windows-keys.sh`      | Generate keys (bash)                               |
+| `scripts/generate-windows-keys.ps1`     | Generate keys (PowerShell)                         |
+| `scripts/pki/minion/`                   | Pre-shared key storage for Docker mount            |
+| `Makefile`                              | `make up-windows-test` / `make setup-windows-keys` |
 
 ## Troubleshooting
 
 ### Keys Not Found in Enrollment Script
+
 - Run `make setup-windows-keys` to generate keys
 - Verify `scripts/pki/minion/minion.{pem,pub}` exist
 - Check docker-compose.yaml volume mounts are correct
 
 ### Windows Takes 20+ Minutes to Boot
+
 - First boot downloads Windows 11 ISO (~4GB) - normal
 - Subsequent boots are much faster
 - Check disk space: `docker system df`
 - Free up space if needed: `docker system prune -a --volumes`
 
 ### Enrollment Script Doesn't Run
+
 - Check Dockur logs: `docker logs salt-minion-windows-test`
 - Verify Autounattend.xml is readable at `/Autounattend.xml`
-- Check FirstLogonCommands path: `C:\scripts\enrollment\windows-enroll.ps1`
+- Check FirstLogonCommands path: `C:\scripts\scripts\docker\entrypoint-minion.ps1`
 
 ### Salt Minion Installation Fails
+
 - Verify network connectivity in Windows (ping 8.8.8.8)
 - Check `C:\opt\salt\var\log\salt\minion` logs
 - Verify download URL is accessible: `https://packages.broadcom.com/artifactory/saltproject-generic/windows/3007.10/...`
 
 ### Minion Not Connecting to Master
+
 - Verify master is running: `docker compose ps`
 - Check minion config: `C:\opt\salt\conf\minion.d\99-custom.conf`
 - Verify master hostname resolution: `ping salt-master` from Windows
 - Check master logs: `docker compose logs salt-master | grep windows-test`
 
 ### Pre-Shared Keys Not Copied
+
 - Verify keys are mounted: Check if `D:\scripts\pki\minion\minion.pem` exists in running Windows
 - Run `dir D:\scripts` to list mount contents
 - If missing, check docker-compose.yaml volumes section
@@ -220,14 +238,14 @@ rdesktop -u admin -p admin123! localhost:3389
 
 ## Comparison with Other Test Minions
 
-| Aspect | Ubuntu | RHEL | Windows |
-|--------|--------|------|---------|
-| Container Type | Docker | Docker | Dockur (KVM) |
-| Boot Time | ~2 min | ~2 min | ~10 min (first), ~3 min (subsequent) |
-| Salt Keys | Baked in image | Baked in image | Pre-shared mount |
-| Enrollment | Auto on startup | Auto on startup | Auto on first login |
-| Access | Shell/exec | Shell/exec | Web VNC / RDP |
-| KVM Required | No | No | Yes (Linux host only) |
+| Aspect         | Ubuntu          | RHEL            | Windows                              |
+| -------------- | --------------- | --------------- | ------------------------------------ |
+| Container Type | Docker          | Docker          | Dockur (KVM)                         |
+| Boot Time      | ~2 min          | ~2 min          | ~10 min (first), ~3 min (subsequent) |
+| Salt Keys      | Baked in image  | Baked in image  | Pre-shared mount                     |
+| Enrollment     | Auto on startup | Auto on startup | Auto on first login                  |
+| Access         | Shell/exec      | Shell/exec      | Web VNC / RDP                        |
+| KVM Required   | No              | No              | Yes (Linux host only)                |
 
 ## Related Documentation
 

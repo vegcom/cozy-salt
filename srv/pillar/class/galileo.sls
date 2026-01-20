@@ -2,13 +2,12 @@
 # Valve Galileo (Steam Deck) Hardware Class Defaults
 # Applied to any system detected as: Manufacturer=Valve, Product Name=Galileo
 
----
+
 
 #steamdeck:
 #  autologin:
 #    user: deck  # Replace with real username in host/
 
----
 
 docker_enabled: False
 
@@ -16,6 +15,7 @@ docker_enabled: False
 # DISPLAY CONFIGURATION
 # =============================================================================
 # Display settings for Galileo/Steam Deck
+
 # Touchscreen is rotated 90 degrees (landscape mode)
 display:
   # Rotation settings (detect touchscreen device first)
@@ -31,7 +31,6 @@ display:
     # Device pattern: pointer:FTS3528 or similar
     # Automatically detected from xinput list output
 
----
 
 # =============================================================================
 # AUDIO/PIPEWIRE CONFIGURATION
@@ -48,7 +47,6 @@ pipewire:
   # Config location (don't manage here - user edits ~/.config/pipewire/pipewire.conf)
   # Example: echo "default.clock.min-quantum = 256" > ~/.config/pipewire/pipewire.conf
 
----
 
 # =============================================================================
 # BLUETOOTH CONFIGURATION
@@ -59,7 +57,6 @@ bluetooth:
   enabled: true
   # Additional settings managed in /etc/bluetooth/main.conf if needed
 
----
 
 # =============================================================================
 # YOINK: Future Work
@@ -83,10 +80,10 @@ bluetooth:
 #     enabled: false
 #     versions: []  # Install specific Ruby versions if enabled
 
----
+
 
 pacman:
-  repos: {
+  repos:
 
   kde-unstable:
     enabled: true
@@ -104,10 +101,6 @@ pacman:
     enabled: true
     Include: /etc/pacman.d/mirrorlist
 
-  multilib:
-    enabled: true
-    Include: /etc/pacman.d/mirrorlist
-
   jupiter:
     enabled: true
     server: "https://steamdeck-packages.steamos.cloud/archlinux-mirror/$repo/os/$arch"
@@ -116,4 +109,3 @@ pacman:
   chaotic_aur:
     enabled: false
     server: "https://chaotic.cx/arch/x86_64"
-}

@@ -38,13 +38,13 @@ provisioning/windows/
 
 ### File Deployment Targets
 
-| Source File | Deployment Target | Permission | Deployed By |
-|-------------|-------------------|-----------|------------|
-| `files/PROFILE.AllUsersCurrentHost/*` | `C:\Program Files\PowerShell\7\*` | 644 (readable) | `windows.profiles` |
-| `files/opt-cozy/*.ps1` | `C:\opt\cozy\*` | 755 (executable) | `windows.opt-cozy` |
-| `tasks/wsl/*.xml` | `C:\Windows\System32\tasks\cozy\*` | 644 (readable) | `windows.tasks.wsl` |
-| `tasks/kubernetes/*.xml` | `C:\Windows\System32\tasks\cozy\kubernetes\*` | 644 (readable) | `windows.tasks.k8s` |
-| `Autounattend.xml` | Mounted at Windows boot (Dockur) | N/A | Dockur VM setup |
+| Source File                           | Deployment Target                             | Permission       | Deployed By         |
+| ------------------------------------- | --------------------------------------------- | ---------------- | ------------------- |
+| `files/PROFILE.AllUsersCurrentHost/*` | `C:\Program Files\PowerShell\7\*`             | 644 (readable)   | `windows.profiles`  |
+| `files/opt-cozy/*.ps1`                | `C:\opt\cozy\*`                               | 755 (executable) | `windows.opt-cozy`  |
+| `tasks/wsl/*.xml`                     | `C:\Windows\System32\tasks\cozy\*`            | 644 (readable)   | `windows.tasks.wsl` |
+| `tasks/kubernetes/*.xml`              | `C:\Windows\System32\tasks\cozy\kubernetes\*` | 644 (readable)   | `windows.tasks.k8s` |
+| `Autounattend.xml`                    | Mounted at Windows boot (Dockur)              | N/A              | Dockur VM setup     |
 
 ### Salt States for Deployment
 
@@ -89,6 +89,7 @@ Salt mounts `provisioning/windows/` at `/provisioning` in master container, whic
 The PowerShell profile is modular and composable, allowing independent configuration of different tools while maintaining a single entry point.
 
 **Profile entry point**: `Microsoft.PowerShell_profile.ps1`
+
 - **Location**: `C:\Program Files\PowerShell\7\profile.ps1` (deployed)
 - **Purpose**: Main profile loader that sources all config files
 - **Runs on**: Every PowerShell session start
@@ -137,6 +138,7 @@ config.d/
 ```
 
 **Benefits**:
+
 - Each tool can be enabled/disabled independently
 - Changes to one tool don't affect others
 - Easy to add new tools (create new config.d/tool.ps1 file)
@@ -165,6 +167,7 @@ function Script-Loader {
 ```
 
 Features:
+
 - Times each script load (via `Mark-Time` / `Show-Elapsed`)
 - Catches failures and logs them
 - Uses PowerShell success indicator `$?` (not `$LASTEXITCODE`)
@@ -175,6 +178,7 @@ Features:
 All config files have try/catch wrappers:
 
 **`modules.ps1`** - Handles module import failures
+
 ```powershell
 try {
     Import-Module -Scope Global -Force -Name $module -ErrorAction Stop
@@ -188,6 +192,7 @@ try {
 ```
 
 **`npm.ps1`** - Handles npm detection failures
+
 ```powershell
 try {
     $found = @(); [npm detection logic]
@@ -198,6 +203,7 @@ try {
 ```
 
 **`choco.ps1`** - Handles chocolatey initialization failures
+
 ```powershell
 try {
     Import-Module $chocolateyprofile
@@ -213,15 +219,17 @@ Profile continues even if any tool fails to initialize.
 **Purpose**: Unattended Windows 11 setup for Dockur virtualization
 
 **Features**:
+
 - Accepts Windows EULA
 - Sets regional/language preferences
 - Configures network (DHCP)
 - Runs FirstLogonCommands (executes enrollment script at first login)
 
 **FirstLogonCommands**:
-- Runs `windows-enroll.ps1` as SYSTEM during first boot
+
+- Runs `entrypoint-minion.ps1` as SYSTEM during first boot
 - Script waits for network/master, installs Salt, applies highstate
-- See: `scripts/enrollment/windows-enroll.ps1`
+- See: `scripts/docker/entrypoint-minion.ps1`
 
 **Usage**: Mounted in Dockur VM, automatically processed at installation time
 
@@ -236,6 +244,7 @@ Post-installation utilities in `provisioning/windows/files/opt-cozy/`:
 **Purpose**: Configure Docker to use WSL context in Windows
 
 **What it does**:
+
 - Detects WSL 2 installation
 - Creates Docker context pointing to WSL
 - Enables efficient container development from Windows
@@ -249,6 +258,7 @@ Post-installation utilities in `provisioning/windows/files/opt-cozy/`:
 **Purpose**: Enable and configure Windows OpenSSH service
 
 **What it does**:
+
 - Installs OpenSSH server (if not present)
 - Enables and starts SSH service
 - Configures automatic startup
@@ -262,6 +272,7 @@ Post-installation utilities in `provisioning/windows/files/opt-cozy/`:
 ### WSL Automation
 
 **`tasks/wsl/wsl_autostart.xml`**
+
 - **Task name**: `cozy\wsl-autostart`
 - **Trigger**: At user logon
 - **Action**: Runs `wsl --list -v` and starts distributions
@@ -273,24 +284,28 @@ Post-installation utilities in `provisioning/windows/files/opt-cozy/`:
 Scheduled tasks for development environment automation:
 
 **`tasks/kubernetes/docker_registry_port_forward.xml`**
+
 - **Task name**: `cozy\kubernetes\docker-registry-pf`
 - **Trigger**: At system startup
 - **Action**: Forward localhost:5000 to registry service
 - **Purpose**: Local Docker image registry access
 
 **`tasks/kubernetes/ollama_port_forward.xml`**
+
 - **Task name**: `cozy\kubernetes\ollama-pf`
 - **Trigger**: At system startup
 - **Action**: Forward localhost:11434 to Ollama service
 - **Purpose**: Local LLM inference access
 
 **`tasks/kubernetes/open_webui_port_forward.xml`**
+
 - **Task name**: `cozy\kubernetes\open-webui-pf`
 - **Trigger**: At system startup
 - **Action**: Forward localhost:8080 to Open WebUI service
 - **Purpose**: Local LLM web interface access
 
 **All tasks**:
+
 - Deploy to: `C:\Windows\System32\tasks\cozy\kubernetes\`
 - Run with: SYSTEM privileges
 - Deployed by: `windows.tasks.kubernetes` Salt state
@@ -301,12 +316,12 @@ Scheduled tasks for development environment automation:
 
 Files are deployed with these permissions:
 
-| Type | Permission | Reason |
-|------|-----------|--------|
-| Profile files (.ps1 in config.d/) | 644 | Sourced by profile, not executable |
-| opt-cozy scripts (.ps1) | 755 | Executable utilities |
-| Task XMLs (.xml) | 644 | Configuration, not executable |
-| Autounattend.xml | 644 | Configuration, not executable |
+| Type                              | Permission | Reason                             |
+| --------------------------------- | ---------- | ---------------------------------- |
+| Profile files (.ps1 in config.d/) | 644        | Sourced by profile, not executable |
+| opt-cozy scripts (.ps1)           | 755        | Executable utilities               |
+| Task XMLs (.xml)                  | 644        | Configuration, not executable      |
+| Autounattend.xml                  | 644        | Configuration, not executable      |
 
 ### Windows ACLs
 
@@ -324,6 +339,7 @@ icacls "C:\Program Files\PowerShell\7" /grant:r "Users:(OI)(CI)(R)" /grant:r "Ad
 ### Add a New Tool to Profile
 
 1. **Create config file** in `provisioning/windows/files/PROFILE.AllUsersCurrentHost/config.d/`
+
    ```powershell
    # newtool.ps1
    try {
@@ -341,6 +357,7 @@ icacls "C:\Program Files\PowerShell\7" /grant:r "Users:(OI)(CI)(R)" /grant:r "Ad
    - Add to Script-Loader call in appropriate section
 
 3. **Run fix-permissions**
+
    ```bash
    ./scripts/fix-permissions.sh
    ```
@@ -368,11 +385,13 @@ icacls "C:\Program Files\PowerShell\7" /grant:r "Users:(OI)(CI)(R)" /grant:r "Ad
 If PowerShell fails to load profile:
 
 1. **Check Windows ACLs**:
+
    ```powershell
    icacls "C:\Program Files\PowerShell\7"
    ```
 
 2. **Test individual config files**:
+
    ```powershell
    . "C:\Program Files\PowerShell\7\config.d\npm.ps1"
    ```
@@ -386,6 +405,7 @@ If PowerShell fails to load profile:
 ### Module Import Failures
 
 If modules fail to import:
+
 - Check `logging "Failed to import $module"` messages
 - Verify module is installed: `Get-Module -ListAvailable`
 - Try manual import: `Import-Module Terminal-Icons`
@@ -395,11 +415,13 @@ If modules fail to import:
 If tasks don't run:
 
 1. **Verify task registration**:
+
    ```powershell
    Get-ScheduledTask -TaskPath "\cozy\" -TaskName "*"
    ```
 
 2. **Check task logs**:
+
    ```powershell
    Get-WinEvent -LogName "Microsoft-Windows-TaskScheduler/Operational"
    ```

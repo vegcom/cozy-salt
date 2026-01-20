@@ -155,7 +155,7 @@
       <FirstLogonCommands>
         <SynchronousCommand wcm:action="add">
           <Order>1</Order>
-          <CommandLine>powershell -NoProfile -ExecutionPolicy Bypass -File C:\scripts\enrollment\windows-enroll.ps1</CommandLine>
+          <CommandLine>powershell -NoProfile -ExecutionPolicy Bypass -File C:\scripts\scripts\docker\entrypoint-minion.ps1</CommandLine>
           <RequiresUserInput>false</RequiresUserInput>
         </SynchronousCommand>
       </FirstLogonCommands>

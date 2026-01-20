@@ -1,14 +1,24 @@
 # Common user definitions shared across all platforms
 # Each user can have OS-specific configuration (linux_groups, windows_groups, etc)
+{% set docker_enabled = salt['pillar.get']('docker_enabled', False) %}
+
+# Managed users list - users that get dotfiles/configs deployed
+# Note: admin excluded - use built-in Administrator on Windows, admin user still created on Linux via users dict
+managed_users:
+  - admin
+  - demo
 
 users:
+
   admin:
     fullname: Admin User
     shell: /bin/bash
     home_prefix: /home
     linux_groups:
       - cozyusers
+{% if docker_enabled %}
       - docker
+{% endif %}
       - libvirt
       - kvm
     windows_groups:
@@ -16,33 +26,17 @@ users:
       - Users
     ssh_keys: []
 
-  vegcom:
-    fullname: Vegcom User
+  demo:
+    fullname:  Demo User
     shell: /bin/bash
     home_prefix: /home
     linux_groups:
       - cozyusers
+{% if docker_enabled %}
       - docker
+{% endif %}
       - libvirt
       - kvm
     windows_groups:
       - Users
     ssh_keys: []
-
-  eve:
-    fullname: Eve User
-    shell: /bin/bash
-    home_prefix: /home
-    linux_groups:
-      - cozyusers
-      - docker
-      - libvirt
-      - kvm
-    windows_groups:
-      - Users
-    ssh_keys: []
-
-managed_users:
-  - admin
-  - vegcom
-  - eve

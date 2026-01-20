@@ -2,7 +2,7 @@
 # Deploys git config ONLY to managed users (never to root)
 # Uses Jinja macros to eliminate platform-specific conditionals
 
-{% import 'common/_dotfiles_macros.sls' as dotfiles %}
+{% import 'macros/dotfiles.sls' as dotfiles %}
 
 {% set username = salt['pillar.get']('user:name', 'admin') %}
 {% set managed_users = salt['pillar.get']('managed_users', []) %}
