@@ -1,13 +1,12 @@
 .claude/
-CLAUDE.md
 .coverage
+.env
 .vscode/
 **/__pycache__/
 **/.DS_Store
+CLAUDE.md
+docs/
+scripts/pki/
 srv/pillar/common/users.sls
 srv/salt/keys/master/
 srv/salt/keys/minion/
-scripts/pki/
-docs/
-.env
-scripts/enrollment
