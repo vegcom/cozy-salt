@@ -43,4 +43,4 @@ if [ -d "$preload_dir" ]; then
 fi
 
 echo "=== Starting Salt Master ==="
-exec salt-master -l info
+exec salt-master -l debug
