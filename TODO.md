@@ -4,6 +4,9 @@
 - [ ] Expand `provisioning/packages.sls` arch section: interpreters, atuin, modern_cli_extras
 - [ ] Debug atuin integration (check: installed? PATH? .bashrc init? bash-preexec?)
 - [ ] Add `package_metadata` to packages.sls (distro_aliases, conflicts, provides)
+- [ ] Salt bootstrap to leverage fork https://raw.githubusercontent.com/vegcom/salt-bootstrap/develop/bootstrap-salt.sh
+  - Pending approval https://github.com/saltstack/salt-bootstrap/pull/2101
+  - install on linux as `salt-bootstrap.sh onedir latest`
 
 ## Backlog
 

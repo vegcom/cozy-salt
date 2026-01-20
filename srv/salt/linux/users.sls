@@ -11,7 +11,7 @@
 skel_files:
   file.recurse:
     - name: /etc/skel
-    - source: salt://provisioning/linux/files/etc-skel
+    - source: salt://linux/files/etc-skel
     - include_empty: True
     - clean: False
     - order: 1

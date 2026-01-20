@@ -9,3 +9,4 @@ srv/salt/keys/master/
 srv/salt/keys/minion/
 scripts/pki/
 docs/
+.env
