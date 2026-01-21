@@ -1,0 +1,18 @@
+# ~/.config/systemd/user/input-leapc.service
+[Unit]
+Description=Leap Input Daemon
+Documentation=https://github.com/input-leap/input-leap
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/input-leapc --restart --no-daemon -d DEBUG desktop.local
+Restart=on-failure
+RestartSec=2
+# Optional: ensure XDG paths are respected
+Environment=XDG_CONFIG_HOME=%h/.config
+Environment=XDG_DATA_HOME=%h/.local/share
+
+[Install]
+WantedBy=default.target
+Requires=graphical.target
