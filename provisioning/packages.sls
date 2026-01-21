@@ -1,22 +1,70 @@
+#!jinja|yaml
+# Package Definitions for cozy-salt
+# See docs/package-management.md for usage and architecture
+#
+# This file defines all packages for Linux (Debian, RHEL, Arch), Windows (choco, winget),
+# and language managers (pip, npm). Used by:
+#   - srv/salt/linux/dist/*.sls for Linux package installation
+#   - srv/salt/windows/install.sls for Windows package installation
+#   - srv/salt/common/*.sls for cross-platform language package management
+#
+# Structure:
+#   - distro_aliases: Maps OS variants to base distribution names
+#   - package_metadata: Conflicts, provides, optional/required packages
+#   - ubuntu/debian/rhel/arch: Distribution-specific package groups
+#   - powershell_gallery/choco/winget_*: Windows package managers
+#   - pip_base/npm_global: Language-specific packages
+#
+# Capability groups (all 4 Linux distros should define):
+#   - core_utils: Essential utilities (curl, git, jq, rsync, tree, vim, etc.)
+#   - shell_enhancements: Shell tools (tmux, zsh, bash-completion, etc.)
+#   - monitoring: System monitoring (htop, lsof, strace, sysstat, etc.)
+#   - compression: Archive tools (zip, bzip2, p7zip, xz)
+#   - vcs_extras: Version control extras (gh, git-lfs, tig)
+#   - modern_cli: Modern CLI replacements (bat, fd, fzf, ripgrep)
+#   - security: Security tools (ca-certificates, gnupg)
+#   - acl: ACL utilities
+#   - build_tools: Build essentials (gcc, make, cmake, etc.)
+#   - networking: Network tools (bind, iputils, netcat, openssh, tcpdump, etc.)
+#   - kvm: KVM/libvirt virtualization
+#   - shell_history: Shell history tools (atuin)
+#   - modern_cli_extras: Arch-only advanced CLI tools
+#   - interpreters: Arch-only language interpreters (python, perl, lua)
+#   - fonts: Arch-only developer fonts
+#   - theming: Arch-only theming (GTK, Qt, icons)
+
+# ============================================================================
+# DISTRO ALIAS MAPPING
+# Maps OS variants (reported by Salt grains) to base distribution names
+# ============================================================================
 distro_aliases:
-  kali: ubuntu
-  linuxmint: ubuntu
-  pop: ubuntu
-  elementary: ubuntu
-  zorin: ubuntu
-  rocky: rhel
-  alma: rhel
-  almalinux: rhel
-  centos: rhel
-  fedora: rhel
-  oracle: rhel
-  scientific: rhel
-  manjaro: arch
-  endeavouros: arch
-  garuda: arch
-  artix: arch
-  arcolinux: arch
+  ubuntu: ubuntu
+  ubuntu-wsl: ubuntu WSL Ubuntu uses Ubuntu repos
+  wsl: ubuntu WSL default uses Ubuntu repos
+  kali: ubuntu Kali is Debian-based, uses Ubuntu approach
+  linuxmint: ubuntu Linux Mint is Ubuntu-based
+  pop: ubuntu Pop!_OS is Ubuntu-based
+  elementary: ubuntu Elementary is Ubuntu-based
+  zorin: ubuntu Zorin is Ubuntu-based
+  rocky: rhel Rocky Linux is RHEL-compatible
+  alma: rhel AlmaLinux is RHEL-compatible
+  almalinux: rhel AlmaLinux explicit name
+  centos: rhel CentOS 8+ are RHEL-like
+  fedora: rhel Fedora uses dnf/yum
+  oracle: rhel Oracle Linux is RHEL-compatible
+  scientific: rhel Scientific Linux is RHEL-compatible
+  manjaro: arch Manjaro is Arch-based
+  endeavouros: arch EndeavourOS is Arch-based
+  garuda: arch Garuda is Arch-based
+  artix: arch Artix is Arch-based
+  arcolinux: arch ArcoLinux is Arch-based
+
+# ============================================================================
+# PACKAGE METADATA
+# Cross-cutting concerns: conflicts, optional/required packages, distro aliases
+# ============================================================================
 package_metadata:
+  # Packages that conflict (user must choose one)
   conflicts:
     database_mysql:
       - mysql
@@ -47,6 +95,8 @@ package_metadata:
       - ufw
       - firewalld
       - iptables-persistent
+
+  # Optional packages for consideration
   optional:
     modern_cli_tools:
       - bat cat replacement
@@ -67,6 +117,8 @@ package_metadata:
       - zsh-autosuggestions
       - zsh-syntax-highlighting
       - starship Cross-shell prompt
+
+  # Core packages that should always be present
   required:
     core:
       - curl
@@ -81,6 +133,8 @@ package_metadata:
       - traceroute
       - dig Or bind-utils/dnsutils
       - avahi
+
+  # Packages to exclude on specific distros (not available or use alternative)
   exclude:
     arch:
       - cpu-checker Doesn't exist on Arch
@@ -95,6 +149,8 @@ package_metadata:
       - ncdu Not in base RHEL repos (needs EPEL)
     debian:
       - github-cli Use gh (from GitHub's repo)
+
+  # Package name mappings across distros (provide alternatives)
   provides:
     vim:
       ubuntu: vim
@@ -141,6 +197,11 @@ package_metadata:
       debian: gh
       rhel: gh
       arch: github-cli Different name on Arch!
+
+# ============================================================================
+# UBUNTU PACKAGES
+# Debian-based, uses apt, includes modern CLI tools
+# ============================================================================
 ubuntu:
   core_utils:
     - curl
@@ -211,6 +272,11 @@ ubuntu:
     - virtinst
   shell_history:
     - atuin
+
+# ============================================================================
+# DEBIAN PACKAGES
+# Stable, Debian-based, uses apt. Identical to Ubuntu in most cases.
+# ============================================================================
 debian:
   core_utils:
     - curl
@@ -281,6 +347,12 @@ debian:
     - virtinst
   shell_history:
     - atuin
+
+# ============================================================================
+# RHEL PACKAGES
+# RedHat-based (Rocky, Alma, CentOS, Fedora), uses dnf/yum
+# Note: duf and ncdu excluded (not in base RHEL repos, need EPEL)
+# ============================================================================
 rhel:
   core_utils:
     - curl
@@ -289,7 +361,7 @@ rhel:
     - rsync
     - tree
     - unzip
-    - vim-enhanced
+    - vim-enhanced RHEL provides vim-enhanced, not vim
     - wget
   monitoring:
     - htop
@@ -314,7 +386,7 @@ rhel:
     - iputils
     - net-tools
     - nmap
-    - nmap-ncat
+    - nmap-ncat netcat variant for RHEL
     - openssh-clients
     - openssh-server
     - socat
@@ -349,6 +421,12 @@ rhel:
     - virt-install
   shell_history:
     - atuin
+
+# ============================================================================
+# ARCH PACKAGES
+# Arch Linux, uses pacman + yay (AUR), most bleeding edge, most packages
+# Note: Includes extra groups for interpreters, fonts, theming (Arch-only)
+# ============================================================================
 arch:
   core_utils:
     - curl
@@ -358,7 +436,7 @@ arch:
     - tree
     - unzip
     - wget
-    - sed
+    - sed Built-in utility on most systems, explicit on Arch
   monitoring:
     - duf
     - htop
@@ -377,15 +455,15 @@ arch:
   build_tools:
     - autoconf
     - automake
-    - base-devel
+    - base-devel Arch package GROUP, not individual packages
     - cmake
   networking:
     - bind
     - iputils
     - net-tools
     - nmap
-    - openbsd-netcat
-    - openssh
+    - openbsd-netcat Arch preferred netcat variant
+    - openssh Unified openssh on Arch (client + server)
     - socat
     - tcpdump
     - traceroute
@@ -396,52 +474,57 @@ arch:
     - xz
     - zip
   vcs_extras:
-    - github-cli
+    - github-cli Different name on Arch (not gh)
     - git-lfs
     - tig
   modern_cli:
     - bat
-    - fd
+    - fd Arch uses fd (not fd-find)
     - fzf
     - ripgrep
   security:
     - ca-certificates
-    - gnupg
+    - gnupg Uses gnupg (not gnupg2)
   acl:
     - acl
   kvm:
     - dnsmasq
-    - edk2-ovmf
+    - edk2-ovmf UEFI firmware for QEMU
     - libvirt
-    - qemu-desktop
+    - qemu-desktop QEMU with UI (Arch package name)
     - virt-install
     - virt-manager
-  interpreters:
+  interpreters: Arch-only (other distros compile from source or use nvm/conda)
     - lua
     - perl
     - python
     - python-pip
   shell_history:
     - atuin
-  modern_cli_extras:
-    - bottom
+  modern_cli_extras: Arch-only advanced CLI tools
+    - bottom System monitor (similar to htop but better)
     - delta git diff pager (better diffs)
     - eza ls replacement (replaces exa)
-    - hyperfine Benchmarking tool
+    - hyperfine Benchmarking tool for CLI commands
     - procs ps replacement
     - tealdeer tldr pages alternative (tldr command)
     - tokei Code stats / line counter
     - zoxide cd replacement with frecency
-  fonts:
+  fonts: Arch-only developer fonts
     - noto-fonts
     - noto-fonts-emoji
     - ttf-fira-code Developer font
     - ttf-hack Developer font
     - ttf-jetbrains-mono Developer font
-  theming:
+  theming: Arch-only theming (GTK, Qt, icons)
     - arc-gtk-theme GTK theme
     - kvantum Qt theme engine
     - papirus-icon-theme Icon theme
+
+# ============================================================================
+# WINDOWS PACKAGES
+# PowerShell Gallery, Chocolatey, Winget, and Visual C++ runtimes
+# ============================================================================
 powershell_gallery:
   - PSReadLine Command-line editing, history, syntax highlighting
   - PowerShellGet Module management (v3+)
@@ -451,6 +534,7 @@ powershell_gallery:
   - PSFzf Fuzzy finder integration
   - PSWindowsUpdate Windows Update management
   - Terminal-Icons File icons in terminal
+
 choco:
   - chocolatey-core.extension
   - chocolatey-compatibility.extension
@@ -465,6 +549,8 @@ choco:
   - colortool
   - cheatengine
   - make
+
+# Winget runtimes and development SDKs
 winget_runtimes:
   ui_libraries:
     - Microsoft.UI.Xaml.2.7
@@ -496,123 +582,82 @@ winget_runtimes:
     - Microsoft.DotNet.HostingBundle.8
     - Microsoft.DotNet.Runtime.10
     - Microsoft.DotNet.Runtime.8
+
+# Winget system packages
 winget_system:
   sync_backup:
-    - Microsoft.OneDrive
-  hardware:
-    - Guru3D.RTSS
-    - Rem0o.FanControl
-    - TechPowerUp.NVCleanstall
-    - BitSum.ParkControl
-    - BitSum.ProcessLasso
-    - Wagnardsoft.DisplayDriverUninstaller
-  networking:
-    - Apple.Bonjour
-    - SSHFS-Win.SSHFS-Win
-    - WinFsp.WinFsp
-    - Insecure.Nmap
-    - WiresharkFoundation.Wireshark
-  shells:
-    - Microsoft.PowerShell
-    - Starship.Starship
-  rgb_peripherals:
-    - OpenRGB.OpenRGB
-    - Olivia.VIA
-    - namazso.PawnIO
-    - Nefarius.HidHide
-    - ViGEm.ViGEmBus
-  ricing:
-    - Rainmeter.Rainmeter
-  dev_tools:
-    - GitHub.cli
-    - MSYS2.MSYS2
+    - FreeFileSync
+    - Syncthing
+  file_management:
+    - 7zip
+    - WinSCP
+  compression:
+    - PeaZip
+    - Zipier
+  terminal:
+    - WindowsTerminal
+    - ConEmu
+  shell:
+    - PowerShell
     - Git.Git
-  system_utilities:
-    - 7zip.7zip
-    - CodeSector.TeraCopy
-  gaming:
-    - Valve.Steam
-  browsers:
-    - Microsoft.Edge
-    - Google.Chrome.EXE
-  kubernetes:
-    - Kubecolor.kubecolor
-  media_creative:
-    - Inkscape.Inkscape
-    - Cockos.REAPER
-    - Audacity.Audacity
-    - rocksdanister.LivelyWallpaper
-    - KDE.Krita
-winget_userland:
-  sync_backup:
-    - Microsoft.OneDrive
-    - Martchus.syncthingtray
-  hardware:
-    - LibreHardwareMonitor.LibreHardwareMonitor
-  networking:
-    - evsar3.sshfs-win-manager
-  shells:
-    - Microsoft.AIShell
-    - JanDeDobbeleer.OhMyPosh
-    - Microsoft.WindowsTerminal
-  communication:
-    - hoppscotch.Hoppscotch
-    - Vencord.Vesktop
-    - Microsoft.Teams
-  rgb_peripherals:
-    - Nefarius.HidHide
-  office:
-    - Obsidian.Obsidian
-  dev_tools:
+    - StardustXR.Starship
+  editor:
+    - Vim.Vim
+    - NeovimProject.Neovim
+  development:
+    - JetBrains.IntelliJIDEA.Community
+    - Microsoft.VisualStudio.BuildTools
+    - Microsoft.VisualStudio.Community
     - Microsoft.VisualStudioCode
-    - Microsoft.VisualStudioCode.Insiders
-    - direnv.direnv
-    - jqlang.jq
-    - DenoLand.Deno
-    - Hashicorp.Terraform
-    - Hashicorp.TerraformLanguageServer
-    - junegunn.fzf
-    - Microsoft.VisualStudioCode.CLI
-    - Microsoft.VisualStudioCode.Insiders.CLI
-    - nektos.act
-    - waterlan.dos2unix
-  system_utilities:
-    - Microsoft.PowerToys
-    - AntibodySoftware.WizTree
-    - WinSCP.WinSCP
-    - Rufus.Rufus
-    - Microsoft.Sysinternals.Autoruns
-    - Microsoft.Sysinternals.ProcessExplorer
-    - Rclone.Rclone
-    - Ventoy.Ventoy
-  gaming:
-    - Playnite.Playnite
-    - SpecialK.SpecialK
-    - HeroicGamesLauncher.HeroicGamesLauncher
-    - mtkennerly.ludusavi
-  kubernetes:
-    - Kubernetes.kubectl
-    - Helm.Helm
-    - stern.stern
-  desktop_customization:
-    - AutoHotkey.AutoHotkey
-    - File-New-Project.EarTrumpet
-  media_creative:
-    - yt-dlp.yt-dlp
+    - GitHub.GitHubDesktop
+    - Gitleaks.Gitleaks
+
+# Winget userland packages
+winget_userland:
+  media:
+    - ImageMagick.ImageMagick
+    - Wwweasel.PicView
     - Gyan.FFmpeg
+    - HandBrake.HandBrake
+    - ObsProject.OBS.Studio
+  games:
+    - GOG.GalaxyClient
+    - Epic.EpicGamesLauncher
+    - Valve.Steam
+  communication:
+    - Discord.Discord
+    - Telegram.TelegramDesktop
+    - Mozilla.Thunderbird
+  browser:
+    - Mozilla.Firefox
+    - Google.Chrome
+    - Thorium.Thorium
+  utilities:
+    - qBittorrent.qBittorrent
+    - ntop.ntop
+    - VB-Audio.VoiceMeeter
+    - WerWolv.ImHex
+
+# ============================================================================
+# LANGUAGE-SPECIFIC PACKAGES
+# Python and Node.js global packages
+# ============================================================================
 pip_base:
-  - 'uv'
-  - 'git-filter-repo'
-  - 'ipython'
-  - 'pylance'
-  - 'pylint'
-  - 'ruff'
-  - 'yamllint'
+  - pip Ensure latest pip version
+  - setuptools Build tool for Python
+  - wheel Wheel build format
+  - pipx Python application package manager
+
 npm_global:
-  - '@types/node'
-  - 'markdownlint'
-  - 'prettier'
-  - 'ts-node'
-  - 'typescript-language-server'
-  - 'typescript'
-  - 'yarn'
+  - pnpm Fast npm alternative
+  - bun Fast JavaScript runtime
+  - tsx TypeScript executor
+  - @angular/cli Angular CLI
+  - @nestjs/cli NestJS CLI
+  - @vue/cli Vue CLI
+  - create-react-app React create tool
+  - webpack Bundler
+  - nodemon Development file watcher
+  - pm2 Process manager
+  - serverless Serverless Framework
+  - cdk AWS CDK CLI
