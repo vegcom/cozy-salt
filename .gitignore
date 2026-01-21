@@ -5,7 +5,6 @@
 **/__pycache__/
 **/.DS_Store
 CLAUDE.md
-docs/
 scripts/pki/
 srv/pillar/common/users.sls
 srv/salt/keys/master/

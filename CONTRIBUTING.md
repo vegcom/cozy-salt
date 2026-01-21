@@ -44,6 +44,19 @@ install_node:
 
 Sets `NVM_HOME`, `NVM_SYMLINK`, `CONDA_HOME` automatically.
 
+## Documentation
+
+Module documentation lives in `docs/modules/` (not as inline comments in `.sls` files).
+
+Examples:
+- [Salt Scheduler](./docs/modules/scheduler.md) - Pillar configuration and usage for `schedule` module
+- [State files](./srv/salt/) - Minimal header comment pointing to `docs/modules/`
+
+When adding a new module:
+1. Create `docs/modules/<name>.md` with configuration, options, and examples
+2. Reference it from the state file: `# See docs/modules/<name>.md for usage`
+3. Minimal pillar template with just a reference to the docs
+
 ## Git Workflow
 
 1. Branch from main

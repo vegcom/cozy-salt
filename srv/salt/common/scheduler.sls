@@ -1,18 +1,8 @@
 #!jinja|yaml
 # Salt Scheduler State Configuration
-# Applies scheduled jobs from pillar data to minions
-#
-# Pillar structure (define in srv/pillar/*/scheduler.sls):
-#   schedule:
-#     job_name:
-#       function: module.function
-#       seconds: 3600
-#       args: [arg1, arg2]
+# See docs/modules/scheduler.md for documentation and examples
 
-# Import scheduler configuration from pillar
 {% set schedules = salt['pillar.get']('schedule', {}) %}
-
-# Apply each scheduled job to the minion
 {% for job_name, job_config in schedules.items() %}
 schedule_{{ job_name }}:
   schedule.present:
