@@ -209,6 +209,8 @@ ubuntu:
     - qemu-system-x86
     - qemu-utils
     - virtinst
+  shell_history:
+    - atuin
 debian:
   core_utils:
     - curl
@@ -277,6 +279,8 @@ debian:
     - qemu-system-x86
     - qemu-utils
     - virtinst
+  shell_history:
+    - atuin
 rhel:
   core_utils:
     - curl
@@ -343,6 +347,8 @@ rhel:
     - qemu-img
     - qemu-kvm
     - virt-install
+  shell_history:
+    - atuin
 arch:
   core_utils:
     - curl
