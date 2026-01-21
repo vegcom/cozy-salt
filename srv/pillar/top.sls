@@ -9,6 +9,7 @@ base:
     - common.network
     - common.paths
     - common.versions
+    - common.scheduler
 
   # Windows systems
   'G@os_family:Windows':

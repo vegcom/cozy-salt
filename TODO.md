@@ -2,7 +2,7 @@
 
 ## High priority
 
-- [ ] Add [scheduler](https://docs.saltproject.io/salt/user-guide/en/latest/topics/scheduler.html)
+- [x] Add [scheduler](https://docs.saltproject.io/salt/user-guide/en/latest/topics/scheduler.html) (2025-01-21)
 
 ## Active
 
@@ -13,9 +13,9 @@
   - install on linux as `salt-bootstrap.sh onedir latest`
   - `curl -fsSL https://raw.githubusercontent.com/vegcom/salt-bootstrap/refs/heads/develop/bootstrap-salt.sh | bash -s -- -D onedir latest`
   - [x] Break out enrollment scripts into submodule
-    - [ ] add submodule helpers to `Makefile`
-      - [ ]`git submodule update --init --recursive`
-      - [ ]`git submodule update --recursive --remote`
+    - [x] add submodule helpers to `Makefile` (2025-01-20)
+      - [x]`git submodule update --init --recursive`
+      - [x]`git submodule update --recursive --remote`
 
 ## Backlog
 
@@ -24,5 +24,7 @@
 - [ ] Windows: parameterize hardcoded paths via pillar (PowerShell, sshd_config.d)
 - [ ] Windows: pillar-driven scheduled tasks
 - [ ] SDDM astronaut theme (pillar gate: `steamdeck:sddm:theme`)
-- [ ] Immutable Linux support (Flatpak/distrobox for read-only filesystems)
+
+## Pending review
+
 - [ ] Tailscale DNS nameserver append
