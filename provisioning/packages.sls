@@ -619,7 +619,7 @@ windows:
       - Epic.EpicGamesLauncher
       - Valve.Steam
     communication:
-      - Discord.Discord
+      - Vencord.Vesktop
       - Telegram.TelegramDesktop
       - Mozilla.Thunderbird
     browser:
