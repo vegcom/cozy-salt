@@ -45,6 +45,12 @@ yay_wrapper_profile:
     - source: salt://linux/files/etc-profile.d/yay-wrapper.sh
     - mode: 755
 
+cozy_system_profile:
+  file.managed:
+    - name: /etc/profile.d/cozy.sh
+    - source: salt://linux/files/etc-profile.d/cozy.sh
+    - mode: 644
+
 # Deploy hardened SSH configuration (consolidated template - High-003)
 # Template handles platform conditionals: Linux, WSL, and Windows
 sshd_hardening_config:

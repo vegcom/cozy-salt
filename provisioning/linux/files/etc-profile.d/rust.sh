@@ -1,6 +1,7 @@
 #!/bin/bash
 # Rust (rustup) system-wide initialization
 # Manages environment for all users to use system-wide /opt/rust installation
+# Managed by Salt - DO NOT EDIT MANUALLY
 
 # Set Rust directories
 export RUSTUP_HOME="/opt/rust"

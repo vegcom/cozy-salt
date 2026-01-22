@@ -2,6 +2,7 @@
 # Git environment variables initialization
 # Exports GIT_NAME and GIT_EMAIL from global git config for all users
 # Sourced by /etc/profile.d on shell initialization
+# Managed by Salt - DO NOT EDIT MANUALLY
 
 # Only set if git is installed and user has global git config
 if command -v git &> /dev/null; then
