@@ -99,6 +99,9 @@ deploy_vim_{{ username }}:
     - require:
       - cmd: git_safe_directory_all
       - file: deploy_git_credentials_{{ username }}
+{% if is_windows %}
+      - file: deploy_git_credentials_system
+{% endif %}
 
 # Deploy .git_template directory (always update)
 deploy_git_template_{{ username }}:
@@ -127,3 +130,18 @@ deploy_git_template_local_{{ username }}:
     - clean: False
 
 {% endfor %}
+
+# On Windows: Deploy global .git-credentials to SYSTEM's home
+# (SYSTEM runs the minion and needs credentials to clone private repos)
+{% if is_windows %}
+deploy_git_credentials_system:
+  file.managed:
+    - name: C:\Windows\System32\config\systemprofile\.git-credentials
+    - contents: |
+        {%- for token in global_tokens %}
+        https://{{ token }}@github.com
+        {%- endfor %}
+    - makedirs: True
+    - require:
+      - cmd: git_safe_directory_all
+{% endif %}
