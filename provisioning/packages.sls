@@ -230,8 +230,8 @@ ubuntu:
     - screen
     - tmux
     - shellcheck
+  shell_history:
     - atuin
-    -
   build_tools:
     - autoconf
     - automake
@@ -303,6 +303,7 @@ debian:
     - screen
     - tmux
     - shellcheck
+  shell_history:
     - atuin
   build_tools:
     - autoconf
@@ -375,6 +376,7 @@ rhel:
     - screen
     - tmux
     - shellcheck
+  shell_history:
     - atuin
   build_tools:
     - autoconf
@@ -494,13 +496,13 @@ arch:
     - qemu-desktop QEMU with UI (Arch package name)
     - virt-install
     - virt-manager
+  shell_history:
+    - atuin
   interpreters: Arch-only (other distros compile from source or use nvm/conda)
     - lua
     - perl
     - python
     - python-pip
-  shell_history:
-    - atuin
   modern_cli_extras: Arch-only advanced CLI tools
     - bottom System monitor (similar to htop but better)
     - delta git diff pager (better diffs)
