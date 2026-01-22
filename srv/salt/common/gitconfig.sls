@@ -61,17 +61,29 @@ deploy_gitignore_{{ username }}:
 {% endif %}
     - makedirs: True
 
-# Deploy .gitconfig.local (create once only, user customizations)
+# Deploy .gitconfig.local with user github config if present in pillar
+{% set github_config = users_data.get(username, {}).get('github', {}) %}
+{% set git_email = github_config.get('email', '') %}
+{% set git_name = github_config.get('name', '') %}
 deploy_gitconfig_local_{{ username }}:
   file.managed:
     - name: {{ dotfiles.dotfile_path(user_home, '.gitconfig.local') }}
+{% if git_email and git_name %}
+    - contents: |
+        [user]
+        	email = {{ git_email }}
+        	name = {{ git_name }}
+    - replace: True
+{% else %}
     - source: salt://common/dotfiles/.gitconfig.local
+    - replace: False
+    - create: False
+{% endif %}
 {% if not is_windows %}
     - user: {{ username }}
     - mode: 644
 {% endif %}
     - makedirs: True
-    - create: False
 
 # Deploy .gitignore.local (create once only, user customizations)
 deploy_gitignore_local_{{ username }}:
