@@ -30,7 +30,7 @@ Adds to PATH:
 
 Modifies:
 
-```
+```text
 HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment\Path
 ```
 

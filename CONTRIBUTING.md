@@ -66,6 +66,7 @@ When adding a new module:
 
 ## Submodules
 
-|                                       repo                                        |                     path                     |
-| :-------------------------------------------------------------------------------: | :------------------------------------------: |
-| [vegcom/cozy-salt-enrollment.git](https://github.com/vegcom/cozy-salt-enrollment) | [scripts/enrollment/](./scripts/enrollment/) |
+|                                       repo                                        |                        path                         |
+| :-------------------------------------------------------------------------------: | :-------------------------------------------------: |
+| [vegcom/cozy-salt-enrollment.git](https://github.com/vegcom/cozy-salt-enrollment) |     [scripts/enrollment/](./scripts/enrollment/)    |
+|           [vegcom/cozy-vim.git](https://github.com/vegcom/cozy-vim)           | [provisioning/common/dotfiles/.vim/](./.vim/) |
