@@ -2,9 +2,9 @@
 # Fetches comprehensive PowerShell configuration from cozy-pwsh.git
 # Profile includes: init, time, logging, aliases, functions, modules, npm, conda, choco, code, starship
 # See docs/modules/windows-profiles.md for configuration
+# Requires: srv/salt/common/gitconfig.sls (deploy_git_credentials_system)
 
 {% set pwsh_profile_dir = salt['pillar.get']('paths:powershell_7_profile', 'C:\\Program Files\\PowerShell\\7') %}
-{% set github_token = salt['pillar.get']('github:access_token', '') %}
 
 # Create PowerShell 7 profile directory structure
 powershell_profile_directory:
@@ -13,16 +13,15 @@ powershell_profile_directory:
     - makedirs: True
 
 # Deploy PowerShell profile via git (clone cozy-pwsh.git)
-# Fetches latest system-wide profile configuration from the repo
+# Uses .git-credentials deployed via common/gitconfig.sls (deploy_git_credentials_system)
+# SYSTEM home: C:\Windows\System32\config\systemprofile\.git-credentials
 powershell_profile_files:
   git.latest:
     - name: https://github.com/vegcom/cozy-pwsh.git
     - target: {{ pwsh_profile_dir }}
     - branch: main
-{% if github_token %}
-    - https_user: {{ github_token }}
-    - https_pass: ''
-{% endif %}
+    - force_clone: True
+    - force_reset: True
     - require:
       - file: powershell_profile_directory
 
