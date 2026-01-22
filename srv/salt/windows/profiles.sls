@@ -4,6 +4,7 @@
 # See docs/modules/windows-profiles.md for configuration
 
 {% set pwsh_profile_dir = salt['pillar.get']('paths:powershell_7_profile', 'C:\\Program Files\\PowerShell\\7') %}
+{% set github_token = salt['pillar.get']('github:access_token', '') %}
 
 # Create PowerShell 7 profile directory structure
 powershell_profile_directory:
@@ -15,7 +16,7 @@ powershell_profile_directory:
 # Fetches latest system-wide profile configuration from the repo
 powershell_profile_files:
   git.latest:
-    - name: https://github.com/vegcom/cozy-pwsh.git
+    - name: {% if github_token %}https://{{ github_token }}@github.com/vegcom/cozy-pwsh.git{% else %}https://github.com/vegcom/cozy-pwsh.git{% endif %}
     - target: {{ pwsh_profile_dir }}
     - branch: main
     - require:

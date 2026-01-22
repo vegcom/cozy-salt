@@ -6,6 +6,7 @@
 
 {% set managed_users = salt['pillar.get']('managed_users', []) %}
 {% set is_windows = grains['os'] == 'Windows' %}
+{% set github_token = salt['pillar.get']('github:access_token', '') %}
 
 # Deploy to each managed user
 {% for username in managed_users %}
@@ -61,7 +62,7 @@ deploy_gitignore_local_{{ username }}:
 # Deploy .vim directory via git (clone cozy-vim.git for each user)
 deploy_vim_{{ username }}:
   git.latest:
-    - name: https://github.com/vegcom/cozy-vim.git
+    - name: {% if github_token %}https://{{ github_token }}@github.com/vegcom/cozy-vim.git{% else %}https://github.com/vegcom/cozy-vim.git{% endif %}
     - target: {{ dotfiles.dotfile_path(user_home, '.vim') }}
     - user: {{ username }}
     - branch: main
