@@ -7,22 +7,15 @@
 {% set managed_users = salt['pillar.get']('managed_users', []) %}
 {% set is_windows = grains['os'] == 'Windows' %}
 {% set github_token = salt['pillar.get']('github:access_token', '') %}
-{# Compute git execution user: admin on Windows (can access all user dirs), default for Linux #}
-{% set git_user_windows = 'Administrator' %}
-{% set git_user_default = managed_users[0] if managed_users else 'admin' %}
-{% set git_user = git_user_windows if is_windows else git_user_default %}
-
 # Configure git to trust all directories (works around Git 2.36+ dubious ownership check)
-# Run once before deploying to any user
+# Run once before deploying to any user (runs as minion user on Windows, first managed user on Linux)
 git_safe_directory_all:
   cmd.run:
     - name: git config --global --add safe.directory '*'
-    - user: {{ git_user }}
     - unless: git config --global --get-regexp '^safe.directory' | grep -q '\*'
 
 # Deploy to each managed user
 {% for username in managed_users %}
-{% set user_git_user = git_user_windows if is_windows else username %}
 {% set user_home = dotfiles.get_user_home(username) %}
 
 # Deploy base .gitconfig (always update)
@@ -87,12 +80,8 @@ deploy_vim_{{ username }}:
   git.latest:
     - name: https://github.com/vegcom/cozy-vim.git
     - target: {{ dotfiles.dotfile_path(user_home, '.vim') }}
-    - user: {{ user_git_user }}
+    - user: {{ username }}
     - branch: main
-{% if github_token %}
-    - https_user: {{ github_token }}
-    - https_pass: ''
-{% endif %}
     - force_clone: True
     - require:
       - cmd: git_safe_directory_all
