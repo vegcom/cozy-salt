@@ -15,14 +15,14 @@
 nvm_download:
   cmd.run:
     - name: >
-        pwsh -NoLogo -NoProfile -Command
+        pwsh -NoLogo -Command
         "Invoke-WebRequest -Uri '{{ npm_pkg }}' -OutFile {{ nvm_tmp }}"
     - creates: {{ nvm_tmp }}
 
 nvm_install:
   cmd.run:
     - name: >
-        pwsh -NoLogo -NoProfile -Command
+        pwsh -NoLogo -Command
         "Expand-Archive -Path {{ nvm_tmp }} -DestinationPath {{ nvm_path }} -Force"
     - creates: {{ nvm_bin }}
     - require:
@@ -73,7 +73,7 @@ install_default_node_version:
 nvm_nodejs_dir_cleanup:
   cmd.run:
     - name: >
-        pwsh -NoLogo -NoProfile -Command
+        pwsh -NoLogo -Command
         "if ((Test-Path '{{ node_path }}') -and -not ((Get-Item '{{ node_path }}').Attributes -band [IO.FileAttributes]::ReparsePoint)) { Remove-Item -Path '{{ node_path }}' -Recurse -Force }"
     - require:
       - cmd: install_default_node_version

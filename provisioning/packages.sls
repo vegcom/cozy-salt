@@ -631,6 +631,7 @@ windows:
       - ntop.ntop
       - VB-Audio.VoiceMeeter
       - WerWolv.ImHex
+      - JohnMacFarlane.Pandoc
 
 # ============================================================================
 # LANGUAGE-SPECIFIC PACKAGES

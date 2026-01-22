@@ -13,7 +13,7 @@ windhawk_directory:
 windhawk_download:
   cmd.run:
     - name: >
-        pwsh -NoLogo -NoProfile -Command
+        pwsh -NoLogo -Command
         "Invoke-WebRequest -Uri 'https://github.com/ramensoftware/windhawk/releases/download/v{{ windhawk_version }}/windhawk_setup.exe' -OutFile {{ windhawk_tmp }}"
     - creates: {{ windhawk_tmp }}
     - require:
@@ -22,7 +22,7 @@ windhawk_download:
 windhawk_install:
   cmd.run:
     - name: >
-        pwsh -NoLogo -NoProfile -Command
+        pwsh -NoLogo -Command
         "& \"$env:TEMP\windhawk-install.exe\" /S /AUTO_UPDATE /PORTABLE /D={{ windhawk_path }}"
     - creates: {{ windhawk_path }}\windhawk.exe
     - require:

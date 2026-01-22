@@ -5,7 +5,7 @@
 # Detect if WSL is available and set grain for future targeting
 detect_wsl:
   cmd.run:
-    - name: powershell -NoProfile -Command "if (Get-Command wsl -ErrorAction SilentlyContinue) { 'true' } else { 'false' }"
+    - name: powershell -Command "if (Get-Command wsl -ErrorAction SilentlyContinue) { 'true' } else { 'false' }"
     - stateful: False
   grains.present:
     - name: is_wsl

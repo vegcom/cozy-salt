@@ -16,7 +16,7 @@ qmk_msysdirectory:
 qmk_msys_download:
   cmd.run:
     - name: >
-        pwsh -NoLogo -NoProfile -Command
+        pwsh -NoLogo -Command
         "Invoke-WebRequest -Uri \"{{ qmk_uri }}\"
         -OutFile \"{{ qmk_msys_tmp }}\""
     - creates: {{ qmk_msys_tmp }}
@@ -26,7 +26,7 @@ qmk_msys_download:
 qmk_msys_install:
   cmd.run:
     - name: >
-        pwsh -NoLogo -NoProfile -Command
+        pwsh -NoLogo -Command
         "& \"{{ qmk_msys_tmp }}\"
         /SP-
         /VERYSILENT

@@ -14,7 +14,7 @@ wt_directory:
 wt_download:
   cmd.run:
     - name: >
-        pwsh -NoLogo -NoProfile -Command
+        pwsh -NoLogo -Command
         "Invoke-WebRequest -Uri 'https://github.com/microsoft/terminal/releases/download/v{{ wt_version }}/Microsoft.WindowsTerminal_{{ wt_version }}_x64.zip' -OutFile '{{ wt_tmp }}'"
     - creates: {{ wt_tmp }}
     - require:
@@ -23,7 +23,7 @@ wt_download:
 wt_install:
   cmd.run:
     - name: >
-        pwsh -NoLogo -NoProfile -Command
+        pwsh -NoLogo -Command
         "Expand-Archive -Path {{ wt_tmp }} -DestinationPath {{ wt_path }} -Force"
     - creates: {{ wt_path }}
     - require:

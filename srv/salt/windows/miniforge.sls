@@ -20,7 +20,7 @@ miniforge_directory:
 miniforge_download:
   cmd.run:
     - name: >
-        pwsh -NoLogo -NoProfile -Command
+        pwsh -NoLogo -Command
         "Invoke-WebRequest -Uri 'https://github.com/conda-forge/miniforge/releases/download/{{ miniforge_version }}/Miniforge3-Windows-x86_64.exe' -OutFile {{ miniforge_tmp }}"
     - creates: {{ miniforge_tmp }}
     - require:
@@ -29,7 +29,7 @@ miniforge_download:
 miniforge_install:
   cmd.run:
     - name: >
-        pwsh -NoLogo -NoProfile -Command
+        pwsh -NoLogo -Command
         "& \"$env:TEMP\miniforge-install.exe\" /InstallationType=AllUsers /RegisterPython=1 /S /D={{ miniforge_path }}"
     - creates: {{ miniforge_path }}\Scripts\conda.exe
     - require:
