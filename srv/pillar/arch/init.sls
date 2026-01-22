@@ -129,19 +129,8 @@ pacman:
       enabled: true
       server: "https://chaotic.cx/arch/{{ chaotic_arch }}"
 
-# =============================================================================
-# System Locales
-# =============================================================================
-# Locales to generate via locale-gen
-# Added to /etc/locale.gen before running locale-gen
-locales:
-  - en_US.UTF-8
-  - fr_FR.UTF-8
-  - ja_JP.UTF-8
-  - ko_KR.UTF-8
-  - ru_RU.UTF-8
-  - zh_CN.UTF-8
-  - zh_TW.UTF-8
+# Note: System locales are configured in srv/pillar/linux/init.sls as global defaults
+# Override in host/ pillar if needed for specific systems
 
 # =============================================================================
 # Steam Deck Specific Configuration
