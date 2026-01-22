@@ -1,3 +1,6 @@
 [submodule "scripts/enrollment"]
 	path = scripts/enrollment
 	url = git@github.com:vegcom/cozy-salt-enrollment.git
+[submodule "provisioning/common/dotfiles/.vim"]
+	path = provisioning/common/dotfiles/.vim
+	url = https://github.com/vegcom/cozy-vim.git
