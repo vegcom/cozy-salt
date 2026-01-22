@@ -11,3 +11,8 @@ user:
 # Node.js version management via nvm
 nvm:
   default_version: 'lts'
+
+# Windows system paths
+paths:
+  powershell_7_profile: 'C:\Program Files\PowerShell\7'
+  sshd_config_d: 'C:\ProgramData\ssh\sshd_config.d'

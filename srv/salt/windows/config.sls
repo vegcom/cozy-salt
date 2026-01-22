@@ -1,8 +1,12 @@
 # Windows configuration
 # User setup, environment, and system configuration
+# See docs/modules/windows-config.md for configuration
 
 {% set network_config = salt['pillar.get']('network', {}) %}
 {% set hosts = network_config.get('hosts', {}) %}
+{% set paths = salt['pillar.get']('paths', {}) %}
+{% set sshd_config_d = paths.get('sshd_config_d', 'C:\\ProgramData\\ssh\\sshd_config.d') %}
+{% set pwsh_7_profile = paths.get('powershell_7_profile', 'C:\\Program Files\\PowerShell\\7') %}
 
 # WSL-specific configuration (detection and Docker context setup)
 # Export git user config as environment variables for vim
@@ -14,7 +18,7 @@ include:
 # Template handles platform conditionals: Linux, WSL, and Windows
 sshd_hardening_config:
   file.managed:
-    - name: C:\ProgramData\ssh\sshd_config.d\99-hardening.conf
+    - name: {{ sshd_config_d }}\99-hardening.conf
     - source: salt://_templates/sshd_hardening.conf.jinja
     - template: jinja
     - makedirs: True
@@ -24,7 +28,7 @@ sshd_hardening_config:
 # Prefers stable (7) if available, falls back to preview (7-preview)
 openssh_default_shell:
   cmd.run:
-    - name: powershell -NoProfile -Command "$path = if (Test-Path 'C:\Program Files\PowerShell\7\pwsh.exe') { 'C:\Program Files\PowerShell\7\pwsh.exe' } else { 'C:\Program Files\PowerShell\7-preview\pwsh.exe' }; New-ItemProperty -Path 'HKLM:\SOFTWARE\OpenSSH' -Name DefaultShell -Value $path -PropertyType String -Force | Out-Null"
+    - name: powershell -NoProfile -Command "$path = if (Test-Path '{{ pwsh_7_profile }}\pwsh.exe') { '{{ pwsh_7_profile }}\pwsh.exe' } else { '{{ pwsh_7_profile }}-preview\pwsh.exe' }; New-ItemProperty -Path 'HKLM:\SOFTWARE\OpenSSH' -Name DefaultShell -Value $path -PropertyType String -Force | Out-Null"
     - shell: cmd
 
 # Manage Windows hosts file entries for network services (from pillar.network.hosts)

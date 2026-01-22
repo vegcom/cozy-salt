@@ -1,5 +1,5 @@
 # Windows Miniforge system-wide installation
-# Installs Miniforge3 to C:\opt\miniforge3 for all users
+# See docs/modules/windows-miniforge.md for configuration
 # PATH updates handled by windows.paths (avoids race conditions)
 
 {% set miniforge_versions = salt['pillar.get']('versions:miniforge', {}) %}
@@ -8,6 +8,7 @@
 {% set miniforge_path     = salt['pillar.get']('install_paths:miniforge:windows', 'C:\\opt\\miniforge3') %}
 {% set miniforge_tmp      = '$env:TEMP\\miniforge-install.exe' %}
 {% set env_registry = salt['pillar.get']('windows:env_registry', 'HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment') %}
+{% set pwsh_7_profile = salt['pillar.get']('paths:powershell_7_profile', 'C:\\Program Files\\PowerShell\\7') %}
 
 # Create C:\opt\miniforge3 directory for consistency
 miniforge_directory:
@@ -47,14 +48,14 @@ miniforge_clean:
 # Appends conda-hook.ps1 sourcing to AllUsersAllHosts profile (pwsh7)
 miniforge_powershell_profile:
   file.append:
-    - name: C:\Program Files\PowerShell\7\profile.ps1
+    - name: {{ pwsh_7_profile }}\profile.ps1
     - text: |
         # Conda initialization (managed by Salt)
         if (Test-Path "{{ miniforge_path }}\shell\condabin\conda-hook.ps1") {
             . "{{ miniforge_path }}\shell\condabin\conda-hook.ps1"
         }
     - makedirs: True
-    # - unless: 'pwsh -NoProfile -Command "Test-Path ''C:\Program Files\PowerShell\7\profile.ps1'' -and (Get-Content ''C:\Program Files\PowerShell\7\profile.ps1'' -Raw) -match ''conda-hook''"'
+    # - unless: 'pwsh -NoProfile -Command "Test-Path ''{{ pwsh_7_profile }}\profile.ps1'' -and (Get-Content ''{{ pwsh_7_profile }}\profile.ps1'' -Raw) -match ''conda-hook''"'
     - require:
       - cmd: miniforge_install
       - cmd: powershell_profile_deployed
