@@ -59,17 +59,10 @@ winget-install-user:
 {% for pkg in pkgs %}
 winget_runtime_{{ pkg | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
-    - shell: pwsh
+    - shell: cmd
     - runas: SYSTEM
     - name: winget install --scope machine --accept-source-agreements --accept-package-agreements --exact --id {{ pkg }}
-    - unless: >
-        pwsh -NoLogo -NoProfile -Command "
-          if (winget list --scope machine --exact --id {{ pkg }} | Select-String -Quiet -Pattern '{{ pkg }}') {
-            exit 0
-          } else {
-            exit 1
-          }
-        "
+    - unless: winget list --scope machine --exact --id {{ pkg }} | find "{{ pkg }}" >nul
     - require:
       - cmd: winget-install-user
 {% endfor %}
@@ -82,17 +75,10 @@ winget_runtime_{{ pkg | replace('.', '_') | replace('-', '_') }}:
 {% for pkg in pkgs %}
 winget_{{ pkg | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
-    - shell: pwsh
+    - shell: cmd
     - runas: SYSTEM
     - name: winget install --scope machine --accept-source-agreements --accept-package-agreements  --exact --id {{ pkg }}
-    - unless: >
-        pwsh -NoLogo -NoProfile -Command "
-          if (winget list --scope machine --exact --id {{ pkg }} | Select-String -Quiet -Pattern '{{ pkg }}') {
-            exit 0
-          } else {
-            exit 1
-          }
-        "
+    - unless: winget list --scope machine --exact --id {{ pkg }} | find "{{ pkg }}" >nul
     - require:
       - cmd: winget-install-user
 {% endfor %}
@@ -108,15 +94,8 @@ winget_userland_{{ user | replace('.', '_') | replace('-', '_') }}_{{ pkg | repl
   cmd.run:
     - name: winget install --scope user --accept-source-agreements --accept-package-agreements  --exact --id {{ pkg }}
     - runas: {{ user }}
-    - shell: pwsh
-    - unless: >
-        pwsh -NoLogo -NoProfile -Command "
-          if (winget list --scope user --exact --id {{ pkg }} | Select-String -Quiet -Pattern '{{ pkg }}') {
-            exit 0
-          } else {
-            exit 1
-          }
-        "
+    - shell: cmd
+    - unless: winget list --scope user --exact --id {{ pkg }} | find "{{ pkg }}" >nul
     # - require:
     #   - cmd: winget-install-system
     {% endfor %}
