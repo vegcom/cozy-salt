@@ -109,3 +109,21 @@ pacman:
   chaotic_aur:
     enabled: false
     server: "https://chaotic.cx/arch/x86_64"
+
+# =============================================================================
+# Steam Deck: Login Manager (SDDM)
+# =============================================================================
+linux:
+  login_manager:
+    sddm:
+      enabled: true
+      theme: astronaut
+      deploy_fonts: true
+    autologin:
+      user: false               # Set to 'deck' or username to enable autologin
+
+  # =============================================================================
+  # Steam Deck: Bluetooth
+  # =============================================================================
+  bluetooth:
+    enabled: true

@@ -59,6 +59,28 @@ locales:
   - zh_TW.UTF-8
 
 # =============================================================================
+# Login Manager (SDDM) Configuration
+# =============================================================================
+# Manages SDDM display manager, theming, and autologin
+# Disabled by default - enable in class/ or host/ pillar
+linux:
+  login_manager:
+    sddm:
+      enabled: false
+      theme: astronaut          # SDDM theme name (astronaut, breeze, etc)
+      deploy_fonts: true        # Deploy theme fonts to system
+    autologin:
+      user: false               # Username for autologin (false = disabled)
+
+  # =============================================================================
+  # Bluetooth Configuration
+  # =============================================================================
+  # Manages bluetooth service and configuration
+  # Disabled by default - enable in class/ or host/ pillar
+  bluetooth:
+    enabled: false              # Enable bluetooth service
+
+# =============================================================================
 # Role-based Capability Mapping
 # =============================================================================
 # Each role defines a list of capabilities to install

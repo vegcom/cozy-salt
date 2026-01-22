@@ -7,6 +7,9 @@ include:
   - linux.install         # Role-aware package installation + Docker + GPU detection
   - linux.config-locales  # Deploy system locales (all Linux distros)
   - linux.dist.config-pacman  # Arch: Manage pacman.conf and repos
+  - linux.config-login-manager  # SDDM login manager, autologin, display hooks
+  - linux.config-bluetooth    # Bluetooth service and configuration
+  - linux.config-steamdeck    # Steam Deck hardware-specific config
   - linux.wsl-config      # WSL-specific config (must run before linux.config)
   - linux.config          # Includes service management (merged from services.sls)
   - linux.docker-proxy    # Deploy Docker socket proxy for TCP access

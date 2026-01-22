@@ -1,9 +1,0 @@
-#!jinja|yaml
-# Bokcoy (Steam Deck) Host Configuration
-
-# Full workstation role with all packages
-workstation_role: 'workstation-full'
-
-steamdeck:
-  autologin:
-    user: vegcom
