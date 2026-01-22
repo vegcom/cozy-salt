@@ -28,8 +28,8 @@ deploy_gitconfig_{{ username }}:
   file.managed:
     - name: {{ dotfiles.dotfile_path(user_home, '.gitconfig') }}
     - source: salt://common/dotfiles/.gitconfig
-    - user: {{ username }}
 {% if not is_windows %}
+    - user: {{ username }}
     - mode: 644
 {% endif %}
     - makedirs: True
@@ -42,8 +42,8 @@ deploy_git_credentials_{{ username }}:
         {%- for token in merged_tokens %}
         https://{{ token }}@github.com
         {%- endfor %}
-    - user: {{ username }}
 {% if not is_windows %}
+    - user: {{ username }}
     - mode: 600
 {% endif %}
     - makedirs: True
@@ -55,8 +55,8 @@ deploy_gitignore_{{ username }}:
   file.managed:
     - name: {{ dotfiles.dotfile_path(user_home, '.gitignore') }}
     - source: salt://common/dotfiles/.gitignore
-    - user: {{ username }}
 {% if not is_windows %}
+    - user: {{ username }}
     - mode: 644
 {% endif %}
     - makedirs: True
@@ -66,8 +66,8 @@ deploy_gitconfig_local_{{ username }}:
   file.managed:
     - name: {{ dotfiles.dotfile_path(user_home, '.gitconfig.local') }}
     - source: salt://common/dotfiles/.gitconfig.local
-    - user: {{ username }}
 {% if not is_windows %}
+    - user: {{ username }}
     - mode: 644
 {% endif %}
     - makedirs: True
@@ -78,8 +78,8 @@ deploy_gitignore_local_{{ username }}:
   file.managed:
     - name: {{ dotfiles.dotfile_path(user_home, '.gitignore.local') }}
     - source: salt://common/dotfiles/.gitignore.local
-    - user: {{ username }}
 {% if not is_windows %}
+    - user: {{ username }}
     - mode: 644
 {% endif %}
     - makedirs: True
@@ -90,7 +90,9 @@ deploy_vim_{{ username }}:
   git.latest:
     - name: https://github.com/vegcom/cozy-vim.git
     - target: {{ dotfiles.dotfile_path(user_home, '.vim') }}
+{% if not is_windows %}
     - user: {{ username }}
+{% endif %}
     - branch: main
     - force_clone: True
     - force_reset: True
@@ -103,8 +105,8 @@ deploy_git_template_{{ username }}:
   file.recurse:
     - name: {{ dotfiles.dotfile_path(user_home, '.git_template') }}
     - source: salt://common/dotfiles/.git_template
-    - user: {{ username }}
 {% if not is_windows %}
+    - user: {{ username }}
     - dir_mode: 755
     - file_mode: 644
 {% endif %}
@@ -116,8 +118,8 @@ deploy_git_template_local_{{ username }}:
   file.recurse:
     - name: {{ dotfiles.dotfile_path(user_home, '.git_template.local') }}
     - source: salt://common/dotfiles/.git_template.local
-    - user: {{ username }}
 {% if not is_windows %}
+    - user: {{ username }}
     - dir_mode: 755
     - file_mode: 644
 {% endif %}
