@@ -77,8 +77,8 @@ deploy_vim_{{ username }}:
     - user: {{ username }}
     - branch: main
 {% if github_token %}
-    - https_user: _
-    - https_pass: {{ github_token }}
+    - https_user: {{ github_token }}
+    - https_pass: ''
 {% endif %}
     - force_clone: True
 

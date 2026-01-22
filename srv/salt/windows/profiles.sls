@@ -20,8 +20,8 @@ powershell_profile_files:
     - target: {{ pwsh_profile_dir }}
     - branch: main
 {% if github_token %}
-    - https_user: _
-    - https_pass: {{ github_token }}
+    - https_user: {{ github_token }}
+    - https_pass: ''
 {% endif %}
     - require:
       - file: powershell_profile_directory
