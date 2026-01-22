@@ -9,27 +9,19 @@
   - Format: `https://[username]:[token]@github.com`
 - [x] Create SDDM config files in provisioning/linux/files/sddm/ (commit d15b6c5)
 - [x] Remove invalid git parameters from archlinux.sls yay bootstrap (commit d15b6c5)
+- [x] Revert winget commands to pwsh execution (commit 5a7162d)
+- [x] Service account implementation (commits 7de204c, f06904d)
+  - srv/pillar/mgmt.sls with service_user config
+  - Admin added to managed_users
+  - Windows service account creation (Administrators group)
+  - Linux service account creation (/bin/false shell, minimal)
+  - Service account runs early in provisioning chain
 
 ## High priority
 
 - [x] Add [scheduler](https://docs.saltproject.io/salt/user-guide/en/latest/topics/scheduler.html) (2025-01-21)
 
 ## Active
-
-- [ ] Service account tooling (2025-01-22)
-  - **Short-term**: Create `srv/salt/macros/service-account.sls` for lifecycle management (create → use → cleanup)
-  - **Med-term**: Move existing macros to `srv/lib/macros/` (consolidate dotfiles.sls, gpu.sls, etc)
-  - **Long-term**: Add `srv/lib/modules/` for custom Salt modules, update file_roots config
-  - Pillar: `service_user` key in common for configurable service account name
-  - Use for Windows admin user creation and system-level operations
-- [ ] Admin user creation on Windows (2025-01-22)
-  - Create `admin` user explicitly (currently excluded, uses built-in Administrator)
-  - Integrate with service account tooling
-  - Add to managed users group structure
-- [ ] Evaluate provisioning users from pillar for winget (2025-01-22)
-  - Option: Use service account or provision user list for system winget installs instead of SYSTEM
-  - Research SYSTEM account winget blocker and workarounds
-  - Update `srv/salt/windows/install.sls` accordingly
 - [ ] Debug atuin integration (check: installed? PATH? .bashrc init? bash-preexec?)
 - [ ] Move tests/ to cozy-salt-enrollment submodule (test_states.py, test_linting.py)
 - [x] Add `package_metadata` to packages.sls (distro_aliases, conflicts, provides) (2025-01-21: structure defined in provisioning/packages.sls)
@@ -38,6 +30,16 @@
   - Pending approval [saltstack/salt-bootstrap/pull/2101](https://github.com/saltstack/salt-bootstrap/pull/2101)
   - install on linux as `salt-bootstrap.sh onedir latest`
   - `curl -fsSL https://raw.githubusercontent.com/vegcom/salt-bootstrap/refs/heads/develop/bootstrap-salt.sh | bash -s -- -D onedir latest`
+
+## Documentation (Pending Review)
+
+- [ ] Update docs for 2025-01-22 changes
+  - Pillar: srv/pillar/mgmt.sls (service account config)
+  - Service accounts: Linux and Windows implementation
+  - Admin user in managed_users
+  - SDDM extraction to general states
+  - Git credential format changes
+  - Update architecture/deployment model docs as needed
 
 ## Backlog
 
