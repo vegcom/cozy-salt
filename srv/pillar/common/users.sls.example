@@ -2,6 +2,12 @@
 # Each user can have OS-specific configuration (linux_groups, windows_groups, etc)
 {% set docker_enabled = salt['pillar.get']('docker_enabled', False) %}
 
+# Global github tokens (shared by all users for git operations)
+# User-specific tokens merge with these in srv/salt/common/gitconfig.sls
+github:
+  tokens:
+    - ghp_global_shared_token_123
+
 # Managed users list - users that get dotfiles/configs deployed
 # Note: admin excluded - use built-in Administrator on Windows, admin user still created on Linux via users dict
 managed_users:
@@ -25,6 +31,13 @@ users:
       - Administrators
       - Users
     ssh_keys: []
+    github:
+      # Email and name auto-deployed to .gitconfig.local
+      email: admin@example.com
+      name: Admin User
+      # Personal access tokens for private repo access
+      tokens:
+        - ghp_admin_token_abc
 
   demo:
     fullname:  Demo User
@@ -40,3 +53,10 @@ users:
     windows_groups:
       - Users
     ssh_keys: []
+    github:
+      # Email and name auto-deployed to .gitconfig.local
+      email: demo@example.com
+      name: Demo User
+      # Personal access tokens for private repo access
+      tokens:
+        - ghp_demo_token_xyz

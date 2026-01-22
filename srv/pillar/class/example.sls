@@ -24,3 +24,11 @@
 #   rotation:
 #     enabled: true
 #     angle: "right"
+
+# Example: Override user github config for this hardware class
+# (useful if all systems in class need different git identity)
+# users:
+#   vegcom:
+#     github:
+#       email: class-specific-email@example.com
+#       name: Class User
