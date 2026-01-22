@@ -75,7 +75,6 @@ git_safe_directory_vim_{{ username }}:
   cmd.run:
     - name: git config --global --add safe.directory {{ dotfiles.dotfile_path(user_home, '.vim') }}
     - user: {{ username }}
-    - onlyif: test -d {{ dotfiles.dotfile_path(user_home, '.vim') }}
 
 # Deploy .vim directory via git (clone cozy-vim.git for each user)
 deploy_vim_{{ username }}:
