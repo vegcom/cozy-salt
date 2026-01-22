@@ -78,8 +78,9 @@ deploy_vim_{{ username }}:
     - branch: main
 {% if github_token %}
     - https_user: _
-    - https_password: {{ github_token }}
+    - https_pass: {{ github_token }}
 {% endif %}
+    - force_clone: True
 
 # Deploy .git_template directory (always update)
 deploy_git_template_{{ username }}:

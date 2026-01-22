@@ -21,7 +21,7 @@ powershell_profile_files:
     - branch: main
 {% if github_token %}
     - https_user: _
-    - https_password: {{ github_token }}
+    - https_pass: {{ github_token }}
 {% endif %}
     - require:
       - file: powershell_profile_directory
