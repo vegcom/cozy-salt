@@ -8,11 +8,11 @@ Package metadata in `provisioning/packages.sls` contains cross-cutting concerns:
 
 ```yaml
 package_metadata:
-  conflicts:          # Packages that conflict (user chooses one)
-  optional:           # Nice-to-have packages
-  required:           # Core packages always present
-  exclude:            # Packages unavailable on specific distros
-  provides:           # Name mappings across distros
+  conflicts: # Packages that conflict (user chooses one)
+  optional: # Nice-to-have packages
+  required: # Core packages always present
+  exclude: # Packages unavailable on specific distros
+  provides: # Name mappings across distros
 ```
 
 ## Validation Rules
@@ -22,6 +22,7 @@ package_metadata:
 **Rule**: Each conflict group must be comprehensive and non-overlapping.
 
 **Check**:
+
 ```python
 # Each conflict set should have alternatives for users
 conflicts[key] must have:
@@ -37,6 +38,7 @@ database_mysql:
 ```
 
 **Invalid examples**:
+
 - Single-item conflict (not really a conflict)
 - Incomplete (missing distro variants without reason)
 - Undocumented tradeoffs
@@ -46,6 +48,7 @@ database_mysql:
 **Rule**: Excluded packages must exist in `provides` section or have inline comment.
 
 **Check**:
+
 ```python
 # For each exclude entry:
 for distro, excluded_packages in package_metadata.exclude.items():
@@ -66,6 +69,7 @@ exclude:
 ```
 
 **Common reasons**:
+
 - "Not in base repos (needs EPEL)" - package exists but requires extra repo
 - "Use X instead" - replaced by alternative package
 - "Different name on [distro]" - see provides section
@@ -76,11 +80,12 @@ exclude:
 **Rule**: Every name mapping must reflect actual package names across distros.
 
 **Check**:
+
 ```python
 # For each provides entry:
 for package_logical_name, mapping in provides.items():
   require len(mapping) == 4  # ubuntu, debian, rhel, arch
-  
+
   # Each value must be:
   # - String: single package (most common)
   # - List: multiple packages (RHEL gcc+gcc-c++, Arch base-devel)
@@ -103,6 +108,7 @@ provides:
 ```
 
 **Enforcement**:
+
 - Every logical package name needs all 4 distros
 - Comments required for non-standard mappings (lists, groups, unusual names)
 
@@ -111,6 +117,7 @@ provides:
 **Rule**: All 4 distros must define the same capability groups (except Arch-only groups).
 
 **Check**:
+
 ```python
 # For each distro (ubuntu, debian, rhel, arch):
 ubuntu_groups = set(ubuntu.keys())      # {core_utils, build_tools, ...}
@@ -132,6 +139,7 @@ assert arch_only_groups == required_arch_only, \
 ```
 
 **Common errors**:
+
 - Typo in group name: `build_tools` vs `build_tool` (inconsistent)
 - Group exists in Ubuntu but not RHEL
 - Missing Arch-only groups
@@ -141,17 +149,18 @@ assert arch_only_groups == required_arch_only, \
 **Rule**: Package names within groups should be consistent across distros (unless in provides).
 
 **Check**:
+
 ```python
 # For each package in a capability group:
 for group in common_groups:
   ubuntu_packages = ubuntu[group]
   rhel_packages = rhel[group]
-  
+
   # If package appears in both, should be:
   # - Same name (if same package)
   # - OR in provides section (if different names)
   # - OR in exclude section (if unavailable)
-  
+
   for pkg in ubuntu_packages:
     if pkg not in rhel_packages:
       # Check if RHEL has alternative in provides
@@ -160,13 +169,14 @@ for group in common_groups:
 ```
 
 **Example**:
+
 ```yaml
 ubuntu:
   core_utils:
-    - vim             # In Ubuntu
+    - vim # In Ubuntu
 rhel:
   core_utils:
-    - vim-enhanced    # Different name in RHEL
+    - vim-enhanced # Different name in RHEL
 
 # Must be in provides:
 provides:
@@ -192,14 +202,14 @@ from pathlib import Path
 def validate_packages():
     """Validate provisioning/packages.sls structure."""
     packages_file = Path('provisioning/packages.sls')
-    
+
     with open(packages_file) as f:
         # Extract YAML from Jinja comments
         content = f.read()
         packages = yaml.safe_load(content)
-    
+
     errors = []
-    
+
     # 1. Check conflicts
     for conflict_name, packages_list in packages['package_metadata']['conflicts'].items():
         if len(packages_list) < 2:
@@ -207,7 +217,7 @@ def validate_packages():
         for pkg in packages_list:
             if not isinstance(pkg, str):
                 errors.append(f"Conflict '{conflict_name}' has non-string entry: {pkg}")
-    
+
     # 2. Check excludes have comments/provides mapping
     for distro, excluded in packages['package_metadata']['exclude'].items():
         for pkg in excluded:
@@ -215,18 +225,18 @@ def validate_packages():
             # Also check for inline comment (manual check via review)
             if not in_provides:
                 errors.append(f"Excluded package '{pkg}' on {distro} not in provides. Add comment.")
-    
+
     # 3. Check provides completeness
     for logical_name, mapping in packages['package_metadata']['provides'].items():
         required_distros = {'ubuntu', 'debian', 'rhel', 'arch'}
         if set(mapping.keys()) != required_distros:
             missing = required_distros - set(mapping.keys())
             errors.append(f"Provides '{logical_name}' missing distros: {missing}")
-    
+
     # 4. Check capability groups consistency
-    distros = {'ubuntu': packages['ubuntu'], 'debian': packages['debian'], 
+    distros = {'ubuntu': packages['ubuntu'], 'debian': packages['debian'],
                'rhel': packages['rhel'], 'arch': packages['arch']}
-    
+
     shared_groups = set(packages['ubuntu'].keys())
     for distro_name, distro_pkg in distros.items():
         if distro_name == 'arch':
@@ -238,20 +248,20 @@ def validate_packages():
                 errors.append(f"{distro_name} missing groups: {missing}")
             if extra:
                 errors.append(f"{distro_name} has extra groups: {extra}")
-    
+
     # 5. Check Arch has required Arch-only groups
     arch_only_required = {'interpreters', 'modern_cli_extras', 'fonts', 'theming'}
     arch_groups = set(packages['arch'].keys())
     arch_specific = arch_groups - shared_groups
     if arch_specific != arch_only_required:
         errors.append(f"Arch groups mismatch. Expected: {arch_only_required}, got: {arch_specific}")
-    
+
     if errors:
         print("Package metadata validation errors:")
         for error in errors:
             print(f"  ✗ {error}")
         return False
-    
+
     print("✓ Package metadata validation passed")
     return True
 
@@ -281,6 +291,16 @@ At deployment, ensure requested packages don't violate conflicts:
 ```sls
 # srv/salt/linux/install.sls
 {% set requested_packages = packages[grains['os']].get(capability_group, []) %}
+
+# Before installing, check for conflicts
+{% for conflict_group, conflicting_packages in packages.package_metadata.conflicts.items() %}
+  {% set found = [] %}
+  {% for pkg in requested_packages %}
+    {% if pkg in conflicting_packages %}
+      {% do found.append(pkg) %}
+    {% endif %}
+  {% endfor %}
+ set requested_packages = packages[grains['os']].get(capability_group, []) %}
 
 # Before installing, check for conflicts
 {% for conflict_group, conflicting_packages in packages.package_metadata.conflicts.items() %}

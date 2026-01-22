@@ -32,6 +32,7 @@ Instead of storing full configuration files in cozy-salt, we fetch them dynamica
 **State**: `srv/salt/common/gitconfig.sls` (managed_users loop)
 
 **How it works**:
+
 ```sls
 deploy_vim_{{ username }}:
   git.latest:
@@ -52,6 +53,7 @@ deploy_vim_{{ username }}:
 **State**: `srv/salt/windows/profiles.sls`
 
 **How it works**:
+
 ```sls
 powershell_profile_files:
   git.latest:
@@ -60,7 +62,8 @@ powershell_profile_files:
     - branch: main
 ```
 
-**Update model**: 
+**Update model**:
+
 - Manual edits to cozy-pwsh.git
 - OR automatic sync via Starship-Twilite webhook (see below)
 - Fetched on next highstate
@@ -89,6 +92,7 @@ powershell_profile_files:
 ## Pillar Configuration
 
 Cozy-salt uses a hierarchical pillar system to manage configuration:
+
 - **Global defaults**: `srv/pillar/linux/init.sls`, `srv/pillar/arch/init.sls`, `srv/pillar/windows/init.sls`
 - **Hardware classes**: `srv/pillar/class/` (e.g., `galileo.sls` for Steam Deck)
 - **Per-host overrides**: `srv/pillar/host/` (e.g., `hostname.sls` for specific machines)
@@ -166,6 +170,7 @@ Sensitive information (tokens, credentials, API keys) are stored in a gitignored
 ### File Structure
 
 **`srv/pillar/secrets/init.sls.example`** (committed):
+
 ```yaml
 # Secrets configuration (EXAMPLE - rename to init.sls and fill with actual values)
 # This file should NOT be committed to git - see .gitignore
@@ -175,18 +180,21 @@ github:
 ```
 
 **`srv/pillar/secrets/init.sls`** (gitignored, locally created):
+
 ```yaml
 github:
   access_token: ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 **`.env.example`** (committed):
+
 ```bash
 # Environment configuration (EXAMPLE - copy to .env and fill with actual values)
 PROJECT_ACCESS_TOKEN=your_github_pat_token_here
 ```
 
 **`.env`** (gitignored, locally created):
+
 ```bash
 PROJECT_ACCESS_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
@@ -194,6 +202,7 @@ PROJECT_ACCESS_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ### Access in Salt States
 
 **From pillar** (recommended for deployment):
+
 ```sls
 {% set github_token = salt['pillar.get']('github:access_token', '') %}
 
@@ -204,6 +213,7 @@ deploy_from_repo:
 ```
 
 **From environment** (for local scripts/tests):
+
 ```bash
 source .env
 curl -H "Authorization: token $PROJECT_ACCESS_TOKEN" \
@@ -218,6 +228,7 @@ curl -H "Authorization: token $PROJECT_ACCESS_TOKEN" \
    - `.env.local`
 
 2. **File permissions**: Restrict access
+
    ```bash
    chmod 600 srv/pillar/secrets/init.sls .env
    ```
@@ -229,6 +240,7 @@ curl -H "Authorization: token $PROJECT_ACCESS_TOKEN" \
    - Limited expiration windows
 
 5. **Salt master security**: Pillar data is available to all minions; use pillar matching if needed:
+
    ```sls
    'role:deployment':
      - match: pillar
@@ -281,7 +293,8 @@ Updated starship.toml deploys to Windows systems
 
 **Cause**: SSH key not configured or HTTPS token not available
 
-**Fix**: 
+**Fix**:
+
 - Use HTTPS URL with token: `https://token@github.com/owner/repo.git`
 - Or configure SSH key for git user (minion runs as uid 999)
 
@@ -290,6 +303,7 @@ Updated starship.toml deploys to Windows systems
 **Cause**: Event type mismatch or token permissions
 
 **Check**:
+
 1. Secret name matches: `TARGET_REPO` in Starship-Twilite
 2. Token has `repo` scope
 3. Webhook delivery logs in Settings → Webhooks
@@ -299,6 +313,22 @@ Updated starship.toml deploys to Windows systems
 **Cause**: Pillar not loaded or file doesn't exist
 
 **Fix**:
+ook never triggers
+
+**Cause**: Event type mismatch or token permissions
+
+**Check**:
+
+1. Secret name matches: `TARGET_REPO` in Starship-Twilite
+2. Token has `repo` scope
+3. Webhook delivery logs in Settings → Webhooks
+
+### Secrets not available in state
+
+**Cause**: Pillar not loaded or file doesn't exist
+
+**Fix**:
+
 1. Create `srv/pillar/secrets/init.sls` from `.example`
 2. Run `salt '*' saltutil.refresh_pillar`
 3. Verify: `salt '*' pillar.get github:access_token`
