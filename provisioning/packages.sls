@@ -433,6 +433,8 @@ arch:
     - unzip
     - wget
     - sed Built-in utility on most systems, explicit on Arch
+    - glibc
+    - glibc-locales
   monitoring:
     - duf
     - htop

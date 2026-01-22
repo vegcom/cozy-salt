@@ -108,6 +108,9 @@ capability_meta:
 # =============================================================================
 # Manages /etc/pacman.conf repositories
 # Chaotic AUR enabled by default for faster AUR package access
+# Server URL auto-detects architecture: x86_64 or aarch64 (ARM/Steam Deck)
+{% set cpuarch = salt['grains.get']('cpuarch', 'x86_64') %}
+{% set chaotic_arch = 'aarch64' if cpuarch == 'aarch64' else 'x86_64' %}
 pacman:
   repos:
     core:
@@ -124,7 +127,7 @@ pacman:
 
     chaotic_aur:
       enabled: true
-      server: "https://chaotic.cx/arch/x86_64"
+      server: "https://chaotic.cx/arch/{{ chaotic_arch }}"
 
 # =============================================================================
 # System Locales
