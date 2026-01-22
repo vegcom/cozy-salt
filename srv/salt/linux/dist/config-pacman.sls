@@ -4,7 +4,7 @@
 
 {% if grains['os_family'] == 'Arch' %}
 
-{% set pacman_repos = salt['pillar.get']('pacman:repos', {}) %}
+{% set pacman_repos = salt['pillar.get']('pacman:repos') or {} %}
 
 # =============================================================================
 # CHAOTIC AUR PREREQUISITES
@@ -55,6 +55,7 @@ pacman_conf:
         # By default, pacman accepts packages signed by keys that it knows about.
         # SigLevel = Required DatabaseRequired
 
+        {% if pacman_repos %}
         {% for repo_name, repo_config in pacman_repos.items() %}
         {% if repo_config.get('enabled', false) %}
 
@@ -74,6 +75,7 @@ pacman_conf:
 
         {% endif %}
         {% endfor %}
+        {% endif %}
 
 # =============================================================================
 # PACMAN DATABASE SYNC
