@@ -23,18 +23,3 @@
 # host:
 #   capabilities:
 #     kvm: true
-
-# Example: Override user github config (email and name in .gitconfig.local)
-# users:
-#   vegcom:
-#     github:
-#       email: custom-email@example.com
-#       name: Custom Name
-#       tokens:
-#         - ghp_customtoken123
-#   eve:
-#     github:
-#       email: eve@example.com
-#       name: Eve User
-#       tokens:
-#         - ghp_eve_token456
