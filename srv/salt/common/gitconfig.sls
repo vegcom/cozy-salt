@@ -66,37 +66,30 @@ deploy_vim_{{ username }}:
     - user: {{ username }}
     - branch: main
 
-{% if not is_windows %}
-# Deploy .git_template directory (always update) - Unix/Linux only
+# Deploy .git_template directory (always update)
 deploy_git_template_{{ username }}:
   file.recurse:
     - name: {{ dotfiles.dotfile_path(user_home, '.git_template') }}
     - source: salt://common/dotfiles/.git_template
     - user: {{ username }}
+{% if not is_windows %}
     - dir_mode: 755
     - file_mode: 644
+{% endif %}
     - makedirs: True
     - clean: True
 
-# Deploy .git_template.local directory (preserve user additions) - Unix/Linux only
+# Deploy .git_template.local directory (preserve user additions)
 deploy_git_template_local_{{ username }}:
   file.recurse:
     - name: {{ dotfiles.dotfile_path(user_home, '.git_template.local') }}
     - source: salt://common/dotfiles/.git_template.local
     - user: {{ username }}
+{% if not is_windows %}
     - dir_mode: 755
     - file_mode: 644
+{% endif %}
     - makedirs: True
     - clean: False
-{% else %}
-# Git template directories skipped on Windows
-deploy_git_template_{{ username }}:
-  test.nop:
-    - name: Git template directory not applicable on Windows
-
-deploy_git_template_local_{{ username }}:
-  test.nop:
-    - name: Git template local directory not applicable on Windows
-{% endif %}
 
 {% endfor %}
