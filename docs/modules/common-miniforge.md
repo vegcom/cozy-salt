@@ -13,12 +13,12 @@ Orchestrates miniforge installation across Linux/Windows with permissions and gr
 
 ## Operations
 
-| Item | Purpose |
-|------|---------|
-| Permissions | Admin user write access to `/opt/miniforge3` (Linux) |
-| Group ACL | Add admin user to conda group |
-| Shell init | Ensure conda shell integration works |
-| Environments | Initialize default environment |
+| Item         | Purpose                                              |
+| ------------ | ---------------------------------------------------- |
+| Permissions  | Admin user write access to `/opt/miniforge3` (Linux) |
+| Group ACL    | Add admin user to conda group                        |
+| Shell init   | Ensure conda shell integration works                 |
+| Environments | Initialize default environment                       |
 
 ## Pillar Configuration
 

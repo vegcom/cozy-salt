@@ -10,6 +10,7 @@ KVM/libvirt virtualization configuration for Linux testing environments.
 ## Purpose
 
 Configuration for systems used as KVM hypervisors:
+
 - Virtual machine management
 - Testing environments
 - Nested virtualization
@@ -19,9 +20,9 @@ Configuration for systems used as KVM hypervisors:
 
 ```yaml
 kvm:
-  nested: true           # Enable nested virtualization
-  cpu_cores: 4          # VM CPU allocation
-  memory_gb: 8          # VM memory allocation
+  nested: true # Enable nested virtualization
+  cpu_cores: 4 # VM CPU allocation
+  memory_gb: 8 # VM memory allocation
   storage_pool: /var/lib/libvirt/images
   networks:
     default:
@@ -32,6 +33,7 @@ kvm:
 ## Requirements
 
 Requires these capabilities/packages:
+
 - kvm (gated by host:capabilities:kvm)
 - libvirt-daemon, libvirt-clients
 - qemu-kvm, qemu-system-x86
@@ -42,13 +44,14 @@ For testing Docker in containers:
 
 ```yaml
 kvm:
-  nested: true           # Allows KVM inside VM
-  iommu: false          # Usually not needed
+  nested: true # Allows KVM inside VM
+  iommu: false # Usually not needed
 ```
 
 ## User Groups
 
 Group membership:
+
 - `kvm` group: Access to /dev/kvm
 - `libvirt` group: Manage VMs without sudo
 

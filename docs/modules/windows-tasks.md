@@ -10,12 +10,12 @@ Windows scheduled tasks import from XML files for automation: WSL autostart, por
 
 ## Configured Tasks
 
-| Task | Purpose |
-|------|---------|
-| WSL autostart | Auto-start WSL services on Windows boot |
-| Docker port forward | Expose Docker daemon to host network |
-| Ollama port forward | Kubernetes API access from host |
-| OpenWebUI forward | Web UI port exposure |
+| Task                | Purpose                                 |
+| ------------------- | --------------------------------------- |
+| WSL autostart       | Auto-start WSL services on Windows boot |
+| Docker port forward | Expose Docker daemon to host network    |
+| Ollama port forward | Kubernetes API access from host         |
+| OpenWebUI forward   | Web UI port exposure                    |
 
 ## Deployment Process
 
@@ -26,6 +26,7 @@ Windows scheduled tasks import from XML files for automation: WSL autostart, por
 ## XML Location
 
 Source XML files:
+
 - `provisioning/windows/tasks/wsl_autostart.xml`
 - `provisioning/windows/tasks/docker_registry_port_forward.xml`
 - `provisioning/windows/tasks/ollama_port_forward.xml`

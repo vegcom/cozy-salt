@@ -11,24 +11,25 @@ Rust installation to `C:\opt\rust` via rustup-init on Windows.
 ## Installation
 
 Uses official rustup-init.exe:
-https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe
+<https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe>
 
-| Item | Location |
-|------|----------|
-| Rust binaries | `C:\opt\rust\bin` |
-| Cargo | `C:\opt\rust\bin\cargo.exe` |
-| Toolchain | Latest stable by default |
+| Item          | Location                    |
+| ------------- | --------------------------- |
+| Rust binaries | `C:\opt\rust\bin`           |
+| Cargo         | `C:\opt\rust\bin\cargo.exe` |
+| Toolchain     | Latest stable by default    |
 
 ## Pillar Configuration
 
 ```yaml
 rust:
-  toolchain: stable  # or nightly, beta
+  toolchain: stable # or nightly, beta
 ```
 
 ## Installed Components
 
 Via `common.rust`:
+
 - rustc: Compiler
 - cargo: Package manager
 - clippy: Linter

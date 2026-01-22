@@ -11,10 +11,10 @@ Windows-specific default pillar configuration.
 
 ```yaml
 user:
-  name: Administrator    # Default admin user
+  name: Administrator # Default admin user
 
 nvm:
-  default_version: 'lts'
+  default_version: "lts"
 
 rust:
   toolchain: stable
@@ -29,10 +29,11 @@ Auto-detects admin user:
 
 ```yaml
 user:
-  name: {{ detected_user }}
+  name: { { detected_user } }
 ```
 
 Detection order:
+
 1. %USERNAME% environment variable
 2. Falls back to: `Administrator`
 
@@ -42,7 +43,7 @@ Windows uses nvm-windows (different from Linux):
 
 ```yaml
 nvm:
-  default_version: 'lts'  # or 'lts/gallium', '18.0.0'
+  default_version: "lts" # or 'lts/gallium', '18.0.0'
 ```
 
 ## Rust Configuration
@@ -51,7 +52,7 @@ Rust toolchain selection:
 
 ```yaml
 rust:
-  toolchain: stable       # or nightly, beta
+  toolchain: stable # or nightly, beta
 ```
 
 ## Miniforge Configuration
@@ -71,9 +72,9 @@ Override in host-specific pillar:
 
 ```yaml
 user:
-  name: custom_user       # Custom admin user
+  name: custom_user # Custom admin user
 nvm:
-  default_version: v16    # Specific Node version
+  default_version: v16 # Specific Node version
 ```
 
 ## Notes

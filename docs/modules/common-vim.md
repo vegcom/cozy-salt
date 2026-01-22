@@ -9,14 +9,15 @@ Deploy vim configuration files and plugins.
 
 ## Deploys
 
-| Item | Source |
-|------|--------|
+| Item            | Source                                                  |
+| --------------- | ------------------------------------------------------- |
 | .vim/ directory | `provisioning/common/.vim/` (plugins, autoload, colors) |
-| .vimrc | Symlink to config file in provisioning |
+| .vimrc          | Symlink to config file in provisioning                  |
 
 ## Plugin Management
 
 Includes:
+
 - Pathogen (plugin loader)
 - Sensible defaults (vim-sensible)
 - Color schemes (monokai, solarized, etc.)
@@ -35,6 +36,7 @@ vim .vimrc        # Edit config
 ## Customization
 
 Edit config in `provisioning/common/.vimrc`:
+
 - Keybindings
 - Color scheme
 - Plugin settings

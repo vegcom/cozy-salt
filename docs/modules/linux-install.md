@@ -31,11 +31,11 @@ Installed based on `workstation_role`:
 Define in pillar:
 
 ```yaml
-workstation_role: workstation-base  # or minimal/developer/full
+workstation_role: workstation-base # or minimal/developer/full
 
 host:
   capabilities:
-    kvm: true  # Enable KVM/libvirt installation
+    kvm: true # Enable KVM/libvirt installation
 ```
 
 ## Notes

@@ -23,26 +23,26 @@ schedule:
 
 ## Time Specifications
 
-| Option | Example | Note |
-|--------|---------|------|
-| `seconds` | `3600` | Interval in seconds |
-| `minutes` | `60` | Interval in minutes |
-| `hours` | `24` | Interval in hours |
-| `days` | `7` | Interval in days |
-| `cron` | `*/15 * * * *` | Cron expression (requires python-croniter) |
-| `when` | `5:00pm` | Specific time |
-| `start` / `end` | `8:00am` / `5:00pm` | Time range for execution |
+| Option          | Example             | Note                                       |
+| --------------- | ------------------- | ------------------------------------------ |
+| `seconds`       | `3600`              | Interval in seconds                        |
+| `minutes`       | `60`                | Interval in minutes                        |
+| `hours`         | `24`                | Interval in hours                          |
+| `days`          | `7`                 | Interval in days                           |
+| `cron`          | `*/15 * * * *`      | Cron expression (requires python-croniter) |
+| `when`          | `5:00pm`            | Specific time                              |
+| `start` / `end` | `8:00am` / `5:00pm` | Time range for execution                   |
 
 ## Job Configuration Options
 
-| Option | Type | Description |
-|--------|------|-------------|
-| `function` | string | **Required**. Module function to execute (e.g., `state.sls`, `state.highstate`) |
-| `args` | list | Positional arguments passed to function |
-| `kwargs` | dict | Keyword arguments passed to function |
-| `splay` | dict | Randomize job start time (object with `start` and `end` keys) |
-| `enabled` | bool | Enable/disable job (default: true) |
-| `return_job` | bool | Return job results to master (default: false) |
+| Option       | Type   | Description                                                                     |
+| ------------ | ------ | ------------------------------------------------------------------------------- |
+| `function`   | string | **Required**. Module function to execute (e.g., `state.sls`, `state.highstate`) |
+| `args`       | list   | Positional arguments passed to function                                         |
+| `kwargs`     | dict   | Keyword arguments passed to function                                            |
+| `splay`      | dict   | Randomize job start time (object with `start` and `end` keys)                   |
+| `enabled`    | bool   | Enable/disable job (default: true)                                              |
+| `return_job` | bool   | Return job results to master (default: false)                                   |
 
 ## Examples
 
@@ -61,7 +61,7 @@ schedule:
 schedule:
   frequent_check:
     function: state.sls
-    cron: '*/15 * * * *'
+    cron: "*/15 * * * *"
     args:
       - my.state
 ```
@@ -88,8 +88,8 @@ schedule:
   monitoring_job:
     function: cmd.run
     args:
-      - 'systemctl status docker'
-    cron: '*/5 * * * *'
+      - "systemctl status docker"
+    cron: "*/5 * * * *"
     return_job: true
 ```
 

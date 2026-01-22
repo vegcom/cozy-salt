@@ -12,22 +12,23 @@ System-wide Node.js version manager installation to `/opt/nvm`.
 
 Installs NVM from official repo: https://github.com/nvm-sh/nvm
 
-| Item | Location |
-|------|----------|
-| NVM binary | `/opt/nvm` |
-| Shell init | `/etc/profile.d/nvm-init.sh` |
+| Item         | Location                                        |
+| ------------ | ----------------------------------------------- |
+| NVM binary   | `/opt/nvm`                                      |
+| Shell init   | `/etc/profile.d/nvm-init.sh`                    |
 | Default Node | Version from `linux:nvm:default_version` pillar |
 
 ## Pillar Configuration
 
 ```yaml
 nvm:
-  default_version: 'lts/*'  # or 'lts/gallium', 'v18.0.0', etc.
+  default_version: "lts/*" # or 'lts/gallium', 'v18.0.0', etc.
 ```
 
 ## Global Packages
 
 Installed via `common.nvm`:
+
 - pnpm
 - bun
 - tsx
@@ -38,6 +39,7 @@ See `docs/modules/common-nvm.md` for complete list.
 ## Usage
 
 After provisioning:
+
 ```bash
 nvm list              # List installed versions
 nvm install 18       # Install specific version

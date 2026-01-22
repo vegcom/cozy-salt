@@ -11,18 +11,18 @@ Linux-specific default pillar configuration.
 
 ```yaml
 user:
-  name: ubuntu              # Default admin user
+  name: ubuntu # Default admin user
 
-workstation_role: workstation-base  # Package capability set
+workstation_role: workstation-base # Package capability set
 
 nvm:
-  default_version: 'lts/*'
+  default_version: "lts/*"
 
 host:
   capabilities:
-    kvm: false             # KVM disabled by default
+    kvm: false # KVM disabled by default
   services:
-    ssh_enabled: true      # SSH service control
+    ssh_enabled: true # SSH service control
 ```
 
 ## User Detection
@@ -31,10 +31,11 @@ Auto-detects admin user:
 
 ```yaml
 user:
-  name: {{ detected_user }}
+  name: { { detected_user } }
 ```
 
 Detection order:
+
 1. Container detection: defaults to `root`
 2. SUDO_USER environment variable
 3. LOGNAME environment variable
@@ -44,12 +45,12 @@ Detection order:
 
 Defines package installation scope:
 
-| Role | Includes |
-|------|----------|
-| workstation-minimal | core_utils, shell_enhancements |
-| workstation-base | minimal + monitoring, vcs, cli, security, acl |
-| workstation-developer | base + build_tools, networking, kvm |
-| workstation-full | developer + interpreters, fonts, theming (Arch only) |
+| Role                  | Includes                                             |
+| --------------------- | ---------------------------------------------------- |
+| workstation-minimal   | core_utils, shell_enhancements                       |
+| workstation-base      | minimal + monitoring, vcs, cli, security, acl        |
+| workstation-developer | base + build_tools, networking, kvm                  |
+| workstation-full      | developer + interpreters, fonts, theming (Arch only) |
 
 ## Capabilities
 
@@ -58,7 +59,7 @@ Fine-grained control:
 ```yaml
 host:
   capabilities:
-    kvm: true              # Enable KVM/libvirt
+    kvm: true # Enable KVM/libvirt
 ```
 
 Gated by `pillar_gate` in capability_meta.
@@ -70,7 +71,7 @@ Service management:
 ```yaml
 host:
   services:
-    ssh_enabled: true      # Enable SSH service
+    ssh_enabled: true # Enable SSH service
 ```
 
 ## Customization
@@ -78,9 +79,9 @@ host:
 Override per-host in `srv/pillar/host/{hostname}.sls`:
 
 ```yaml
-workstation_role: workstation-developer  # More packages
+workstation_role: workstation-developer # More packages
 nvm:
-  default_version: v18.0.0  # Specific Node version
+  default_version: v18.0.0 # Specific Node version
 ```
 
 ## Notes

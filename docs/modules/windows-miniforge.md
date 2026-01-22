@@ -11,13 +11,13 @@ Miniforge installation to `C:\opt\miniforge3` for Python environment management.
 ## Installation
 
 Installs Miniforge from official releases:
-https://github.com/conda-forge/miniforge
+<https://github.com/conda-forge/miniforge>
 
-| Item | Location |
-|------|----------|
-| Conda binary | `C:\opt\miniforge3` |
-| Python | `C:\opt\miniforge3\python.exe` |
-| Environments | `%USERPROFILE%\.conda\envs\` |
+| Item         | Location                       |
+| ------------ | ------------------------------ |
+| Conda binary | `C:\opt\miniforge3`            |
+| Python       | `C:\opt\miniforge3\python.exe` |
+| Environments | `%USERPROFILE%\.conda\envs\`   |
 
 ## Pillar Configuration
 
@@ -31,6 +31,7 @@ miniforge:
 ## Registry Configuration
 
 Sets Windows registry entries for:
+
 - Python association
 - Conda default channels
 - Base environment activation

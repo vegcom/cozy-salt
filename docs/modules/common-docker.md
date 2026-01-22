@@ -11,11 +11,11 @@ Docker daemon installation with auto-detection of system type and correct reposi
 
 Automatically selects correct Docker repository based on system:
 
-| System | Repo | Codename |
-|--------|------|----------|
-| Native Debian | download.docker.com/linux/debian | {detected codename} |
-| Ubuntu/WSL/Kali | download.docker.com/linux/ubuntu | noble (24.04) |
-| RHEL-based | download.docker.com/linux/rhel | Version-specific |
+| System          | Repo                             | Codename            |
+| --------------- | -------------------------------- | ------------------- |
+| Native Debian   | download.docker.com/linux/debian | {detected codename} |
+| Ubuntu/WSL/Kali | download.docker.com/linux/ubuntu | noble (24.04)       |
+| RHEL-based      | download.docker.com/linux/rhel   | Version-specific    |
 
 ## Detection Logic
 
@@ -30,13 +30,14 @@ Override auto-detection via pillar:
 
 ```yaml
 docker:
-  repo_path: ubuntu  # or debian
-  codename: focal    # override detected version
+  repo_path: ubuntu # or debian
+  codename: focal # override detected version
 ```
 
 ## Installation
 
 Installs:
+
 - docker-ce: Docker Community Edition
 - docker-ce-cli: Docker CLI
 - containerd.io: Container runtime

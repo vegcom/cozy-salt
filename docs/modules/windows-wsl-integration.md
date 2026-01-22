@@ -10,6 +10,7 @@ Windows Subsystem for Linux integration: Docker Desktop context configuration, W
 ## Purpose
 
 Bridge Windows and WSL environments:
+
 - Docker context configuration
 - WSL 2 Docker daemon access
 - File sharing setup
@@ -18,6 +19,7 @@ Bridge Windows and WSL environments:
 ## Configuration
 
 Sets up Docker contexts for:
+
 - Windows Docker Desktop
 - WSL 2 Docker daemon (if available)
 - Container filesystem sharing
@@ -26,6 +28,7 @@ Sets up Docker contexts for:
 ## Detection
 
 Auto-detects:
+
 - WSL presence
 - WSL distribution names
 - Docker Desktop installation
@@ -34,6 +37,7 @@ Auto-detects:
 ## Docker Contexts
 
 Creates contexts:
+
 - `desktop-linux`: Windows Docker Desktop
 - `wsl-ubuntu`: WSL Ubuntu Docker daemon
 - `wsl-debian`: WSL Debian Docker daemon (if present)

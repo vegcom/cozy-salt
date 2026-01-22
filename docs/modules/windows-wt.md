@@ -11,11 +11,11 @@ Modern terminal emulator for Windows with PowerShell, CMD, and WSL integration.
 
 Installs Windows Terminal from Microsoft Store or WinGet.
 
-| Item | Location |
-|------|----------|
-| Binary | `C:\Program Files\WindowsTerminal\` |
-| Config | `%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_*/LocalState/settings.json` |
-| Symlink | Optional start menu shortcut |
+| Item    | Location                                                                       |
+| ------- | ------------------------------------------------------------------------------ |
+| Binary  | `C:\Program Files\WindowsTerminal\`                                            |
+| Config  | `%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_*/LocalState/settings.json` |
+| Symlink | Optional start menu shortcut                                                   |
 
 ## Features
 
@@ -28,6 +28,7 @@ Installs Windows Terminal from Microsoft Store or WinGet.
 ## Configuration
 
 Deployed via JSON settings:
+
 - Default profile selection
 - Tab behavior
 - Color schemes

@@ -9,17 +9,18 @@ Homebrew package manager installation for Linux with ACL-based group permissions
 
 ## Installation
 
-Installs Homebrew from official site: https://brew.sh
+Installs Homebrew from official site: <https://brew.sh>
 
-| Item | Location |
-|------|----------|
-| Homebrew | `/opt/homebrew` |
-| Shell init | `/etc/profile.d/homebrew-init.sh` |
+| Item        | Location                               |
+| ----------- | -------------------------------------- |
+| Homebrew    | `/opt/homebrew`                        |
+| Shell init  | `/etc/profile.d/homebrew-init.sh`      |
 | Permissions | Admin user in homebrew group can write |
 
 ## Purpose
 
 Cross-platform package manager for:
+
 - Consistent packages across macOS/Linux
 - Tools not in distro repos
 - Custom/bleeding-edge versions

@@ -9,11 +9,11 @@ Cross-platform Rust component management: clippy, rustfmt, etc.
 
 ## Installs Components
 
-| Component | Purpose |
-|-----------|---------|
-| clippy | Linter for Rust (catches common mistakes) |
-| rustfmt | Code formatter (consistent style) |
-| rust-std | Standard library for target platforms |
+| Component | Purpose                                   |
+| --------- | ----------------------------------------- |
+| clippy    | Linter for Rust (catches common mistakes) |
+| rustfmt   | Code formatter (consistent style)         |
+| rust-std  | Standard library for target platforms     |
 
 ## Usage
 

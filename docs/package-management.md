@@ -21,10 +21,11 @@ Maps OS variant names (reported by Salt grains) to base distribution families:
 - **Arch-based**: arch, manjaro, endeavouros, garuda, artix, arcolinux
 
 Example:
+
 ```yaml
 distro_aliases:
-  kali: ubuntu          # Kali uses Ubuntu repo structure
-  manjaro: arch         # Manjaro uses Arch package manager
+  kali: ubuntu # Kali uses Ubuntu repo structure
+  manjaro: arch # Manjaro uses Arch package manager
 ```
 
 ### 2. Package Metadata
@@ -32,7 +33,9 @@ distro_aliases:
 Cross-cutting package concerns not tied to a single distro.
 
 #### Conflicts
+
 Packages that conflict with each other (user must choose one):
+
 - MySQL variants: mysql, mariadb, percona-server
 - Java versions: openjdk-17-jdk, java-21-openjdk-devel, etc.
 - Netcat variants: netcat-openbsd, nmap-ncat, openbsd-netcat
@@ -40,24 +43,31 @@ Packages that conflict with each other (user must choose one):
 - Firewalls: ufw, firewalld, iptables-persistent
 
 #### Optional Packages
+
 Packages users might want to install:
+
 - Modern CLI tools: bat, fd, ripgrep, fzf, duf, ncdu, delta, zoxide
 - Dev extras: gh, git-lfs, tig, lazygit
 - Shell extras: zsh-autosuggestions, zsh-syntax-highlighting, starship
 
 #### Required Packages
+
 Core packages that should always be present:
+
 - **Core**: curl, git, openssh, ca-certificates
 - **Build**: gcc, make
 - **Network**: ping, traceroute, dig, avahi
 
 #### Exclude
+
 Packages not available on specific distros:
+
 - **Arch**: cpu-checker, build-essential (use base-devel), openssh-client (use openssh), vim-enhanced, fd-find, gnupg2
 - **RHEL**: duf, ncdu (not in base repos, need EPEL)
 - **Debian**: github-cli (use gh instead)
 
 #### Provides
+
 Cross-distro package name mappings (same functionality, different package names):
 
 ```yaml
@@ -65,42 +75,46 @@ provides:
   vim:
     ubuntu: vim
     debian: vim
-    rhel: vim-enhanced    # RHEL names it vim-enhanced
+    rhel: vim-enhanced # RHEL names it vim-enhanced
     arch: vim
   build_essentials:
     ubuntu: build-essential
     debian: build-essential
-    rhel: [gcc, gcc-c++, make, autoconf, automake]  # List on RHEL
-    arch: base-devel      # Group on Arch, not individual packages
+    rhel: [gcc, gcc-c++, make, autoconf, automake] # List on RHEL
+    arch: base-devel # Group on Arch, not individual packages
   github_cli:
     ubuntu: gh
     debian: gh
     rhel: gh
-    arch: github-cli      # Different name on Arch!
+    arch: github-cli # Different name on Arch!
 ```
 
 ### 3. Linux Distributions (4 major families)
 
 #### Ubuntu
+
 - Debian-based, uses `apt`
 - Modern repos with latest versions
 - Includes: duf, ncdu (available in repos)
 - Includes modern CLI tools (bat, fd-find, ripgrep)
 
 #### Debian
+
 - Stable, Debian-based, uses `apt`
 - Nearly identical to Ubuntu (tested and equivalent)
 - Conservative versioning
 - Same package availability as Ubuntu
 
 #### RHEL (Rocky, Alma, CentOS, Fedora)
+
 - Uses `dnf`/`yum`
 - More conservative repos
 - Excludes: duf, ncdu (need EPEL repo)
 - Uses vim-enhanced instead of vim
-- Uses *-clients variant names (openssh-clients, bind-utils)
+- Uses \*-clients variant names (openssh-clients, bind-utils)
 
 #### Arch Linux
+
 - Most comprehensive package set
 - Uses `pacman` + `yay` (AUR helper)
 - Bleeding edge versions
@@ -117,7 +131,9 @@ provides:
 ### 4. Windows Packages
 
 #### PowerShell Gallery
+
 System-level PowerShell modules:
+
 - PSReadLine: Command-line editing and history
 - PowerShellGet: Module management
 - Microsoft.WinGet.Client: WinGet interface
@@ -126,7 +142,9 @@ System-level PowerShell modules:
 - Terminal-Icons: File icons in terminal
 
 #### Chocolatey
+
 Universal Windows package manager:
+
 - Extensions: chocolatey-core, chocolatey-compatibility
 - Development: vim, make, docker-cli, docker-compose
 - Utilities: Cygwin, colortool
@@ -134,15 +152,18 @@ Universal Windows package manager:
 - Games: cheatengine
 
 #### Winget
+
 Microsoft's modern package manager with 3 sections:
 
 **winget_runtimes**: System dependencies
+
 - UI Libraries: Microsoft.UI.Xaml 2.7, 2.8
 - Visual C++ Runtimes: 2008-2015+ x64/x86
 - SDKs: Windows ADK, Windows SDK
 - .NET: AspNetCore 9, DesktopRuntime 8/9/10
 
 **winget_system**: Development and utilities
+
 - Sync/Backup: FreeFileSync, Syncthing
 - File Management: 7zip, WinSCP
 - Terminal: Windows Terminal, ConEmu, PowerShell
@@ -150,6 +171,7 @@ Microsoft's modern package manager with 3 sections:
 - Version Control: Git, GitHub Desktop
 
 **winget_userland**: User applications
+
 - Media: ImageMagick, FFmpeg, HandBrake, OBS
 - Games: GOG, Epic Games, Steam
 - Communication: Discord, Telegram, Thunderbird
@@ -159,14 +181,18 @@ Microsoft's modern package manager with 3 sections:
 ### 5. Language Managers
 
 #### pip_base (Python)
+
 Global Python packages:
+
 - pip: Ensure latest version
 - setuptools: Python build tool
 - wheel: Wheel package format
 - pipx: Python application manager
 
 #### npm_global (Node.js)
+
 Global Node.js packages:
+
 - Build tools: webpack, pnpm, bun, tsx
 - CLI tools: @angular/cli, @nestjs/cli, @vue/cli, create-react-app
 - Development: nodemon, pm2
@@ -176,24 +202,24 @@ Global Node.js packages:
 
 Package groups organized by functionality. States in `srv/salt/linux/install.sls` install these via capability metadata from `srv/pillar/linux/init.sls`.
 
-| Group | Purpose | All Distros? | Notes |
-|-------|---------|--------------|-------|
-| `core_utils` | Essential utilities | ✓ | curl, git, jq, rsync, tree, vim, wget |
-| `shell_enhancements` | Shell tools | ✓ | tmux, zsh, bash-completion |
-| `monitoring` | System monitoring | ✓ | htop, lsof, strace, sysstat (minus duf/ncdu on RHEL) |
-| `compression` | Archive tools | ✓ | zip, bzip2, p7zip, xz |
-| `vcs_extras` | Version control | ✓ | gh, git-lfs, tig |
-| `modern_cli` | CLI replacements | ✓ | bat, fd, fzf, ripgrep |
-| `security` | Security tools | ✓ | ca-certificates, gnupg(2) |
-| `acl` | ACL utilities | ✓ | acl package |
-| `build_tools` | Build essentials | ✓ | gcc, make, cmake, autoconf |
-| `networking` | Network tools | ✓ | openssh, bind, netcat, nmap, tcpdump, traceroute |
-| `kvm` | Virtualization | ✓ | libvirt, qemu, virt-install (gated by pillar) |
-| `shell_history` | Shell history | ✓ | atuin |
-| `interpreters` | Languages | Arch only | lua, perl, python, python-pip |
-| `modern_cli_extras` | Advanced CLI | Arch only | bottom, delta, eza, hyperfine, procs, tealdeer, tokei, zoxide |
-| `fonts` | Developer fonts | Arch only | Noto, Fira Code, Hack, JetBrains Mono |
-| `theming` | Themes/Icons | Arch only | arc-gtk, kvantum, papirus-icons |
+| Group                | Purpose             | All Distros? | Notes                                                         |
+| -------------------- | ------------------- | ------------ | ------------------------------------------------------------- |
+| `core_utils`         | Essential utilities | ✓            | curl, git, jq, rsync, tree, vim, wget                         |
+| `shell_enhancements` | Shell tools         | ✓            | tmux, zsh, bash-completion                                    |
+| `monitoring`         | System monitoring   | ✓            | htop, lsof, strace, sysstat (minus duf/ncdu on RHEL)          |
+| `compression`        | Archive tools       | ✓            | zip, bzip2, p7zip, xz                                         |
+| `vcs_extras`         | Version control     | ✓            | gh, git-lfs, tig                                              |
+| `modern_cli`         | CLI replacements    | ✓            | bat, fd, fzf, ripgrep                                         |
+| `security`           | Security tools      | ✓            | ca-certificates, gnupg(2)                                     |
+| `acl`                | ACL utilities       | ✓            | acl package                                                   |
+| `build_tools`        | Build essentials    | ✓            | gcc, make, cmake, autoconf                                    |
+| `networking`         | Network tools       | ✓            | openssh, bind, netcat, nmap, tcpdump, traceroute              |
+| `kvm`                | Virtualization      | ✓            | libvirt, qemu, virt-install (gated by pillar)                 |
+| `shell_history`      | Shell history       | ✓            | atuin                                                         |
+| `interpreters`       | Languages           | Arch only    | lua, perl, python, python-pip                                 |
+| `modern_cli_extras`  | Advanced CLI        | Arch only    | bottom, delta, eza, hyperfine, procs, tealdeer, tokei, zoxide |
+| `fonts`              | Developer fonts     | Arch only    | Noto, Fira Code, Hack, JetBrains Mono                         |
+| `theming`            | Themes/Icons        | Arch only    | arc-gtk, kvantum, papirus-icons                               |
 
 ## Usage in State Files
 
@@ -208,6 +234,7 @@ install_core_utils:
 ```
 
 **Files using this pattern**:
+
 - `srv/salt/linux/dist/debian.sls`
 - `srv/salt/linux/dist/rhel.sls`
 - `srv/salt/linux/dist/archlinux.sls`
@@ -224,7 +251,7 @@ role_capabilities:
   workstation-minimal:
     - core_utils
     - shell_enhancements
-  
+
   workstation-base:
     - core_utils
     - shell_enhancements
@@ -234,13 +261,13 @@ role_capabilities:
     - modern_cli
     - security
     - acl
-  
+
   workstation-developer:
     - [all of base, plus]
     - build_tools
     - networking
     - kvm
-  
+
   workstation-full:
     - [all of developer, plus]
     - interpreters
@@ -256,9 +283,9 @@ Capability metadata defines state names and options:
 capability_meta:
   kvm:
     state_name: kvm_packages
-    pillar_gate: host:capabilities:kvm      # Only install if enabled
-    has_service: libvirtd                   # Enable this service
-    has_user_groups:                        # Add user to these groups
+    pillar_gate: host:capabilities:kvm # Only install if enabled
+    has_service: libvirtd # Enable this service
+    has_user_groups: # Add user to these groups
       - kvm
       - libvirt
 ```
@@ -278,6 +305,7 @@ capability_meta:
 ### Add a new package to all distros
 
 1. Add to each distro section in `provisioning/packages.sls`:
+
    ```yaml
    ubuntu:
      my_capability:
@@ -287,13 +315,14 @@ capability_meta:
        - new_package
    rhel:
      my_capability:
-       - alternative_name  # if different
+       - alternative_name # if different
    arch:
      my_capability:
-       - arch_name  # if different
+       - arch_name # if different
    ```
 
 2. If different names across distros, add to `provides` section:
+
    ```yaml
    provides:
      my_package:
@@ -306,19 +335,22 @@ capability_meta:
 
 1. Define in all 4 distro sections with consistent group name (snake_case)
 2. Add entry to `srv/pillar/linux/init.sls` capability_meta:
+
    ```yaml
    new_capability:
-     state_name: new_packages  # corresponds to state ID
-     pillar_gate: optional.path  # if conditional
+     state_name: new_packages # corresponds to state ID
+     pillar_gate: optional.path # if conditional
      has_service: optional_service
      has_user_groups: [optional, groups]
    ```
+
 3. Add to relevant role_capabilities (minimal, base, developer, full)
 4. Create state file or add to existing: `state_id: new_packages`
 
 ### Handle distro-specific issues
 
 Use `exclude` section for unavailable packages:
+
 ```yaml
 exclude:
   rhel:
@@ -326,6 +358,7 @@ exclude:
 ```
 
 Use `provides` section for name differences:
+
 ```yaml
 provides:
   package_name:

@@ -11,36 +11,38 @@ Arch Linux-specific default pillar configuration with AUR and pacman settings.
 
 ```yaml
 user:
-  name: arch              # Default admin user
+  name: arch # Default admin user
 
-workstation_role: workstation-full  # Includes extra groups
+workstation_role: workstation-full # Includes extra groups
 
 nvm:
-  default_version: 'lts/*'
+  default_version: "lts/*"
 
 host:
   capabilities:
     kvm: false
 
 pacman:
-  parallel_downloads: 5   # Concurrent downloads
-  color: true            # Colored output
-  checksums: sha256      # Checksum verification
+  parallel_downloads: 5 # Concurrent downloads
+  color: true # Colored output
+  checksums: sha256 # Checksum verification
 
 aur:
-  builder_user: builder  # Non-root AUR builder
-  build_dir: /tmp/makepkg  # AUR build directory
+  builder_user: builder # Non-root AUR builder
+  build_dir: /tmp/makepkg # AUR build directory
 ```
 
 ## Default Role
 
 Arch defaults to `workstation-full`:
+
 - Includes: interpreters, fonts, theming, modern_cli_extras
 - Additional capabilities unavailable on other distros
 
 ## Arch-Specific Packages
 
 Unique to Arch (via yay):
+
 - `github-cli` (not `gh`)
 - `fd` (not `fd-find`)
 - `base-devel` group (not individual packages)
@@ -50,9 +52,9 @@ Unique to Arch (via yay):
 
 ```yaml
 pacman:
-  parallel_downloads: 5   # Speed up downloads
-  color: true            # Colorized output
-  checksums: sha256      # Verify integrity
+  parallel_downloads: 5 # Speed up downloads
+  color: true # Colorized output
+  checksums: sha256 # Verify integrity
 ```
 
 ## AUR Builder
@@ -61,7 +63,7 @@ Non-root AUR builder setup:
 
 ```yaml
 aur:
-  builder_user: builder  # Unprivileged AUR builder
+  builder_user: builder # Unprivileged AUR builder
   build_dir: /tmp/makepkg
 ```
 
@@ -72,9 +74,9 @@ Requires sudoers configuration for pacman access.
 Override per-host:
 
 ```yaml
-workstation_role: workstation-developer  # Fewer packages
+workstation_role: workstation-developer # Fewer packages
 pacman:
-  parallel_downloads: 10  # Faster downloads
+  parallel_downloads: 10 # Faster downloads
 ```
 
 ## Notes

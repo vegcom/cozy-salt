@@ -9,16 +9,17 @@ Windows Subsystem for Linux (WSL) specific configuration via `/etc/wsl.conf`.
 
 ## Configures
 
-| Setting | Purpose |
-|---------|---------|
-| systemd | Enable systemd init system (WSL 2 only) |
-| DNS | Control resolver: use Windows host or auto |
-| Interop | Windows exe path access from Linux |
-| Network | Host IP binding, DHCP relay |
+| Setting | Purpose                                    |
+| ------- | ------------------------------------------ |
+| systemd | Enable systemd init system (WSL 2 only)    |
+| DNS     | Control resolver: use Windows host or auto |
+| Interop | Windows exe path access from Linux         |
+| Network | Host IP binding, DHCP relay                |
 
 ## Configuration File
 
 Manages `/etc/wsl.conf`:
+
 ```ini
 [boot]
 systemd=true
@@ -42,6 +43,7 @@ wsl:
 ## Usage Detection
 
 Auto-detects WSL via:
+
 - `/proc/version` check for "Microsoft" or "WSL"
 - Only applies config if running in WSL environment
 

@@ -26,6 +26,7 @@ for l in lines:
 return b"\n".join(cleaned)
 '
 }
+
 t(){
   if [[ -d ${PWD}/.git ]] ; then
     tmux new -s "$(basename "${PWD}/")"

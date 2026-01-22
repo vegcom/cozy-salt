@@ -10,6 +10,7 @@ Custom Salt execution module for Arch Linux pacman package manager with clean en
 ## Purpose
 
 Provides pacman-specific functionality:
+
 - Clean environment execution (removes user config)
 - Batch package operations
 - Architecture-specific handling (x86_64, aarch64)
@@ -17,12 +18,12 @@ Provides pacman-specific functionality:
 
 ## Functions Provided
 
-| Function | Purpose |
-|----------|---------|
-| `pacman.installed` | Install packages (batch) |
-| `pacman.removed` | Remove packages (batch) |
-| `pacman.sync` | Sync database before operations |
-| `pacman.clean` | Clean package cache |
+| Function           | Purpose                         |
+| ------------------ | ------------------------------- |
+| `pacman.installed` | Install packages (batch)        |
+| `pacman.removed`   | Remove packages (batch)         |
+| `pacman.sync`      | Sync database before operations |
+| `pacman.clean`     | Clean package cache             |
 
 ## Usage in States
 
@@ -39,6 +40,7 @@ install_packages:
 ## Environment Handling
 
 Runs with clean environment:
+
 - Removes `MAKEFLAGS` (build customization)
 - Removes `PACMAN_OPTS` (user configuration)
 - Isolates from user ~/.config/pacman/

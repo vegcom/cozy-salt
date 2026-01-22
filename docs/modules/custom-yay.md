@@ -10,6 +10,7 @@ Custom Salt execution module for Arch User Repository (AUR) helper yay with non-
 ## Purpose
 
 Provides yay-specific functionality:
+
 - AUR package installation
 - Non-root execution (security)
 - Clean environment handling
@@ -17,12 +18,12 @@ Provides yay-specific functionality:
 
 ## Functions Provided
 
-| Function | Purpose |
-|----------|---------|
+| Function        | Purpose                   |
+| --------------- | ------------------------- |
 | `yay.installed` | Install packages from AUR |
-| `yay.removed` | Remove AUR packages |
-| `yay.sync` | Sync AUR database |
-| `yay.search` | Search AUR |
+| `yay.removed`   | Remove AUR packages       |
+| `yay.sync`      | Sync AUR database         |
+| `yay.search`    | Search AUR                |
 
 ## Usage in States
 
@@ -39,6 +40,7 @@ install_aur_packages:
 ## Non-Root Execution
 
 Runs as unprivileged user:
+
 - Requires `builder` user setup
 - Avoids sudo complications with AUR build
 - Uses sudoers for pacman operations
@@ -47,6 +49,7 @@ Runs as unprivileged user:
 ## Environment Handling
 
 Clean environment:
+
 - Removes `MAKEFLAGS`
 - Removes user configuration
 - Isolated from home directory
@@ -55,6 +58,7 @@ Clean environment:
 ## Sudoers Configuration
 
 Requires entry for `builder` user:
+
 ```
 builder ALL=(ALL) NOPASSWD: /usr/bin/pacman
 builder ALL=(ALL) NOPASSWD: /usr/bin/systemctl

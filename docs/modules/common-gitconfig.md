@@ -9,15 +9,16 @@ Deploy dotfiles for git configuration: .gitconfig, .git-credentials, .gitignore_
 
 ## Deploys
 
-| File | Purpose |
-|------|---------|
-| `.gitconfig` | Git configuration (user.name, user.email, aliases, core settings) |
-| `.git-credentials` | Stored credentials for HTTPS auth (sensitive) |
-| `.gitignore_global` | Global gitignore patterns |
+| File                | Purpose                                                           |
+| ------------------- | ----------------------------------------------------------------- |
+| `.gitconfig`        | Git configuration (user.name, user.email, aliases, core settings) |
+| `.git-credentials`  | Stored credentials for HTTPS auth (sensitive)                     |
+| `.gitignore_global` | Global gitignore patterns                                         |
 
 ## Source Files
 
 From `provisioning/common/`:
+
 - `.gitconfig.jinja` (templated with pillar values)
 - `.git-credentials` (if exists)
 - `.gitignore_global`
@@ -25,6 +26,7 @@ From `provisioning/common/`:
 ## Pillar Integration
 
 Interpolates from pillar:
+
 - git.name, git.email (via jinja template)
 - Any custom aliases or config values
 

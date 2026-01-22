@@ -22,13 +22,13 @@ paths:
 
 ## Platform Defaults
 
-| Tool | Linux | Windows |
-|------|-------|---------|
-| nvm | /opt/nvm | C:\opt\nvm |
-| rust | /opt/rust | C:\opt\rust |
+| Tool      | Linux           | Windows           |
+| --------- | --------------- | ----------------- |
+| nvm       | /opt/nvm        | C:\opt\nvm        |
+| rust      | /opt/rust       | C:\opt\rust       |
 | miniforge | /opt/miniforge3 | C:\opt\miniforge3 |
-| homebrew | /opt/homebrew | N/A |
-| cozy | /opt/cozy | C:\opt\cozy |
+| homebrew  | /opt/homebrew   | N/A               |
+| cozy      | /opt/cozy       | C:\opt\cozy       |
 
 ## Usage in States
 
@@ -46,7 +46,7 @@ Override in pillar data:
 
 ```yaml
 paths:
-  nvm: /usr/local/nvm  # Custom location
+  nvm: /usr/local/nvm # Custom location
 ```
 
 ## Notes

@@ -11,20 +11,20 @@ Cross-platform global npm package installation after NVM setup.
 
 Global npm packages available in all projects:
 
-| Package | Purpose |
-|---------|---------|
-| pnpm | Fast npm alternative |
-| bun | Fast JavaScript runtime |
-| tsx | TypeScript executor |
-| @angular/cli | Angular CLI tools |
-| @nestjs/cli | NestJS framework CLI |
-| @vue/cli | Vue framework CLI |
-| create-react-app | React project scaffold |
-| webpack | Module bundler |
-| nodemon | Auto-restart on file change |
-| pm2 | Process manager for Node apps |
-| serverless | Serverless framework |
-| cdk | AWS CDK CLI |
+| Package          | Purpose                       |
+| ---------------- | ----------------------------- |
+| pnpm             | Fast npm alternative          |
+| bun              | Fast JavaScript runtime       |
+| tsx              | TypeScript executor           |
+| @angular/cli     | Angular CLI tools             |
+| @nestjs/cli      | NestJS framework CLI          |
+| @vue/cli         | Vue framework CLI             |
+| create-react-app | React project scaffold        |
+| webpack          | Module bundler                |
+| nodemon          | Auto-restart on file change   |
+| pm2              | Process manager for Node apps |
+| serverless       | Serverless framework          |
+| cdk              | AWS CDK CLI                   |
 
 ## Usage
 

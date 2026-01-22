@@ -10,6 +10,7 @@ Windows customization tool for modifying system behavior without patching core f
 ## Purpose
 
 Windhawk allows system modifications:
+
 - Window management customization
 - Taskbar modifications
 - Explorer/shell tweaks
@@ -18,13 +19,13 @@ Windhawk allows system modifications:
 ## Installation
 
 Installs Windhawk from official source:
-https://ramensoftware.com/windows-customization-windhawk
+<https://ramensoftware.com/windows-customization-windhawk>
 
-| Item | Details |
-|------|---------|
-| Binary | `C:\Program Files\Windhawk\` |
-| Service | Windhawk engine runs as service |
-| Mods | Downloaded from Windhawk mod store |
+| Item    | Details                            |
+| ------- | ---------------------------------- |
+| Binary  | `C:\Program Files\Windhawk\`       |
+| Service | Windhawk engine runs as service    |
+| Mods    | Downloaded from Windhawk mod store |
 
 ## Pillar Configuration
 
@@ -47,6 +48,7 @@ windhawk:
 ## Usage
 
 Windhawk automatically applies enabled mods:
+
 - Settings app: Configure mods
 - Engine auto-updates
 - Mods reload on changes

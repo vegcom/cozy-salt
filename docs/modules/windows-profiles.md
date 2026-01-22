@@ -9,15 +9,16 @@ Deploy PowerShell 7 system-wide profile with comprehensive configuration.
 
 ## Deploys
 
-| File | Purpose |
-|------|---------|
-| Profile.ps1 | System-wide PowerShell initialization |
-| profile.d/ | Modular configuration scripts |
-| PSReadLine config | Command-line editing and history |
+| File              | Purpose                               |
+| ----------------- | ------------------------------------- |
+| Profile.ps1       | System-wide PowerShell initialization |
+| profile.d/        | Modular configuration scripts         |
+| PSReadLine config | Command-line editing and history      |
 
 ## Configuration
 
 Includes:
+
 - Aliases for common commands
 - Custom functions and utilities
 - Module imports
@@ -28,6 +29,7 @@ Includes:
 ## Locations
 
 Deployed to:
+
 - `$PROFILE.AllUsersAllHosts` (all users, all hosts)
 - `$env:ProgramFiles\PowerShell\7\profile.ps1`
 - `C:\ProgramData\PowerShell\profile.d/`
@@ -35,6 +37,7 @@ Deployed to:
 ## Integration
 
 Profile sets up:
+
 - NVM/Node.js paths
 - Rust paths
 - Conda/Miniforge

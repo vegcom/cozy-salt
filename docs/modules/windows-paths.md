@@ -10,6 +10,7 @@ Consolidated Windows PATH environment variable management via registry.
 ## Purpose
 
 Manages system-wide PATH via Windows registry to:
+
 - Add tool directories (nvm, rust, miniforge, conda)
 - Remove duplicates
 - Maintain proper order
@@ -18,6 +19,7 @@ Manages system-wide PATH via Windows registry to:
 ## Configures
 
 Adds to PATH:
+
 - `C:\opt\nvm` (NVM/Node.js)
 - `C:\opt\rust\bin` (Rust)
 - `C:\opt\miniforge3` (Conda)
@@ -27,6 +29,7 @@ Adds to PATH:
 ## Registry Location
 
 Modifies:
+
 ```
 HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment\Path
 ```

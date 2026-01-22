@@ -10,19 +10,19 @@ System-wide Miniforge installation to `/opt/miniforge3` for package/environment 
 
 ## Installation
 
-Installs Miniforge from official releases: https://github.com/conda-forge/miniforge
+Installs Miniforge from official releases: <https://github.com/conda-forge/miniforge>
 
-| Item | Location |
-|------|----------|
-| Conda binary | `/opt/miniforge3/bin` |
-| Shell init | `/etc/profile.d/miniforge-init.sh` |
-| Environments | `~/.conda/envs/` |
+| Item         | Location                           |
+| ------------ | ---------------------------------- |
+| Conda binary | `/opt/miniforge3/bin`              |
+| Shell init   | `/etc/profile.d/miniforge-init.sh` |
+| Environments | `~/.conda/envs/`                   |
 
 ## Pillar Configuration
 
 ```yaml
 miniforge:
-  version: latest  # or specific version
+  version: latest # or specific version
 ```
 
 ## Usage

@@ -10,6 +10,7 @@ MSYS2-based development environment for mechanical keyboard firmware (QMK).
 ## Purpose
 
 QMK MSYS provides:
+
 - Compiler toolchain for ARM microcontrollers
 - Build environment for keyboard firmware
 - Serial communication tools
@@ -18,13 +19,13 @@ QMK MSYS provides:
 ## Installation
 
 Installs QMK MSYS from official releases:
-https://msys.qmk.fm/
+<https://msys.qmk.fm/>
 
-| Item | Location |
-|------|----------|
-| MSYS2 | `C:\opt\qmk_msys` |
-| Compiler | ARM GCC, STM32 tools |
-| Build tools | Make, CMake, ninja |
+| Item        | Location             |
+| ----------- | -------------------- |
+| MSYS2       | `C:\opt\qmk_msys`    |
+| Compiler    | ARM GCC, STM32 tools |
+| Build tools | Make, CMake, ninja   |
 
 ## Included Tools
 

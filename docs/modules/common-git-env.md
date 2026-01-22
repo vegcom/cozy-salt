@@ -29,6 +29,7 @@ git:
 ## Effect
 
 Variables available in:
+
 - Shell sessions (bash, zsh, sh)
 - Git commits (used by git-commit hook)
 - SSH identity (can be used in .gitconfig)

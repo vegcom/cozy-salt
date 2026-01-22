@@ -10,17 +10,18 @@ System-wide Rust installation to `/opt/rust` via rustup.
 
 ## Installation
 
-Uses official rustup: https://rustup.rs/
+Uses official rustup: <https://rustup.rs/>
 
-| Item | Location |
-|------|----------|
-| Rust binary | `/opt/rust/bin` |
-| Shell init | `/etc/profile.d/rust-init.sh` |
-| Toolchain | Latest stable by default |
+| Item        | Location                      |
+| ----------- | ----------------------------- |
+| Rust binary | `/opt/rust/bin`               |
+| Shell init  | `/etc/profile.d/rust-init.sh` |
+| Toolchain   | Latest stable by default      |
 
 ## Installed Components
 
 Via `common.rust`:
+
 - rustc: Rust compiler
 - cargo: Package manager
 - clippy: Linter (installed by common.rust)
@@ -30,7 +31,7 @@ Via `common.rust`:
 
 ```yaml
 rust:
-  toolchain: stable  # or nightly, beta
+  toolchain: stable # or nightly, beta
 ```
 
 ## Usage

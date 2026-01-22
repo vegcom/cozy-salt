@@ -13,8 +13,8 @@ Network configuration for DNS, hosts file, and service entries.
 network:
   dns:
     nameservers:
-      - 1.1.1.1          # Cloudflare
-      - 1.0.0.1          # Cloudflare backup
+      - 1.1.1.1 # Cloudflare
+      - 1.0.0.1 # Cloudflare backup
   hosts:
     entries:
       localhost: 127.0.0.1
@@ -30,9 +30,9 @@ Nameserver list for systemd-resolved:
 network:
   dns:
     nameservers:
-      - 8.8.8.8          # Google DNS
-      - 8.8.4.4          # Google backup
-      - 1.1.1.1          # Cloudflare
+      - 8.8.8.8 # Google DNS
+      - 8.8.4.4 # Google backup
+      - 1.1.1.1 # Cloudflare
 ```
 
 ## Hosts File Entries
@@ -43,9 +43,9 @@ Local hostname mappings:
 network:
   hosts:
     entries:
-      docker.local: 127.0.0.1       # Docker Desktop
-      kubernetes.local: 127.0.0.1   # K8s API
-      registry.local: 127.0.0.1     # Docker Registry
+      docker.local: 127.0.0.1 # Docker Desktop
+      kubernetes.local: 127.0.0.1 # K8s API
+      registry.local: 127.0.0.1 # Docker Registry
 ```
 
 ## Platform-Specific Handling
@@ -74,7 +74,7 @@ Override in host/class-specific pillar:
 network:
   hosts:
     entries:
-      myapp.local: 192.168.1.100  # Custom host entry
+      myapp.local: 192.168.1.100 # Custom host entry
 ```
 
 ## Notes

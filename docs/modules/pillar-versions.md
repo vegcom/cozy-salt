@@ -13,22 +13,22 @@ Version specifications for:
 
 ```yaml
 versions:
-  nvm_version: 'lts/*'         # Node version
-  rust_toolchain: stable       # Rust version
-  miniforge_version: latest    # Conda version
-  windhawk_version: latest     # Windows customization tool
-  wt_version: latest           # Windows Terminal version
-  qmk_msys_version: latest     # QMK environment version
+  nvm_version: "lts/*" # Node version
+  rust_toolchain: stable # Rust version
+  miniforge_version: latest # Conda version
+  windhawk_version: latest # Windows customization tool
+  wt_version: latest # Windows Terminal version
+  qmk_msys_version: latest # QMK environment version
 ```
 
 ## Version Formats
 
-| Tool | Format | Examples |
-|------|--------|----------|
-| NVM | SemVer or alias | 'lts/*', 'lts/gallium', 'v18.0.0' |
-| Rust | Channel | stable, nightly, beta |
-| Miniforge | Version or latest | latest, 23.1.0 |
-| Windows tools | Version or latest | latest |
+| Tool          | Format            | Examples                           |
+| ------------- | ----------------- | ---------------------------------- |
+| NVM           | SemVer or alias   | 'lts/\*', 'lts/gallium', 'v18.0.0' |
+| Rust          | Channel           | stable, nightly, beta              |
+| Miniforge     | Version or latest | latest, 23.1.0                     |
+| Windows tools | Version or latest | latest                             |
 
 ## Usage in States
 
@@ -46,9 +46,9 @@ Override for specific requirements:
 
 ```yaml
 versions:
-  nvm_version: 'v16.14.0'     # Lock to specific version
-  rust_toolchain: nightly     # Use nightly Rust
-  miniforge_version: '23.1.0'
+  nvm_version: "v16.14.0" # Lock to specific version
+  rust_toolchain: nightly # Use nightly Rust
+  miniforge_version: "23.1.0"
 ```
 
 ## Update Cycle
