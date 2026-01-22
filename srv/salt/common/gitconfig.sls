@@ -47,6 +47,8 @@ deploy_git_credentials_{{ username }}:
     - mode: 600
 {% endif %}
     - makedirs: True
+    - require:
+      - file: deploy_gitconfig_{{ username }}
 
 # Deploy base .gitignore (always update)
 deploy_gitignore_{{ username }}:
@@ -91,8 +93,10 @@ deploy_vim_{{ username }}:
     - user: {{ username }}
     - branch: main
     - force_clone: True
+    - force_reset: True
     - require:
       - cmd: git_safe_directory_all
+      - file: deploy_git_credentials_{{ username }}
 
 # Deploy .git_template directory (always update)
 deploy_git_template_{{ username }}:
