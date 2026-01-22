@@ -58,6 +58,14 @@ deploy_gitignore_local_{{ username }}:
     - makedirs: True
     - create: False
 
+# Deploy .vim directory via git (clone cozy-vim.git for each user)
+deploy_vim_{{ username }}:
+  git.latest:
+    - name: https://github.com/vegcom/cozy-vim.git
+    - target: {{ dotfiles.dotfile_path(user_home, '.vim') }}
+    - user: {{ username }}
+    - branch: main
+
 # Deploy .git_template directory (always update)
 deploy_git_template_{{ username }}:
   file.recurse:
