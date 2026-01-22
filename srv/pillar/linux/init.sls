@@ -2,6 +2,13 @@
 # Linux Pillar Data
 # Configuration values for Linux minions
 
+# =============================================================================
+# CPU Architecture Detection
+# =============================================================================
+# Computed once here for reuse across distro-specific pillars
+# Used by: Chaotic AUR mirror selection, cross-arch deployments
+cpu_arch: "{{ 'aarch64' if salt['grains.get']('cpuarch') == 'aarch64' else 'x86_64' }}"
+
 # User configuration
 # Auto-detected from login user (defaults to root in containers)
 {% if salt['grains.get']('virtual', '') in ['docker', 'container', 'lxc'] %}
