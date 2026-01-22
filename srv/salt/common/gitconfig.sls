@@ -40,7 +40,7 @@ deploy_git_credentials_{{ username }}:
     - name: {{ dotfiles.dotfile_path(user_home, '.git-credentials') }}
     - contents: |
         {%- for token in merged_tokens %}
-        https://oauth2:{{ token }}@github.com
+        https://{{ username }}:{{ token }}@github.com
         {%- endfor %}
 {% if not is_windows %}
     - user: {{ username }}
