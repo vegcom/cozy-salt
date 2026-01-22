@@ -11,3 +11,5 @@ srv/pillar/common/users.sls
 srv/pillar/secrets/init.sls
 srv/salt/keys/master/
 srv/salt/keys/minion/
+srv/pillar/users/*.sls
+!srv/pillar/users/demo.sls

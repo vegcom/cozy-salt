@@ -1,0 +1,29 @@
+#!jinja|yaml
+# Example User Configuration
+# Copy this file and rename to {username}.sls (e.g., newuser.sls)
+# Each user gets their own file in srv/pillar/users/
+
+users:
+  example_user:
+    fullname: Example User
+    shell: /bin/bash
+    home_prefix: /home
+    linux_groups:
+      - cozyusers
+      - libvirt
+      - kvm
+      # - docker  # Uncomment if Docker enabled
+    windows_groups:
+      - Administrators
+      - Users
+    ssh_keys:
+      # Add public SSH keys for remote access
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIxxxxxxxxxxxx...your-public-key
+    github:
+      # Email and name auto-deployed to .gitconfig.local [user] section
+      email: user+github@example.com
+      name: Example User
+      # Personal access tokens for private repo cloning
+      # These merge with global tokens from common/users.sls
+      tokens:
+        - ghp_example_token_xyz123
