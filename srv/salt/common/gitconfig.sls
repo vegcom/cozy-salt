@@ -5,6 +5,7 @@
 {% import 'macros/dotfiles.sls' as dotfiles %}
 
 {% set managed_users = salt['pillar.get']('managed_users', []) %}
+{% set is_windows = grains['os'] == 'Windows' %}
 
 # Deploy to each managed user
 {% for username in managed_users %}
@@ -63,8 +64,10 @@ deploy_git_template_{{ username }}:
     - name: {{ dotfiles.dotfile_path(user_home, '.git_template') }}
     - source: salt://common/dotfiles/.git_template
     - user: {{ username }}
+{% if not is_windows %}
     - dir_mode: 755
     - file_mode: 644
+{% endif %}
     - makedirs: True
     - clean: True
 
@@ -74,8 +77,10 @@ deploy_git_template_local_{{ username }}:
     - name: {{ dotfiles.dotfile_path(user_home, '.git_template.local') }}
     - source: salt://common/dotfiles/.git_template.local
     - user: {{ username }}
+{% if not is_windows %}
     - dir_mode: 755
     - file_mode: 644
+{% endif %}
     - makedirs: True
     - clean: False
 
