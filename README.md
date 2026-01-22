@@ -36,6 +36,32 @@ provisioning/      # Files to deploy (configs, scripts, templates)
 scripts/           # Enrollment, Docker entrypoints, utilities
 ```
 
+## Pillar Configuration
+
+**Hierarchy** (later levels override earlier):
+
+1. **Global defaults**: `srv/pillar/linux/init.sls`, `srv/pillar/windows/init.sls`, `srv/pillar/arch/init.sls`
+2. **Hardware classes**: `srv/pillar/class/` (e.g., `galileo.sls` for Steam Deck)
+3. **Per-host overrides**: `srv/pillar/host/example.sls` (copy template, rename to hostname)
+4. **User configurations**: `srv/pillar/users/` (individual user configs, see `demo.sls` template)
+5. **Secrets**: `srv/pillar/secrets/init.sls` (gitignored, tokens/credentials)
+
+**User Management**:
+
+- **Global**: `srv/pillar/common/users.sls` - managed users list + shared GitHub tokens
+- **Per-user**: `srv/pillar/users/{username}.sls` - individual user configs
+  - Template: `srv/pillar/users/demo.sls`
+  - Copy template and rename to username (e.g., `newuser.sls`)
+  - Includes: groups, SSH keys, git config (email/name), personal tokens
+  - Tokens merge with global tokens automatically
+
+**Git Credentials**:
+
+- Stored in `.git-credentials` with format: `https://username:token@github.com`
+- Deployed per-user via `srv/salt/common/gitconfig.sls`
+- `.gitconfig.local` auto-populated with `[user]` section if email/name in pillar
+- See `srv/pillar/users/demo.sls` for structure
+
 ## Enrollment
 
 `git submodule update --recursive --remote`

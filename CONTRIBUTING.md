@@ -44,6 +44,41 @@ install_node:
 
 Sets `NVM_HOME`, `NVM_SYMLINK`, `CONDA_HOME` automatically.
 
+## Pillar Configuration Examples
+
+Pillar template files (committed) show structure and defaults. Copy templates to create instance files:
+
+| Template | Purpose | Instance | Notes |
+| --- | --- | --- | --- |
+| `srv/pillar/host/example.sls` | Per-host config template | `srv/pillar/host/{hostname}.sls` | Loaded if exists, never tracked |
+| `srv/pillar/class/example.sls` | Hardware class template | `srv/pillar/class/{classname}.sls` | Reference for structure |
+| `srv/pillar/users/demo.sls` | User config template | `srv/pillar/users/{username}.sls` | Local files only, demo.sls tracked |
+| `srv/pillar/common/users.sls.example` | User metadata template | `srv/pillar/common/users.sls` | Shows structure (tracked) |
+| `srv/pillar/secrets/init.sls.example` | Secrets template | `srv/pillar/secrets/init.sls` | Gitignored, create locally |
+
+**Creating a new host configuration**:
+```bash
+cp srv/pillar/host/example.sls srv/pillar/host/myhost.sls
+# Edit myhost.sls, set any host-specific pillar values
+# File is auto-loaded based on minion hostname
+```
+
+**Adding a new managed user**:
+```bash
+cp srv/pillar/users/demo.sls srv/pillar/users/newuser.sls
+# Edit newuser.sls:
+# - Change "example_user" to "newuser" in pillar
+# - Set groups, SSH keys, github config, tokens
+# - Add "newuser" to managed_users list in srv/pillar/common/users.sls
+# - User config remains local (see .gitignore)
+```
+
+**Git credentials and user config**:
+- Credentials stored in `.git-credentials`: `https://username:token@github.com`
+- User email/name auto-deploy to `.gitconfig.local [user]` section
+- Tokens merge: global (common/users.sls) + per-user (users/{username}.sls)
+- See `srv/pillar/users/demo.sls` for github config structure
+
 ## Documentation
 
 Module documentation lives in `docs/modules/` (not as inline comments in `.sls` files).
