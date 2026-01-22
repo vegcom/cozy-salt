@@ -86,13 +86,68 @@ powershell_profile_files:
 
 **Result**: Changes to Starship-Twilite automatically sync through cozy-pwsh → cozy-salt → Windows systems
 
-## Secrets Management
+## Pillar Configuration
+
+Cozy-salt uses a hierarchical pillar system to manage configuration:
+- **Global defaults**: `srv/pillar/linux/init.sls`, `srv/pillar/arch/init.sls`, `srv/pillar/windows/init.sls`
+- **Hardware classes**: `srv/pillar/class/` (e.g., `galileo.sls` for Steam Deck)
+- **Per-host overrides**: `srv/pillar/host/` (e.g., `hostname.sls` for specific machines)
+- **Secrets** (gitignored): `srv/pillar/secrets/init.sls`
+- **User config** (gitignored): `srv/pillar/common/users.sls`
+
+### Example Files (Templates)
+
+All example files are committed to the repo for reference. Copy and rename them to use:
+
+1. **`srv/pillar/host/example.sls`** → Copy to `srv/pillar/host/YOUR_HOSTNAME.sls`
+   - Per-host configuration overrides
+   - Applied to single specific system (matched by minion_id)
+   - Example: custom locales, disable features, enable capabilities
+
+2. **`srv/pillar/class/example.sls`** → Copy to `srv/pillar/class/YOUR_CLASS.sls`
+   - Hardware class configuration
+   - Applied to all systems with matching grains (e.g., Steam Deck)
+   - Example: Chaotic AUR for aarch64, SDDM config
+
+3. **`srv/pillar/secrets/init.sls.example`** → Copy to `srv/pillar/secrets/init.sls`
+   - Sensitive credentials (tokens, keys, passwords)
+   - Gitignored - never committed
+   - Edit with actual secrets after copying
+
+4. **`srv/pillar/common/users.sls.example`** → Reference only
+   - Shows user structure format
+   - Actual users defined in `srv/pillar/common/users.sls` (gitignored)
+
+### Configuration Hierarchy
+
+Pillar values merge from bottom to top (later values override earlier):
+
+1. `srv/pillar/linux/init.sls` (global Linux defaults)
+2. `srv/pillar/arch/init.sls` or `windows/init.sls` (distro-specific)
+3. `srv/pillar/class/CLASSNAME.sls` (hardware class)
+4. `srv/pillar/host/HOSTNAME.sls` (per-host)
+
+### Secrets Management
 
 Sensitive information (tokens, credentials, API keys) are stored in a gitignored pillar file.
 
 ### Setup
 
-1. **Create secrets pillar** (locally, never committed):
+1. **Create host-specific config** (optional):
+
+   ```bash
+   cp srv/pillar/host/example.sls srv/pillar/host/HOSTNAME.sls
+   # Edit to override defaults for this host
+   ```
+
+2. **Create hardware class config** (optional):
+
+   ```bash
+   cp srv/pillar/class/example.sls srv/pillar/class/YOUR_CLASS.sls
+   # Edit to configure for this hardware class
+   ```
+
+3. **Create secrets pillar** (required, locally):
 
    ```bash
    cp srv/pillar/secrets/init.sls.example srv/pillar/secrets/init.sls
@@ -100,7 +155,7 @@ Sensitive information (tokens, credentials, API keys) are stored in a gitignored
    chmod 600 srv/pillar/secrets/init.sls
    ```
 
-2. **Set environment variables** (for local development/testing):
+4. **Set environment variables** (for local development/testing):
 
    ```bash
    cp .env.example .env
@@ -250,6 +305,11 @@ Updated starship.toml deploys to Windows systems
 
 ## Related Documentation
 
+- **Pillar examples**:
+  - `srv/pillar/host/example.sls` - Per-host configuration template
+  - `srv/pillar/class/example.sls` - Hardware class template
+  - `srv/pillar/secrets/init.sls.example` - Secrets template
+  - `srv/pillar/common/users.sls.example` - User configuration reference
 - **Git deployments**: Salt [git.latest](https://docs.saltproject.io/salt/user-guide/en/latest/reference/modules/salt.modules.git.html) documentation
 - **Pillar data**: Salt [pillar system](https://docs.saltproject.io/salt/user-guide/en/latest/topics/pillar/) documentation
 - **Secrets management**: See TODO for lightweight alternatives to Vault (secrets management solution pending)
@@ -261,3 +321,5 @@ Updated starship.toml deploys to Windows systems
 - `provisioning/windows/README.md` - PowerShell profile deployment details
 - `srv/salt/common/gitconfig.sls` - Vim deployment implementation
 - `srv/salt/windows/profiles.sls` - PowerShell profile deployment implementation
+- `srv/salt/linux/dist/config-pacman.sls` - Arch repo and Chaotic AUR configuration
+- `srv/salt/linux/config-locales.sls` - System locale deployment
