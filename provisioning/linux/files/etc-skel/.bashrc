@@ -6,7 +6,7 @@ gclean() {
   local marker="${1}"
 
   if [[ -z ${marker} ]];then
-    echo "Usage: rude <marker>"
+    echo "Usage: gclean <marker>"
     return 1
   fi
 

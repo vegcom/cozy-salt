@@ -387,6 +387,5 @@ All package definitions must follow:
 ## See Also
 
 - [CONTRIBUTING.md](../CONTRIBUTING.md) - Rule 1: Packages in provisioning/packages.sls
-- [CLAUDE.md](../CLAUDE.md) - Three rules of cozy-salt
 - `srv/salt/linux/install.sls` - How packages are installed
 - `srv/pillar/linux/init.sls` - Capability metadata and role definitions

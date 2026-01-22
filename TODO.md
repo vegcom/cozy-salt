@@ -12,15 +12,11 @@
   - Pending approval [saltstack/salt-bootstrap/pull/2101](https://github.com/saltstack/salt-bootstrap/pull/2101)
   - install on linux as `salt-bootstrap.sh onedir latest`
   - `curl -fsSL https://raw.githubusercontent.com/vegcom/salt-bootstrap/refs/heads/develop/bootstrap-salt.sh | bash -s -- -D onedir latest`
-  - [x] Break out enrollment scripts into submodule
-    - [x] add submodule helpers to `Makefile` (2025-01-20)
-      - [x]`git submodule update --init --recursive`
-      - [x]`git submodule update --recursive --remote`
 
 ## Backlog
 
 - [ ] Cull verbose inline comments from .sls files, move to proper docs
-- [ ] Rewrite tests/test-states-json.sh in Python (pytest integration, better error handling)
+- [x] Rewrite tests/test-states-json.sh in Python (pytest integration, better error handling) (2025-01-21: test_states.py + test_linting.py complete, culled shell test runners)
 - [ ] Windows: parameterize hardcoded paths via pillar (PowerShell, sshd_config.d)
 - [ ] Windows: pillar-driven scheduled tasks
 - [ ] SDDM astronaut theme (pillar gate: `steamdeck:sddm:theme`)
