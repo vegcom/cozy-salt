@@ -6,7 +6,9 @@
 
 {% set managed_users = salt['pillar.get']('managed_users', []) %}
 {% set is_windows = grains['os'] == 'Windows' %}
-{% set github_tokens = salt['pillar.get']('github:tokens', []) %}
+{# Merge global and user-specific github tokens #}
+{% set global_tokens = salt['pillar.get']('github:tokens', []) %}
+{% set users_data = salt['pillar.get']('users', {}) %}
 # Configure git to trust all directories (works around Git 2.36+ dubious ownership check)
 # Run once before deploying to any user (runs as minion user on Windows, first managed user on Linux)
 git_safe_directory_all:
@@ -17,6 +19,9 @@ git_safe_directory_all:
 # Deploy to each managed user
 {% for username in managed_users %}
 {% set user_home = dotfiles.get_user_home(username) %}
+{# Merge global and user-specific github tokens #}
+{% set user_tokens = users_data.get(username, {}).get('github', {}).get('tokens', []) %}
+{% set merged_tokens = global_tokens + user_tokens %}
 
 # Deploy base .gitconfig (always update)
 deploy_gitconfig_{{ username }}:
@@ -29,12 +34,12 @@ deploy_gitconfig_{{ username }}:
 {% endif %}
     - makedirs: True
 
-# Deploy .git-credentials from pillar github tokens
+# Deploy .git-credentials from merged global and user-specific tokens
 deploy_git_credentials_{{ username }}:
   file.managed:
     - name: {{ dotfiles.dotfile_path(user_home, '.git-credentials') }}
     - contents: |
-        {%- for token in github_tokens %}
+        {%- for token in merged_tokens %}
         https://{{ token }}@github.com
         {%- endfor %}
     - user: {{ username }}
