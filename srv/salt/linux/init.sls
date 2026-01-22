@@ -4,6 +4,7 @@
 
 include:
   - linux.users           # Create admin user and cozyusers group first
+  - linux.service-account # Create service account for system operations
   - linux.install         # Role-aware package installation + Docker + GPU detection
   - linux.config-locales  # Deploy system locales (all Linux distros)
   - linux.dist.config-pacman  # Arch: Manage pacman.conf and repos
