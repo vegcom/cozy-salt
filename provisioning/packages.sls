@@ -525,139 +525,137 @@ arch:
 # WINDOWS PACKAGES
 # PowerShell Gallery, Chocolatey, Winget, and Visual C++ runtimes
 # ============================================================================
-powershell_gallery:
-  - PSReadLine Command-line editing, history, syntax highlighting
-  - PowerShellGet Module management (v3+)
-  - Microsoft.WinGet.Client WinGet PowerShell interface
-  - Microsoft.WinGet.CommandNotFound Command not found suggestions
-  - powershell-yaml YAML parsing
-  - PSFzf Fuzzy finder integration
-  - PSWindowsUpdate Windows Update management
-  - Terminal-Icons File icons in terminal
+windows:
+  powershell_gallery:
+    - PSReadLine  # Command-line editing, history, syntax highlighting
+    - PowerShellGet  # Module management (v3+)
+    - Microsoft.WinGet.Client  # WinGet PowerShell interface
+    - Microsoft.WinGet.CommandNotFound  # Command not found suggestions
+    - powershell-yaml  # YAML parsing
+    - PSFzf  # Fuzzy finder integration
+    - PSWindowsUpdate  # Windows Update management
+    - Terminal-Icons  # File icons in terminal
 
-choco:
-  - chocolatey-core.extension
-  - chocolatey-compatibility.extension
-  - chocolatey-font-helpers.extension
-  - dive
-  - docker-cli
-  - docker-compose
-  - vim
-  - nerd-fonts-FiraCode
-  - nerd-fonts-Hack
-  - Cygwin
-  - colortool
-  - cheatengine
-  - make
+  choco:
+    - chocolatey-compatibility.extension  # Compatibility layer
+    - chocolatey-core.extension  # Core extension
+    - chocolatey-font-helpers.extension  # Font installation helpers
+    - cheatengine  # Game/memory hacking tool
+    - colortool  # Windows console colors
+    - Cygwin  # Unix-like environment
+    - dive  # Docker image analyzer
+    - docker-cli  # Docker command-line interface
+    - docker-compose  # Docker compose orchestration
+    - make  # GNU make build tool
+    - nerd-fonts-FiraCode  # Fira Code with Nerd fonts
+    - nerd-fonts-Hack  # Hack font with Nerd fonts
+    - vim  # Vi improved text editor
 
-# Winget runtimes and development SDKs
-winget_runtimes:
-  ui_libraries:
-    - Microsoft.UI.Xaml.2.7
-    - Microsoft.UI.Xaml.2.8
-    - Microsoft.VCLibs.Desktop.14
-  vcredist:
-    - Microsoft.VCRedist.2012.x64
-    - Microsoft.VCRedist.2012.x86
-    - Microsoft.VCRedist.2013.x64
-    - Microsoft.VCRedist.2013.x86
-    - Microsoft.VCRedist.2015+.x64
-    - Microsoft.VCRedist.2015+.x86
-    - Microsoft.VCRedist.2008.x64
-    - Microsoft.VCRedist.2008.x86
-    - Microsoft.VCRedist.2010.x64
-    - Microsoft.VCRedist.2010.x86
-  sdks:
-    - Microsoft.WindowsADK
-    - Microsoft.WindowsSDK.10.0.18362
-    - Microsoft.NuGet
-    - Microsoft.AppInstaller
-    - Microsoft.AppInstallerFileBuilder
-  dotnet:
-    - Microsoft.DotNet.AspNetCore.9
-    - Microsoft.DotNet.DesktopRuntime.10
-    - Microsoft.DotNet.DesktopRuntime.8
-    - Microsoft.DotNet.DesktopRuntime.9
-    - Microsoft.DotNet.Framework.DeveloperPack.4.6
-    - Microsoft.DotNet.HostingBundle.8
-    - Microsoft.DotNet.Runtime.10
-    - Microsoft.DotNet.Runtime.8
+  winget_runtimes:
+    ui_libraries:
+      - Microsoft.UI.Xaml.2.7
+      - Microsoft.UI.Xaml.2.8
+      - Microsoft.VCLibs.Desktop.14
+    vcredist:
+      - Microsoft.VCRedist.2012.x64
+      - Microsoft.VCRedist.2012.x86
+      - Microsoft.VCRedist.2013.x64
+      - Microsoft.VCRedist.2013.x86
+      - Microsoft.VCRedist.2015+.x64
+      - Microsoft.VCRedist.2015+.x86
+      - Microsoft.VCRedist.2008.x64
+      - Microsoft.VCRedist.2008.x86
+      - Microsoft.VCRedist.2010.x64
+      - Microsoft.VCRedist.2010.x86
+    sdks:
+      - Microsoft.WindowsADK
+      - Microsoft.WindowsSDK.10.0.18362
+      - Microsoft.NuGet
+      - Microsoft.AppInstaller
+      - Microsoft.AppInstallerFileBuilder
+    dotnet:
+      - Microsoft.DotNet.AspNetCore.9
+      - Microsoft.DotNet.DesktopRuntime.10
+      - Microsoft.DotNet.DesktopRuntime.8
+      - Microsoft.DotNet.DesktopRuntime.9
+      - Microsoft.DotNet.Framework.DeveloperPack.4.6
+      - Microsoft.DotNet.HostingBundle.8
+      - Microsoft.DotNet.Runtime.10
+      - Microsoft.DotNet.Runtime.8
 
-# Winget system packages
-winget_system:
-  sync_backup:
-    - FreeFileSync
-    - Syncthing
-  file_management:
-    - 7zip
-    - WinSCP
-  compression:
-    - PeaZip
-    - Zipier
-  terminal:
-    - WindowsTerminal
-    - ConEmu
-  shell:
-    - PowerShell
-    - Git.Git
-    - StardustXR.Starship
-  editor:
-    - Vim.Vim
-    - NeovimProject.Neovim
-  development:
-    - JetBrains.IntelliJIDEA.Community
-    - Microsoft.VisualStudio.BuildTools
-    - Microsoft.VisualStudio.Community
-    - Microsoft.VisualStudioCode
-    - GitHub.GitHubDesktop
-    - Gitleaks.Gitleaks
+  winget_system:
+    sync_backup:
+      - FreeFileSync
+      - Syncthing
+    file_management:
+      - 7zip
+      - WinSCP
+    compression:
+      - PeaZip
+      - Zipier
+    terminal:
+      - WindowsTerminal
+      - ConEmu
+    shell:
+      - PowerShell
+      - Git.Git
+      - StardustXR.Starship
+    editor:
+      - Vim.Vim
+      - NeovimProject.Neovim
+    development:
+      - JetBrains.IntelliJIDEA.Community
+      - Microsoft.VisualStudio.BuildTools
+      - Microsoft.VisualStudio.Community
+      - Microsoft.VisualStudioCode
+      - GitHub.GitHubDesktop
+      - Gitleaks.Gitleaks
 
-# Winget userland packages
-winget_userland:
-  media:
-    - ImageMagick.ImageMagick
-    - Wwweasel.PicView
-    - Gyan.FFmpeg
-    - HandBrake.HandBrake
-    - ObsProject.OBS.Studio
-  games:
-    - GOG.GalaxyClient
-    - Epic.EpicGamesLauncher
-    - Valve.Steam
-  communication:
-    - Discord.Discord
-    - Telegram.TelegramDesktop
-    - Mozilla.Thunderbird
-  browser:
-    - Mozilla.Firefox
-    - Google.Chrome
-    - Thorium.Thorium
-  utilities:
-    - qBittorrent.qBittorrent
-    - ntop.ntop
-    - VB-Audio.VoiceMeeter
-    - WerWolv.ImHex
+  winget_userland:
+    media:
+      - ImageMagick.ImageMagick
+      - Wwweasel.PicView
+      - Gyan.FFmpeg
+      - HandBrake.HandBrake
+      - ObsProject.OBS.Studio
+    games:
+      - GOG.GalaxyClient
+      - Epic.EpicGamesLauncher
+      - Valve.Steam
+    communication:
+      - Discord.Discord
+      - Telegram.TelegramDesktop
+      - Mozilla.Thunderbird
+    browser:
+      - Mozilla.Firefox
+      - Google.Chrome
+      - Thorium.Thorium
+    utilities:
+      - qBittorrent.qBittorrent
+      - ntop.ntop
+      - VB-Audio.VoiceMeeter
+      - WerWolv.ImHex
 
 # ============================================================================
 # LANGUAGE-SPECIFIC PACKAGES
 # Python and Node.js global packages
 # ============================================================================
 pip_base:
-  - pip Ensure latest pip version
-  - setuptools Build tool for Python
-  - wheel Wheel build format
-  - pipx Python application package manager
+  - pip  # Ensure latest pip version
+  - setuptools  # Build tool for Python
+  - wheel  # Wheel build format
+  - pipx  # Python application package manager
 
 npm_global:
-  - pnpm Fast npm alternative
-  - bun Fast JavaScript runtime
-  - tsx TypeScript executor
-  - @angular/cli Angular CLI
-  - @nestjs/cli NestJS CLI
-  - @vue/cli Vue CLI
-  - create-react-app React create tool
-  - webpack Bundler
-  - nodemon Development file watcher
-  - pm2 Process manager
-  - serverless Serverless Framework
-  - cdk AWS CDK CLI
+  - pnpm  # Fast npm alternative
+  - bun  # Fast JavaScript runtime
+  - tsx  # TypeScript executor
+  - "@angular/cli"  # Angular CLI
+  - "@nestjs/cli"  # NestJS CLI
+  - "@vue/cli"  # Vue CLI
+  - create-react-app  # React create tool
+  - webpack  # Bundler
+  - nodemon  # Development file watcher
+  - pm2  # Process manager
+  - serverless  # Serverless Framework
+  - cdk  # AWS CDK CLI
