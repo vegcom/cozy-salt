@@ -16,6 +16,17 @@
   - Windows service account creation (Administrators group)
   - Linux service account creation (/bin/false shell, minimal)
   - Service account runs early in provisioning chain
+- [x] Restructure user pillar configuration (commit bacfa14)
+  - Break monolithic srv/pillar/common/users.sls into per-user files
+  - srv/pillar/users/{username}.sls pattern (admin.sls, vegcom.sls, eve.sls)
+  - srv/pillar/users/demo.sls as tracked template for new users
+  - .gitignore rules: ignore all user configs except demo.sls
+  - common/users.sls reduced to managed_users list + global github.tokens
+- [x] Document pillar configuration structure (commits 2503f62, 6bde44b)
+  - README.md: Pillar hierarchy explanation + user management
+  - CONTRIBUTING.md: Template reference + instructions for new hosts/users
+  - Git credentials and .gitconfig.local auto-deployment documented
+  - No CLAUDE.md references in public documentation
 
 ## High priority
 
@@ -30,16 +41,6 @@
   - Pending approval [saltstack/salt-bootstrap/pull/2101](https://github.com/saltstack/salt-bootstrap/pull/2101)
   - install on linux as `salt-bootstrap.sh onedir latest`
   - `curl -fsSL https://raw.githubusercontent.com/vegcom/salt-bootstrap/refs/heads/develop/bootstrap-salt.sh | bash -s -- -D onedir latest`
-
-## Documentation (Pending Review)
-
-- [ ] Update docs for 2025-01-22 changes
-  - Pillar: srv/pillar/mgmt.sls (service account config)
-  - Service accounts: Linux and Windows implementation
-  - Admin user in managed_users
-  - SDDM extraction to general states
-  - Git credential format changes
-  - Update architecture/deployment model docs as needed
 
 ## Backlog
 
