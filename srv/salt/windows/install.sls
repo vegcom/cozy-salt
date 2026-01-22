@@ -54,8 +54,8 @@ winget-install-user:
 
 
 # Install Winget runtime packages, system scope
-{% if packages.winget_runtimes is defined %}
-{% for category, pkgs in packages.winget_runtimes.items() %}
+{% if packages.windows.winget_runtimes is defined %}
+{% for category, pkgs in packages.windows.winget_runtimes.items() %}
 {% for pkg in pkgs %}
 winget_runtime_{{ pkg | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
@@ -77,8 +77,8 @@ winget_runtime_{{ pkg | replace('.', '_') | replace('-', '_') }}:
 {% endif %}
 
 # Install Winget packages by category, as machine scope
-{% if packages.winget_system is defined %}
-{% for category, pkgs in packages.winget_system.items() %}
+{% if packages.windows.winget_system is defined %}
+{% for category, pkgs in packages.windows.winget_system.items() %}
 {% for pkg in pkgs %}
 winget_{{ pkg | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
@@ -102,7 +102,7 @@ winget_{{ pkg | replace('.', '_') | replace('-', '_') }}:
 # Installs userland packages, user scope ( similar to  AllUsers )
 {% set users = salt['pillar.get']('managed_users', []) %}
 {% for user in users %}
-  {% for category, pkgs in packages.winget_userland.items() %}
+  {% for category, pkgs in packages.windows.winget_userland.items() %}
     {% for pkg in pkgs %}
 winget_userland_{{ user | replace('.', '_') | replace('-', '_') }}_{{ pkg | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
@@ -123,8 +123,8 @@ winget_userland_{{ user | replace('.', '_') | replace('-', '_') }}_{{ pkg | repl
   {% endfor %}
 {% endfor %}
 
-# PowerShell Modules (from both powershell_modules and powershell_gallery sources)
-{% set all_pwsh_modules = packages.get('powershell_modules', []) + packages.get('powershell_gallery', []) %}
+# PowerShell Modules (from powershell_gallery)
+{% set all_pwsh_modules = packages.windows.get('powershell_gallery', []) %}
 {% if all_pwsh_modules %}
 {% for module in all_pwsh_modules %}
 pwsh_module_{{ module | replace('.', '_') | replace('-', '_') }}:
@@ -155,8 +155,8 @@ choco_feature_{{ feature }}_enabled:
 {% endfor %}
 
 # Install Chocolatey packages
-{% if packages.choco is defined %}
-{% for pkg in packages.choco %}
+{% if packages.windows.choco is defined %}
+{% for pkg in packages.windows.choco %}
 choco_{{ pkg | replace('.', '_') | replace('-', '_') }}:
   chocolatey.installed:
     - name: {{ pkg }}
