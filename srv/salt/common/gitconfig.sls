@@ -18,7 +18,9 @@ deploy_gitconfig_{{ username }}:
     - name: {{ dotfiles.dotfile_path(user_home, '.gitconfig') }}
     - source: salt://common/dotfiles/.gitconfig
     - user: {{ username }}
+{% if not is_windows %}
     - mode: 644
+{% endif %}
     - makedirs: True
 
 # Deploy .git-credentials (always update)
@@ -27,7 +29,9 @@ deploy_git_credentials_{{ username }}:
     - name: {{ dotfiles.dotfile_path(user_home, '.git-credentials') }}
     - source: salt://common/dotfiles/.git-credentials
     - user: {{ username }}
+{% if not is_windows %}
     - mode: 600
+{% endif %}
     - makedirs: True
 
 # Deploy base .gitignore (always update)
@@ -36,7 +40,9 @@ deploy_gitignore_{{ username }}:
     - name: {{ dotfiles.dotfile_path(user_home, '.gitignore') }}
     - source: salt://common/dotfiles/.gitignore
     - user: {{ username }}
+{% if not is_windows %}
     - mode: 644
+{% endif %}
     - makedirs: True
 
 # Deploy .gitconfig.local (create once only, user customizations)
@@ -45,7 +51,9 @@ deploy_gitconfig_local_{{ username }}:
     - name: {{ dotfiles.dotfile_path(user_home, '.gitconfig.local') }}
     - source: salt://common/dotfiles/.gitconfig.local
     - user: {{ username }}
+{% if not is_windows %}
     - mode: 644
+{% endif %}
     - makedirs: True
     - create: False
 
@@ -55,17 +63,23 @@ deploy_gitignore_local_{{ username }}:
     - name: {{ dotfiles.dotfile_path(user_home, '.gitignore.local') }}
     - source: salt://common/dotfiles/.gitignore.local
     - user: {{ username }}
+{% if not is_windows %}
     - mode: 644
+{% endif %}
     - makedirs: True
     - create: False
 
 # Deploy .vim directory via git (clone cozy-vim.git for each user)
 deploy_vim_{{ username }}:
   git.latest:
-    - name: {% if github_token %}https://{{ github_token }}@github.com/vegcom/cozy-vim.git{% else %}https://github.com/vegcom/cozy-vim.git{% endif %}
+    - name: https://github.com/vegcom/cozy-vim.git
     - target: {{ dotfiles.dotfile_path(user_home, '.vim') }}
     - user: {{ username }}
     - branch: main
+{% if github_token %}
+    - https_user: _
+    - https_password: {{ github_token }}
+{% endif %}
 
 # Deploy .git_template directory (always update)
 deploy_git_template_{{ username }}:

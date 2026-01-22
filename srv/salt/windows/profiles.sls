@@ -16,9 +16,13 @@ powershell_profile_directory:
 # Fetches latest system-wide profile configuration from the repo
 powershell_profile_files:
   git.latest:
-    - name: {% if github_token %}https://{{ github_token }}@github.com/vegcom/cozy-pwsh.git{% else %}https://github.com/vegcom/cozy-pwsh.git{% endif %}
+    - name: https://github.com/vegcom/cozy-pwsh.git
     - target: {{ pwsh_profile_dir }}
     - branch: main
+{% if github_token %}
+    - https_user: _
+    - https_password: {{ github_token }}
+{% endif %}
     - require:
       - file: powershell_profile_directory
 
