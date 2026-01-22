@@ -198,20 +198,20 @@ class PackageValidator:
   def report(self) -> None:
     """Print validation report."""
     if self.errors:
-      print("❌ Package metadata validation FAILED\n")
+      print("FAILED: Package metadata validation\n")
       print("Errors:")
       for i, error in enumerate(self.errors, 1):
         print(f"  {i}. {error}")
       print()
 
     if self.warnings:
-      print("⚠️  Warnings:")
+      print("Warnings:")
       for i, warning in enumerate(self.warnings, 1):
         print(f"  {i}. {warning}")
       print()
 
     if not self.errors:
-      print("✅ Package metadata validation PASSED")
+      print("PASSED: Package metadata validation")
       if self.warnings:
         print(
           f"   ({len(self.warnings)} warning{'s' if len(self.warnings) != 1 else ''})"

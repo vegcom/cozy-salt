@@ -41,14 +41,6 @@ class TestUbuntuStates:
     """Ubuntu should have at least one state executed."""
     assert ubuntu_results.total > 0, "No states were executed"
 
-  def test_state_count(self, ubuntu_results: ParsedResults) -> None:
-    """Report state execution counts."""
-    # This test always passes but reports metrics
-    print("\nUbuntu state summary:")
-    print(f"  Total:     {ubuntu_results.total}")
-    print(f"  Succeeded: {ubuntu_results.succeeded}")
-    print(f"  Failed:    {ubuntu_results.failed}")
-
 
 # =============================================================================
 # RHEL Tests
@@ -71,13 +63,6 @@ class TestRHELStates:
     """RHEL should have at least one state executed."""
     assert rhel_results.total > 0, "No states were executed"
 
-  def test_state_count(self, rhel_results: ParsedResults) -> None:
-    """Report state execution counts."""
-    print("\nRHEL state summary:")
-    print(f"  Total:     {rhel_results.total}")
-    print(f"  Succeeded: {rhel_results.succeeded}")
-    print(f"  Failed:    {rhel_results.failed}")
-
 
 # =============================================================================
 # Windows Tests
@@ -99,13 +84,6 @@ class TestWindowsStates:
   def test_has_states(self, windows_results: ParsedResults) -> None:
     """Windows should have at least one state executed."""
     assert windows_results.total > 0, "No states were executed"
-
-  def test_state_count(self, windows_results: ParsedResults) -> None:
-    """Report state execution counts."""
-    print("\nWindows state summary:")
-    print(f"  Total:     {windows_results.total}")
-    print(f"  Succeeded: {windows_results.succeeded}")
-    print(f"  Failed:    {windows_results.failed}")
 
 
 # =============================================================================

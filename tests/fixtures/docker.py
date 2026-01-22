@@ -181,8 +181,7 @@ class ContainerManager:
         )
 
       # Check for completion marker in logs
-      logs = self.get_container_logs(config.container_name)
-      if "Highstate complete" in logs:
+      if "Highstate complete" in self.get_container_logs(config.container_name):
         logger.info("Highstate completed successfully")
         return True
 
