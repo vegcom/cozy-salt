@@ -1,6 +1,7 @@
 #!/bin/bash
 # /etc/profile.d/yay-wrapper.sh: YAY AUR helper environment isolation (Arch Linux only)
 # Deployed by salt to clean yay execution environment
+# Managed by Salt - DO NOT EDIT MANUALLY
 
 # Only apply on Arch Linux / derivative systems
 if [[ ! -f /etc/arch-release ]] && [[ ! -f /etc/artix-release ]]; then

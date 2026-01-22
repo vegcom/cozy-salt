@@ -10,6 +10,7 @@ base:
     - common.paths
     - common.versions
     - common.scheduler
+    - secrets
 
   # Windows systems
   'G@os_family:Windows':

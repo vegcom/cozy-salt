@@ -1,6 +1,7 @@
 #!/bin/bash
 # NVM (Node Version Manager) system-wide initialization
 # Manages environment for all users to use system-wide /opt/nvm installation
+# Managed by Salt - DO NOT EDIT MANUALLY
 
 # Set NVM directory
 export NVM_DIR="/opt/nvm"

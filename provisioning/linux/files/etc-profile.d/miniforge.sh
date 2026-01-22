@@ -1,8 +1,8 @@
 #!/bin/bash
 # Miniforge conda/mamba initialization (system-wide installation at /opt/miniforge3)
 # Available to all users
+# Managed by Salt - DO NOT EDIT MANUALLY
 
-# >>> conda initialize >>>
 __conda_setup="$('/opt/miniforge3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
 # shellcheck disable=SC2181
 if [ $? -eq 0 ]; then
@@ -16,10 +16,7 @@ else
     fi
 fi
 unset __conda_setup
-# <<< conda initialize <<<
 
-
-# >>> mamba initialize >>>
 MAMBA_EXE='/opt/miniforge3/bin/mamba'
 MAMBA_ROOT_PREFIX='/opt/miniforge3'
 export MAMBA_EXE
@@ -38,4 +35,3 @@ if [ -f "/opt/miniforge3/etc/profile.d/mamba.sh" ]; then
     # shellcheck disable=SC1091
     . "/opt/miniforge3/etc/profile.d/mamba.sh"
 fi
-# <<< mamba initialize <<<

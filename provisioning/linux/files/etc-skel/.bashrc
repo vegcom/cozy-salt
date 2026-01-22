@@ -1,5 +1,6 @@
 #!/bin/bash
-# ~/.bashrc :  Managed by salt
+# ~/.bashrc
+# Managed by Salt - DO NOT EDIT MANUALLY
 
 gclean() {
   # Marker text to stop at; default stays your original

@@ -1,5 +1,5 @@
 # Windows PowerShell 7 System-Wide Profile Deployment
-# Deploys comprehensive PowerShell configuration
+# Fetches comprehensive PowerShell configuration from cozy-pwsh.git
 # Profile includes: init, time, logging, aliases, functions, modules, npm, conda, choco, code, starship
 # See docs/modules/windows-profiles.md for configuration
 
@@ -11,13 +11,13 @@ powershell_profile_directory:
     - name: {{ pwsh_profile_dir }}
     - makedirs: True
 
-# Deploy main profile and config files recursively
-# Mirrors directory structure: config.d/, starship.toml, Microsoft.PowerShell_profile.ps1
+# Deploy PowerShell profile via git (clone cozy-pwsh.git)
+# Fetches latest system-wide profile configuration from the repo
 powershell_profile_files:
-  file.recurse:
-    - name: {{ pwsh_profile_dir }}
-    - source: salt://windows/files/PROFILE.AllUsersCurrentHost/
-    - makedirs: True
+  git.latest:
+    - name: https://github.com/vegcom/cozy-pwsh.git
+    - target: {{ pwsh_profile_dir }}
+    - branch: main
     - require:
       - file: powershell_profile_directory
 
@@ -28,6 +28,6 @@ powershell_profile_deployed:
     - name: icacls "{{ pwsh_profile_dir }}" /grant:r "Users:(OI)(CI)(R)" /grant:r "Administrators:(OI)(CI)(F)" /t /q
     - shell: cmd
     - require:
-      - file: powershell_profile_files
+      - git: powershell_profile_files
     - onchanges:
-      - file: powershell_profile_files
+      - git: powershell_profile_files

@@ -7,6 +7,7 @@
 ## Active
 
 - [ ] Debug atuin integration (check: installed? PATH? .bashrc init? bash-preexec?)
+- [ ] Move tests/ to cozy-salt-enrollment submodule (test_states.py, test_linting.py)
 - [x] Add `package_metadata` to packages.sls (distro_aliases, conflicts, provides) (2025-01-21: structure defined in provisioning/packages.sls)
 - [ ] Validate and enforce package_metadata (conflicts, exclude, provides resolution)
 - [ ] Salt bootstrap to leverage fork [vegcom/salt-bootstrap/develop/bootstrap-salt.sh](https://raw.githubusercontent.com/vegcom/salt-bootstrap/develop/bootstrap-salt.sh)
@@ -26,6 +27,11 @@
 - [x] Windows: parameterize hardcoded paths via pillar (PowerShell, sshd_config.d) (2025-01-21: commit b460453)
 - [x] Windows: pillar-driven scheduled tasks (2025-01-21: commit b67acd9)
 - [x] SDDM astronaut theme (pillar gate: `steamdeck:sddm:theme`) (2025-01-21)
+
+## Future
+
+- [ ] IPA provisioning (awaiting secrets management solution - explore lightweight alternatives to Vault)
+- [ ] Integrate cozy-fragments (Windows Terminal config fragments) - manual for now
 
 ## Pending review
 

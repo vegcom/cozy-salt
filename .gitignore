@@ -1,11 +1,13 @@
 .claude/
 .coverage
 .env
+.env.local
 .vscode/
 **/__pycache__/
 **/.DS_Store
 CLAUDE.md
 scripts/pki/
 srv/pillar/common/users.sls
+srv/pillar/secrets/init.sls
 srv/salt/keys/master/
 srv/salt/keys/minion/

@@ -11,20 +11,7 @@ provisioning/windows/
 │   ├── opt-cozy/                 Post-install system utilities
 │   │   ├── configure-docker-wsl-context.ps1
 │   │   └── enable-openssh.ps1
-│   └── PROFILE.AllUsersCurrentHost/  PowerShell 7 system-wide profile
-│       ├── Microsoft.PowerShell_profile.ps1  Main loader
-│       ├── starship.toml          Shell prompt configuration
-│       └── config.d/              Modular configuration scripts
-│           ├── init.ps1           Logging framework
-│           ├── time.ps1           Timing utilities
-│           ├── functions.ps1      Utility functions
-│           ├── aliases.ps1        Command aliases
-│           ├── modules.ps1        PowerShell module loader
-│           ├── choco.ps1          Chocolatey integration
-│           ├── code.ps1           VS Code integration
-│           ├── conda.ps1          Conda/Miniforge integration
-│           ├── npm.ps1            NPM/NVM integration
-│           └── starship.ps1       Starship prompt
+│   └── (PowerShell profile now fetched from cozy-pwsh.git)
 └── tasks/                         Scheduled task definitions (XML)
     ├── wsl/
     │   └── wsl_autostart.xml      WSL distro autostart task
@@ -38,21 +25,22 @@ provisioning/windows/
 
 ### File Deployment Targets
 
-| Source File                           | Deployment Target                             | Permission       | Deployed By         |
-| ------------------------------------- | --------------------------------------------- | ---------------- | ------------------- |
-| `files/PROFILE.AllUsersCurrentHost/*` | `C:\Program Files\PowerShell\7\*`             | 644 (readable)   | `windows.profiles`  |
-| `files/opt-cozy/*.ps1`                | `C:\opt\cozy\*`                               | 755 (executable) | `windows.opt-cozy`  |
-| `tasks/wsl/*.xml`                     | `C:\Windows\System32\tasks\cozy\*`            | 644 (readable)   | `windows.tasks.wsl` |
-| `tasks/kubernetes/*.xml`              | `C:\Windows\System32\tasks\cozy\kubernetes\*` | 644 (readable)   | `windows.tasks.k8s` |
-| `Autounattend.xml`                    | Mounted at Windows boot (Dockur)              | N/A              | Dockur VM setup     |
+| Source                                 | Deployment Target                             | Permission       | Deployed By         |
+| -------------------------------------- | --------------------------------------------- | ---------------- | ------------------- |
+| `cozy-pwsh.git`                        | `C:\Program Files\PowerShell\7\*`             | 644 (readable)   | `windows.profiles`  |
+| `files/opt-cozy/*.ps1`                 | `C:\opt\cozy\*`                               | 755 (executable) | `windows.opt-cozy`  |
+| `tasks/wsl/*.xml`                      | `C:\Windows\System32\tasks\cozy\*`            | 644 (readable)   | `windows.tasks.wsl` |
+| `tasks/kubernetes/*.xml`               | `C:\Windows\System32\tasks\cozy\kubernetes\*` | 644 (readable)   | `windows.tasks.k8s` |
+| `Autounattend.xml`                     | Mounted at Windows boot (Dockur)              | N/A              | Dockur VM setup     |
 
 ### Salt States for Deployment
 
 Located in `srv/salt/windows/`:
 
-- **`windows/profiles.sls`** → Deploys PowerShell profile files recursively
+- **`windows/profiles.sls`** → Deploys PowerShell profile via git
   - Creates `C:\Program Files\PowerShell\7` directory
-  - Recursively copies all files from `salt://windows/files/PROFILE.AllUsersCurrentHost/`
+  - Clones [cozy-pwsh.git](https://github.com/vegcom/cozy-pwsh.git) (main branch) to profile directory
+  - Fetches latest profile configuration on each highstate run
   - Sets Windows ACLs (Users:Read, Administrators:Full)
   - Dependency for other states that modify profile
 
@@ -84,13 +72,17 @@ Salt mounts `provisioning/windows/` at `/provisioning` in master container, whic
 
 ## PowerShell Profile System
 
+The PowerShell profile is maintained in the external repository [cozy-pwsh.git](https://github.com/vegcom/cozy-pwsh.git) and fetched dynamically by Salt.
+
+**For profile configuration and customization, see**: [cozy-pwsh](https://github.com/vegcom/cozy-pwsh.git)
+
 ### Overview
 
 The PowerShell profile is modular and composable, allowing independent configuration of different tools while maintaining a single entry point.
 
 **Profile entry point**: `Microsoft.PowerShell_profile.ps1`
 
-- **Location**: `C:\Program Files\PowerShell\7\profile.ps1` (deployed)
+- **Location**: `C:\Program Files\PowerShell\7\profile.ps1` (deployed from cozy-pwsh.git)
 - **Purpose**: Main profile loader that sources all config files
 - **Runs on**: Every PowerShell session start
 - **Load time**: ~2-3 seconds for full initialization
@@ -338,33 +330,17 @@ icacls "C:\Program Files\PowerShell\7" /grant:r "Users:(OI)(CI)(R)" /grant:r "Ad
 
 ### Add a New Tool to Profile
 
-1. **Create config file** in `provisioning/windows/files/PROFILE.AllUsersCurrentHost/config.d/`
+Profile customization is now maintained in [cozy-pwsh.git](https://github.com/vegcom/cozy-pwsh.git).
 
-   ```powershell
-   # newtool.ps1
-   try {
-       # Initialization logic here
-       logging "newtool initialized" "DEBUG"
-   } catch {
-       if (Get-Command logging -ErrorAction SilentlyContinue) {
-           logging "Failed to initialize newtool: $_" "WARN"
-       }
-   }
-   ```
+**To add a new tool to the profile:**
 
-2. **Update main profile** (`Microsoft.PowerShell_profile.ps1`)
-   - Add path variable: `$newtool = "$profileDir\config.d\newtool.ps1"`
-   - Add to Script-Loader call in appropriate section
+1. Fork or submit a PR to [cozy-pwsh](https://github.com/vegcom/cozy-pwsh.git)
+2. Create config file in `config.d/newtool.ps1`
+3. Update `Microsoft.PowerShell_profile.ps1` to source the new config
+4. Merge to main branch
+5. Salt will fetch and deploy on next highstate run
 
-3. **Run fix-permissions**
-
-   ```bash
-   ./scripts/fix-permissions.sh
-   ```
-
-4. **Deploy with Salt**
-   - Profile files automatically deploy via `windows/profiles.sls`
-   - No state file changes needed (recursive deployment)
+**No changes needed to cozy-salt** - configuration updates are automatic when cozy-pwsh.git is updated.
 
 ### Add a New Scheduled Task
 

@@ -69,4 +69,10 @@ When adding a new module:
 |                                       repo                                        |                        path                         |
 | :-------------------------------------------------------------------------------: | :-------------------------------------------------: |
 | [vegcom/cozy-salt-enrollment.git](https://github.com/vegcom/cozy-salt-enrollment) |     [scripts/enrollment/](./scripts/enrollment/)    |
-|           [vegcom/cozy-vim.git](https://github.com/vegcom/cozy-vim)           | [provisioning/common/dotfiles/.vim/](./.vim/) |
+
+## Dynamic Git Deployments
+
+|                                       repo                                        |                        deployment                        |
+| :-------------------------------------------------------------------------------: | :-----------------------------------------------------: |
+|           [vegcom/cozy-vim.git](https://github.com/vegcom/cozy-vim)               |    `~/.vim` (per-user via git.latest in gitconfig.sls)   |
+|          [vegcom/cozy-pwsh.git](https://github.com/vegcom/cozy-pwsh)              | `C:\Program Files\PowerShell\7` (system-wide via windows/profiles.sls) |
