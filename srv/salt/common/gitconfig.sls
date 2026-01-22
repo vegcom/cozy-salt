@@ -69,11 +69,11 @@ deploy_gitignore_local_{{ username }}:
     - makedirs: True
     - create: False
 
-# Configure git to trust .vim directory (works around Git 2.36+ dubious ownership check)
-# Needed when repo is owned by different user than who runs git commands
-git_safe_directory_vim_{{ username }}:
+# Configure git to trust all directories (works around Git 2.36+ dubious ownership check)
+# Needed when repo is owned by different user than who runs git commands (common on Windows)
+git_safe_directory_all_{{ username }}:
   cmd.run:
-    - name: git config --global --add safe.directory {{ dotfiles.dotfile_path(user_home, '.vim') }}
+    - name: git config --global --add safe.directory '*'
     - user: {{ username }}
 
 # Deploy .vim directory via git (clone cozy-vim.git for each user)
@@ -89,7 +89,7 @@ deploy_vim_{{ username }}:
 {% endif %}
     - force_clone: True
     - require:
-      - cmd: git_safe_directory_vim_{{ username }}
+      - cmd: git_safe_directory_all_{{ username }}
 
 # Deploy .git_template directory (always update)
 deploy_git_template_{{ username }}:
