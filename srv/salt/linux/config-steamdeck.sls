@@ -4,6 +4,7 @@
 
 {% set is_galileo = grains.get('dmi', {}).get('System Information', {}).get('Manufacturer', '') == 'Valve' and
                     grains.get('dmi', {}).get('System Information', {}).get('Product Name', '') == 'Galileo' %}
+{% set github_token = salt['pillar.get']('github:access_token', '') %}
 
 {% if is_galileo %}
 
@@ -75,6 +76,10 @@ sddm_theme:
     - name: {{ theme_url }}
     - target: /usr/share/sddm/themes/sddm-{{ sddm_theme }}-theme
     - user: root
+{% if github_token %}
+    - https_user: {{ github_token }}
+    - https_pass: ''
+{% endif %}
 
 {% if deploy_fonts %}
 sddm_theme_fonts:

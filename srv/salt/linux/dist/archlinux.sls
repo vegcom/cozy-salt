@@ -13,6 +13,7 @@
 {% set workstation_role = salt['pillar.get']('workstation_role', 'workstation-full') %}
 {% set capability_meta = salt['pillar.get']('capability_meta', {}) %}
 {% set yay_user = salt['pillar.get']('aur_user', 'admin') %}
+{% set github_token = salt['pillar.get']('github:access_token', '') %}
 
 # Get role capabilities from pillar (centralized in srv/pillar/linux/init.sls)
 {% set role_capabilities = salt['pillar.get']('role_capabilities', {}) %}
@@ -60,6 +61,10 @@ yay_clone:
     - target: /home/{{ yay_user }}/.cache/yay-bootstrap/yay-bin
     - user: {{ yay_user }}
     - force_clone: True
+{% if github_token %}
+    - https_user: {{ github_token }}
+    - https_pass: ''
+{% endif %}
     - require:
       - file: yay_build_dir
     - unless: which yay
