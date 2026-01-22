@@ -32,7 +32,7 @@ winget-install-user:
     - shell: powershell
     - runas: {{ bootstrap_user }}
     - unless: |
-        powershell -NoProfile -Command "
+        powershell -Command "
           if (Get-AppxPackage Microsoft.DesktopAppInstaller -ErrorAction SilentlyContinue) {
             exit 0
           } else {
@@ -66,7 +66,7 @@ winget_runtime_{{ pkg | replace('.', '_') | replace('-', '_') }}:
     - runas: SYSTEM
     - name: winget install --scope machine --accept-source-agreements --accept-package-agreements --exact --id {{ pkg }}
     - unless: >
-        pwsh -NoLogo -NoProfile -Command "
+        pwsh -NoLogo -Command "
           if (winget list --scope machine --exact --id {{ pkg }} | Select-String -Quiet -Pattern '{{ pkg }}') {
             exit 0
           } else {
@@ -89,7 +89,7 @@ winget_{{ pkg | replace('.', '_') | replace('-', '_') }}:
     - runas: SYSTEM
     - name: winget install --scope machine --accept-source-agreements --accept-package-agreements  --exact --id {{ pkg }}
     - unless: >
-        pwsh -NoLogo -NoProfile -Command "
+        pwsh -NoLogo -Command "
           if (winget list --scope machine --exact --id {{ pkg }} | Select-String -Quiet -Pattern '{{ pkg }}') {
             exit 0
           } else {
@@ -113,7 +113,7 @@ winget_userland_{{ user | replace('.', '_') | replace('-', '_') }}_{{ pkg | repl
     - runas: {{ user }}
     - shell: pwsh
     - unless: >
-        pwsh -NoLogo -NoProfile -Command "
+        pwsh -NoLogo -Command "
           if (winget list --scope user --exact --id {{ pkg }} | Select-String -Quiet -Pattern '{{ pkg }}') {
             exit 0
           } else {
@@ -135,11 +135,11 @@ pwsh_module_{{ module | replace('.', '_') | replace('-', '_') }}:
     - shell: pwsh
     - runas: SYSTEM
     - name: >
-        pwsh -NoLogo -NoProfile -Command "
+        pwsh -NoLogo -Command "
           Install-Module -Name '{{ module }}' -Scope AllUsers -AllowClobber -SkipPublisherCheck -Force -Repository PSGallery
         "
     - unless: >
-        pwsh -NoLogo -NoProfile -Command "
+        pwsh -NoLogo -Command "
           if (Get-InstalledModule -Name '{{ module }}' -ErrorAction SilentlyContinue) {
             exit 0
           } else {
