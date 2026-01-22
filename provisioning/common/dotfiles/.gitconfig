@@ -60,4 +60,5 @@
   forceSignAnnotated = true
 
 [credential]
-  helper = cache
+  helper = store
+  helper = cache --timeout=3600
