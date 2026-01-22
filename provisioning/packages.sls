@@ -230,8 +230,6 @@ ubuntu:
     - screen
     - tmux
     - shellcheck
-  shell_history:
-    - atuin
   build_tools:
     - autoconf
     - automake
@@ -303,8 +301,6 @@ debian:
     - screen
     - tmux
     - shellcheck
-  shell_history:
-    - atuin
   build_tools:
     - autoconf
     - automake
@@ -376,8 +372,6 @@ rhel:
     - screen
     - tmux
     - shellcheck
-  shell_history:
-    - atuin
   build_tools:
     - autoconf
     - automake
@@ -496,8 +490,6 @@ arch:
     - qemu-desktop QEMU with UI (Arch package name)
     - virt-install
     - virt-manager
-  shell_history:
-    - atuin
   interpreters: Arch-only (other distros compile from source or use nvm/conda)
     - lua
     - perl
@@ -640,7 +632,7 @@ windows:
 
 # ============================================================================
 # LANGUAGE-SPECIFIC PACKAGES
-# Python and Node.js global packages
+# Python, Node.js, and Rust tools
 # ============================================================================
 pip_base:
   - pip  # Ensure latest pip version
@@ -661,3 +653,6 @@ npm_global:
   - pm2  # Process manager
   - serverless  # Serverless Framework
   - cdk  # AWS CDK CLI
+
+cargo_global:
+  - atuin  # Shell history tool (install via cargo across all distros)
