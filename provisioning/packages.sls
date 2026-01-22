@@ -197,6 +197,11 @@ package_metadata:
       debian: gh
       rhel: gh
       arch: github-cli Different name on Arch!
+    shellcheck:
+      ubuntu: shellcheck
+      debian: shellcheck
+      rhel: ShellCheck
+      arch: shellcheck
 
 # ============================================================================
 # UBUNTU PACKAGES
@@ -224,9 +229,9 @@ ubuntu:
     - bash-completion
     - screen
     - tmux
-    - zsh
-    - zsh-autosuggestions
-    - zsh-syntax-highlighting
+    - shellcheck
+    - atuin
+    -
   build_tools:
     - autoconf
     - automake
@@ -270,8 +275,6 @@ ubuntu:
     - qemu-system-x86
     - qemu-utils
     - virtinst
-  shell_history:
-    - atuin
 
 # ============================================================================
 # DEBIAN PACKAGES
@@ -299,9 +302,8 @@ debian:
     - bash-completion
     - screen
     - tmux
-    - zsh
-    - zsh-autosuggestions
-    - zsh-syntax-highlighting
+    - shellcheck
+    - atuin
   build_tools:
     - autoconf
     - automake
@@ -345,8 +347,7 @@ debian:
     - qemu-system-x86
     - qemu-utils
     - virtinst
-  shell_history:
-    - atuin
+
 
 # ============================================================================
 # RHEL PACKAGES
@@ -373,7 +374,8 @@ rhel:
     - bash-completion
     - screen
     - tmux
-    - zsh
+    - shellcheck
+    - atuin
   build_tools:
     - autoconf
     - automake
@@ -419,8 +421,6 @@ rhel:
     - qemu-img
     - qemu-kvm
     - virt-install
-  shell_history:
-    - atuin
 
 # ============================================================================
 # ARCH PACKAGES
