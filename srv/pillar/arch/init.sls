@@ -103,6 +103,44 @@ capability_meta:
     state_name: theming_packages
 
 # =============================================================================
+# =============================================================================
+# Pacman Repository Configuration
+# =============================================================================
+# Manages /etc/pacman.conf repositories
+# Chaotic AUR enabled by default for faster AUR package access
+pacman:
+  repos:
+    core:
+      enabled: true
+      Include: /etc/pacman.d/mirrorlist
+
+    extra:
+      enabled: true
+      Include: /etc/pacman.d/mirrorlist
+
+    multilib:
+      enabled: true
+      Include: /etc/pacman.d/mirrorlist
+
+    chaotic_aur:
+      enabled: true
+      server: "https://chaotic.cx/arch/x86_64"
+
+# =============================================================================
+# System Locales
+# =============================================================================
+# Locales to generate via locale-gen
+# Added to /etc/locale.gen before running locale-gen
+locales:
+  - en_US.UTF-8
+  - fr_FR.UTF-8
+  - ja_JP.UTF-8
+  - ko_KR.UTF-8
+  - ru_RU.UTF-8
+  - zh_CN.UTF-8
+  - zh_TW.UTF-8
+
+# =============================================================================
 # Steam Deck Specific Configuration
 # =============================================================================
 steamdeck:

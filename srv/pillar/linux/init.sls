@@ -37,6 +37,15 @@ host:
     ssh_enabled: {{ not (salt['file.file_exists']('/.dockerenv') or salt['file.file_exists']('/run/.containerenv')) }}
 
 # =============================================================================
+# System Locales
+# =============================================================================
+# Locales to generate via locale-gen
+# Added to /etc/locale.gen before running locale-gen
+# Override in class/ or host/ pillar as needed
+locales:
+  - en_US.UTF-8
+
+# =============================================================================
 # Role-based Capability Mapping
 # =============================================================================
 # Each role defines a list of capabilities to install
