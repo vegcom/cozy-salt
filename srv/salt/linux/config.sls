@@ -42,8 +42,8 @@ nvm_system_profile:
 yay_wrapper_profile:
   file.managed:
     - name: /etc/profile.d/yay-wrapper.sh
-    - source: salt://common/files/profile.d/yay-wrapper.sh
-    - mode: 644
+    - source: salt://linux/files/etc-profile.d/yay-wrapper.sh
+    - mode: 755
 
 # Deploy hardened SSH configuration (consolidated template - High-003)
 # Template handles platform conditionals: Linux, WSL, and Windows
