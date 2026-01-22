@@ -7,7 +7,8 @@
 ## Active
 
 - [ ] Debug atuin integration (check: installed? PATH? .bashrc init? bash-preexec?)
-- [ ] Add `package_metadata` to packages.sls (distro_aliases, conflicts, provides)
+- [x] Add `package_metadata` to packages.sls (distro_aliases, conflicts, provides) (2025-01-21: structure defined in provisioning/packages.sls)
+- [ ] Validate and enforce package_metadata (conflicts, exclude, provides resolution)
 - [ ] Salt bootstrap to leverage fork [vegcom/salt-bootstrap/develop/bootstrap-salt.sh](https://raw.githubusercontent.com/vegcom/salt-bootstrap/develop/bootstrap-salt.sh)
   - Pending approval [saltstack/salt-bootstrap/pull/2101](https://github.com/saltstack/salt-bootstrap/pull/2101)
   - install on linux as `salt-bootstrap.sh onedir latest`
