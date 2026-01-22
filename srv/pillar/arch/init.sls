@@ -101,3 +101,21 @@ capability_meta:
 
   theming:
     state_name: theming_packages
+
+# =============================================================================
+# Steam Deck Specific Configuration
+# =============================================================================
+steamdeck:
+  # SDDM login manager theme
+  # Options: 'astronaut', 'breeze', etc. (theme folder name in /usr/share/sddm/themes/)
+  sddm:
+    theme: 'astronaut'
+    deploy_fonts: true
+
+  # Autologin user (blank = disabled)
+  autologin:
+    user: false  # or: 'deck' to enable autologin
+
+  # Bluetooth configuration
+  bluetooth:
+    enabled: true

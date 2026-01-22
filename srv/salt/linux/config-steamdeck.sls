@@ -59,32 +59,50 @@ sddm_general_conf:
     - makedirs: True
 
 # =============================================================================
-# ASTRONAUT THEME DEPLOYMENT
+# SDDM THEME DEPLOYMENT (Pillar-gated)
 # =============================================================================
+{% set sddm_theme = salt['pillar.get']('steamdeck:sddm:theme', 'astronaut') %}
+{% set deploy_fonts = salt['pillar.get']('steamdeck:sddm:deploy_fonts', true) %}
+{% set theme_url_map = {
+  'astronaut': 'https://github.com/Keyitdev/sddm-astronaut-theme.git',
+  'breeze': 'skip',
+} %}
+{% set theme_url = theme_url_map.get(sddm_theme, '') %}
 
-sddm_astronaut_theme:
+{% if sddm_theme and theme_url and theme_url != 'skip' %}
+sddm_theme:
   git.latest:
-    - name: https://github.com/Keyitdev/sddm-astronaut-theme.git
-    - target: /usr/share/sddm/themes/sddm-astronaut-theme
+    - name: {{ theme_url }}
+    - target: /usr/share/sddm/themes/sddm-{{ sddm_theme }}-theme
     - user: root
 
-sddm_astronaut_fonts:
+{% if deploy_fonts %}
+sddm_theme_fonts:
   cmd.run:
-    - name: cp -r /usr/share/sddm/themes/sddm-astronaut-theme/Fonts/* /usr/share/fonts/
+    - name: cp -r /usr/share/sddm/themes/sddm-{{ sddm_theme }}-theme/Fonts/* /usr/share/fonts/ 2>/dev/null || true
     - require:
-      - git: sddm_astronaut_theme
-    - onlyif: test -d /usr/share/sddm/themes/sddm-astronaut-theme/Fonts
+      - git: sddm_theme
+    - onlyif: test -d /usr/share/sddm/themes/sddm-{{ sddm_theme }}-theme/Fonts
 
 update_font_cache:
   cmd.run:
     - name: fc-cache -f -v
     - require:
-      - cmd: sddm_astronaut_fonts
+      - cmd: sddm_theme_fonts
+{% endif %}
+
+{% else %}
+# SDDM theme deployment disabled or theme not found in map
+# Set steamdeck:sddm:theme in pillar to deploy (e.g., 'astronaut')
+sddm_theme_disabled:
+  test.nop:
+    - name: SDDM theme deployment disabled or theme not found (current: {{ sddm_theme }})
+{% endif %}
 
 # =============================================================================
-# AUTOLOGIN CONFIGURATION (Optional via pillar gate)
+# AUTOLOGIN CONFIGURATION (Pillar-gated)
 # =============================================================================
-{% set autologin_user = salt['pillar.get']('steamdeck:autologin:user', False) %}
+{% set autologin_user = salt['pillar.get']('steamdeck:autologin:user', false) %}
 {% if autologin_user %}
 
 sddm_autologin_conf:
@@ -96,6 +114,11 @@ sddm_autologin_conf:
         Session=awesome
     - makedirs: True
 
+{% else %}
+# Autologin disabled (set steamdeck:autologin:user to enable)
+sddm_autologin_disabled:
+  test.nop:
+    - name: Autologin disabled (set steamdeck:autologin:user to enable)
 {% endif %}
 
 # =============================================================================
@@ -110,10 +133,9 @@ steamdeck_sleep_hook:
     - makedirs: True
 
 # =============================================================================
-# BLUETOOTH CONFIGURATION
+# BLUETOOTH CONFIGURATION (Pillar-gated)
 # =============================================================================
-{% set bluetooth_config = salt['pillar.get']('bluetooth', {}) %}
-{% set bluetooth_enabled = bluetooth_config.get('enabled', True) %}
+{% set bluetooth_enabled = salt['pillar.get']('steamdeck:bluetooth:enabled', true) %}
 
 {% if bluetooth_enabled %}
 # Enable and start Bluetooth service
@@ -143,7 +165,7 @@ bluetooth_main_config:
 # Bluetooth disabled in pillar
 bluetooth_disabled:
   test.nop:
-    - name: Bluetooth configuration disabled (check pillar display:bluetooth:enabled)
+    - name: Bluetooth configuration disabled (check pillar steamdeck:bluetooth:enabled)
 {% endif %}
 
 {% else %}

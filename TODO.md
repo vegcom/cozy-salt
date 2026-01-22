@@ -17,9 +17,9 @@
 
 - [ ] Cull verbose inline comments from .sls files, move to proper docs
 - [x] Rewrite tests/test-states-json.sh in Python (pytest integration, better error handling) (2025-01-21: test_states.py + test_linting.py complete, culled shell test runners)
-- [ ] Windows: parameterize hardcoded paths via pillar (PowerShell, sshd_config.d)
-- [ ] Windows: pillar-driven scheduled tasks
-- [ ] SDDM astronaut theme (pillar gate: `steamdeck:sddm:theme`)
+- [x] Windows: parameterize hardcoded paths via pillar (PowerShell, sshd_config.d) (2025-01-21: commit b460453)
+- [x] Windows: pillar-driven scheduled tasks (2025-01-21: commit b67acd9)
+- [x] SDDM astronaut theme (pillar gate: `steamdeck:sddm:theme`) (2025-01-21)
 
 ## Pending review
 
