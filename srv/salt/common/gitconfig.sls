@@ -6,7 +6,7 @@
 
 {% set managed_users = salt['pillar.get']('managed_users', []) %}
 {% set is_windows = grains['os'] == 'Windows' %}
-{% set github_token = salt['pillar.get']('github:access_token', '') %}
+{% set github_tokens = salt['pillar.get']('github:tokens', []) %}
 # Configure git to trust all directories (works around Git 2.36+ dubious ownership check)
 # Run once before deploying to any user (runs as minion user on Windows, first managed user on Linux)
 git_safe_directory_all:
@@ -29,11 +29,14 @@ deploy_gitconfig_{{ username }}:
 {% endif %}
     - makedirs: True
 
-# Deploy .git-credentials (always update)
+# Deploy .git-credentials from pillar github tokens
 deploy_git_credentials_{{ username }}:
   file.managed:
     - name: {{ dotfiles.dotfile_path(user_home, '.git-credentials') }}
-    - source: salt://common/dotfiles/.git-credentials
+    - contents: |
+        {%- for token in github_tokens %}
+        https://{{ token }}@github.com
+        {%- endfor %}
     - user: {{ username }}
 {% if not is_windows %}
     - mode: 600
