@@ -40,7 +40,7 @@ deploy_git_credentials_{{ username }}:
     - name: {{ dotfiles.dotfile_path(user_home, '.git-credentials') }}
     - contents: |
         {%- for token in merged_tokens %}
-        https://{{ token }}@github.com
+        https://oauth2:{{ token }}@github.com
         {%- endfor %}
 {% if not is_windows %}
     - user: {{ username }}
@@ -139,7 +139,7 @@ deploy_git_credentials_system:
     - name: C:\Windows\System32\config\systemprofile\.git-credentials
     - contents: |
         {%- for token in global_tokens %}
-        https://{{ token }}@github.com
+        https://oauth2:{{ token }}@github.com
         {%- endfor %}
     - makedirs: True
     - require:
