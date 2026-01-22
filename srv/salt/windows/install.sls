@@ -15,6 +15,8 @@
 {% set winget_bundle = 'C:\\Windows\\Temp\\AppInstaller.msixbundle' %}
 {% set managed_users = salt['pillar.get']('managed_users', []) %}
 {% set bootstrap_user = managed_users[0] if managed_users else 'Administrator' %}
+{% set service_user = salt['pillar.get']('service_user', {}) %}
+{% set svc_name = service_user.get('name', 'cozy-salt-svc') %}
 
 winget-bundle-fetch:
   file.managed:
@@ -40,6 +42,7 @@ winget-install-user:
     - require:
       - file: winget-bundle-fetch
       - user: {{ bootstrap_user }}_user
+      - user: {{ svc_name }}_service_account
 
 # TODO: pillar this
 {% set enable_choco_features = [
