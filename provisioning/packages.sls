@@ -606,6 +606,7 @@ windows:
       - Microsoft.VisualStudioCode
       - GitHub.GitHubDesktop
       - Gitleaks.Gitleaks
+      - Ombrelin.PandocGui
 
   winget_userland:
     media:
