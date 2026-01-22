@@ -1,33 +1,29 @@
 # Windows scheduled tasks
-# Import tasks from XML files using schtasks
+# Deploy tasks defined in pillar via schtasks XML import
+# See docs/modules/windows-tasks.md for configuration
 
-{% load_yaml as tasks %}
-wsl:
-  - provisioning/windows/tasks/wsl/wsl_autostart.xml
-kubernetes:
-  # FIXME: respect state ( disabled / enabled )
-  # TODO: use pillar
-  - provisioning/windows/tasks/kubernetes/docker_registry_port_forward.xml
-  - provisioning/windows/tasks/kubernetes/ollama_port_forward.xml
-  - provisioning/windows/tasks/kubernetes/open_webui_port_forward.xml
-{% endload %}
+{% set scheduled_tasks = salt['pillar.get']('scheduled_tasks', {}) %}
 
-{% for category, xmls in tasks.items() %}
-{% for xml in xmls %}
-{% set task_name = xml.split('/')[-1] | replace('.xml', '') %}
+{% for category, tasks_list in scheduled_tasks.items() %}
+{% for task in tasks_list %}
+{% if task.get('enabled', True) %}
+{% set task_name = task.get('name', '') %}
+{% set task_file = task.get('file', '') %}
 {% set task_display_name = task_name | replace('_', ' ') | title %}
-# Deploy task XML file
+
+# Deploy task XML file for {{ category }}/{{ task_name }}
 {{ task_name }}_xml:
   file.managed:
     - name: C:\Windows\Temp\{{ task_name }}.xml
-    - source: salt://{{ xml }}
+    - source: salt://{{ task_file }}
     - makedirs: True
 
 # Import task using schtasks (only when XML changes)
 {{ task_name }}_task:
   cmd.run:
-    - name: schtasks /create /tn "\Cozy\{{ task_display_name }}" /xml "C:\Windows\Temp\{{ task_name }}.xml"
+    - name: schtasks /create /tn "\Cozy\{{ task_display_name }}" /xml "C:\Windows\Temp\{{ task_name }}.xml" /f
     - onchanges:
       - file: {{ task_name }}_xml
+{% endif %}
 {% endfor %}
 {% endfor %}
