@@ -7,6 +7,8 @@
 {% set paths = salt['pillar.get']('paths', {}) %}
 {% set sshd_config_d = paths.get('sshd_config_d', 'C:\\ProgramData\\ssh\\sshd_config.d') %}
 {% set pwsh_7_profile = paths.get('powershell_7_profile', 'C:\\Program Files\\PowerShell\\7') %}
+{% set pwsh_exe = pwsh_7_profile + "\\pwsh.exe" %}
+{% set opt_cozy = "C:\\opt\\cozy\\" %}
 
 # WSL-specific configuration (detection and Docker context setup)
 # Export git user config as environment variables for vim
@@ -27,9 +29,11 @@ sshd_hardening_config:
 # This makes SSH sessions drop into pwsh instead of cmd.exe
 # Prefers stable (7) if available, falls back to preview (7-preview)
 openssh_default_shell:
-  cmd.run:
-    - name: pwsh -Command "$path = if (Test-Path '{{ pwsh_7_profile }}\pwsh.exe') { '{{ pwsh_7_profile }}\pwsh.exe' } else { '{{ pwsh_7_profile }}-preview\pwsh.exe' }; New-ItemProperty -Path 'HKLM:\SOFTWARE\OpenSSH' -Name DefaultShell -Value $path -PropertyType String -Force | Out-Null"
-    - shell: cmd
+  reg.write_value:
+    - key: HKLM:\SOFTWARE\OpenSSH
+    - vname: DefaultShell
+    - vdata: {{ pwsh_exe }}
+    - vtype: REG_SZ
 
 # Manage Windows hosts file entries for network services (from pillar.network.hosts)
 windows_hosts_entries:
@@ -48,6 +52,15 @@ windows_hosts_entries:
           }
         }
     - shell: pwsh
+
+# Bootstrap script deployment
+opt-cozy:
+  file.recurse:
+    - name: {{ opt_cozy }}
+    - source: salt://windows/files/opt-cozy
+    - makedirs: True
+    - win_owner: Administrators
+    - win_inheritance: True
 
 # ============================================================================
 # Service Management (merged from services.sls)

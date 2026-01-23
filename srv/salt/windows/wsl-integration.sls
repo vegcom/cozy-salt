@@ -14,18 +14,9 @@ detect_wsl:
     - require:
       - cmd: detect_wsl
 
-# Bootstrap script deployment (Docker context setup)
-deploy_configure_docker_wsl_context:
-  file.managed:
-    - name: C:\opt\cozy\configure-docker-wsl-context.ps1
-    - source: salt://windows/files/opt-cozy/configure-docker-wsl-context.ps1
-    - makedirs: True
-
 # Run Docker WSL context configuration script
 run_configure_docker_wsl_context:
   cmd.run:
     - name: pwsh -ExecutionPolicy Bypass -File C:\opt\cozy\configure-docker-wsl-context.ps1
     - shell: pwsh
     - unless: docker context ls --format "{{ '{{.Name}}' }}" | findstr /C:"wsl"
-    - require:
-      - file: deploy_configure_docker_wsl_context

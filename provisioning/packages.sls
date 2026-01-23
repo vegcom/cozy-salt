@@ -550,92 +550,93 @@ windows:
     - nerd-fonts-Hack  # Hack font with Nerd fonts
     - vim  # Vi improved text editor
 
-  winget_runtimes:
-    ui_libraries:
-      - Microsoft.UI.Xaml.2.7
-      - Microsoft.UI.Xaml.2.8
-      - Microsoft.VCLibs.Desktop.14
-    vcredist:
-      - Microsoft.VCRedist.2012.x64
-      - Microsoft.VCRedist.2012.x86
-      - Microsoft.VCRedist.2013.x64
-      - Microsoft.VCRedist.2013.x86
-      - Microsoft.VCRedist.2015+.x64
-      - Microsoft.VCRedist.2015+.x86
-      - Microsoft.VCRedist.2008.x64
-      - Microsoft.VCRedist.2008.x86
-      - Microsoft.VCRedist.2010.x64
-      - Microsoft.VCRedist.2010.x86
-    sdks:
-      - Microsoft.WindowsADK
-      - Microsoft.WindowsSDK.10.0.18362
-      - Microsoft.NuGet
-      - Microsoft.AppInstaller
-      - Microsoft.AppInstallerFileBuilder
-    dotnet:
-      - Microsoft.DotNet.AspNetCore.9
-      - Microsoft.DotNet.DesktopRuntime.10
-      - Microsoft.DotNet.DesktopRuntime.8
-      - Microsoft.DotNet.DesktopRuntime.9
-      - Microsoft.DotNet.Framework.DeveloperPack.4.6
-      - Microsoft.DotNet.HostingBundle.8
-      - Microsoft.DotNet.Runtime.10
-      - Microsoft.DotNet.Runtime.8
+  winget:
+    runtimes:
+      ui_libraries:
+        - Microsoft.UI.Xaml.2.7
+        - Microsoft.UI.Xaml.2.8
+        - Microsoft.VCLibs.Desktop.14
+      vcredist:
+        - Microsoft.VCRedist.2012.x64
+        - Microsoft.VCRedist.2012.x86
+        - Microsoft.VCRedist.2013.x64
+        - Microsoft.VCRedist.2013.x86
+        - Microsoft.VCRedist.2015+.x64
+        - Microsoft.VCRedist.2015+.x86
+        - Microsoft.VCRedist.2008.x64
+        - Microsoft.VCRedist.2008.x86
+        - Microsoft.VCRedist.2010.x64
+        - Microsoft.VCRedist.2010.x86
+      sdks:
+        - Microsoft.WindowsADK
+        - Microsoft.WindowsSDK.10.0.18362
+        - Microsoft.NuGet
+        - Microsoft.AppInstaller
+        - Microsoft.AppInstallerFileBuilder
+      dotnet:
+        - Microsoft.DotNet.AspNetCore.9
+        - Microsoft.DotNet.DesktopRuntime.10
+        - Microsoft.DotNet.DesktopRuntime.8
+        - Microsoft.DotNet.DesktopRuntime.9
+        - Microsoft.DotNet.Framework.DeveloperPack.4.6
+        - Microsoft.DotNet.HostingBundle.8
+        - Microsoft.DotNet.Runtime.10
+        - Microsoft.DotNet.Runtime.8
 
-  winget_system:
-    sync_backup:
-      - FreeFileSync
-      - Syncthing
-    file_management:
-      - 7zip
-      - WinSCP
-    compression:
-      - PeaZip
-      - Zipier
-    terminal:
-      - WindowsTerminal
-      - ConEmu
-    shell:
-      - PowerShell
-      - Git.Git
-      - StardustXR.Starship
-    editor:
-      - Vim.Vim
-      - NeovimProject.Neovim
-    development:
-      - JetBrains.IntelliJIDEA.Community
-      - Microsoft.VisualStudio.BuildTools
-      - Microsoft.VisualStudio.Community
-      - Microsoft.VisualStudioCode
-      - GitHub.GitHubDesktop
-      - Gitleaks.Gitleaks
-      - Ombrelin.PandocGui
+    system:
+      sync_backup:
+        - FreeFileSync
+        - Syncthing
+      file_management:
+        - 7zip
+        - WinSCP
+      compression:
+        - PeaZip
+        - Zipier
+      terminal:
+        - WindowsTerminal
+        - ConEmu
+      shell:
+        - PowerShell
+        - Git.Git
+        - StardustXR.Starship
+      editor:
+        - Vim.Vim
+        - NeovimProject.Neovim
+      development:
+        - JetBrains.IntelliJIDEA.Community
+        - Microsoft.VisualStudio.BuildTools
+        - Microsoft.VisualStudio.Community
+        - Microsoft.VisualStudioCode
+        - GitHub.GitHubDesktop
+        - Gitleaks.Gitleaks
+        - Ombrelin.PandocGui
 
-  winget_userland:
-    media:
-      - ImageMagick.ImageMagick
-      - Wwweasel.PicView
-      - Gyan.FFmpeg
-      - HandBrake.HandBrake
-      - ObsProject.OBS.Studio
-    games:
-      - GOG.GalaxyClient
-      - Epic.EpicGamesLauncher
-      - Valve.Steam
-    communication:
-      - Vencord.Vesktop
-      - Telegram.TelegramDesktop.Beta
-      - Mozilla.Thunderbird
-    browser:
-      - Mozilla.Firefox
-      - Google.Chrome
-      - Thorium.Thorium
-    utilities:
-      - qBittorrent.qBittorrent
-      - ntop.ntop
-      - VB-Audio.VoiceMeeter
-      - WerWolv.ImHex
-      - JohnMacFarlane.Pandoc
+    userland:
+      media:
+        - ImageMagick.ImageMagick
+        - Wwweasel.PicView
+        - Gyan.FFmpeg
+        - HandBrake.HandBrake
+        - ObsProject.OBS.Studio
+      games:
+        - GOG.GalaxyClient
+        - Epic.EpicGamesLauncher
+        - Valve.Steam
+      communication:
+        - Vencord.Vesktop
+        - Telegram.TelegramDesktop.Beta
+        - Mozilla.Thunderbird
+      browser:
+        - Mozilla.Firefox
+        - Google.Chrome
+        - Thorium.Thorium
+      utilities:
+        - qBittorrent.qBittorrent
+        - ntop.ntop
+        - VB-Audio.VoiceMeeter
+        - WerWolv.ImHex
+        - JohnMacFarlane.Pandoc
 
 # ============================================================================
 # LANGUAGE-SPECIFIC PACKAGES

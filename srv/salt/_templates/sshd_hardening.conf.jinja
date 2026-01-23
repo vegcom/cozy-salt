@@ -28,9 +28,10 @@ MaxSessions 10
 # Protocol
 Protocol 2
 
+# Banner
+PrintMotd yes
 {% if grains['os_family'] == 'Windows' %}
-# Windows-specific: Administrators group authorization (optional)
-# Uncomment to use administrators_authorized_keys instead of per-user authorized_keys
-# Match Group administrators
-#        AuthorizedKeysFile __PROGRAMDATA__/ssh/administrators_authorized_keys
+Banner "C:\ProgramData\ssh\motd.txt"
+{% else %}
+Banner /etc/motd
 {% endif %}

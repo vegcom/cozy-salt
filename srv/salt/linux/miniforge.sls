@@ -9,6 +9,16 @@
 {% set managed_users = salt['pillar.get']('managed_users', []) %}
 {% set service_user = managed_users[0] if managed_users else 'nobody' %}
 
+# Create nvm directory first (NVM installer requires it to exist)
+miniforge_directory:
+  file.directory:
+    - name: {{ miniforge_path }}
+    - mode: "0755"
+    - user: {{ service_user }}
+    - group: cozyusers
+    - makedirs: True
+    - clean: True
+
 # Download miniforge installer
 miniforge_download:
   cmd.run:
@@ -22,13 +32,10 @@ miniforge_download:
 # -s = skip pre/post-link/install scripts (we handle conda init via profile.d)
 miniforge_install:
   cmd.run:
-    - name: |
-        bash /tmp/miniforge-init.sh -b -s -p {{ miniforge_path }}
-        rm -f /tmp/miniforge-init.sh
-        chown -R {{ service_user }}:cozyusers {{ miniforge_path }}
-        chmod -R 775 {{ miniforge_path }}
+    - name: bash /tmp/miniforge-init.sh -b -s -p {{ miniforge_path }}
     - require:
       - cmd: miniforge_download
+      - file: miniforge_directory
     - creates: {{ miniforge_path }}/bin/conda
 
 # Install base pip packages via common orchestration

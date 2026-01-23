@@ -1,3 +1,4 @@
+!srv/pillar/users/demo.sls
 .claude/
 .coverage
 .env
@@ -5,11 +6,13 @@
 .vscode/
 **/__pycache__/
 **/.DS_Store
+**/node_modules
 CLAUDE.md
 scripts/pki/
 srv/pillar/common/users.sls
 srv/pillar/secrets/init.sls
+srv/pillar/users/*.sls
 srv/salt/keys/master/
 srv/salt/keys/minion/
-srv/pillar/users/*.sls
-!srv/pillar/users/demo.sls
+package.json
+package-lock.json

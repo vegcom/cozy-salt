@@ -1,6 +1,10 @@
 #!/bin/bash
 # Managed by Salt - DO NOT EDIT MANUALLY
 
+if [ -n "${__ETC_BASH_SOURCED}" ]; then
+    return 0
+fi
+
 # shellcheck disable=SC1009
 if [ -d /etc/profile.d ]; then
   # shellcheck  disable=SC1072 disable=SC1073
@@ -12,3 +16,11 @@ if [ -d /etc/profile.d ]; then
   done
   unset i
 fi
+
+if [ -f /etc/bash.bashrc ] ; then
+  # shellcheck disable=SC1091
+  source /etc/bash.bashrc
+fi
+
+__ETC_PROFILE_SOURCED=1
+export __ETC_BASH_SOURCED

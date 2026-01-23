@@ -10,7 +10,7 @@ export NVM_DIR="/opt/nvm"
 
 # Source NVM if installed
 if [ -s "$NVM_DIR/nvm.sh" ]; then
-    \. "$NVM_DIR/nvm.sh"  # This loads nvm
+  . "$NVM_DIR/nvm.sh"  # This loads nvm
 fi
 
 # Add global npm packages to PATH
@@ -21,5 +21,5 @@ fi
 
 # Source NVM bash completion if available
 if [ -s "$NVM_DIR/bash_completion" ]; then
-    \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+  . "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 fi

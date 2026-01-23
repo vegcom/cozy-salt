@@ -16,7 +16,9 @@ safe_append_path '/usr/games'
 # Now we ship our own jazz
 safe_append_path '/opt/cozy'
 
-alias append_path=safe_append_path
+if ! type append_path &>/dev/null ; then
+  alias append_path=safe_append_path
+fi
 
 # Now do the cozy thing
 if [ "${PS1-}" ]; then
