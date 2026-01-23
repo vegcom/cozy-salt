@@ -21,7 +21,7 @@ HOTPINK=$'\e[38;2;255;121;198m'     # #ff79c6 - special
 FG=$'\e[38;2;216;216;216m'          # #d8d8d8 - text
 X=$'\e[0m'                          # reset
 
-cat << EOF
+cat << EOF | tee /etc/motd &>/dev/null
 
 ${PURPLE}        .  *  .       *    .        *       .    *
 ${BRIGHT_PURPLE}    *        .    ${HOTPINK}~ welcome home ~${BRIGHT_PURPLE}    .        *

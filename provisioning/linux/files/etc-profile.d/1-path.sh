@@ -16,6 +16,8 @@ safe_append_path '/usr/games'
 # Now we ship our own jazz
 safe_append_path '/opt/cozy'
 
+alias append_path=safe_append_path
+
 # Now do the cozy thing
 if [ "${PS1-}" ]; then
   echo -e "\n🌸 ${HOSTNAME:-localhost}: cozy_system_profile loaded. \e[35mSay hi to your wife.\e[0m\n"

@@ -55,25 +55,25 @@ pacman_conf:
         #
         # By default, pacman accepts packages signed by keys that it knows about.
         # SigLevel = Required DatabaseRequired
-        {%- if pacman_repos -%}
-        {%- for repo_name, repo_config in pacman_repos.items() -%}
-        {%- if repo_config.get('enabled', false) -%}
+        {%- if pacman_repos %}
+        {%- for repo_name, repo_config in pacman_repos.items() %}
+        {%- if repo_config.get('enabled', false) %}
         [{{ repo_name }}]
-        {%- if repo_config.get('Server') -%}
+        {%- if repo_config.get('Server') %}
         Server = {{ repo_config.get('Server') }}
         {%- endif %}
-        {%- if repo_config.get('server') -%}
+        {%- if repo_config.get('server') %}
         Server = {{ repo_config.get('server') }}
         {%- endif %}
-        {%- if repo_config.get('Include') -%}
+        {%- if repo_config.get('Include') %}
         Include = {{ repo_config.get('Include') }}
         {%- endif %}
-        {%- if repo_config.get('SigLevel') -%}
+        {%- if repo_config.get('SigLevel') %}
         SigLevel = {{ repo_config.get('SigLevel') }}
-        {%- endif -%}
-        {%- endif -%}
-        {%- endfor -%}
-        {%- endif -%}
+        {%- endif %}
+        {%- endif %}
+        {%- endfor %}
+        {%- endif %}
 
 # =============================================================================
 # PACMAN DATABASE SYNC
@@ -81,7 +81,7 @@ pacman_conf:
 # Refresh package database after repo changes
 pacman_sync_after_config:
   cmd.run:
-    - name: pacman -Sy
+    - name: pacman -Syy
     - require:
       - file: pacman_conf
       - pkg: chaotic_mirrorlist

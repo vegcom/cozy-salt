@@ -28,7 +28,7 @@ sshd_hardening_config:
 # Prefers stable (7) if available, falls back to preview (7-preview)
 openssh_default_shell:
   cmd.run:
-    - name: powershell -Command "$path = if (Test-Path '{{ pwsh_7_profile }}\pwsh.exe') { '{{ pwsh_7_profile }}\pwsh.exe' } else { '{{ pwsh_7_profile }}-preview\pwsh.exe' }; New-ItemProperty -Path 'HKLM:\SOFTWARE\OpenSSH' -Name DefaultShell -Value $path -PropertyType String -Force | Out-Null"
+    - name: pwsh -Command "$path = if (Test-Path '{{ pwsh_7_profile }}\pwsh.exe') { '{{ pwsh_7_profile }}\pwsh.exe' } else { '{{ pwsh_7_profile }}-preview\pwsh.exe' }; New-ItemProperty -Path 'HKLM:\SOFTWARE\OpenSSH' -Name DefaultShell -Value $path -PropertyType String -Force | Out-Null"
     - shell: cmd
 
 # Manage Windows hosts file entries for network services (from pillar.network.hosts)

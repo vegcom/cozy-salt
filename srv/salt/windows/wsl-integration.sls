@@ -5,8 +5,9 @@
 # Detect if WSL is available and set grain for future targeting
 detect_wsl:
   cmd.run:
-    - name: powershell -Command "if (Get-Command wsl -ErrorAction SilentlyContinue) { 'true' } else { 'false' }"
+    - name: pwsh -Command "if (Get-Command wsl -ErrorAction SilentlyContinue) { 'true' } else { 'false' }"
     - stateful: False
+    - shell: pwsh
   grains.present:
     - name: is_wsl
     - value: True
@@ -23,7 +24,8 @@ deploy_configure_docker_wsl_context:
 # Run Docker WSL context configuration script
 run_configure_docker_wsl_context:
   cmd.run:
-    - name: powershell -ExecutionPolicy Bypass -File C:\opt\cozy\configure-docker-wsl-context.ps1
+    - name: pwsh -ExecutionPolicy Bypass -File C:\opt\cozy\configure-docker-wsl-context.ps1
+    - shell: pwsh
     - unless: docker context ls --format "{{ '{{.Name}}' }}" | findstr /C:"wsl"
     - require:
       - file: deploy_configure_docker_wsl_context

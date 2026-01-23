@@ -26,7 +26,7 @@ miniforge_install:
         bash /tmp/miniforge-init.sh -b -s -p {{ miniforge_path }}
         rm -f /tmp/miniforge-init.sh
         chown -R {{ service_user }}:cozyusers {{ miniforge_path }}
-        chmod -R 755 {{ miniforge_path }}
+        chmod -R 775 {{ miniforge_path }}
     - require:
       - cmd: miniforge_download
     - creates: {{ miniforge_path }}/bin/conda

@@ -62,6 +62,10 @@ skel_files:
     - group: {{ username }}
     - mode: "0755"
     - makedirs: True
+    - follow_symlinks: False
+    - recurse:
+      - user
+      - group
     - require:
       - user: {{ username }}_user
 

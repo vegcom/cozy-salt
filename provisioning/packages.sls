@@ -171,17 +171,17 @@ package_metadata:
       ubuntu: build-essential
       debian: build-essential
       rhel: ['gcc', 'gcc-c++', 'make', 'autoconf', 'automake']
-      arch: base-devel This is a GROUP on Arch
+      arch: base-devel
     ssh_client:
       ubuntu: openssh-client
       debian: openssh-client
       rhel: openssh-clients
-      arch: openssh Unified package
+      arch: openssh
     ssh_server:
       ubuntu: openssh-server
       debian: openssh-server
       rhel: openssh-server
-      arch: openssh Unified package
+      arch: openssh
     dns_utils:
       ubuntu: bind9-dnsutils
       debian: bind9-dnsutils
@@ -191,12 +191,12 @@ package_metadata:
       ubuntu: 7zip
       debian: 7zip
       rhel: p7zip
-      arch: p7zip Or 7zip (both work)
+      arch: p7zip
     github_cli:
       ubuntu: gh
       debian: gh
       rhel: gh
-      arch: github-cli Different name on Arch!
+      arch: github-cli
     shellcheck:
       ubuntu: shellcheck
       debian: shellcheck
@@ -359,7 +359,7 @@ rhel:
     - rsync
     - tree
     - unzip
-    - vim-enhanced RHEL provides vim-enhanced, not vim
+    - vim-enhanced
     - wget
   monitoring:
     - htop
@@ -384,7 +384,7 @@ rhel:
     - iputils
     - net-tools
     - nmap
-    - nmap-ncat netcat variant for RHEL
+    - nmap-ncat
     - openssh-clients
     - openssh-server
     - socat
@@ -432,7 +432,7 @@ arch:
     - tree
     - unzip
     - wget
-    - sed Built-in utility on most systems, explicit on Arch
+    - sed
     - glibc
     - glibc-locales
   monitoring:
@@ -453,15 +453,15 @@ arch:
   build_tools:
     - autoconf
     - automake
-    - base-devel Arch package GROUP, not individual packages
+    - base-devel
     - cmake
   networking:
     - bind
     - iputils
     - net-tools
     - nmap
-    - openbsd-netcat Arch preferred netcat variant
-    - openssh Unified openssh on Arch (client + server)
+    - openbsd-netcat
+    - openssh
     - socat
     - tcpdump
     - traceroute
@@ -472,52 +472,52 @@ arch:
     - xz
     - zip
   vcs_extras:
-    - github-cli Different name on Arch (not gh)
+    - github-cli
     - git-lfs
     - tig
   modern_cli:
     - bat
-    - fd Arch uses fd (not fd-find)
+    - fd
     - fzf
     - ripgrep
   security:
     - ca-certificates
-    - gnupg Uses gnupg (not gnupg2)
+    - gnupg
   acl:
     - acl
   kvm:
     - dnsmasq
-    - edk2-ovmf UEFI firmware for QEMU
+    - edk2-ovmf
     - libvirt
-    - qemu-desktop QEMU with UI (Arch package name)
+    - qemu-desktop
     - virt-install
     - virt-manager
-  interpreters: Arch-only (other distros compile from source or use nvm/conda)
+  interpreters:
     - lua
     - perl
     - python
     - python-pip
-  modern_cli_extras: Arch-only advanced CLI tools
-    - bottom System monitor (similar to htop but better)
-    - delta git diff pager (better diffs)
-    - eza ls replacement (replaces exa)
-    - hyperfine Benchmarking tool for CLI commands
-    - procs ps replacement
-    - tealdeer tldr pages alternative (tldr command)
-    - tokei Code stats / line counter
-    - zoxide cd replacement with frecency
-  fonts: Arch-only developer fonts
+  modern_cli_extras:
+    - bottom
+    - delta
+    - eza
+    - hyperfine
+    - procs
+    - tealdeer
+    - tokei
+    - zoxide
+  fonts:
     - noto-fonts
     - noto-fonts-emoji
     - noto-fonts-cjk
-    - ttf-fira-code Developer font
-    - ttf-hack Developer font
-    - ttf-jetbrains-mono Developer font
+    - ttf-fira-code
+    - ttf-hac
+    - ttf-jetbrains-mono
     - inter-font
-  theming: Arch-only theming (GTK, Qt, icons)
-    - arc-gtk-theme GTK theme
-    - kvantum Qt theme engine
-    - papirus-icon-theme Icon theme
+  theming:
+    - arc-gtk-theme
+    - kvantum Qt
+    - papirus-icon-theme
 
 # ============================================================================
 # WINDOWS PACKAGES
@@ -533,6 +533,7 @@ windows:
     - PSFzf  # Fuzzy finder integration
     - PSWindowsUpdate  # Windows Update management
     - Terminal-Icons  # File icons in terminal
+    - Microsoft.PowerShell.Utility
 
   choco:
     - chocolatey-compatibility.extension  # Compatibility layer

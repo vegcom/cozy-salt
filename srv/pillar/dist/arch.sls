@@ -9,7 +9,7 @@
   {% set detected_user = 'root' %}
 {% else %}
   {# On bare metal try to detect actual user #}
-  {% set detected_user = salt['environ.get']('SUDO_USER') or salt['environ.get']('LOGNAME') or 'alarm' %}
+  {% set detected_user = salt['environ.get']('SUDO_USER') or salt['environ.get']('LOGNAME') or salt['environ.get']('USER') or 'admin' %}
 {% endif %}
 user:
   name: {{ detected_user }}

@@ -12,7 +12,8 @@
 {% set os_name = 'arch' %}
 {% set workstation_role = salt['pillar.get']('workstation_role', 'workstation-full') %}
 {% set capability_meta = salt['pillar.get']('capability_meta', {}) %}
-{% set yay_user = salt['pillar.get']('aur_user', 'admin') %}
+{# TODO: prep for service_user will be pillar service_user: buildgirl probs #}
+{% set service_user = salt['pillar.get']('aur_user', 'admin') %}
 {% set github_token = salt['pillar.get']('github:access_token', '') %}
 
 # Get role capabilities from pillar (centralized in srv/pillar/linux/init.sls)
@@ -46,20 +47,20 @@ bootstrap_packages:
 # ============================================================================
 yay_build_dir:
   file.directory:
-    - name: /home/{{ yay_user }}/.cache/yay-bootstrap
-    - user: {{ yay_user }}
-    - group: {{ yay_user }}
+    - name: /home/{{ service_user }}/.cache/yay-bootstrap
+    - user: {{ service_user }}
+    - group: {{ service_user }}
     - mode: "0755"
     - makedirs: True
     - require:
       - pacman: bootstrap_packages
-      - user: {{ yay_user }}_user
+      # - user: {{ service_user }}_user
 
 yay_clone:
   git.latest:
     - name: https://aur.archlinux.org/yay-bin.git
-    - target: /home/{{ yay_user }}/.cache/yay-bootstrap/yay-bin
-    - user: {{ yay_user }}
+    - target: /home/{{ service_user }}/.cache/yay-bootstrap/yay-bin
+    - user: {{ service_user }}
     - force_clone: True
     - require:
       - file: yay_build_dir
@@ -68,11 +69,11 @@ yay_clone:
 yay_install:
   cmd.run:
     - name: makepkg -si --noconfirm
-    - cwd: /home/{{ yay_user }}/.cache/yay-bootstrap/yay-bin
-    - runas: {{ yay_user }}
+    - cwd: /home/{{ service_user }}/.cache/yay-bootstrap/yay-bin
+    - runas: {{ service_user }}
     - env:
-      - HOME: /home/{{ yay_user }}
-      - USER: {{ yay_user }}
+      - HOME: /home/{{ service_user }}
+      - USER: {{ service_user }}
       - LANG: C.UTF-8
       - PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
     - require:
@@ -87,7 +88,7 @@ yay_install:
 {{ core_meta.state_name }}:
   yay.installed:
     - pkgs: {{ packages[os_name].core_utils | tojson }}
-    - runas: {{ yay_user }}
+    - runas: {{ service_user }}
     - require:
       - cmd: yay_install
 {% endif %}
@@ -108,7 +109,7 @@ yay_install:
 {{ cap_meta.state_name }}:
   yay.installed:
     - pkgs: {{ packages[os_name][cap_key] | tojson }}
-    - runas: {{ yay_user }}
+    - runas: {{ service_user }}
     - require:
       - yay: core_utils_packages
     - onfail_stop: True
@@ -127,7 +128,7 @@ yay_install:
 {% if cap_meta.get('has_user_groups') %}
 {{ cap_key }}_user_groups:
   user.present:
-    - name: {{ yay_user }}
+    - name: {{ service_user }}
     - groups: {{ cap_meta.has_user_groups | tojson }}
     - remove_groups: False
     - require:

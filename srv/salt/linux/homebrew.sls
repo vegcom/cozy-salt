@@ -10,31 +10,29 @@
 {# Extract parent directory for initial creation #}
 {% set homebrew_parent = homebrew_base.rsplit('/', 1)[0] if '/' in homebrew_base else '/home/linuxbrew' %}
 {# Use first managed user for homebrew operations (homebrew rejects root) #}
+{# TODO: prep for service_user will be pillar service_user: buildgirl probs #}
 {% set managed_users = salt['pillar.get']('managed_users', []) %}
-{% set homebrew_user = managed_users[0] if managed_users else 'nobody' %}
+{% set service_user = managed_users[0] if managed_users else 'nobody' %}
 
-# Create parent directory owned by homebrew_user
+# Create parent directory owned by service_user
 # Homebrew installer will create .linuxbrew subdirectory
 linuxbrew_directory:
   file.directory:
     - name: {{ homebrew_parent }}
-    - user: {{ homebrew_user }}
+    - user: {{ service_user }}
     - group: cozyusers
     - mode: "0775"
     - makedirs: True
     - order: 20
-    - require:
-      - user: {{ homebrew_user }}_user
-      - group: cozyusers_group
 
 # Download and execute Homebrew installer (default supported path)
-# Runs as homebrew_user (Homebrew rejects root execution)
+# Runs as service_user (Homebrew rejects root execution)
 # NONINTERACTIVE=1 suppresses prompts
 homebrew_install:
   cmd.run:
     - name: |
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    - runas: {{ homebrew_user }}
+    - runas: {{ service_user }}
     - env:
       - NONINTERACTIVE: 1
     - creates: {{ homebrew_base }}/bin/brew
@@ -70,7 +68,7 @@ homebrew_update:
           git remote add origin https://github.com/Homebrew/brew.git
         fi
         {{ homebrew_base }}/bin/brew update || true
-    - runas: {{ homebrew_user }}
+    - runas: {{ service_user }}
     - require:
       - cmd: homebrew_install
     - unless: test -f {{ homebrew_base }}/var/homebrew/.last_update_timestamp

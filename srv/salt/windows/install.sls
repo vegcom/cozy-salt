@@ -11,12 +11,30 @@
 # becomes available system-wide at C:\Program Files\WindowsApps\...
 # SYSTEM can then invoke winget for --scope machine installs.
 
-{% set winget_url = 'https://github.com/microsoft/winget-cli/releases/download/v1.12.440/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle' %}
-{% set winget_bundle = 'C:\\Windows\\Temp\\AppInstaller.msixbundle' %}
+{% set winget_url = 'https://github.com/microsoft/winget-cli/releases/download/v1.28.100-preview/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle' %}
+{% set winget_bundle = '$env:TEMP\\AppInstaller.msixbundle' %}
+{# TODO: prep for service_user will be pillar service_user: buildgirl probs #}
+{# XXX: bootstrap_user and service_user both required here #}
 {% set managed_users = salt['pillar.get']('managed_users', []) %}
-{% set bootstrap_user = managed_users[0] if managed_users else 'Administrator' %}
+{% set bootstrap_user = managed_users[0] if managed_users else 'admin' %}
 {% set service_user = salt['pillar.get']('service_user', {}) %}
 {% set svc_name = service_user.get('name', 'cozy-salt-svc') %}
+{% set winget_path = 'C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_*\winget.exe' %}
+
+# PowerShell Modules (from powershell_gallery)
+{% set all_pwsh_modules = packages.windows.get('powershell_gallery', []) %}
+{% if all_pwsh_modules %}
+{% for module in all_pwsh_modules %}
+pwsh_module_{{ module | replace('.', '_') | replace('-', '_') }}:
+  cmd.run:
+    - shell: pwsh
+    - runas: SYSTEM
+    - name: >
+        pwsh -NoLogo -Command "
+          Install-Module -Name '{{ module }}' -Scope AllUsers -AllowClobber -SkipPublisherCheck -Force -Repository PSGallery
+        "
+{% endfor %}
+{% endif %}
 
 winget-bundle-fetch:
   file.managed:
@@ -28,17 +46,17 @@ winget-bundle-fetch:
 # Install winget as real user (SYSTEM cannot install AppX packages)
 winget-install-user:
   cmd.run:
-    - name: Add-AppxPackage -Path "{{ winget_bundle }}"
-    - shell: powershell
+    - name: Add-AppxPackage -Online -PackagePath {{ winget_bundle }} -SkipLicense
+    - shell: pwsh
     - runas: {{ bootstrap_user }}
-    - unless: |
-        powershell -Command "
-          if (Get-AppxPackage Microsoft.DesktopAppInstaller -ErrorAction SilentlyContinue) {
-            exit 0
-          } else {
-            exit 1
-          }
-        "
+    # - unless: |
+    #     pwsh -Command "
+    #       if (Get-AppxPackage Microsoft.DesktopAppInstaller -ErrorAction SilentlyContinue) {
+    #         exit 0
+    #       } else {
+    #         exit 1
+    #       }
+    #     "
     - require:
       - file: winget-bundle-fetch
       - user: {{ bootstrap_user }}_user
@@ -91,15 +109,15 @@ winget_runtime_{{ pkg | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
     - shell: pwsh
     - runas: SYSTEM
-    - name: winget install --scope machine --accept-source-agreements --accept-package-agreements --exact --id {{ pkg }}
-    - unless: >
-        pwsh -NoLogo -Command "
-          if (winget list --scope machine --exact --id {{ pkg }} | Select-String -Quiet -Pattern '{{ pkg }}') {
-            exit 0
-          } else {
-            exit 1
-          }
-        "
+    - name: {{ winget_path }} install --scope machine --accept-source-agreements --accept-package-agreements --exact --id {{ pkg }}
+    # - unless: >
+    #     pwsh -NoLogo -Command "
+    #       if (winget list --scope machine --exact --id {{ pkg }} | Select-String -Quiet -Pattern '{{ pkg }}') {
+    #         exit 0
+    #       } else {
+    #         exit 1
+    #       }
+    #     "
     - require:
       - cmd: winget-install-user
 {% endfor %}
@@ -114,15 +132,7 @@ winget_{{ pkg | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
     - shell: pwsh
     - runas: SYSTEM
-    - name: winget install --scope machine --accept-source-agreements --accept-package-agreements  --exact --id {{ pkg }}
-    - unless: >
-        pwsh -NoLogo -Command "
-          if (winget list --scope machine --exact --id {{ pkg }} | Select-String -Quiet -Pattern '{{ pkg }}') {
-            exit 0
-          } else {
-            exit 1
-          }
-        "
+    - name: {{ winget_path }} install --scope machine --accept-source-agreements --accept-package-agreements  --exact --id {{ pkg }}
     - require:
       - cmd: winget-install-user
 {% endfor %}
@@ -136,42 +146,9 @@ winget_{{ pkg | replace('.', '_') | replace('-', '_') }}:
     {% for pkg in pkgs %}
 winget_userland_{{ user | replace('.', '_') | replace('-', '_') }}_{{ pkg | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
-    - name: winget install --scope user --accept-source-agreements --accept-package-agreements  --exact --id {{ pkg }}
+    - name: {{ winget_path }} install --scope user --accept-source-agreements --accept-package-agreements  --exact --id {{ pkg }}
     - runas: {{ user }}
     - shell: pwsh
-    - unless: >
-        pwsh -NoLogo -Command "
-          if (winget list --scope user --exact --id {{ pkg }} | Select-String -Quiet -Pattern '{{ pkg }}') {
-            exit 0
-          } else {
-            exit 1
-          }
-        "
-    # - require:
-    #   - cmd: winget-install-system
     {% endfor %}
   {% endfor %}
 {% endfor %}
-
-# PowerShell Modules (from powershell_gallery)
-{% set all_pwsh_modules = packages.windows.get('powershell_gallery', []) %}
-{% if all_pwsh_modules %}
-{% for module in all_pwsh_modules %}
-pwsh_module_{{ module | replace('.', '_') | replace('-', '_') }}:
-  cmd.run:
-    - shell: pwsh
-    - runas: SYSTEM
-    - name: >
-        pwsh -NoLogo -Command "
-          Install-Module -Name '{{ module }}' -Scope AllUsers -AllowClobber -SkipPublisherCheck -Force -Repository PSGallery
-        "
-    - unless: >
-        pwsh -NoLogo -Command "
-          if (Get-InstalledModule -Name '{{ module }}' -ErrorAction SilentlyContinue) {
-            exit 0
-          } else {
-            exit 1
-          }
-        "
-{% endfor %}
-{% endif %}

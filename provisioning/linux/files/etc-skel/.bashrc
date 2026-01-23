@@ -2,4 +2,7 @@
 # ~/.bashrc
 # Managed by Salt - DO NOT EDIT MANUALLY
 
-source "$HOME"/.bashrc.local
+if [[ -f "$HOME"/.bashrc.local ]]; then
+  # shellcheck disable=SC1091
+  source "$HOME"/.bashrc.local
+fi

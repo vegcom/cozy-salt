@@ -31,7 +31,7 @@ install_npm_global_packages:
     - require:
       - cmd: nvm_use_default
     {% else %}
-    - name: NPM_CONFIG_PREFIX={{ nvm_path }} npm install -g {{ npm_packages | join(' ') }}
+    - name: NPM_CONFIG_PREFIX={{ nvm_path }} npm install --prefer-dedupe --foreground-scripts  --no-audit  --no-fund -g {{ npm_packages | join(' ') }}
     - shell: /bin/bash
     - env:
       - BASH_ENV: /etc/profile.d/nvm.sh

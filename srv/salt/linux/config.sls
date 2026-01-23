@@ -60,6 +60,12 @@ cozy_etc_profile:
     - source: salt://linux/files/etc/profile
     - mode: "0644"
 
+cozy_etc_bashrc:
+  file.managed:
+    - name: /etc/bash.bashrc
+    - source: salt://linux/files/etc/bash.bashrc
+    - mode: "0644"
+
 cozy_opt_dir:
   file.directory:
     - name: /opt/cozy
@@ -67,18 +73,22 @@ cozy_opt_dir:
     - makedirs: True
     - mode: "0755"
     - order: 1
+    - recurse:
+      - user
+      - group
 
 cozy_opts:
   file.recurse:
     - name: /opt/cozy
     - source: salt://linux/files/opt-cozy
     - include_empty: True
-    - clean: True
+    - clean: False
     - dir_mode: "0755"
-    - file_mode: '0744'
+    - file_mode: "0774"
     - order: 0
     - require:
       - file: cozy_opt_dir
+
 
 cozy_pam:
   file.managed:
