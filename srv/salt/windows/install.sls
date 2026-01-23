@@ -62,6 +62,26 @@ chocolatey-install:
     "removePackageInformationOnUninstall",
 ] %}
 
+# Enable Chocolatey features
+{% for feature in enable_choco_features %}
+choco_feature_{{ feature }}_enabled:
+  cmd.run:
+    - name: choco feature enable -n={{ feature }}
+    - shell: pwsh
+    - require:
+      - cmd: chocolatey-install
+{% endfor %}
+
+# Install Chocolatey packages
+{% if packages.windows.choco is defined %}
+{% for pkg in packages.windows.choco %}
+choco_{{ pkg | replace('.', '_') | replace('-', '_') }}:
+  chocolatey.installed:
+    - name: {{ pkg }}
+    - require:
+      - cmd: chocolatey-install
+{% endfor %}
+{% endif %}
 
 # Install Winget runtime packages, system scope
 {% if packages.windows.winget_runtimes is defined %}
@@ -153,26 +173,5 @@ pwsh_module_{{ module | replace('.', '_') | replace('-', '_') }}:
             exit 1
           }
         "
-{% endfor %}
-{% endif %}
-
-# Enable Chocolatey features
-{% for feature in enable_choco_features %}
-choco_feature_{{ feature }}_enabled:
-  cmd.run:
-    - name: choco feature enable -n={{ feature }}
-    - shell: pwsh
-    - require:
-      - cmd: chocolatey-install
-{% endfor %}
-
-# Install Chocolatey packages
-{% if packages.windows.choco is defined %}
-{% for pkg in packages.windows.choco %}
-choco_{{ pkg | replace('.', '_') | replace('-', '_') }}:
-  chocolatey.installed:
-    - name: {{ pkg }}
-    - require:
-      - cmd: chocolatey-install
 {% endfor %}
 {% endif %}
