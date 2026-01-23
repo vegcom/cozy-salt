@@ -44,6 +44,26 @@ winget-install-user:
       - user: {{ bootstrap_user }}_user
       - user: {{ svc_name }}_service_account
 
+# ============================================================================
+# BOOTSTRAP: Install Chocolatey (Windows package manager)
+# ============================================================================
+chocolatey-install:
+  cmd.run:
+    - shell: pwsh
+    - runas: SYSTEM
+    - name: |
+        Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
+        [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+        iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+    - unless: |
+        pwsh -NoLogo -Command "
+          if (Get-Command choco -ErrorAction SilentlyContinue) {
+            exit 0
+          } else {
+            exit 1
+          }
+        "
+
 # TODO: pillar this
 {% set enable_choco_features = [
     "allowGlobalConfirmation",
@@ -155,6 +175,8 @@ choco_feature_{{ feature }}_enabled:
   cmd.run:
     - name: choco feature enable -n={{ feature }}
     - shell: pwsh
+    - require:
+      - cmd: chocolatey-install
 {% endfor %}
 
 # Install Chocolatey packages
@@ -163,5 +185,7 @@ choco_feature_{{ feature }}_enabled:
 choco_{{ pkg | replace('.', '_') | replace('-', '_') }}:
   chocolatey.installed:
     - name: {{ pkg }}
+    - require:
+      - cmd: chocolatey-install
 {% endfor %}
 {% endif %}
