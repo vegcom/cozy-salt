@@ -33,11 +33,10 @@
 - [x] Add [scheduler](https://docs.saltproject.io/salt/user-guide/en/latest/topics/scheduler.html) (2025-01-21)
 
 ## Active
-- [ ] Implement brew package installation (from provisioning/packages.sls cargo_global)
+- [ ] Implement brew package installation (from provisioning/packages.sls brew)
   - Create srv/salt/common/brew.sls or linux/homebrew.sls state
   - Detect if brew installed (macOS or Linux with Homebrew)
-  - Install packages from cargo_global list on systems with brew
-  - Consider: rename cargo_global to brew_global for clarity
+  - Install packages from brew list on systems with brew
 - [ ] Debug atuin integration (check: installed? PATH? .bashrc init? bash-preexec?)
 - [ ] Move tests/ to cozy-salt-enrollment submodule (test_states.py, test_linting.py)
 - [x] Add `package_metadata` to packages.sls (distro_aliases, conflicts, provides) (2025-01-21: structure defined in provisioning/packages.sls)

@@ -512,6 +512,7 @@ arch:
     - ttf-fira-code Developer font
     - ttf-hack Developer font
     - ttf-jetbrains-mono Developer font
+    - inter-font
   theming: Arch-only theming (GTK, Qt, icons)
     - arc-gtk-theme GTK theme
     - kvantum Qt theme engine
@@ -621,7 +622,7 @@ windows:
       - Valve.Steam
     communication:
       - Vencord.Vesktop
-      - Telegram.TelegramDesktop
+      - Telegram.TelegramDesktop.Beta
       - Mozilla.Thunderbird
     browser:
       - Mozilla.Firefox
@@ -658,5 +659,7 @@ npm_global:
   - serverless  # Serverless Framework
   - cdk  # AWS CDK CLI
 
-cargo_global:
-  - atuin  # Shell history tool (install via cargo across all distros)
+brew:
+  - atuin
+  - weasyprint
+  - pandoc
