@@ -3,10 +3,11 @@
 
 # shellcheck disable=SC1009
 if [ -d /etc/profile.d ]; then
-  # shellcheck disable=SC1058 disable=SC1072 disable=SC1073
-  for i "in" $(run-parts --list --regex '^[a-zA-Z0-9_][a-zA-Z0-9._-]*\.sh$' /etc/profile.d); do
-    if [ -r $i ]; then
-      . $i
+  # shellcheck  disable=SC1072 disable=SC1073
+  for i in /etc/profile.d/*.sh ; do
+    if [ -r "$i" ]; then
+      # shellcheck disable=SC1090
+      . "$i"
     fi
   done
   unset i
