@@ -46,23 +46,10 @@ winget-install-user:
 
 # ============================================================================
 # BOOTSTRAP: Install Chocolatey (Windows package manager)
+# Uses Salt's native chocolatey.bootstrapped state (requires Salt 3007.1+)
 # ============================================================================
 chocolatey-install:
-  cmd.run:
-    - shell: pwsh
-    - runas: SYSTEM
-    - name: |
-        Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
-        [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-        iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-    - unless: |
-        pwsh -NoLogo -Command "
-          if (Get-Command choco -ErrorAction SilentlyContinue) {
-            exit 0
-          } else {
-            exit 1
-          }
-        "
+  chocolatey.bootstrapped
 
 # TODO: pillar this
 {% set enable_choco_features = [
