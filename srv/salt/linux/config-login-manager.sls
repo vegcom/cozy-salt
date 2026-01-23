@@ -18,7 +18,7 @@ sddm_main_config:
         # SDDM Configuration
         # Per-capability configs managed in /etc/sddm.conf.d/ via cozy-salt
         # This file kept minimal to avoid conflicts with .d/ directory
-    - mode: 0644
+    - mode: "0644"
     - user: root
     - group: root
 
@@ -143,6 +143,6 @@ steamdeck_sleep_hook:
   file.managed:
     - name: /usr/lib/systemd/system-sleep/deck.sh
     - source: salt://linux/files/steamdeck/deck.sh
-    - mode: 0755
+    - mode: "0755"
     - makedirs: True
 {% endif %}

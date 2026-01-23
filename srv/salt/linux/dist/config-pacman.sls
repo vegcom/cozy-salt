@@ -32,7 +32,7 @@ chaotic_mirrorlist:
 pacman_conf:
   file.managed:
     - name: /etc/pacman.conf
-    - mode: 644
+    - mode: "0644"
     - user: root
     - group: root
     - contents: |
@@ -50,32 +50,30 @@ pacman_conf:
         ParallelDownloads = 5
         SigLevel = Required DatabaseOptional
         LocalFileSigLevel = Optional
+        ILoveCandy
 
         #
         # By default, pacman accepts packages signed by keys that it knows about.
         # SigLevel = Required DatabaseRequired
-
-        {% if pacman_repos %}
-        {% for repo_name, repo_config in pacman_repos.items() %}
-        {% if repo_config.get('enabled', false) %}
-
+        {%- if pacman_repos -%}
+        {%- for repo_name, repo_config in pacman_repos.items() -%}
+        {%- if repo_config.get('enabled', false) -%}
         [{{ repo_name }}]
-        {% if repo_config.get('Server') %}
+        {%- if repo_config.get('Server') -%}
         Server = {{ repo_config.get('Server') }}
-        {% endif %}
-        {% if repo_config.get('server') %}
+        {%- endif %}
+        {%- if repo_config.get('server') -%}
         Server = {{ repo_config.get('server') }}
-        {% endif %}
-        {% if repo_config.get('Include') %}
+        {%- endif %}
+        {%- if repo_config.get('Include') -%}
         Include = {{ repo_config.get('Include') }}
-        {% endif %}
-        {% if repo_config.get('SigLevel') %}
+        {%- endif %}
+        {%- if repo_config.get('SigLevel') -%}
         SigLevel = {{ repo_config.get('SigLevel') }}
-        {% endif %}
-
-        {% endif %}
-        {% endfor %}
-        {% endif %}
+        {%- endif -%}
+        {%- endif -%}
+        {%- endfor -%}
+        {%- endif -%}
 
 # =============================================================================
 # PACMAN DATABASE SYNC

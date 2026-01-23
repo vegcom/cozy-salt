@@ -8,7 +8,7 @@
   {# In containers, default to root #}
   {% set detected_user = 'root' %}
 {% else %}
-  {# On bare metal/Steam Deck, try to detect actual user #}
+  {# On bare metal try to detect actual user #}
   {% set detected_user = salt['environ.get']('SUDO_USER') or salt['environ.get']('LOGNAME') or 'alarm' %}
 {% endif %}
 user:
@@ -112,6 +112,10 @@ capability_meta:
 {% set cpu_arch = salt['pillar.get']('cpu_arch', 'x86_64') %}
 pacman:
   repos:
+    kde-unstable:
+      enabled: true
+      Include: /etc/pacman.d/mirrorlist
+
     core:
       enabled: true
       Include: /etc/pacman.d/mirrorlist
@@ -125,7 +129,7 @@ pacman:
       Include: /etc/pacman.d/mirrorlist
 
     chaotic_aur:
-      enabled: true
+      enabled: false
       server: "https://chaotic.cx/arch/{{ cpu_arch }}"
 
 # Note: System locales are configured in srv/pillar/linux/init.sls as global defaults

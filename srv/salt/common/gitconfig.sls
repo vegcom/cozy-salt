@@ -30,7 +30,7 @@ deploy_gitconfig_{{ username }}:
     - source: salt://common/dotfiles/.gitconfig
 {% if not is_windows %}
     - user: {{ username }}
-    - mode: 644
+    - mode: "0644"
 {% endif %}
     - makedirs: True
 
@@ -44,7 +44,7 @@ deploy_git_credentials_{{ username }}:
         {%- endfor %}
 {% if not is_windows %}
     - user: {{ username }}
-    - mode: 600
+    - mode: "0600"
 {% endif %}
     - makedirs: True
     - require:
@@ -57,7 +57,7 @@ deploy_gitattributes_{{ username }}:
     - source: salt://common/dotfiles/.gitattributes
 {% if not is_windows %}
     - user: {{ username }}
-    - mode: 644
+    - mode: "0644"
 {% endif %}
     - makedirs: True
 
@@ -68,7 +68,7 @@ deploy_gitignore_{{ username }}:
     - source: salt://common/dotfiles/.gitignore
 {% if not is_windows %}
     - user: {{ username }}
-    - mode: 644
+    - mode: "0644"
 {% endif %}
     - makedirs: True
 
@@ -82,8 +82,8 @@ deploy_gitconfig_local_{{ username }}:
 {% if git_email and git_name %}
     - contents: |
         [user]
-        	email = {{ git_email }}
-        	name = {{ git_name }}
+            email = {{ git_email }}
+            name = {{ git_name }}
     - replace: True
 {% else %}
     - source: salt://common/dotfiles/.gitconfig.local
@@ -92,7 +92,7 @@ deploy_gitconfig_local_{{ username }}:
 {% endif %}
 {% if not is_windows %}
     - user: {{ username }}
-    - mode: 644
+    - mode: "0644"
 {% endif %}
     - makedirs: True
 
@@ -103,7 +103,7 @@ deploy_gitattributes_local_{{ username }}:
     - source: salt://common/dotfiles/.gitattributes.local
 {% if not is_windows %}
     - user: {{ username }}
-    - mode: 644
+    - mode: "0644"
 {% endif %}
     - makedirs: True
     - create: False
@@ -115,7 +115,7 @@ deploy_gitignore_local_{{ username }}:
     - source: salt://common/dotfiles/.gitignore.local
 {% if not is_windows %}
     - user: {{ username }}
-    - mode: 644
+    - mode: "0644"
 {% endif %}
     - makedirs: True
     - create: False
@@ -145,8 +145,8 @@ deploy_git_template_{{ username }}:
     - source: salt://common/dotfiles/.git_template
 {% if not is_windows %}
     - user: {{ username }}
-    - dir_mode: 755
-    - file_mode: 644
+    - dir_mode: "0755"
+    - file_mode: "0644"
 {% endif %}
     - makedirs: True
     - clean: True
@@ -158,8 +158,8 @@ deploy_git_template_local_{{ username }}:
     - source: salt://common/dotfiles/.git_template.local
 {% if not is_windows %}
     - user: {{ username }}
-    - dir_mode: 755
-    - file_mode: 644
+    - dir_mode: "0755"
+    - file_mode: "0644"
 {% endif %}
     - makedirs: True
     - clean: False

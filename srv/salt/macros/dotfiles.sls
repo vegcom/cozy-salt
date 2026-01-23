@@ -26,7 +26,7 @@
     - name: {{ dotfile_path(user_home, dotfile_name) }}
     - source: {{ source }}
     - user: {{ username }}
-    - mode: 644
+    - mode: "0644"
     - makedirs: True
   {%- if creates %}
     - creates: {{ dotfile_path(user_home, creates) }}
@@ -44,8 +44,8 @@
     - name: {{ dotfile_path(user_home, dotdir_name) }}
     - source: {{ source }}
     - user: {{ username }}
-    - dir_mode: 755
-    - file_mode: 644
+    - dir_mode: "0755"
+    - file_mode: "0644"
     - makedirs: True
     - clean: False
   {%- if require_user %}

@@ -9,5 +9,5 @@ git_env_vars_profile:
   file.managed:
     - name: /etc/profile.d/git-env.sh
     - source: salt://linux/files/etc-profile.d/git-env.sh
-    - mode: 644
+    - mode: "0644"
 {% endif %}

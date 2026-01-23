@@ -13,7 +13,7 @@
 locale_gen_config:
   file.managed:
     - name: /etc/locale.gen
-    - mode: 644
+    - mode: "0644"
     - user: root
     - group: root
     - contents: |

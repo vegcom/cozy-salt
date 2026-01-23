@@ -15,7 +15,7 @@
     - source: salt://provisioning/wsl/files/opt-cozy/{{ script }}
     - user: {{ grains['username'] }}
     - group: {{ grains['username'] }}
-    - mode: 755
+    - mode: "0755"
     - require:
       - file: /opt/cozy
 {% endfor %}
@@ -26,7 +26,7 @@
     - source: salt://provisioning/common/files/opt-cozy/docker-proxy.yaml
     - user: {{ grains['username'] }}
     - group: {{ grains['username'] }}
-    - mode: 644
+    - mode: "0644"
     - require:
       - file: /opt/cozy
 

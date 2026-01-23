@@ -40,7 +40,7 @@ scripts/           # Enrollment, Docker entrypoints, utilities
 
 **Hierarchy** (later levels override earlier):
 
-1. **Global defaults**: `srv/pillar/linux/init.sls`, `srv/pillar/windows/init.sls`, `srv/pillar/arch/init.sls`
+1. **Global defaults**: `srv/pillar/linux/init.sls`, `srv/pillar/windows/init.sls`, `srv/pillar/dist/*.sls`
 2. **Hardware classes**: `srv/pillar/class/` (e.g., `galileo.sls` for Steam Deck)
 3. **Per-host overrides**: `srv/pillar/host/example.sls` (copy template, rename to hostname)
 4. **User configurations**: `srv/pillar/users/` (individual user configs, see `demo.sls` template)

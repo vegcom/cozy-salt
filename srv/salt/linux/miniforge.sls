@@ -5,6 +5,9 @@
 {% set miniforge_version = miniforge_versions.get('version', '24.11.3-0') %}
 {# Path configuration from pillar with defaults #}
 {% set miniforge_path = salt['pillar.get']('install_paths:miniforge:linux', '/opt/miniforge3') %}
+{# TODO: prep for service_user will be pillar service_user: buildgirl probs #}
+{% set managed_users = salt['pillar.get']('managed_users', []) %}
+{% set service_user = managed_users[0] if managed_users else 'nobody' %}
 
 # Download miniforge installer
 miniforge_download:
@@ -22,6 +25,7 @@ miniforge_install:
     - name: |
         bash /tmp/miniforge-init.sh -b -s -p {{ miniforge_path }}
         rm -f /tmp/miniforge-init.sh
+        chown -R {{ service_user }}:cozyusers {{ miniforge_path }}
         chmod -R 755 {{ miniforge_path }}
     - require:
       - cmd: miniforge_download

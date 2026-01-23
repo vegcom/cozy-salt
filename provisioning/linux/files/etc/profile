@@ -1,0 +1,13 @@
+#!/bin/bash
+# Managed by Salt - DO NOT EDIT MANUALLY
+
+# shellcheck disable=SC1009
+if [ -d /etc/profile.d ]; then
+  # shellcheck disable=SC1058 disable=SC1072 disable=SC1073
+  for i "in" $(run-parts --list --regex '^[a-zA-Z0-9_][a-zA-Z0-9._-]*\.sh$' /etc/profile.d); do
+    if [ -r $i ]; then
+      . $i
+    fi
+  done
+  unset i
+fi

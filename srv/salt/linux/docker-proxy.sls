@@ -16,7 +16,7 @@ docker_proxy_file:
   file.managed:
     - name: {{ docker_proxy_config }}
     - source: salt://provisioning/common/files/opt-cozy/docker-proxy.yaml
-    - mode: 644
+    - mode: "0644"
     - user: root
     - group: root
     - makedirs: True

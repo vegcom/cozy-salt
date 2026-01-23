@@ -10,6 +10,7 @@
                 'microsoft' in salt['cmd.run']('cat /proc/version 2>/dev/null || echo ""', python_shell=True).lower() %}
 {# SSH port: 2222 for WSL (avoids Windows SSH on 22), 22 for native Linux #}
 {% set ssh_port = 2222 if is_wsl else salt['pillar.get']('ssh:port', 22) %}
+{% set include_files = ['0-functions.sh', '1-path.sh', 'cozy.sh'] %}
 
 # NOTE: /etc/skel is now managed in linux/users.sls (must run before user.present)
 
@@ -18,38 +19,72 @@ tmux_system_config:
   file.managed:
     - name: /etc/tmux.conf
     - source: salt://linux/files/etc/tmux.conf
-    - mode: 644
+    - mode: "0644"
 
 # Deploy profile.d initialization scripts
 starship_profile:
   file.managed:
     - name: /etc/profile.d/starship.sh
     - source: salt://linux/files/etc-profile.d/starship.sh
-    - mode: 644
+    - mode: "0644"
 
 miniforge_system_profile:
   file.managed:
     - name: /etc/profile.d/miniforge.sh
     - source: salt://linux/files/etc-profile.d/miniforge.sh
-    - mode: 644
+    - mode: "0644"
 
 nvm_system_profile:
   file.managed:
     - name: /etc/profile.d/nvm.sh
     - source: salt://linux/files/etc-profile.d/nvm.sh
-    - mode: 644
+    - mode: "0644"
 
 yay_wrapper_profile:
   file.managed:
     - name: /etc/profile.d/yay-wrapper.sh
     - source: salt://linux/files/etc-profile.d/yay-wrapper.sh
-    - mode: 755
+    - mode: "0755"
 
-cozy_system_profile:
+{% for include_file in include_files %}
+cozy_etc_profiled_{{ include_file | replace('-', '_') }}:
   file.managed:
-    - name: /etc/profile.d/cozy.sh
-    - source: salt://linux/files/etc-profile.d/cozy.sh
-    - mode: 644
+    - name: /etc/profile.d/{{ include_file }}
+    - source: salt://linux/files/etc-profile.d/{{ include_file }}
+    - mode: "0644"
+{% endfor %}
+
+cozy_etc_profile:
+  file.managed:
+    - name: /etc/profile
+    - source: salt://linux/files/etc/profile
+    - mode: "0644"
+
+cozy_opt_dir:
+  file.directory:
+    - name: /opt/cozy
+    - source: salt://linux/files/opt-cozy
+    - makedirs: True
+    - mode: "0755"
+    - order: 1
+
+cozy_opts:
+  file.recurse:
+    - name: /opt/cozy
+    - source: salt://linux/files/opt-cozy
+    - include_empty: True
+    - clean: True
+    - dir_mode: "0755"
+    - file_mode: '0744'
+    - order: 0
+    - require:
+      - file: cozy_opt_dir
+
+cozy_pam:
+  file.managed:
+    - name: /etc/pam.d/cozy
+    - source: salt://linux/files/etc-pam.d/cozy
+    - mode: "0644"
 
 # Deploy hardened SSH configuration (consolidated template - High-003)
 # Template handles platform conditionals: Linux, WSL, and Windows
@@ -58,7 +93,7 @@ sshd_hardening_config:
     - name: /etc/ssh/sshd_config.d/99-hardening.conf
     - source: salt://_templates/sshd_hardening.conf.jinja
     - template: jinja
-    - mode: 644
+    - mode: "0644"
     - makedirs: True
 
 # Allow unauthenticated APT packages (trusted repositories) - Debian/Ubuntu only
@@ -68,7 +103,7 @@ apt_allow_unauthenticated:
     - name: /etc/apt/apt.conf.d/99-allow-unauthenticated
     - contents: |
         APT::Get::AllowUnauthenticated "true";
-    - mode: 644
+    - mode: "0644"
 {% else %}
 apt_allow_unauthenticated:
   test.nop:
@@ -93,7 +128,7 @@ dns_search_domain:
         {% for nameserver in dns.get('nameservers', ['10.0.0.1', '1.1.1.1', '1.0.0.1']) %}
         nameserver {{ nameserver }}
         {% endfor %}
-    - mode: 644
+    - mode: "0644"
 {% else %}
 # DNS configuration skipped - running in container (Docker/Podman/Kubernetes)
 skip_dns_config:

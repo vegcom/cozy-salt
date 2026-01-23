@@ -11,7 +11,7 @@ wsl_config:
     - name: /etc/wsl.conf
     - source: salt://provisioning/wsl/files/etc/wsl.conf.jinja
     - template: jinja
-    - mode: 644
+    - mode: "0644"
     - makedirs: True
 
 # Note: Changes to /etc/wsl.conf require WSL shutdown/restart to take effect

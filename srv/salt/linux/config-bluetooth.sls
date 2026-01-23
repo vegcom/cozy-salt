@@ -23,7 +23,7 @@ bluetooth_service:
 bluetooth_main_config:
   file.managed:
     - name: /etc/bluetooth/main.conf
-    - mode: 644
+    - mode: "0644"
     - makedirs: True
     - contents: |
         # Bluetooth configuration (managed by cozy-salt)

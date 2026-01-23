@@ -25,7 +25,7 @@ base:
   # Arch Linux specific
   'G@os_family:Arch':
     - match: compound
-    - arch
+    - dist.arch
 
   # Hardware class: Valve Galileo (Steam Deck)
   'G@biosvendor:Valve and G@boardname:Galileo':

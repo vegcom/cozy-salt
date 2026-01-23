@@ -19,8 +19,8 @@ linuxbrew_directory:
   file.directory:
     - name: {{ homebrew_parent }}
     - user: {{ homebrew_user }}
-    - group: {{ homebrew_user }}
-    - mode: 755
+    - group: cozyusers
+    - mode: "0775"
     - makedirs: True
     - order: 20
     - require:
@@ -56,7 +56,7 @@ homebrew_profile:
   file.managed:
     - name: /etc/profile.d/homebrew.sh
     - source: salt://linux/files/etc-profile.d/homebrew.sh
-    - mode: 644
+    - mode: "0644"
     - require:
       - cmd: homebrew_acl_permissions
 

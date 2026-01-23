@@ -81,34 +81,23 @@ bluetooth:
 #     versions: []  # Install specific Ruby versions if enabled
 
 
+# pacman:
+#   repos:
+#     kde-unstable:
+#       enabled: true
+#       Include: /etc/pacman.d/mirrorlist
 
-pacman:
-  repos:
+#     core:
+#       enabled: true
+#       Include: /etc/pacman.d/mirrorlist
 
-  kde-unstable:
-    enabled: true
-    Include: /etc/pacman.d/mirrorlist
+#     extra:
+#       enabled: true
+#       Include: /etc/pacman.d/mirrorlist
 
-  core:
-    enabled: true
-    Include: /etc/pacman.d/mirrorlist
-
-  extra:
-    enabled: true
-    Include: /etc/pacman.d/mirrorlist
-
-  multilib:
-    enabled: true
-    Include: /etc/pacman.d/mirrorlist
-
-  jupiter:
-    enabled: true
-    server: "https://steamdeck-packages.steamos.cloud/archlinux-mirror/$repo/os/$arch"
-    siglevel: "Never"
-
-  chaotic_aur:
-    enabled: false
-    server: "https://chaotic.cx/arch/x86_64"
+#     multilib:
+#       enabled: true
+#       Include: /etc/pacman.d/mirrorlist
 
 # =============================================================================
 # Steam Deck: Login Manager (SDDM)

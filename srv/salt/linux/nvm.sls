@@ -14,7 +14,7 @@
 nvm_directory:
   file.directory:
     - name: {{ nvm_path }}
-    - mode: 755
+    - mode: "0755"
     - makedirs: True
 
 # Download and install NVM system-wide
@@ -35,7 +35,7 @@ nvm_profile:
   file.managed:
     - name: /etc/profile.d/nvm.sh
     - source: salt://linux/files/etc-profile.d/nvm.sh
-    - mode: 644
+    - mode: "0644"
 
 # Install default Node.js version system-wide
 # Use BASH_ENV for non-interactive shells (Salt cmd.run)

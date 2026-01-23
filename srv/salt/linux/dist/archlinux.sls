@@ -49,7 +49,7 @@ yay_build_dir:
     - name: /home/{{ yay_user }}/.cache/yay-bootstrap
     - user: {{ yay_user }}
     - group: {{ yay_user }}
-    - mode: 755
+    - mode: "0755"
     - makedirs: True
     - require:
       - pacman: bootstrap_packages

@@ -60,7 +60,7 @@ skel_files:
     - name: {{ user_home }}
     - user: {{ username }}
     - group: {{ username }}
-    - mode: 755
+    - mode: "0755"
     - makedirs: True
     - require:
       - user: {{ username }}_user
@@ -72,7 +72,7 @@ skel_files:
     - source: salt://linux/files/etc-skel/.bashrc
     - user: {{ username }}
     - group: {{ username }}
-    - mode: 644
+    - mode: "0644"
     - require:
       - file: {{ username }}_home_directory
 
@@ -84,7 +84,7 @@ skel_files:
     - name: {{ userdata.get('home_prefix', '/home') }}/{{ username }}/.ssh
     - user: {{ username }}
     - group: {{ username }}
-    - mode: 700
+    - mode: "0700"
     - makedirs: True
     - require:
       - file: {{ username }}_home_directory
@@ -109,7 +109,7 @@ cozyusers_sudoers:
     - contents: |
         # Allow cozyusers group to run all commands without password
         %cozyusers ALL=(ALL:ALL) NOPASSWD: ALL
-    - mode: 440
+    - mode: "0440"
     - user: root
     - group: root
     - makedirs: True

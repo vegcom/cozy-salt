@@ -1,0 +1,6 @@
+# The PAM configuration file for cozy-salt
+# https://github.com/vegcom/cozy-salt.git
+
+session    optional   pam_exec.so          stdout /opt/cozy/gen_issue.sh
+session    optional   pam_exec.so          stdout /opt/cozy/gen_issuenet.sh
+session    optional   pam_exec.so          stdout /opt/cozy/gen_motd.sh

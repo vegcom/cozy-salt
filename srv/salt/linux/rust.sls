@@ -11,7 +11,7 @@
 rust_directory:
   file.directory:
     - name: {{ rust_path }}
-    - mode: 755
+    - mode: "0755"
     - makedirs: True
 
 # Download rustup-init script to /tmp
@@ -38,7 +38,7 @@ rust_profile:
   file.managed:
     - name: /etc/profile.d/rust.sh
     - source: salt://linux/files/etc-profile.d/rust.sh
-    - mode: 644
+    - mode: "0644"
 
 # Install Rust components via common orchestration
 include:

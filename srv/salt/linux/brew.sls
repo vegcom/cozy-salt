@@ -15,8 +15,8 @@ install_brew_packages:
     - name: {{ homebrew_base }}/bin/brew install {{ brew_packages | join(' ') }}
     - runas: {{ homebrew_user }}
     - unless: ! test -x {{ homebrew_base }}/bin/brew
-    - require:
-      - cmd: homebrew_install
+    # - require:
+    #   - cmd: []
 
 {% else %}
 # No managed users or no brew packages defined
