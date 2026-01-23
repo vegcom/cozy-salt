@@ -50,6 +50,17 @@ deploy_git_credentials_{{ username }}:
     - require:
       - file: deploy_gitconfig_{{ username }}
 
+# Deploy base gitattributes (always update)
+deploy_gitattributes_{{ username }}:
+  file.managed:
+    - name: {{ dotfiles.dotfile_path(user_home, '.gitattributes') }}
+    - source: salt://common/dotfiles/.gitattributes
+{% if not is_windows %}
+    - user: {{ username }}
+    - mode: 644
+{% endif %}
+    - makedirs: True
+
 # Deploy base .gitignore (always update)
 deploy_gitignore_{{ username }}:
   file.managed:
@@ -84,6 +95,18 @@ deploy_gitconfig_local_{{ username }}:
     - mode: 644
 {% endif %}
     - makedirs: True
+
+# Deploy .gitattributes.local (create once only, user customizations)
+deploy_gitattributes_local_{{ username }}:
+  file.managed:
+    - name: {{ dotfiles.dotfile_path(user_home, '.gitattributes.local') }}
+    - source: salt://common/dotfiles/.gitattributes.local
+{% if not is_windows %}
+    - user: {{ username }}
+    - mode: 644
+{% endif %}
+    - makedirs: True
+    - create: False
 
 # Deploy .gitignore.local (create once only, user customizations)
 deploy_gitignore_local_{{ username }}:

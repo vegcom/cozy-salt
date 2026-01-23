@@ -17,10 +17,15 @@ base:
     - match: compound
     - windows
 
-  # Linux systems
-  'G@os_family:Debian or G@os_family:RedHat':
+  # Linux systems (Debian, RedHat, Arch)
+  'G@os_family:Debian or G@os_family:RedHat or G@os_family:Arch':
     - match: compound
     - linux
+
+  # Arch Linux specific
+  'G@os_family:Arch':
+    - match: compound
+    - arch
 
   # Hardware class: Valve Galileo (Steam Deck)
   'G@biosvendor:Valve and G@boardname:Galileo':
