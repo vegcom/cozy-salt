@@ -3,7 +3,7 @@
 # Requires: Homebrew already installed (via linux.homebrew state)
 # Runs as first managed user (Homebrew rejects root execution)
 
-{% import_yaml "provisioning/packages.sls" as packages %}
+{% import_yaml "packages.sls" as packages %}
 {% set managed_users = salt['pillar.get']('managed_users', []) %}
 {% set brew_packages = packages.get('brew', []) %}
 {% set homebrew_user = managed_users[0] if managed_users else None %}

@@ -509,6 +509,7 @@ arch:
   fonts: Arch-only developer fonts
     - noto-fonts
     - noto-fonts-emoji
+    - noto-fonts-cjk
     - ttf-fira-code Developer font
     - ttf-hack Developer font
     - ttf-jetbrains-mono Developer font
