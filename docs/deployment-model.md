@@ -89,163 +89,30 @@ powershell_profile_files:
 
 **Result**: Changes to Starship-Twilite automatically sync through cozy-pwsh → cozy-salt → Windows systems
 
-## Pillar Configuration
+## Pillar Configuration & Secrets
 
-Cozy-salt uses a hierarchical pillar system to manage configuration:
+Pillar configuration, examples, and setup instructions are documented in:
 
-- **Global defaults**: `srv/pillar/linux/init.sls`, `srv/pillar/arch/init.sls`, `srv/pillar/windows/init.sls`
-- **Hardware classes**: `srv/pillar/class/` (e.g., `galileo.sls` for Steam Deck)
-- **Per-host overrides**: `srv/pillar/host/` (e.g., `hostname.sls` for specific machines)
-- **Secrets** (gitignored): `srv/pillar/secrets/init.sls`
-- **User config** (gitignored): `srv/pillar/common/users.sls`
-
-### Example Files (Templates)
-
-All example files are committed to the repo for reference. Copy and rename them to use:
-
-1. **`srv/pillar/host/example.sls`** → Copy to `srv/pillar/host/YOUR_HOSTNAME.sls`
-   - Per-host configuration overrides
-   - Applied to single specific system (matched by minion_id)
-   - Example: custom locales, disable features, enable capabilities
-
-2. **`srv/pillar/class/example.sls`** → Copy to `srv/pillar/class/YOUR_CLASS.sls`
-   - Hardware class configuration
-   - Applied to all systems with matching grains (e.g., Steam Deck)
-   - Example: Chaotic AUR for aarch64, SDDM config
-
-3. **`srv/pillar/secrets/init.sls.example`** → Copy to `srv/pillar/secrets/init.sls`
-   - Sensitive credentials (tokens, keys, passwords)
-   - Gitignored - never committed
-   - Edit with actual secrets after copying
-
-4. **`srv/pillar/common/users.sls.example`** → Reference only
-   - Shows user structure format
-   - Actual users defined in `srv/pillar/common/users.sls` (gitignored)
-
-### Configuration Hierarchy
-
-Pillar values merge from bottom to top (later values override earlier):
-
-1. `srv/pillar/linux/init.sls` (global Linux defaults)
-2. `srv/pillar/arch/init.sls` or `windows/init.sls` (distro-specific)
-3. `srv/pillar/class/CLASSNAME.sls` (hardware class)
-4. `srv/pillar/host/HOSTNAME.sls` (per-host)
+- **README.md** - Pillar hierarchy and user management overview
+- **CONTRIBUTING.md** - Template examples and per-host/user setup instructions
+- Example files in `srv/pillar/`:
+  - [`host/example.sls`](../srv/pillar/host/example.sls) - Per-host configuration template
+  - [`class/example.sls`](../srv/pillar/class/example.sls) - Hardware class template
+  - [`secrets/init.sls.example`](../srv/pillar/secrets/init.sls.example) - Secrets template
+  - [`users/demo.sls`](../srv/pillar/users/demo.sls) - User configuration template
+  - [`common/users.sls.example`](../srv/pillar/common/users.sls.example) - User structure reference
 
 ### Secrets Management
 
 Sensitive information (tokens, credentials, API keys) are stored in a gitignored pillar file.
 
-### Setup
+**Security considerations**:
 
-1. **Create host-specific config** (optional):
-
-   ```bash
-   cp srv/pillar/host/example.sls srv/pillar/host/HOSTNAME.sls
-   # Edit to override defaults for this host
-   ```
-
-2. **Create hardware class config** (optional):
-
-   ```bash
-   cp srv/pillar/class/example.sls srv/pillar/class/YOUR_CLASS.sls
-   # Edit to configure for this hardware class
-   ```
-
-3. **Create secrets pillar** (required, locally):
-
-   ```bash
-   cp srv/pillar/secrets/init.sls.example srv/pillar/secrets/init.sls
-   # Edit with actual secrets
-   chmod 600 srv/pillar/secrets/init.sls
-   ```
-
-4. **Set environment variables** (for local development/testing):
-
-   ```bash
-   cp .env.example .env
-   # Edit with actual token
-   chmod 600 .env
-   ```
-
-### File Structure
-
-**`srv/pillar/secrets/init.sls.example`** (committed):
-
-```yaml
-# Secrets configuration (EXAMPLE - rename to init.sls and fill with actual values)
-# This file should NOT be committed to git - see .gitignore
-
-github:
-  access_token: your_github_pat_token_here
-```
-
-**`srv/pillar/secrets/init.sls`** (gitignored, locally created):
-
-```yaml
-github:
-  access_token: ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxx
-```
-
-**`.env.example`** (committed):
-
-```bash
-# Environment configuration (EXAMPLE - copy to .env and fill with actual values)
-PROJECT_ACCESS_TOKEN=your_github_pat_token_here
-```
-
-**`.env`** (gitignored, locally created):
-
-```bash
-PROJECT_ACCESS_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxx
-```
-
-### Access in Salt States
-
-**From pillar** (recommended for deployment):
-
-```sls
-{% set github_token = salt['pillar.get']('github:access_token', '') %}
-
-deploy_from_repo:
-  git.latest:
-    - name: https://{{ github_token }}@github.com/vegcom/private-repo.git
-    - target: /opt/deployment
-```
-
-**From environment** (for local scripts/tests):
-
-```bash
-source .env
-curl -H "Authorization: token $PROJECT_ACCESS_TOKEN" \
-  https://api.github.com/repos/vegcom/cozy-pwsh/dispatches
-```
-
-### Security Considerations
-
-1. **Never commit secrets**: Use `.gitignore` entries
-   - `srv/pillar/secrets/init.sls`
-   - `.env`
-   - `.env.local`
-
-2. **File permissions**: Restrict access
-
-   ```bash
-   chmod 600 srv/pillar/secrets/init.sls .env
-   ```
-
+1. **Never commit secrets**: Use `.gitignore` for `srv/pillar/secrets/init.sls`, `.env`, `.env.local`
+2. **File permissions**: `chmod 600` on all secret files
 3. **Rotate tokens regularly**: GitHub PAT expiration, access revocation
-
-4. **Use least privilege**: Create separate tokens for different operations
-   - Narrow scopes (repo access only, not org admin)
-   - Limited expiration windows
-
-5. **Salt master security**: Pillar data is available to all minions; use pillar matching if needed:
-
-   ```sls
-   'role:deployment':
-     - match: pillar
-     - secrets  # Only deploy targets get secrets
-   ```
+4. **Use least privilege**: Separate tokens for different operations with narrow scopes
+5. **Salt master security**: Restrict pillar access via pillar matching if needed
 
 ## Deployment Flow
 
@@ -299,21 +166,6 @@ Updated starship.toml deploys to Windows systems
 - Or configure SSH key for git user (minion runs as uid 999)
 
 ### Webhook never triggers
-
-**Cause**: Event type mismatch or token permissions
-
-**Check**:
-
-1. Secret name matches: `TARGET_REPO` in Starship-Twilite
-2. Token has `repo` scope
-3. Webhook delivery logs in Settings → Webhooks
-
-### Secrets not available in state
-
-**Cause**: Pillar not loaded or file doesn't exist
-
-**Fix**:
-ook never triggers
 
 **Cause**: Event type mismatch or token permissions
 

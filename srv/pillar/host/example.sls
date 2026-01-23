@@ -1,25 +1,17 @@
-# Example Host-Specific Pillar Override
-# Copy and rename to match your minion_id (e.g., hostname.sls)
-# Applied ONLY to the specific host that matches this filename
+# Host-specific configuration override
+# Copy this file and rename to match your hostname (e.g., myhost.sls)
+# See CONTRIBUTING.md for details
 
-# Example: Set full workstation role (installs all packages)
-# workstation_role: 'workstation-full'
+workstation_role: workstation-full
 
-# Example: Override system locales for this host
-# locales:
-#   - en_US.UTF-8
-#   - de_DE.UTF-8
+locales:
+  - en_US.UTF-8
 
-# Example: Disable Chaotic AUR on this host
-# pacman:
-#   repos:
-#     chaotic_aur:
-#       enabled: false
+host:
+  capabilities:
+    kvm: true
 
-# Example: Override workstation role (options: workstation-minimal, workstation-base, workstation-developer, workstation-full)
-# workstation_role: 'workstation-developer'
-
-# Example: Enable KVM capability
-# host:
-#   capabilities:
-#     kvm: true
+pacman:
+  repos:
+    chaotic_aur:
+      enabled: true
