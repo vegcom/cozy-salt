@@ -1,3 +1,0 @@
-[submodule "scripts/enrollment"]
-	path = scripts/enrollment
-	url = git@github.com:vegcom/cozy-salt-enrollment.git
