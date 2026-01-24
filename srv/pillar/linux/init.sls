@@ -50,13 +50,13 @@ host:
 # Added to /etc/locale.gen before running locale-gen
 # Override in class/ or host/ pillar as needed
 locales:
-  - en_US.UTF-8
-  - fr_FR.UTF-8
-  - ja_JP.UTF-8
-  - ko_KR.UTF-8
-  - ru_RU.UTF-8
-  - zh_CN.UTF-8
-  - zh_TW.UTF-8
+  - en_US.UTF-8 UTF-8
+  - fr_FR.UTF-8 UTF-8
+  - ja_JP.UTF-8 UTF-8
+  - ko_KR.UTF-8 UTF-8
+  - ru_RU.UTF-8 UTF-8
+  - zh_CN.UTF-8 UTF-8
+  - zh_TW.UTF-8 UTF-8
 
 # =============================================================================
 # Login Manager (SDDM) Configuration
