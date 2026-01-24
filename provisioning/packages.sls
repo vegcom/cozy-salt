@@ -650,7 +650,7 @@ pip_base:
   - pipx  # Python application package manager
 
 npm_global:
-  - @anthropic-ai/claude-code # Sonnet is a friend for managing docs
+  - '@anthropic-ai/claude-code' # Sonnet is a friend for managing docs
   - pnpm  # Fast npm alternative
   - bun  # Fast JavaScript runtime
   - tsx  # TypeScript executor
