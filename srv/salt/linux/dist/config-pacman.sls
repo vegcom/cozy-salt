@@ -40,6 +40,14 @@ cozy_arch_profile:
         alias pkgs_all="pacman -Slq | fzf --preview 'pacman -Si {}' --layout=reverse"
         alias pkg_unowned="(export LC_ALL=C.UTF-8; comm -13 <(pacman -Qlq | sed 's,/$,,' | sort) <(find /etc /usr /opt -path /usr/lib/modules -prune -o -print | sort))"
 
+cozy_arch_downloader:
+  file.managed:
+    - name: /usr/local/bin/aria2-wrapper
+    - source: salt://linux/files/usr-local-bin/aria2-wrapper
+    - mode: "0775"
+    - user: root
+    - group: cozyusers
+
 # =============================================================================
 # PACMAN.CONF REPOSITORY CONFIGURATION
 # =============================================================================

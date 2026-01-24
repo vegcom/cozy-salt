@@ -31,11 +31,9 @@ install_pip_uv:
   cmd.run:
     - name: {{ pip_bin }} install uv
     {% if grains['os_family'] == 'Windows' %}
-    - runas: SYSTEM
     - shell: pwsh
-    {% else %}
-    - runas: {{ service_user }}
     {% endif %}
+    - runas: {{ service_user }}
     - unless: {{ pip_bin }} show uv
     - require:
       - cmd: miniforge_install
@@ -50,9 +48,8 @@ install_pip_base_{{ package | replace('-', '_') }}:
     - name: {{ uv_bin }} --quiet pip install --system --no-progress {{ package }}
     {% if grains['os_family'] == 'Windows' %}
     - shell: pwsh
-    {% else %}
-    - runas: {{ service_user }}
     {% endif %}
+    - runas: {{ service_user }}
     - unless: {{ uv_bin }} --quiet --no-cache --offline pip show --system --strict {{ package }}
     - require:
       - cmd: install_pip_uv

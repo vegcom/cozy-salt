@@ -23,8 +23,10 @@ export NVM_DIR="/opt/nvm"
 export CONDA_AUTO_ACTIVATE_BASE=true
 
 # Load NVM if installed
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+# shellcheck disable=SC1091
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+# shellcheck disable=SC1091
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
 #------------------------------------------------------------------------------
 # Functions
@@ -55,8 +57,19 @@ return b"\n".join(cleaned)
 '
 }
 
+export gclean
+
 t(){
   if [[ -d ${PWD}/.git ]] ; then
     tmux new -s "$(basename "${PWD}/")"
   fi
 }
+
+export t
+
+#------------------------------------------------------------------------------
+# Aliases
+#------------------------------------------------------------------------------
+
+alias cozy-salt="sudo salt-call state.highstate --force-color --state-output=mixed -l error exclude=None,True,Clean"
+export cozy-salt

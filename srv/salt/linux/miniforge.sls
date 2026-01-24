@@ -17,7 +17,7 @@ miniforge_directory:
     - user: {{ service_user }}
     - group: cozyusers
     - makedirs: True
-    - clean: True
+    - clean: False
 
 # Download miniforge installer
 miniforge_download:

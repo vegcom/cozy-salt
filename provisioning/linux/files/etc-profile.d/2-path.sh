@@ -1,5 +1,5 @@
 #!/bin/bash
-# 1-paths.sh
+# 2-path.sh
 
 # Build PATH the way both distros would love
 safe_append_path '/usr/local/sbin'
@@ -16,15 +16,5 @@ safe_append_path '/usr/games'
 # Now we ship our own jazz
 safe_append_path '/opt/cozy'
 
-# We silence known edge cases
-if ! declare -F append_path &>/dev/null ; then
-  alias append_path=safe_append_path
-fi
-if ! declare -F _comp_deprecate_func  &>/dev/null ; then
-  alias _comp_deprecate_func=safe_comp_deprecate_func
-fi
-
-# Now do the cozy thing
-if [ "${PS1-}" ]; then
-  echo -e "\n🌸 ${HOSTNAME:-localhost}: cozy_system_profile loaded. \e[35mSay hi to your wife.\e[0m\n"
-fi
+# Export once, and only once
+export PATH

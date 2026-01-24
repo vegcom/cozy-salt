@@ -16,6 +16,13 @@ nvm:
 paths:
   powershell_7_profile: 'C:\Program Files\PowerShell\7'
   sshd_config_d: 'C:\ProgramData\ssh\sshd_config.d'
+  winget: 'C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_1.27.460.0_x64__8wekyb3d8bbwe'
+
+# Bootstrap packages - URLs for AppX/MSIX bundles
+bootstrap:
+  url:
+    winget: 'https://github.com/microsoft/winget-cli/releases/download/v1.28.100-preview/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle'
+    pwsh: 'https://github.com/PowerShell/PowerShell/releases/download/v7.5.4/PowerShell-7.5.4.msixbundle'
 
 # Windows scheduled tasks (define tasks to deploy via schtasks)
 # Each task references an XML file in provisioning/windows/tasks/

@@ -525,9 +525,9 @@ arch:
 # PowerShell Gallery, Chocolatey, Winget, and Visual C++ runtimes
 # ============================================================================
 windows:
-  powershell_gallery:
+  pwsh_modules:
     - PSReadLine  # Command-line editing, history, syntax highlighting
-    - PowerShellGet  # Module management (v3+)
+    - PowerShellGet  # Module management
     - Microsoft.WinGet.Client  # WinGet PowerShell interface
     - Microsoft.WinGet.CommandNotFound  # Command not found suggestions
     - powershell-yaml  # YAML parsing
@@ -595,23 +595,23 @@ windows:
         - PeaZip
         - Zipier
       terminal:
-        - WindowsTerminal
+        - Alacritty.Alacritty
         - ConEmu
+        - WindowsTerminal
       shell:
-        - PowerShell
         - Git.Git
+        - Microsoft.Powershell
         - StardustXR.Starship
       editor:
         - Vim.Vim
         - NeovimProject.Neovim
       development:
+        - GitHub.GitHubDesktop
+        - Gitleaks.Gitleaks
         - JetBrains.IntelliJIDEA.Community
         - Microsoft.VisualStudio.BuildTools
         - Microsoft.VisualStudio.Community
         - Microsoft.VisualStudioCode
-        - GitHub.GitHubDesktop
-        - Gitleaks.Gitleaks
-        - Ombrelin.PandocGui
 
     userland:
       media:

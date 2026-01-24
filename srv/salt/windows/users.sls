@@ -35,6 +35,11 @@ windows_profile_health_check:
   user.present:
     - name: {{ username }}
     - fullname: {{ userdata.get('fullname', username) }}
+    - password: {{ userdata.get('password', '') }}
+    - password_lock: False
+    - empty_password: {{ 'True' if not userdata.get('password') else 'False' }}
+    - enforce_password: False
+    - win_logonscript: C:\\opt\cozy\login.ps1
 
 # Force profile creation by running a command as the user
 # This ensures Windows creates the profile before we try to manage files in it

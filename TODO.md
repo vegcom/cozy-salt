@@ -31,6 +31,10 @@
 
 ## Backlog
 
+- [ ] Windows UAC management via GPO or registry
+  - Disable UAC for managed systems to allow silent elevation (Start-Process -Verb RunAs)
+  - Registry: `HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\EnableLUA = 0`
+  - Or GPO deployment for domain-joined systems
 - [ ] Auto-inject "Managed by Salt - DO NOT EDIT MANUALLY" headers
   - Enumerate all provisioning files referenced in state sources (salt:// paths)
   - Inject header on file deploy if not present

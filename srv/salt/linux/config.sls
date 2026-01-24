@@ -10,7 +10,7 @@
                 'microsoft' in salt['cmd.run']('cat /proc/version 2>/dev/null || echo ""', python_shell=True).lower() %}
 {# SSH port: 2222 for WSL (avoids Windows SSH on 22), 22 for native Linux #}
 {% set ssh_port = 2222 if is_wsl else salt['pillar.get']('ssh:port', 22) %}
-{% set include_files = ['0-functions.sh', '1-path.sh', 'cozy.sh'] %}
+{% set include_files = ['0-functions.sh', '1-alias.sh', '2-path.sh', '9-cozy-msg.sh', 'cozy.sh'] %}
 
 # NOTE: /etc/skel is now managed in linux/users.sls (must run before user.present)
 
@@ -89,12 +89,47 @@ cozy_opts:
     - require:
       - file: cozy_opt_dir
 
+# Generate banners during highstate
+run_gen_motd:
+  cmd.run:
+    - name: /opt/cozy/gen_motd.sh
+    - require:
+      - file: cozy_opts
+
+run_gen_issue:
+  cmd.run:
+    - name: /opt/cozy/gen_issue.sh
+    - require:
+      - file: cozy_opts
+
+run_gen_issuenet:
+  cmd.run:
+    - name: /opt/cozy/gen_issuenet.sh
+    - require:
+      - file: cozy_opts
 
 cozy_pam:
   file.managed:
     - name: /etc/pam.d/cozy
     - source: salt://linux/files/etc-pam.d/cozy
     - mode: "0644"
+
+# Wire cozy PAM into session stack (runs gen_motd/issue scripts on login)
+{% if grains['os_family'] == 'Debian' %}
+cozy_pam_include:
+  file.append:
+    - name: /etc/pam.d/common-session
+    - text: "@include cozy"
+    - require:
+      - file: cozy_pam
+{% elif grains['os_family'] == 'Arch' %}
+cozy_pam_include:
+  file.append:
+    - name: /etc/pam.d/system-login
+    - text: "@include cozy"
+    - require:
+      - file: cozy_pam
+{% endif %}
 
 # Deploy hardened SSH configuration (consolidated template - High-003)
 # Template handles platform conditionals: Linux, WSL, and Windows

@@ -1,6 +1,10 @@
 # Windows PATH management
 # Consolidated here to avoid race conditions between individual state files
 # Single reg.present that reads current PATH and adds all opt paths at once
+# Also handles cozyusers group and WindowsApps permissions for winget access
+
+{% set winget_path = salt['pillar.get']('paths:winget', 'C:\\Program Files\\WindowsApps\\Microsoft.DesktopAppInstaller_1.27.460.0_x64__8wekyb3d8bbwe') %}
+{% set managed_users = salt['pillar.get']('managed_users', []) %}
 
 {% set opt_paths = [
   'C:\\opt\\nvm',
@@ -11,8 +15,48 @@
   'C:\\opt\\windhawk',
   'C:\\opt\\wt',
   'C:\\opt\\msys',
-  'C:\\opt\\cozy'
+  'C:\\opt\\cozy',
+  winget_path
 ] %}
+
+# Create cozyusers group for shared access to managed paths
+cozyusers_group:
+  group.present:
+    - name: cozyusers
+
+# Add managed users to cozyusers group
+{% for user in managed_users %}
+{{ user }}_cozyusers_member:
+  group.present:
+    - name: cozyusers
+    - addusers:
+      - {{ user }}
+    - require:
+      - group: cozyusers_group
+{% endfor %}
+
+# Grant cozyusers read+execute on all opt paths
+# WindowsApps permissions are strict - need explicit grant for non-installing users
+{% for path in opt_paths %}
+opt_path_acl_{{ loop.index }}:
+  cmd.run:
+    - name: |
+        $path = '{{ path }}'
+        if (Test-Path $path) {
+          $acl = Get-Acl $path
+          $rule = New-Object System.Security.AccessControl.FileSystemAccessRule(
+            'cozyusers', 'ReadAndExecute', 'ContainerInherit,ObjectInherit', 'None', 'Allow'
+          )
+          $acl.AddAccessRule($rule)
+          Set-Acl $path $acl
+          Write-Host "ACL updated for cozyusers on $path"
+        } else {
+          Write-Host "Path not found: $path (not installed yet)"
+        }
+    - shell: pwsh
+    - require:
+      - group: cozyusers_group
+{% endfor %}
 
 {% set current_path = salt['reg.read_value']('HKLM',"SYSTEM\CurrentControlSet\Control\Session Manager\Environment",'Path').get('vdata','') %}
 

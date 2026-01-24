@@ -99,7 +99,7 @@ deploy_gitconfig_local_{{ username }}:
 {% else %}
     - source: salt://common/dotfiles/.gitconfig.local
     - replace: False
-    - create: False
+    - create: True
 {% endif %}
 {% if not is_windows %}
     - user: {{ username }}

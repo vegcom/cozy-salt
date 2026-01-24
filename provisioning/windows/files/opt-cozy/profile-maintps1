@@ -1,0 +1,14 @@
+  # 1. Check ProfileList registry for orphaned SIDs
+  Get-ChildItem "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList" |
+    ForEach-Object {
+      $sid = $_.PSChildName
+      $path = (Get-ItemProperty $_.PSPath).ProfileImagePath
+      Write-Host "$sid -> $path"
+    }
+
+
+  # Remove orphaned registry entries
+  Remove-Item "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\$value" -Recurse
+
+  # Remove orphaned profile folders
+  Remove-Item "C:\Users\$user.$hostname" -Recurse -Force

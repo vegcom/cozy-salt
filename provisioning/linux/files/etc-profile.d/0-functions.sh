@@ -10,9 +10,6 @@ safe_append_path () {
     esac
 }
 
-# Export once, and only once
-export PATH
-
 safe_comp_deprecate_func() {
     # Must have at least one argument (deprecated function name)
     if [ $# -lt 1 ]; then
@@ -36,4 +33,10 @@ safe_comp_deprecate_func() {
     esac
 
     return 0
+}
+
+safe_comp_deprecate_var() {
+    # FIXME: must replicate original function
+    #     * stub is unsafe and untrustworthy
+    :;
 }

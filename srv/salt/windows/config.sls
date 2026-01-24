@@ -30,7 +30,8 @@ sshd_hardening_config:
 # Prefers stable (7) if available, falls back to preview (7-preview)
 openssh_default_shell:
   reg.write_value:
-    - key: HKLM:\SOFTWARE\OpenSSH
+    - hive: HKLM
+    - key: SOFTWARE\OpenSSH
     - vname: DefaultShell
     - vdata: {{ pwsh_exe }}
     - vtype: REG_SZ
