@@ -2,6 +2,11 @@
 
 ## Reactor
 
+- [ ] Windows health-check reactor
+  - Scheduler: `Dism /Online /Cleanup-Image /ScanHealth`
+  - Reactor: on bad return (exit 1), fire `emergency-maint.ps1`
+  - Scripts: `provisioning/windows/files/opt-cozy/emergency-maint.ps1`
+
 - [ ] Auto inject headers w reactor
   - review auto-inject ( git, file )
 

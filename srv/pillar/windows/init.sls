@@ -35,3 +35,16 @@ scheduled_tasks:
     - name: open_webui_port_forward
       file: provisioning/windows/tasks/kubernetes/open_webui_port_forward.xml
       enabled: False
+
+# Salt scheduler - Windows health check
+# Runs DISM ScanHealth weekly; bad return triggers reactor -> emergency-maint.ps1
+schedule:
+  windows_health_check:
+    function: cmd.script
+    args:
+      - salt://provisioning/windows/files/opt-cozy/health-check.ps1
+    kwargs:
+      shell: powershell
+    days: 7
+    enabled: True
+    return_job: True

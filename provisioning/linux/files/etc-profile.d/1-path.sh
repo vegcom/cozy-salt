@@ -16,8 +16,12 @@ safe_append_path '/usr/games'
 # Now we ship our own jazz
 safe_append_path '/opt/cozy'
 
-if ! type append_path &>/dev/null ; then
+# We silence known edge cases
+if ! declare -F append_path &>/dev/null ; then
   alias append_path=safe_append_path
+fi
+if ! declare -F _comp_deprecate_func  &>/dev/null ; then
+  alias _comp_deprecate_func=safe_comp_deprecate_func
 fi
 
 # Now do the cozy thing

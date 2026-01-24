@@ -1,4 +1,3 @@
-**/__pycache__/
 .cache
 .coverage
 .coverage.*
@@ -14,6 +13,8 @@
 .Python
 .pytype/
 .scrapy
+.stfolder
+.stignore
 .tox/
 .venv
 .webassets-cache
@@ -25,6 +26,7 @@
 *.pyc
 *.pyd
 *.pyo
+**/__pycache__/
 build/
 cover/
 coverage.xml

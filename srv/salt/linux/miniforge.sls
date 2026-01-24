@@ -32,7 +32,7 @@ miniforge_download:
 # -s = skip pre/post-link/install scripts (we handle conda init via profile.d)
 miniforge_install:
   cmd.run:
-    - name: bash /tmp/miniforge-init.sh -b -s -p {{ miniforge_path }}
+    - name: bash /tmp/miniforge-init.sh -b -u -s -p {{ miniforge_path }}
     - require:
       - cmd: miniforge_download
       - file: miniforge_directory

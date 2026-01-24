@@ -1,0 +1,25 @@
+
+
+# <type>: <short summary>
+# Types: feat, fix, docs, style, refactor, perf, test, chore, build, ci
+
+# Summary (required)
+# - Keep under 72 characters
+# - Use imperative mood (“Add”, “Fix”, “Remove”)
+
+# Body (optional)
+# - Explain the what and why, not the how
+# - Wrap lines at ~72 chars
+# - Include context, reasoning, or links to issues
+
+# Breaking Changes (optional)
+# BREAKING CHANGE: <description>
+
+# Metadata (optional)
+# Issue: #d3ad
+# Co-authored-by: Name <email>
+
+# Checklist (optional)
+# [ ] Tests added/updated
+# [ ] Docs updated
+# [ ] Lint passes

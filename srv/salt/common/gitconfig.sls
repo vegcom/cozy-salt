@@ -61,6 +61,17 @@ deploy_gitattributes_{{ username }}:
 {% endif %}
     - makedirs: True
 
+# Deploy base .gitmessage (always update)
+deploy_gitmessage_{{ username }}:
+  file.managed:
+    - name: {{ dotfiles.dotfile_path(user_home, '.gitmessage') }}
+    - source: salt://common/dotfiles/.gitmessage
+{% if not is_windows %}
+    - user: {{ username }}
+    - mode: "0644"
+{% endif %}
+    - makedirs: True
+
 # Deploy base .gitignore (always update)
 deploy_gitignore_{{ username }}:
   file.managed:

@@ -17,13 +17,18 @@ locale_gen_config:
     - user: root
     - group: root
     - contents: |
-        # Locale generation configuration
-        # Managed by cozy-salt - DO NOT EDIT MANUALLY
-        # Add or remove locale codes and run: locale-gen
-
         {%- for locale in locales %}
         {{ locale }}
         {%- endfor %}
+
+# Purge all locales
+purge_locales:
+  cmd.run:
+    - name: locale-gen --purge
+    - onchanges:
+      - file: locale_gen_config
+    - requires:
+      - cmd: locale_gen_config
 
 # Generate all configured locales
 generate_locales:
@@ -31,6 +36,8 @@ generate_locales:
     - name: locale-gen
     - onchanges:
       - file: locale_gen_config
+    - require:
+      - cmd: purge_locales
 
 {% else %}
 

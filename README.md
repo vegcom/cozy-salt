@@ -2,6 +2,10 @@
 
 SaltStack IaC for Windows/Linux workstation provisioning. Master runs in Docker.
 
+## [outstanding folks who made it so](AUTHORS.md)
+
+- Listed in [AUTHORS.md](AUTHORS.md)
+
 ## Quick Start
 
 ```bash
@@ -29,7 +33,7 @@ sudo python3 scripts/enrollment/install-minion.py \
 
 ## Structure
 
-```
+```plain
 srv/salt/          # Salt states (linux/, windows/, common/)
 srv/pillar/        # Pillar data (config per minion)
 provisioning/      # Files to deploy (configs, scripts, templates)

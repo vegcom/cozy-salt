@@ -11,9 +11,15 @@
 # becomes available system-wide at C:\Program Files\WindowsApps\...
 # SYSTEM can then invoke winget for --scope machine installs.
 
+{# Winget #}
 {% set winget_url = 'https://github.com/microsoft/winget-cli/releases/download/v1.28.100-preview/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle' %}
 {% set winget_bundle = '$env:TEMP\\AppInstaller.msixbundle' %}
 {% set winget_path = '$env:ProgramFiles\\WindowsApps\\Microsoft.DesktopAppInstaller_*\\winget.exe' %}
+
+{# pwsh #}
+{% set pwsh_url = 'https://github.com/PowerShell/PowerShell/releases/download/v7.5.4/PowerShell-7.5.4.msixbundle' %}
+{% set winget_bundle = '$env:TEMP\\AppInstaller.PowerShell.zip' %}
+
 {# TODO: prep for service_user will be pillar service_user: buildgirl probs #}
 {# XXX: bootstrap_user and service_user both required here #}
 {% set managed_users = salt['pillar.get']('managed_users', []) %}
@@ -31,8 +37,10 @@ winget-bundle-fetch:
 # Install winget as real user (SYSTEM cannot install AppX packages)
 winget-install-user:
   cmd.run:
-    - name: Add-AppxPackage -Online -PackagePath {{ winget_bundle }} -SkipLicense
-    - shell: pwsh
+    # pwsh and powershell declare path differently
+    - name: Add-AppxPackage -Path {{ winget_bundle }}
+    # powershell in the event of damaged pwsh
+    - shell: powershell
     - runas: {{ bootstrap_user }}
     - require:
       - file: winget-bundle-fetch

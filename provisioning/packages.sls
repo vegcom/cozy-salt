@@ -435,6 +435,7 @@ arch:
     - sed
     - glibc
     - glibc-locales
+    - man-db
   monitoring:
     - duf
     - htop

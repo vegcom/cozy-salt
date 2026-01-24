@@ -24,6 +24,22 @@ chaotic_mirrorlist:
     - require:
       - pkg: chaotic_keyring
 
+cozy_arch_profile:
+  # TODO: wrap in such a way that `sudo function_name` will pass
+  file.managed:
+    - name: /etc/profile.d/99-cozy-arch.sh
+    - mode: "0644"
+    - user: root
+    - group: root
+    - contents: |
+        #!/bin/bash
+        pkgs_owned_files(){
+          pacman -Qlq $1 | grep -v '/$' | xargs -r du -h | sort -h
+        }
+        alias pkgs_installed="pacman -Qq | fzf --preview 'pacman -Qil {}' --layout=reverse --bind 'enter:execute(pacman -Qil {} | less)'"
+        alias pkgs_all="pacman -Slq | fzf --preview 'pacman -Si {}' --layout=reverse"
+        alias pkg_unowned="(export LC_ALL=C.UTF-8; comm -13 <(pacman -Qlq | sed 's,/$,,' | sort) <(find /etc /usr /opt -path /usr/lib/modules -prune -o -print | sort))"
+
 # =============================================================================
 # PACMAN.CONF REPOSITORY CONFIGURATION
 # =============================================================================
@@ -43,14 +59,19 @@ pacman_conf:
         #
         # Arch Linux repository mirrorlist
         # See ArchWiki (Mirrors) and Pacman/Tips#Enabling_parallel_downloads for more info on how to rate limit with aria2, wget and powerpill.
-        #VerbosePkgLists
         Architecture = auto
-        #CheckSpace
-        #NoProgressBar
+        HoldPkg = pacman glibc
+        IgnorePkg = less
+        ILoveCandy
+        LocalFileSigLevel = Optional
         ParallelDownloads = 5
         SigLevel = Required DatabaseOptional
-        LocalFileSigLevel = Optional
-        ILoveCandy
+        VerbosePkgLists
+        CheckSpace
+        Color
+
+
+        XferCommand = /usr/local/bin/aria2-wrapper %u %o
 
         #
         # By default, pacman accepts packages signed by keys that it knows about.
