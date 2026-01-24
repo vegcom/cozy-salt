@@ -40,3 +40,24 @@ safe_comp_deprecate_var() {
     #     * stub is unsafe and untrustworthy
     :;
 }
+
+cozy_render(){
+    _helper(){
+        bash <<"EOF"
+        set -o pipefail
+        _state_output="$(salt-call -l quiet state.show_states 2>&1)" || printf '\n%s\n' "${_state_output}"  2>&1 || exit 1
+        awk '/- /{gsub(/\./, "/");system("echo \"salt://"$NF".sls\" ; salt-call slsutil.renderer default_renderer=jinja \"salt://"$NF".sls\"")}'" <<<${_state_output}
+EOF
+    }
+    _helper|fzf --literal --no-clear
+}
+export cozy_render
+
+
+cozy_persist_shell(){
+  if [ -n "$1" ];then 
+    _host=${1}
+    _port=${2:-22}
+    while ! ssh "${_host}" ; do sleep 15 ; nc -vzw 5 "${_host}" 22 ; done
+  fi
+}

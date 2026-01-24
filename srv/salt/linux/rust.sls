@@ -4,6 +4,8 @@
 # Note: rustup rejects RUSTUP_HOME/CARGO_HOME in environment during installation
 # Use inline env vars in commands only
 
+{%- from "macros/acl.sls" import cozy_acl %}
+
 {# Path configuration from pillar with defaults #}
 {% set rust_path = salt['pillar.get']('install_paths:rust:linux', '/opt/rust') %}
 
@@ -43,3 +45,6 @@ rust_profile:
 # Install Rust components via common orchestration
 include:
   - common.rust
+
+# Set ACLs for cozyusers group access
+{{ cozy_acl(rust_path) }}

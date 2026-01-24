@@ -61,7 +61,8 @@ export gclean
 
 t(){
   if [[ -d ${PWD}/.git ]] ; then
-    tmux new -s "$(basename "${PWD}/")"
+    _name="$(basename "${PWD:-$(pwd)}")"
+    tmux new -s "${_name}"
   fi
 }
 
@@ -71,5 +72,3 @@ export t
 # Aliases
 #------------------------------------------------------------------------------
 
-alias cozy-salt="sudo salt-call state.highstate --force-color --state-output=mixed -l error exclude=None,True,Clean"
-export cozy-salt

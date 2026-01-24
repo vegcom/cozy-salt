@@ -3,6 +3,8 @@
 # No per-user profile pollution - initialized via /etc/profile.d/nvm.sh
 # Global npm packages installed via common.nvm orchestration
 
+{%- from "macros/acl.sls" import cozy_acl %}
+
 {% set nvm_config = salt['pillar.get']('nvm', {}) %}
 {% set nvm_versions = salt['pillar.get']('versions:nvm', {}) %}
 {% set default_version = nvm_config.get('default_version', 'lts/*') %}
@@ -82,3 +84,6 @@ nvm_install_default_version:
 # Install global npm packages via common orchestration
 include:
   - common.nvm
+
+# Set ACLs for cozyusers group access
+{{ cozy_acl(nvm_path) }}

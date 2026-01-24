@@ -21,6 +21,13 @@
 
 ## Active
 
+- [ ] Common ACL state for group management
+  - Macro created: `srv/salt/macros/acl.sls` with `cozy_acl()` 
+  - Currently inline in nvm.sls, miniforge.sls, rust.sls
+  - TODO: Centralize cozyusers group creation (currently ad-hoc)
+  - TODO: Consider `srv/salt/common/acl.sls` for group membership management
+  - TODO: Windows equivalent using `icacls` or PowerShell ACL cmdlets
+
 - [ ] Debug atuin integration (check: installed? PATH? .bashrc init? bash-preexec?)
 - [ ] Move tests/ to cozy-salt-enrollment submodule (test_states.py, test_linting.py)
 - [ ] Validate and enforce package_metadata (conflicts, exclude, provides resolution)

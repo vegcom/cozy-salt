@@ -22,7 +22,7 @@ powershell_profile_directory:
 pwsh_profile_repo:
   git.latest:
     - name: https://github.com/vegcom/cozy-pwsh.git
-    - target:
+    - target: {{ git_path }}
     - branch: main
     - force_clone: True
     - force_reset: True

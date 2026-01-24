@@ -29,9 +29,8 @@ sshd_hardening_config:
 # This makes SSH sessions drop into pwsh instead of cmd.exe
 # Prefers stable (7) if available, falls back to preview (7-preview)
 openssh_default_shell:
-  reg.write_value:
-    - hive: HKLM
-    - key: SOFTWARE\OpenSSH
+  reg.present:
+    - name: HKLM\SOFTWARE\OpenSSH
     - vname: DefaultShell
     - vdata: {{ pwsh_exe }}
     - vtype: REG_SZ

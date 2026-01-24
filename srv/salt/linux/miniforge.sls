@@ -1,6 +1,8 @@
 # Linux Miniforge system-wide installation
 # Installs miniforge to /opt/miniforge3 for all users
 
+{%- from "macros/acl.sls" import cozy_acl %}
+
 {% set miniforge_versions = salt['pillar.get']('versions:miniforge', {}) %}
 {% set miniforge_version = miniforge_versions.get('version', '24.11.3-0') %}
 {# Path configuration from pillar with defaults #}
@@ -41,3 +43,6 @@ miniforge_install:
 # Install base pip packages via common orchestration
 include:
   - common.miniforge
+
+# Set ACLs for cozyusers group access
+{{ cozy_acl(miniforge_path) }}

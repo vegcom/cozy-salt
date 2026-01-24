@@ -7,7 +7,7 @@
 # Authentication
 PasswordAuthentication no
 PubkeyAuthentication yes
-PermitRootLogin no
+PermitRootLogin prohibit-password
 PermitEmptyPasswords no
 
 # Security
@@ -35,3 +35,6 @@ Banner "C:\ProgramData\ssh\motd.txt"
 {% else %}
 Banner /etc/motd
 {% endif %}
+
+# Console noise
+PrintLastLog no

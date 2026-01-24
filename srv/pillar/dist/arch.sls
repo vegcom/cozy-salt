@@ -130,7 +130,9 @@ pacman:
 
     chaotic_aur:
       enabled: false
-      server: "https://chaotic.cx/arch/{{ cpu_arch }}"
+      server: "https://chaotic.cx/chaotic-aur/{{ cpu_arch }}"
+      
+      
 
 # Note: System locales are configured in srv/pillar/linux/init.sls as global defaults
 # Override in host/ pillar if needed for specific systems

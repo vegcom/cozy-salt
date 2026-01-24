@@ -651,6 +651,7 @@ pip_base:
 
 npm_global:
   - '@anthropic-ai/claude-code' # Sonnet is a friend for managing docs
+  - "better-ccflare" # Sonnet can work better with a friend
   - pnpm  # Fast npm alternative
   - bun  # Fast JavaScript runtime
   - tsx  # TypeScript executor
