@@ -138,25 +138,10 @@ opt_acl_cozyusers:
 
 # Force environment broadcast after PATH changes
 # Salt doesn't send WM_SETTINGCHANGE, so services won't see updated PATH
+# Uses rundll32 to broadcast WM_SETTINGCHANGE without C# interop
 broadcast_env_change:
   cmd.run:
-    - name: |
-        Add-Type -TypeDefinition @"
-        using System;
-        using System.Runtime.InteropServices;
-        public class Env {
-            [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-            public static extern IntPtr SendMessageTimeout(
-                IntPtr hWnd, uint Msg, UIntPtr wParam, string lParam,
-                uint fuFlags, uint uTimeout, out UIntPtr lpdwResult);
-            public static void Broadcast() {
-                IntPtr HWND_BROADCAST = (IntPtr)0xffff;
-                UIntPtr result;
-                SendMessageTimeout(HWND_BROADCAST, 0x001A, UIntPtr.Zero, "Environment", 0x0002, 5000, out result);
-            }
-        }
-"@
-        [Env]::Broadcast()
-    - shell: powershell
+    - name: rundll32.exe user32.dll,UpdatePerUserSystemParameters ,1 ,True
+    - shell: cmd
     - onchanges_any:
-      - reg: opt_acl_cozyusers
+      - cmd: opt_acl_cozyusers

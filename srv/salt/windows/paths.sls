@@ -58,7 +58,7 @@ opt_path_acl_{{ loop.index }}:
       - group: cozyusers_group
 {% endfor %}
 
-{% set current_path = salt['reg.read_value']('HKLM',"SYSTEM\CurrentControlSet\Control\Session Manager\Environment",'Path').get('vdata','') %}
+{% set current_path = salt['reg.read_value']('HKLM', 'SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment', 'Path').get('vdata', '') %}
 
 # Merge paths if absent
 {% set paths = current_path.split(';') %}
@@ -73,7 +73,7 @@ opt_path_acl_{{ loop.index }}:
 
 opt_paths_update:
   reg.present:
-    - name: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
+    - name: HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
     - vname: Path
     - vtype: REG_EXPAND_SZ
-    - vdata: {{ merged_paths }}
+    - vdata: '{{ merged_paths }}'
