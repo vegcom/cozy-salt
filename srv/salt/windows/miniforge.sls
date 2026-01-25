@@ -2,6 +2,8 @@
 # See docs/modules/windows-miniforge.md for configuration
 # PATH updates handled by windows.paths (avoids race conditions)
 
+# TODO: check TODO.md for more information on pending regedit tweaks. may deffer to salt/windows/regedit.sls
+
 {% set miniforge_versions = salt['pillar.get']('versions:miniforge', {}) %}
 {% set miniforge_version  = miniforge_versions.get('version', '24.11.3-0') %}
 {# Path configuration from pillar with defaults #}

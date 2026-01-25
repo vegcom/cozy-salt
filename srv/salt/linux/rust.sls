@@ -4,7 +4,7 @@
 # Note: rustup rejects RUSTUP_HOME/CARGO_HOME in environment during installation
 # Use inline env vars in commands only
 
-{%- from "macros/acl.sls" import cozy_acl %}
+{%- from "_macros/acl.sls" import cozy_acl %}
 
 {# Path configuration from pillar with defaults #}
 {% set rust_path = salt['pillar.get']('install_paths:rust:linux', '/opt/rust') %}

@@ -35,6 +35,15 @@ openssh_default_shell:
     - vdata: {{ pwsh_exe }}
     - vtype: REG_SZ
 
+# Auto-elevate admin accounts without UAC prompt
+# Allows salt-minion and cozy-salt-svc to run elevated silently
+uac_auto_elevate_admins:
+  reg.present:
+    - name: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+    - vname: ConsentPromptBehaviorAdmin
+    - vdata: 0
+    - vtype: REG_DWORD
+
 # Manage Windows hosts file entries for network services (from pillar.network.hosts)
 windows_hosts_entries:
   cmd.run:

@@ -1,6 +1,6 @@
 # ACL macros for consistent permission management
-# Usage: {%- from "macros/acl.sls" import cozy_acl %}
-#        {{ cozy_acl('/opt/nvm') }}
+# Usage: from "_macros/acl.sls" import cozy_acl
+#        then call cozy_acl('/opt/nvm')
 
 {%- macro cozy_acl(path, group='cozyusers', perms='rwx') %}
 {{ path | replace('/', '_') | replace('.', '_') }}_acl:

@@ -3,7 +3,7 @@
 # No per-user profile pollution - initialized via /etc/profile.d/nvm.sh
 # Global npm packages installed via common.nvm orchestration
 
-{%- from "macros/acl.sls" import cozy_acl %}
+{%- from "_macros/acl.sls" import cozy_acl %}
 
 {% set nvm_config = salt['pillar.get']('nvm', {}) %}
 {% set nvm_versions = salt['pillar.get']('versions:nvm', {}) %}
