@@ -58,7 +58,12 @@ opt_path_acl_{{ loop.index }}:
       - group: cozyusers_group
 {% endfor %}
 
+{# Only read registry on Windows - fails on Linux master during render #}
+{% if grains['os'] == 'Windows' %}
 {% set current_path = salt['reg.read_value']('HKLM', 'SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment', 'Path').get('vdata', '') %}
+{% else %}
+{% set current_path = '' %}
+{% endif %}
 
 # Merge paths if absent
 {% set paths = current_path.split(';') %}
