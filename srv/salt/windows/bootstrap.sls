@@ -107,6 +107,33 @@ disable_delivery_optimization:
     - vdata: 0
     - vtype: REG_DWORD
 
+
+# ============================================================================
+# Package mangement configuration 
+# ============================================================================
+winget_bootstrap:
+  cmd.run:
+    - name: >
+        winget source enable msstore --accept-source-agreements --disable-interactivity;
+        winget source update --disable-interactivity
+    - shell: powershell
+    - runas: SYSTEM
+    - env:
+        WINGET_DISABLE_INTERACTIVE: "1"
+
+# ============================================================================
+# PWSH install 
+# ============================================================================
+install_powershell:
+  cmd.run:
+    - name: >
+        winget install Microsoft.PowerShell --disable-interactivity
+    - shell: powershell
+    - runas: SYSTEM
+    - env:
+        WINGET_DISABLE_INTERACTIVE: "1"
+
+
 # ============================================================================
 # C:\opt Directory Structure and Permissions
 # ============================================================================

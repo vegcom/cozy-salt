@@ -10,7 +10,7 @@ windows_emergency_maintenance:
   cmd.script:
     - tgt: {{ minion_id }}
     - arg:
-      - salt://provisioning/windows/files/opt-cozy/emergency-maint.ps1
+      - salt://windows/files/opt-cozy/emergency-maint.ps1
     - kwarg:
         shell: powershell
 {% endif %}

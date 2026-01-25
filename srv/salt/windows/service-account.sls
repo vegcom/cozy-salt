@@ -12,6 +12,8 @@
     - name: {{ svc_name }}
     - fullname: "Cozy Salt Service Account"
     - password: {{ svc_password }}
+    - enforce_password: True
+    - password_lock: False
     - groups:
       - Administrators
 

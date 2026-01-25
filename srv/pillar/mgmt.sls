@@ -7,4 +7,4 @@ service_user:
   name: cozy-salt-svc
   # Service account password (for Windows creation, sudo on Linux if needed)
   # TODO: Move to secrets/init.sls when secrets management is ready
-  password: "CozyProvision2025!"
+  password: "cozy"
