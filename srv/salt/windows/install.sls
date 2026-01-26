@@ -86,7 +86,7 @@ choco_{{ pkg | replace('.', '_') | replace('-', '_') }}:
   chocolatey.installed:
     - name: {{ pkg }}
     - require:
-      - cmd: chocolatey-install
+      - chocolatey: chocolatey-install
 {% endfor %}
 {% endif %}
 

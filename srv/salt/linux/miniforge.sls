@@ -32,6 +32,7 @@ miniforge_download:
 # -b = batch mode (non-interactive)
 # -p = installation prefix
 # -s = skip pre/post-link/install scripts (we handle conda init via profile.d)
+# -u = update ( bypasses dir being present )
 miniforge_install:
   cmd.run:
     - name: bash /tmp/miniforge-init.sh -b -u -s -p {{ miniforge_path }}

@@ -82,3 +82,20 @@ opt_paths_update:
     - vname: Path
     - vtype: REG_EXPAND_SZ
     - vdata: '{{ merged_paths }}'
+
+paths_broadcast_env_change_system:
+  cmd.run:
+    - name: RUNDLL32.EXE user32.dll,SendMessageTimeout 0xffff 0x1A 0 "Environment" 2 5000
+    - shell: cmd
+    - onchanges:
+      - reg: opt_paths_update
+
+{% for user in managed_users %}
+paths_broadcast_env_change_{{ user }}:
+  cmd.run:
+    - name: rundll32.exe user32.dll,UpdatePerUserSystemParameters ,1 ,True
+    - shell: cmd
+    - runas: {{ user }}
+    - onchanges:
+      - reg: opt_paths_update
+{% endfor %}

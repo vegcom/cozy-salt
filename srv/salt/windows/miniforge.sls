@@ -17,6 +17,7 @@ miniforge_directory:
   file.directory:
     - name: {{ miniforge_path }}
     - makedirs: True
+    - clean: False
 
 # Download miniforge installer
 miniforge_download:

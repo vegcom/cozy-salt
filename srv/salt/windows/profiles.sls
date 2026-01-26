@@ -28,8 +28,8 @@ pwsh_profile_symlink:
     - shell: powershell
     - require:
       - git: pwsh_profile_repo
-    - unless: >
-        (Get-Item "{{ pwsh_profile_dir }}\Microsoft.PowerShell_profile.ps1" -ErrorAction SilentlyContinue).LinkType -eq 'SymbolicLink'
+    # - unless: >
+    #     (Get-Item "{{ pwsh_profile_dir }}\Microsoft.PowerShell_profile.ps1" -ErrorAction SilentlyContinue).LinkType -eq 'SymbolicLink'
 
 # Symlink config.d directory
 pwsh_config_d_symlink:
@@ -42,8 +42,8 @@ pwsh_config_d_symlink:
     - shell: powershell
     - require:
       - git: pwsh_profile_repo
-    - unless: >
-        (Get-Item "{{ pwsh_profile_dir }}\config.d" -ErrorAction SilentlyContinue).LinkType -eq 'SymbolicLink'
+    # - unless: >
+    #     (Get-Item "{{ pwsh_profile_dir }}\config.d" -ErrorAction SilentlyContinue).LinkType -eq 'SymbolicLink'
 
 # Ensure repo is readable by all users
 pwsh_profile_acl:

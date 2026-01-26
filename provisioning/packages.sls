@@ -648,6 +648,7 @@ pip_base:
   - setuptools  # Build tool for Python
   - wheel  # Wheel build format
   - pipx  # Python application package manager
+  - uv # better package manager ( UV managed installs were failing, regress to pip for bootstrap )
 
 npm_global:
   - "@anthropic-ai/claude-code"  # Sonnet is a friend for managing docs
