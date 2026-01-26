@@ -10,6 +10,7 @@ base:
     - common.paths
     - common.versions
     - common.scheduler
+    - mgmt
     - secrets
 
   # Windows systems

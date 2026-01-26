@@ -129,6 +129,14 @@ HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
   - TODO: Consider `srv/salt/common/acl.sls` for group membership management
   - TODO: Windows equivalent using `icacls` or PowerShell ACL cmdlets
 
+- [ ] Pillar load order audit
+  - Validate all pillar files are included in top.sls (mgmt.sls was missing)
+  - Check for duplicate/conflicting keys across pillar files
+  - Reduce redundant comments in pillar files
+  - Document pillar merge behavior and precedence
+  - Verify per-user pillar files (users/*.sls) merge correctly with common/users.sls
+  - Fix password/passwords key mismatch (pillar uses `passwords`, states expect `password`)
+
 - [ ] Debug atuin integration (check: installed? PATH? .bashrc init? bash-preexec?)
 - [ ] Move tests/ to cozy-salt-enrollment submodule (test_states.py, test_linting.py)
 - [ ] Validate and enforce package_metadata (conflicts, exclude, provides resolution)
