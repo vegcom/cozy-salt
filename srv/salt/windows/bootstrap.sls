@@ -7,25 +7,39 @@
 # WinRM Configuration (Salt communication foundation)
 # ============================================================================
 
+# Enable WinRM service first - required before any winrm set commands
+winrm_quickconfig:
+  cmd.run:
+    - name: winrm quickconfig -force
+    - shell: cmd
+
 winrm_disable_credssp_client:
   cmd.run:
     - name: winrm set winrm/config/client/auth @{CredSSP="false"}
     - shell: cmd
+    - require:
+      - cmd: winrm_quickconfig
 
 winrm_disable_credssp_service:
   cmd.run:
     - name: winrm set winrm/config/service/auth @{CredSSP="false"}
     - shell: cmd
+    - require:
+      - cmd: winrm_quickconfig
 
 winrm_allow_unencrypted_service:
   cmd.run:
     - name: winrm set winrm/config/service @{AllowUnencrypted="true"}
     - shell: cmd
+    - require:
+      - cmd: winrm_quickconfig
 
 winrm_allow_unencrypted_client:
   cmd.run:
     - name: winrm set winrm/config/client @{AllowUnencrypted="true"}
     - shell: cmd
+    - require:
+      - cmd: winrm_quickconfig
 
 # ============================================================================
 # UAC / Elevation Settings
@@ -111,40 +125,45 @@ disable_delivery_optimization:
 # ============================================================================
 # Bootstrap Package Installation (using powershell 5.1, not pwsh)
 # These MUST install before any state that uses shell: pwsh or git.latest
+# Winget is per-user - use user's WindowsApps path, not system
 # ============================================================================
 
 {% set managed_users = salt['pillar.get']('managed_users', []) %}
 {% set bootstrap_user = managed_users[0] if managed_users else 'admin' %}
+{% set winget_path = 'C:\\Users\\' ~ bootstrap_user ~ '\\AppData\\Local\\Microsoft\\WindowsApps\\winget.exe' %}
 
 winget_bootstrap:
   cmd.run:
     - name: >
-        winget source enable msstore --accept-source-agreements --disable-interactivity;
-        winget source update --disable-interactivity
+        {{ winget_path }} source enable msstore --accept-source-agreements --disable-interactivity;
+        {{ winget_path }} source update --disable-interactivity
     - shell: powershell
     - runas: {{ bootstrap_user }}
+    - onlyif: Test-Path '{{ winget_path }}'
     - env:
         WINGET_DISABLE_INTERACTIVE: "1"
 
 install_powershell:
   cmd.run:
-    - name: winget install Microsoft.PowerShell --accept-source-agreements --accept-package-agreements --disable-interactivity
+    - name: {{ winget_path }} install Microsoft.PowerShell --accept-source-agreements --accept-package-agreements --disable-interactivity
     - shell: powershell
     - runas: {{ bootstrap_user }}
     - env:
         WINGET_DISABLE_INTERACTIVE: "1"
     - unless: Get-Command pwsh -ErrorAction SilentlyContinue
+    - onlyif: Test-Path '{{ winget_path }}'
     - require:
       - cmd: winget_bootstrap
 
 install_git:
   cmd.run:
-    - name: winget install Git.Git --accept-source-agreements --accept-package-agreements --disable-interactivity
+    - name: {{ winget_path }} install Git.Git --accept-source-agreements --accept-package-agreements --disable-interactivity
     - shell: powershell
     - runas: {{ bootstrap_user }}
     - env:
         WINGET_DISABLE_INTERACTIVE: "1"
     - unless: Get-Command git -ErrorAction SilentlyContinue
+    - onlyif: Test-Path '{{ winget_path }}'
     - require:
       - cmd: winget_bootstrap
 
