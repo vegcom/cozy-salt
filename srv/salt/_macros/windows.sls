@@ -10,8 +10,10 @@
 #}
 {%- macro get_winget_user() -%}
 {%- set managed_users = salt['pillar.get']('managed_users', []) -%}
+{%- set service_user = salt['pillar.get']('service_user:name', 'cozy-salt-svc') -%}
+{%- set check_users = [service_user] + managed_users -%}
 {%- set found_user = none -%}
-{%- for user in managed_users -%}
+{%- for user in check_users -%}
   {%- set user_winget = 'C:\\Users\\' ~ user ~ '\\AppData\\Local\\Microsoft\\WindowsApps\\winget.exe' -%}
   {%- if found_user is none and salt['file.file_exists'](user_winget) -%}
     {%- set found_user = user -%}
