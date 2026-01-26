@@ -1,11 +1,11 @@
 # Windows PowerShell 7 System-Wide Profile Deployment
-# Clones cozy-pwsh.git to C:\opt\cozy-pwsh, symlinks profile into PowerShell 7 dir
+# Clones cozy-pwsh.git to C:\opt\cozy\cozy-pwsh, symlinks profile into PowerShell 7 dir
 # See docs/modules/windows-profiles.md for configuration
 
 {% from '_macros/windows.sls' import get_winget_user with context %}
 
 {% set pwsh_profile_dir = salt['pillar.get']('paths:powershell_7_profile', 'C:\\Program Files\\PowerShell\\7') %}
-{% set repo_path = 'C:\\opt\\cozy-pwsh' %}
+{% set repo_path = 'C:\\opt\\cozy\\cozy-pwsh' %}
 {% set winget_user = get_winget_user() %}
 
 # Clone cozy-pwsh repo to C:\opt\cozy-pwsh
