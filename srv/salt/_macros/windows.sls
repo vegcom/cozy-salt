@@ -9,10 +9,22 @@
     {% set winget_user = get_winget_user() %}
 #}
 {%- macro get_winget_user() -%}
-{#- WindowsApps paths are per-user and can't be checked cross-user via file.file_exists.
-    Use service account since that's who runs salt-call and has winget installed. -#}
+{#- Find first user who exists locally and has a profile (logged in at least once).
+    Check service account first, then managed users. -#}
 {%- set service_user = salt['pillar.get']('service_user:name', 'cozy-salt-svc') -%}
-{{ service_user }}
+{%- set managed_users = salt['pillar.get']('managed_users', []) -%}
+{%- set local_users = salt['user.list_users']() -%}
+{%- set candidates = [service_user] + managed_users -%}
+{%- set found_user = none -%}
+{%- for user in candidates -%}
+  {%- if found_user is none and user in local_users -%}
+    {%- set profile_path = 'C:\\Users\\' ~ user -%}
+    {%- if salt['file.directory_exists'](profile_path) -%}
+      {%- set found_user = user -%}
+    {%- endif -%}
+  {%- endif -%}
+{%- endfor -%}
+{{ found_user if found_user else service_user }}
 {%- endmacro -%}
 
 {#
