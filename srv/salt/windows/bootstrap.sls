@@ -3,6 +3,8 @@
 # Run EARLY - before normal states, after script state gets Salt talking
 # See TODO.md for full context
 
+{% from '_macros/windows.sls' import get_winget_user, get_winget_path with context %}
+
 # ============================================================================
 # WinRM Configuration (Salt communication foundation)
 # ============================================================================
@@ -125,12 +127,11 @@ disable_delivery_optimization:
 # ============================================================================
 # Bootstrap Package Installation (using powershell 5.1, not pwsh)
 # These MUST install before any state that uses shell: pwsh or git.latest
-# Winget is per-user - use user's WindowsApps path, not system
+# Winget is per-user - detect user who has logged in
 # ============================================================================
 
-{% set managed_users = salt['pillar.get']('managed_users', []) %}
-{% set bootstrap_user = managed_users[0] if managed_users else 'admin' %}
-{% set winget_path = 'C:\\Users\\' ~ bootstrap_user ~ '\\AppData\\Local\\Microsoft\\WindowsApps\\winget.exe' %}
+{% set winget_user = get_winget_user() %}
+{% set winget_path = get_winget_path(winget_user) %}
 
 winget_bootstrap:
   cmd.run:
@@ -138,7 +139,7 @@ winget_bootstrap:
         {{ winget_path }} source enable msstore --accept-source-agreements --disable-interactivity;
         {{ winget_path }} source update --disable-interactivity
     - shell: powershell
-    - runas: {{ bootstrap_user }}
+    - runas: {{ winget_user }}
     - onlyif: Test-Path '{{ winget_path }}'
     - env:
         WINGET_DISABLE_INTERACTIVE: "1"
@@ -147,7 +148,7 @@ install_powershell:
   cmd.run:
     - name: {{ winget_path }} install Microsoft.PowerShell --accept-source-agreements --accept-package-agreements --disable-interactivity
     - shell: powershell
-    - runas: {{ bootstrap_user }}
+    - runas: {{ winget_user }}
     - env:
         WINGET_DISABLE_INTERACTIVE: "1"
     - unless: Get-Command pwsh -ErrorAction SilentlyContinue
@@ -159,7 +160,7 @@ install_git:
   cmd.run:
     - name: {{ winget_path }} install Git.Git --accept-source-agreements --accept-package-agreements --disable-interactivity
     - shell: powershell
-    - runas: {{ bootstrap_user }}
+    - runas: {{ winget_user }}
     - env:
         WINGET_DISABLE_INTERACTIVE: "1"
     - unless: Get-Command git -ErrorAction SilentlyContinue

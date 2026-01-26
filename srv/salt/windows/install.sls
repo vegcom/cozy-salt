@@ -2,23 +2,21 @@
 # Packages defined in provisioning/packages.sls
 
 {% import_yaml 'packages.sls' as packages %}
+{% from '_macros/windows.sls' import get_winget_user, get_winget_path with context %}
 
 # ============================================================================
 # BOOTSTRAP: Download and install winget (Windows Package Manager)
 # ============================================================================
 # NOTE: AppX/MSIX packages CANNOT be installed by SYSTEM account.
-# We must install as a real user. Once installed for one user, winget.exe
-# becomes available system-wide at C:\Program Files\WindowsApps\...
-# SYSTEM can then invoke winget for --scope machine installs.
+# We must install as a real user who has logged in and has winget.
 
-{# Bootstrap user needed early for temp path #}
-{% set managed_users = salt['pillar.get']('managed_users', []) %}
-{% set bootstrap_user = managed_users[0] if managed_users else 'admin' %}
+{# Find user with winget installed via macro #}
+{% set winget_user = get_winget_user() %}
+{% set winget_path = get_winget_path(winget_user) %}
 
-{# Winget - from pillar #}
+{# Winget bundle for fresh installs #}
 {% set winget_url = salt['pillar.get']('bootstrap:url:winget') %}
 {% set winget_bundle = 'C:\\opt\\cozy\\temp\\AppInstaller.msixbundle' %}
-{% set winget_path = 'winget' %}
 
 {# pwsh - from pillar #}
 {% set pwsh_url = salt['pillar.get']('bootstrap:url:pwsh') %}
@@ -38,24 +36,22 @@ winget-install-user:
   cmd.run:
     - name: Start-Process -FilePath powershell -ArgumentList '-Command', 'Add-AppxPackage -Path {{ winget_bundle }}' -Verb RunAs -Wait
     - shell: powershell
-    - runas: {{ bootstrap_user }}
+    - runas: {{ winget_user }}
     - require:
       - file: winget-bundle-fetch
-      - user: {{ bootstrap_user }}_user
+      - user: {{ winget_user }}_user
       - user: {{ svc_name }}_service_account
 
-# PowerShell Modules (from powershell_gallery)
+# PowerShell Modules (from powershell_gallery) - requires pwsh installed
 {% set all_pwsh_modules = packages.windows.get('pwsh_modules', []) %}
 {% if all_pwsh_modules %}
 {% for module in all_pwsh_modules %}
 pwsh_module_{{ module | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
     - shell: pwsh
-    - runas: SYSTEM
     - name: >
-        pwsh -NoLogo -Command "
-          Install-Module -Name {{ module }} -Scope AllUsers -AllowClobber -SkipPublisherCheck -Force -Repository PSGallery
-        "
+        Install-Module -Name {{ module }} -Scope AllUsers -AllowClobber -SkipPublisherCheck -Force -Repository PSGallery
+    - onlyif: Get-Command pwsh -ErrorAction SilentlyContinue
 {% endfor %}
 {% endif %}
 
@@ -78,9 +74,9 @@ chocolatey-install:
 choco_feature_{{ feature }}_enabled:
   cmd.run:
     - name: choco feature enable -n={{ feature }}
-    - shell: pwsh
+    - shell: cmd
     - require:
-      - cmd: chocolatey-install
+      - chocolatey: chocolatey-install
 {% endfor %}
 
 # Install Chocolatey packages
@@ -94,70 +90,53 @@ choco_{{ pkg | replace('.', '_') | replace('-', '_') }}:
 {% endfor %}
 {% endif %}
 
-# Install Winget runtime packages, system scope
+# Install Winget runtime packages, machine scope (run as user with winget)
 {% if packages.windows.winget_runtimes is defined %}
 {% for category, pkgs in packages.windows.winget.runtimes.items() %}
 {% for pkg in pkgs %}
 winget_runtime_{{ pkg | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
-    - runas: SYSTEM
-    - shell: pwsh
+    - runas: {{ winget_user }}
+    - shell: powershell
     - name: '{{ winget_path }} install --scope machine --accept-source-agreements --accept-package-agreements --exact --id {{ pkg }}'
-    - unless: >
-        pwsh -NoLogo -Command "
-          if (winget list --scope machine --exact --id {{ pkg }} | Select-String -Quiet -Pattern '{{ pkg }}') {
-            exit 0
-          } else {
-            exit 1
-          }
-        "
+    - unless: '{{ winget_path }} list --exact --id {{ pkg }} | Select-String -Quiet -Pattern ''{{ pkg }}'''
+    - onlyif: Test-Path '{{ winget_path }}'
     - require:
       - cmd: winget-install-user
 {% endfor %}
 {% endfor %}
 {% endif %}
 
-# Install Winget packages by category, as machine scope
+# Install Winget packages by category, machine scope (run as user with winget)
 {% if packages.windows.winget_system is defined %}
 {% for category, pkgs in packages.windows.winget.system.items() %}
 {% for pkg in pkgs %}
 winget_{{ pkg | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
     - name: '{{ winget_path }} install --scope machine --accept-source-agreements --accept-package-agreements --exact --id {{ pkg }}'
-    - runas: SYSTEM
-    - shell: pwsh
-    - unless: >
-        pwsh -NoLogo -Command "
-          if (winget list --scope machine --exact --id {{ pkg }} | Select-String -Quiet -Pattern '{{ pkg }}') {
-            exit 0
-          } else {
-            exit 1
-          }
-        "
+    - runas: {{ winget_user }}
+    - shell: powershell
+    - unless: '{{ winget_path }} list --exact --id {{ pkg }} | Select-String -Quiet -Pattern ''{{ pkg }}'''
+    - onlyif: Test-Path '{{ winget_path }}'
     - require:
       - cmd: winget-install-user
 {% endfor %}
 {% endfor %}
 {% endif %}
 
-# Installs userland packages, user scope ( similar to  AllUsers )
+# Installs userland packages, user scope (each user's own winget)
 {% set users = salt['pillar.get']('managed_users', []) %}
 {% for user in users %}
+{% set user_winget = 'C:\\Users\\' ~ user ~ '\\AppData\\Local\\Microsoft\\WindowsApps\\winget.exe' %}
   {% for category, pkgs in packages.windows.winget.userland.items() %}
     {% for pkg in pkgs %}
 winget_userland_{{ user | replace('.', '_') | replace('-', '_') }}_{{ pkg | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
-    - name: '{{ winget_path }} install --scope user --accept-source-agreements --accept-package-agreements --exact --id {{ pkg }}'
+    - name: '{{ user_winget }} install --scope user --accept-source-agreements --accept-package-agreements --exact --id {{ pkg }}'
     - runas: {{ user }}
-    - shell: pwsh
-    - unless: >
-        pwsh -NoLogo -Command "
-          if (winget list --scope machine --exact --id {{ pkg }} | Select-String -Quiet -Pattern '{{ pkg }}') {
-            exit 0
-          } else {
-            exit 1
-          }
-        "
+    - shell: powershell
+    - unless: '{{ user_winget }} list --exact --id {{ pkg }} | Select-String -Quiet -Pattern ''{{ pkg }}'''
+    - onlyif: Test-Path '{{ user_winget }}'
     {% endfor %}
   {% endfor %}
 {% endfor %}
