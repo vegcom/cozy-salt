@@ -13,6 +13,7 @@ include:
   - linux.config-steamdeck    # Steam Deck hardware-specific config
   - linux.wsl-config      # WSL-specific config (must run before linux.config)
   - linux.config          # Includes service management (merged from services.sls)
+  - linux.cozy-ssh        # SSH config from cozy-ssh repo (symlinks per-user)
   - linux.docker-proxy    # Deploy Docker socket proxy for TCP access
   - linux.nvm
   - linux.rust

@@ -26,32 +26,16 @@ miniforge_permissions:
       - cmd: miniforge_install
 {% endif %}
 
-# Install uvx packages in miniforge base environment
-install_pip_uv:
-  cmd.run:
-    - name: {{ pip_bin }} install uv
-    {% if grains['os_family'] == 'Windows' %}
-    - shell: pwsh
-    {% endif %}
-    - runas: {{ service_user }}
-    - unless: {{ pip_bin }} show uv
-    - require:
-      - cmd: miniforge_install
-      {% if grains['os_family'] != 'Windows' %}
-      - file: miniforge_permissions
-      {% endif %}
-
 # Install pip base packages in miniforge base environment
 {% for package in packages.get('pip_base', []) %}
 install_pip_base_{{ package | replace('-', '_') }}:
   cmd.run:
-    - name: {{ uv_bin }} --quiet pip install --system --no-progress {{ package }}
+    - name: {{ pip_bin }} install --no-progress {{ package }}
     {% if grains['os_family'] == 'Windows' %}
     - shell: pwsh
     {% endif %}
     - runas: {{ service_user }}
-    - unless: {{ uv_bin }} --quiet --no-cache --offline pip show --system --strict {{ package }}
+    - unless: {{ pip_bin }} show {{ package }}
     - require:
-      - cmd: install_pip_uv
       - file: miniforge_permissions
 {% endfor %}

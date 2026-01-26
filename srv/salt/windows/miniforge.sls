@@ -46,6 +46,7 @@ miniforge_clean:
       - cmd: miniforge_install
       - file: miniforge_directory
 
+# FIXME: THis is useless our windows porfile does this it's loaded via git
 # # Initialize conda for PowerShell in system-wide profile
 # # Appends conda-hook.ps1 sourcing to AllUsersAllHosts profile (pwsh7)
 # miniforge_powershell_profile:

@@ -137,6 +137,12 @@ HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
   - Verify per-user pillar files (users/*.sls) merge correctly with common/users.sls
   - Fix password/passwords key mismatch (pillar uses `passwords`, states expect `password`)
 
+- [ ] Provisioning directory cleanup
+  - `provisioning/linux/files/steamdeck/` - weird path, doesn't follow `target-path` convention
+  - `provisioning/linux/files/sddm/` - should be `etc-sddm.conf.d/` or similar
+  - States reference both `/etc/sddm.conf` and `/etc/sddm.conf.d` - consolidate
+  - All paths should mirror target with `-` replacing `/` (e.g., `etc-skel`, `opt-cozy`)
+
 - [ ] Debug atuin integration (check: installed? PATH? .bashrc init? bash-preexec?)
 - [ ] Move tests/ to cozy-salt-enrollment submodule (test_states.py, test_linting.py)
 - [ ] Validate and enforce package_metadata (conflicts, exclude, provides resolution)
@@ -155,7 +161,7 @@ HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
 - [ ] IPA provisioning (awaiting secrets management solution - explore lightweight alternatives to Vault)
 - [ ] BM provisioning (awaiting foreman replacement - explore lightweight alternatives for x86_64 && arm)
 - [ ] Integrate cozy-fragments (Windows Terminal config fragments) - manual for now <<<git@github.com>:vegcom/cozy-fragments.git>>
-- [ ] Integrate cozy-ssh (SSH config framework) - syncthing for now <<git@github.com>:vegcom/cozy-ssh.git>
+- [x] Integrate cozy-ssh (SSH config framework) - `srv/salt/linux/cozy-ssh.sls` clones to `/opt/cozy/cozy-ssh`, symlinks per-user
 
 ## Pending review
 
