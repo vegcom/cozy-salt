@@ -109,29 +109,44 @@ disable_delivery_optimization:
 
 
 # ============================================================================
-# Package mangement configuration 
+# Bootstrap Package Installation (using powershell 5.1, not pwsh)
+# These MUST install before any state that uses shell: pwsh or git.latest
 # ============================================================================
+
+{% set managed_users = salt['pillar.get']('managed_users', []) %}
+{% set bootstrap_user = managed_users[0] if managed_users else 'admin' %}
+
 winget_bootstrap:
   cmd.run:
     - name: >
         winget source enable msstore --accept-source-agreements --disable-interactivity;
         winget source update --disable-interactivity
     - shell: powershell
-    - runas: User #TODO: detect executing user
+    - runas: {{ bootstrap_user }}
     - env:
         WINGET_DISABLE_INTERACTIVE: "1"
 
-# ============================================================================
-# PWSH install 
-# ============================================================================
 install_powershell:
   cmd.run:
-    - name: >
-        winget install Microsoft.PowerShell --disable-interactivity
+    - name: winget install Microsoft.PowerShell --accept-source-agreements --accept-package-agreements --disable-interactivity
     - shell: powershell
-    - runas: User #TODO: detect executing user
+    - runas: {{ bootstrap_user }}
     - env:
         WINGET_DISABLE_INTERACTIVE: "1"
+    - unless: Get-Command pwsh -ErrorAction SilentlyContinue
+    - require:
+      - cmd: winget_bootstrap
+
+install_git:
+  cmd.run:
+    - name: winget install Git.Git --accept-source-agreements --accept-package-agreements --disable-interactivity
+    - shell: powershell
+    - runas: {{ bootstrap_user }}
+    - env:
+        WINGET_DISABLE_INTERACTIVE: "1"
+    - unless: Get-Command git -ErrorAction SilentlyContinue
+    - require:
+      - cmd: winget_bootstrap
 
 
 # ============================================================================
