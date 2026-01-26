@@ -29,75 +29,81 @@ cozy_ssh_repo_perms:
     - require:
       - git: cozy_ssh_repo
 
-# Per-user SSH symlinks and directories
-{% for username in managed_users %}
-{% set userdata = users.get(username, {}) %}
-{% set user_home = userdata.get('home_prefix', '/home') ~ '/' ~ username %}
-{% set user_ssh = user_home ~ '/.ssh' %}
+# FIXME: need to copy not symlink
+# # Per-user SSH symlinks and directories
+# {% for username in managed_users %}
+# {% set userdata = users.get(username, {}) %}
+# {% set user_home = userdata.get('home_prefix', '/home') ~ '/' ~ username %}
+# {% set user_ssh = user_home ~ '/.ssh' %}
 
-# Ensure {{ username }} .ssh directory exists
-{{ username }}_cozy_ssh_dir:
-  file.directory:
-    - name: {{ user_ssh }}
-    - user: {{ username }}
-    - group: {{ username }}
-    - mode: "0700"
-    - makedirs: True
+# # Ensure {{ username }} .ssh directory exists
+# {{ username }}_cozy_ssh_dir:
+#   file.directory:
+#     - name: {{ user_ssh }}
+#     - user: {{ username }}
+#     - group: {{ username }}
+#     - mode: "0700"
+#     - makedirs: True
 
-# Symlink {{ username }} SSH config
-{{ username }}_ssh_config_symlink:
-  file.symlink:
-    - name: {{ user_ssh }}/config
-    - target: {{ repo_path }}/config
-    - user: {{ username }}
-    - group: {{ username }}
-    - force: True
-    - require:
-      - git: cozy_ssh_repo
-      - file: {{ username }}_cozy_ssh_dir
+# FIXME: need to copy not symlink
+# # Symlink {{ username }} SSH config
+# {{ username }}_ssh_config_symlink:
+#   file.symlink:
+#     - name: {{ user_ssh }}/config
+#     - target: {{ repo_path }}/config
+#     - user: {{ username }}
+#     - group: {{ username }}
+#     - force: True
+#     - require:
+#       - git: cozy_ssh_repo
+#       - file: {{ username }}_cozy_ssh_dir
 
-# Symlink {{ username }} ssh_config.d directory
-{{ username }}_ssh_config_d_symlink:
-  file.symlink:
-    - name: {{ user_ssh }}/ssh_config.d
-    - target: {{ repo_path }}/ssh_config.d
-    - user: {{ username }}
-    - group: {{ username }}
-    - force: True
-    - require:
-      - git: cozy_ssh_repo
-      - file: {{ username }}_cozy_ssh_dir
+# FIXME: need to copy not symlink
+# # Symlink {{ username }} ssh_config.d directory
+# {{ username }}_ssh_config_d_symlink:
+#   file.symlink:
+#     - name: {{ user_ssh }}/ssh_config.d
+#     - target: {{ repo_path }}/ssh_config.d
+#     - user: {{ username }}
+#     - group: {{ username }}
+#     - force: True
+#     - require:
+#       - git: cozy_ssh_repo
+#       - file: {{ username }}_cozy_ssh_dir
 
-# Symlink {{ username }} scripts directory
-{{ username }}_ssh_scripts_symlink:
-  file.symlink:
-    - name: {{ user_ssh }}/scripts
-    - target: {{ repo_path }}/scripts
-    - user: {{ username }}
-    - group: {{ username }}
-    - force: True
-    - require:
-      - git: cozy_ssh_repo
-      - file: {{ username }}_cozy_ssh_dir
+# FIXME: need to copy not symlink
+# # Symlink {{ username }} scripts directory
+# {{ username }}_ssh_scripts_symlink:
+#   file.symlink:
+#     - name: {{ user_ssh }}/scripts
+#     - target: {{ repo_path }}/scripts
+#     - user: {{ username }}
+#     - group: {{ username }}
+#     - force: True
+#     - require:
+#       - git: cozy_ssh_repo
+#       - file: {{ username }}_cozy_ssh_dir
 
-# Create {{ username }} known_hosts directory (local, not symlinked)
-{{ username }}_ssh_known_hosts_dir:
-  file.directory:
-    - name: {{ user_ssh }}/known_hosts
-    - user: {{ username }}
-    - group: {{ username }}
-    - mode: "0700"
-    - require:
-      - file: {{ username }}_cozy_ssh_dir
+# FIXME: depends on copy not symlink above
+# # Create {{ username }} known_hosts directory (local, not symlinked)
+# {{ username }}_ssh_known_hosts_dir:
+#   file.directory:
+#     - name: {{ user_ssh }}/known_hosts
+#     - user: {{ username }}
+#     - group: {{ username }}
+#     - mode: "0700"
+#     - require:
+#       - file: {{ username }}_cozy_ssh_dir
 
-# Create {{ username }} ctrl directory for ControlMaster sockets
-{{ username }}_ssh_ctrl_dir:
-  file.directory:
-    - name: {{ user_ssh }}/ctrl
-    - user: {{ username }}
-    - group: {{ username }}
-    - mode: "0700"
-    - require:
-      - file: {{ username }}_cozy_ssh_dir
+# FIXME: depends on copy not symlink above
+# # Create {{ username }} ctrl directory for ControlMaster sockets
+# {{ username }}_ssh_ctrl_dir:
+#   file.directory:
+#     - name: {{ user_ssh }}/ctrl
+#     - user: {{ username }}
+#     - group: {{ username }}
+#     - mode: "0700"
+#     - require:
+#       - file: {{ username }}_cozy_ssh_dir
 
-{% endfor %}
+# {% endfor %}

@@ -1,0 +1,9 @@
+#!/bin/bash
+systemctl --user stop gamescope-session.target 2>/dev/null
+systemctl --user stop gamescope.service 2>/dev/null
+
+# Kill Steam Big Picture
+pkill -TERM steam
+
+# Switch to a TTY and restart SDDM
+sudo systemctl restart sddm.service

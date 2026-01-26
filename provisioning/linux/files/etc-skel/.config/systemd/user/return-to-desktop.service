@@ -1,0 +1,6 @@
+[Unit]
+Description=Return to Desktop override
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/return-to-desktop

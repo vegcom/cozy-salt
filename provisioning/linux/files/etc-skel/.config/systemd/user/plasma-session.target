@@ -1,0 +1,4 @@
+[Unit]
+Description=Custom Return-to-Desktop handler
+Requires=return-to-desktop.service
+After=return-to-desktop.service
