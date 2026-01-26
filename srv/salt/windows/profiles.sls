@@ -5,7 +5,7 @@
 # Requires: srv/salt/common/gitconfig.sls (deploy_git_credentials_system)
 
 {% set pwsh_profile_dir = salt['pillar.get']('paths:powershell_7_profile', 'C:\\Program Files\\PowerShell\\7') %}
-{% set git_path = "$env:TEMP\\cozy-pwsh"%}
+{% set git_path = "C:\\Windows\\Temp\\cozy-pwsh" %}
 {% set managed_users = salt['pillar.get']('managed_users', []) %}
 {% set bootstrap_user = managed_users[0] if managed_users else 'admin' %}
 

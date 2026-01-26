@@ -650,22 +650,24 @@ pip_base:
   - pipx  # Python application package manager
 
 npm_global:
-  - '@anthropic-ai/claude-code' # Sonnet is a friend for managing docs
-  - "better-ccflare" # Sonnet can work better with a friend
-  - pnpm  # Fast npm alternative
-  - bun  # Fast JavaScript runtime
-  - tsx  # TypeScript executor
+  - "@anthropic-ai/claude-code"  # Sonnet is a friend for managing docs
+  - "better-ccflare"  # Sonnet can work better with a friend
+  - "pnpm"  # Fast npm alternative
+  - "bun"  # Fast JavaScript runtime
+  - "tsx"  # TypeScript executor
   - "@angular/cli"  # Angular CLI
   - "@nestjs/cli"  # NestJS CLI
   - "@vue/cli"  # Vue CLI
-  - create-react-app  # React create tool
-  - webpack  # Bundler
-  - nodemon  # Development file watcher
-  - pm2  # Process manager
-  - serverless  # Serverless Framework
-  - cdk  # AWS CDK CLI
+  - "create-react-app"  # React create tool
+  - "webpack"  # Bundler
+  - "nodemon"  # Development file watcher
+  - "pm2"  # Process manager
+  - "serverless"  # Serverless Framework
+  - "cdk"  # AWS CDK CLI
 
 brew:
   - atuin
-  - weasyprint
+  - carapace
   - pandoc
+  - weasyprint
+  - zoxide
