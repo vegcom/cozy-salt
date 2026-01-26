@@ -117,7 +117,7 @@ winget_bootstrap:
         winget source enable msstore --accept-source-agreements --disable-interactivity;
         winget source update --disable-interactivity
     - shell: powershell
-    - runas: SYSTEM
+    - runas: User #TODO: detect executing user
     - env:
         WINGET_DISABLE_INTERACTIVE: "1"
 
@@ -129,7 +129,7 @@ install_powershell:
     - name: >
         winget install Microsoft.PowerShell --disable-interactivity
     - shell: powershell
-    - runas: SYSTEM
+    - runas: User #TODO: detect executing user
     - env:
         WINGET_DISABLE_INTERACTIVE: "1"
 
