@@ -23,19 +23,17 @@ if command -v aria2c >/dev/null 2>&1; then
         --summary-interval=120 \
         --timeout=20 \
         --connect-timeout=10 \
-        --retry-on-5xx=true \
         --retry-on-400=true \
         --retry-on-host-error=true \
         --dir=/ \
         --out "$OUT" \
-        "$URL"
+        "$URL" 2>/dev/null
     then
         exit 0
     fi
 fi
 
-echo "aria2c failed, falling back to curl/wget-style downloader" >&2
-
 # fallback to built-in downloader
+echo "aria2c failed, falling back to curl/wget-style downloader" >&2
 curl -L --fail --retry 5 --retry-delay 5 -o "$OUT" "$URL" \
   || wget --tries=5 --waitretry=5 -O "$OUT" "$URL"

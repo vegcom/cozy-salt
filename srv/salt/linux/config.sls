@@ -66,6 +66,12 @@ cozy_etc_bashrc:
     - source: salt://linux/files/etc/bash.bashrc
     - mode: "0644"
 
+cozy_etc_zshrc:
+  file.managed:
+    - name: /etc/zshrc
+    - source: salt://linux/files/etc/zshrc
+    - mode: "0644"
+
 cozy_opt_dir:
   file.directory:
     - name: /opt/cozy

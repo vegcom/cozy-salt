@@ -17,10 +17,5 @@ if [ -d /etc/profile.d ]; then
   unset i
 fi
 
-if [ -f /etc/bash.bashrc ] ; then
-  # shellcheck disable=SC1091
-  source /etc/bash.bashrc
-fi
-
 __ETC_PROFILE_SOURCED=1
 export __ETC_BASH_SOURCED

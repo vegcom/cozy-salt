@@ -8,6 +8,5 @@
 if command -v git &> /dev/null; then
   GIT_NAME="$(git config --global user.name 2>/dev/null)"
   GIT_EMAIL="$(git config --global user.email 2>/dev/null)"
-  export GIT_EMAIL
-  export GIT_NAME
+  export GIT_EMAIL GIT_NAME
 fi

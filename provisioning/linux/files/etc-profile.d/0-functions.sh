@@ -45,8 +45,8 @@ cozy_render(){
     _helper(){
         bash <<"EOF"
         set -o pipefail
-        _state_output="$(salt-call -l quiet state.show_states 2>&1)" || printf '\n%s\n' "${_state_output}"  2>&1 || exit 1
-        awk '/- /{gsub(/\./, "/");system("echo \"salt://"$NF".sls\" ; salt-call slsutil.renderer default_renderer=jinja \"salt://"$NF".sls\"")}'" <<<${_state_output}
+        _state_output="$(sudo salt-call -l quiet state.show_states 2>&1)" || printf '\n%s\n' "${_state_output}"  2>&1 || exit 1
+        awk '/- /{gsub(/\./, "/");system("echo \"salt://"$NF".sls\" ; sudo salt-call slsutil.renderer default_renderer=jinja \"salt://"$NF".sls\"")}'" <<<${_state_output}
 EOF
     }
     _helper|fzf --literal --no-clear
@@ -61,3 +61,40 @@ cozy_persist_shell(){
     while ! ssh "${_host}" ; do sleep 15 ; nc -vzw 5 "${_host}" 22 ; done
   fi
 }
+
+gclean() {
+  # Marker text to stop at; default stays your original
+  local marker="${1}"
+
+  if [[ -z ${marker} ]];then
+    echo "Usage: gclean <marker>"
+    return 1
+  fi
+
+  _MARK="$marker" git filter-repo --force --message-callback '
+import os
+
+marker = os.environ.get("_MARK", "").encode()
+
+lines = message.split(b"\n")
+cleaned = []
+
+for l in lines:
+    if marker and marker in l:
+        break
+    cleaned.append(l)
+
+return b"\n".join(cleaned)
+'
+}
+
+export gclean
+
+t(){
+  if [[ -d ${PWD}/.git ]] ; then
+    _name="$(basename "${PWD:-$(pwd)}")"
+    tmux new -s "${_name}"
+  fi
+}
+
+export t

@@ -29,46 +29,7 @@ export CONDA_AUTO_ACTIVATE_BASE=true
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
 #------------------------------------------------------------------------------
-# Functions
+# Local user paths
 #------------------------------------------------------------------------------
-gclean() {
-  # Marker text to stop at; default stays your original
-  local marker="${1}"
-
-  if [[ -z ${marker} ]];then
-    echo "Usage: gclean <marker>"
-    return 1
-  fi
-
-  _MARK="$marker" git filter-repo --force --message-callback '
-import os
-
-marker = os.environ.get("_MARK", "").encode()
-
-lines = message.split(b"\n")
-cleaned = []
-
-for l in lines:
-    if marker and marker in l:
-        break
-    cleaned.append(l)
-
-return b"\n".join(cleaned)
-'
-}
-
-export gclean
-
-t(){
-  if [[ -d ${PWD}/.git ]] ; then
-    _name="$(basename "${PWD:-$(pwd)}")"
-    tmux new -s "${_name}"
-  fi
-}
-
-export t
-
-#------------------------------------------------------------------------------
-# Aliases
-#------------------------------------------------------------------------------
+export PATH="$HOME/bin:$HOME/.local/bin:$PATH"
 
