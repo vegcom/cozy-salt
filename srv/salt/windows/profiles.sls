@@ -1,48 +1,54 @@
 # Windows PowerShell 7 System-Wide Profile Deployment
-# Fetches comprehensive PowerShell configuration from cozy-pwsh.git
-# Profile includes: init, time, logging, aliases, functions, modules, npm, conda, choco, code, starship
+# Clones cozy-pwsh.git to C:\opt\cozy-pwsh, symlinks profile into PowerShell 7 dir
 # See docs/modules/windows-profiles.md for configuration
-# Requires: srv/salt/common/gitconfig.sls (deploy_git_credentials_system)
+
+{% from '_macros/windows.sls' import get_winget_user with context %}
 
 {% set pwsh_profile_dir = salt['pillar.get']('paths:powershell_7_profile', 'C:\\Program Files\\PowerShell\\7') %}
-{% set git_path = "C:\\Windows\\Temp\\cozy-pwsh" %}
-{% set managed_users = salt['pillar.get']('managed_users', []) %}
-{% set bootstrap_user = managed_users[0] if managed_users else 'admin' %}
+{% set repo_path = 'C:\\opt\\cozy-pwsh' %}
+{% set winget_user = get_winget_user() %}
 
-# Create PowerShell 7 profile directory structure
-powershell_profile_directory:
-  file.directory:
-    - name: {{ pwsh_profile_dir }}
-    - makedirs: True
-
-# Deploy PowerShell profile via git (clone cozy-pwsh.git)
-# Uses .git-credentials deployed via common/gitconfig.sls (deploy_git_credentials_system)
-# SYSTEM home: C:\Windows\System32\config\systemprofile\.git-credentials
-
+# Clone cozy-pwsh repo to C:\opt\cozy-pwsh
 pwsh_profile_repo:
   git.latest:
     - name: https://github.com/vegcom/cozy-pwsh.git
-    - target: {{ git_path }}
+    - target: {{ repo_path }}
     - branch: main
-    - force_clone: True
     - force_reset: True
-    - runas: {{ bootstrap_user }}
+    - runas: {{ winget_user }}
 
-deploy_pwsh_profile:
-  file.recurse:
-    - name: {{ pwsh_profile_dir }}
-    - source: {{ git_path }}
-    - makedirs: True
-    - user: SYSTEM
-    - group: Administrators
+# Symlink profile file
+pwsh_profile_symlink:
+  cmd.run:
+    - name: |
+        if (Test-Path "{{ pwsh_profile_dir }}\Microsoft.PowerShell_profile.ps1") {
+          Remove-Item "{{ pwsh_profile_dir }}\Microsoft.PowerShell_profile.ps1" -Force
+        }
+        New-Item -ItemType SymbolicLink -Path "{{ pwsh_profile_dir }}\Microsoft.PowerShell_profile.ps1" -Target "{{ repo_path }}\Microsoft.PowerShell_profile.ps1"
+    - shell: powershell
     - require:
       - git: pwsh_profile_repo
+    - unless: >
+        (Get-Item "{{ pwsh_profile_dir }}\Microsoft.PowerShell_profile.ps1" -ErrorAction SilentlyContinue).LinkType -eq 'SymbolicLink'
 
-# Ensure profile is readable by all users and writable by administrators
-# This state depends on the profile being deployed first
-powershell_profile_deployed:
+# Symlink config.d directory
+pwsh_config_d_symlink:
   cmd.run:
-    - name: icacls "{{ pwsh_profile_dir }}" /grant:r "Users:(OI)(CI)(R)" /grant:r "Administrators:(OI)(CI)(F)" /t /q
+    - name: |
+        if (Test-Path "{{ pwsh_profile_dir }}\config.d") {
+          Remove-Item "{{ pwsh_profile_dir }}\config.d" -Recurse -Force
+        }
+        New-Item -ItemType SymbolicLink -Path "{{ pwsh_profile_dir }}\config.d" -Target "{{ repo_path }}\config.d"
+    - shell: powershell
+    - require:
+      - git: pwsh_profile_repo
+    - unless: >
+        (Get-Item "{{ pwsh_profile_dir }}\config.d" -ErrorAction SilentlyContinue).LinkType -eq 'SymbolicLink'
+
+# Ensure repo is readable by all users
+pwsh_profile_acl:
+  cmd.run:
+    - name: icacls "{{ repo_path }}" /grant:r "Users:(OI)(CI)(R)" /grant:r "Administrators:(OI)(CI)(F)" /t /q
     - shell: cmd
     - require:
       - git: pwsh_profile_repo
