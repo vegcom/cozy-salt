@@ -4,8 +4,10 @@
 # Managed by Salt - DO NOT EDIT MANUALLY
 
 # Only apply on Arch Linux / derivative systems
-if [[ ! -f /etc/arch-release ]] && [[ ! -f /etc/artix-release ]]; then
-  return 0
+if [ ! -f /etc/arch-release ] ; then
+  if [ ! -f /etc/artix-release ] ; then
+    return 0
+  fi
 fi
 
 #------------------------------------------------------------------------------

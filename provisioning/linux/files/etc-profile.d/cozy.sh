@@ -26,10 +26,16 @@ export CONDA_AUTO_ACTIVATE_BASE=true
 # shellcheck disable=SC1091
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 # shellcheck disable=SC1091
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-
+if [ "$SHELL" == "/bin/bash" ]; then
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+fi
 #------------------------------------------------------------------------------
 # Local user paths
 #------------------------------------------------------------------------------
 export PATH="$HOME/bin:$HOME/.local/bin:$PATH"
+
+#------------------------------------------------------------------------------
+# Steam Big Picture overrides
+#------------------------------------------------------------------------------
+export STEAM_FORCE_DESKTOP_RETURN=1
 

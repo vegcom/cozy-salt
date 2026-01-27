@@ -1,16 +1,10 @@
 #!/bin/zsh
-# /etc/zshrc
+# ~/zshrc
 # Managed by Salt - DO NOT EDIT MANUALLY
 
 emulate zsh
 autoload -Uz compinit
 compinit -u
-
-if [ -n "${__ETC_ZSH_ZPROFILE_SOURCED}" ]; then
-    if [ -n "${__ETC_ZSHRC_SOURCED}" ]; then
-        return 0
-    fi
-fi
 
 # Carapace
 if command -v carapace >/dev/null; then
@@ -31,7 +25,3 @@ fi
 if command -v atuin >/dev/null; then
     eval "$(atuin init zsh)"
 fi
-
-__ETC_ZSHRC_SOURCED=1
-export __ETC_ZSHRC_SOURCED
-

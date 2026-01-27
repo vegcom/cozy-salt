@@ -66,6 +66,12 @@ cozy_etc_bashrc:
     - source: salt://linux/files/etc/bash.bashrc
     - mode: "0644"
 
+cozy_etc_zprofile:
+  file.managed:
+    - name: /etc/zsh/zprofile
+    - source: salt://linux/files/etc-zsh/zprofile
+    - mode: "0644"
+
 cozy_etc_zshrc:
   file.managed:
     - name: /etc/zshrc

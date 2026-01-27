@@ -10,9 +10,14 @@
 #         (curl -sS https://raw.githubusercontent.com/starship/starship/master/install/install.sh 2>/dev/null | TERM=dumb sh -s -- -y 2>/dev/null) || true
 #     fi
 
-#     if [ ! -f "$HOME/.config/starship.toml" ]; then
-#         mkdir -p "$HOME/.config"
-#     fi
-
-#     eval "$(starship init bash)" 2>/dev/null || true
+# if [ ! -f "$HOME/.config/starship.toml" ]; then
+#     mkdir -p "$HOME/.config"
 # fi
+
+
+# if [ "$SHELL" == "/bin/bash" ];then
+#   eval "$(starship init bash)" 2>/dev/null || true
+# elif [ "$SHELL" == "/bin/zsh" ];then
+#   eval "$(starship init zsh)" 2>/dev/null || true
+# fi
+

@@ -19,7 +19,10 @@ if [ -d "$NVM_DIR/bin" ]; then
     export PATH="$NVM_DIR/bin:$PATH"
 fi
 
-# Source NVM bash completion if available
-if [ -s "$NVM_DIR/bash_completion" ]; then
-  . "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+if [ "$SHELL" == "/bin/bash" ];then
+  # Source NVM bash completion if available
+  if [ -s "$NVM_DIR/bash_completion" ]; then
+    . "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+  fi
 fi

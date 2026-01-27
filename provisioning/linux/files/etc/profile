@@ -1,7 +1,8 @@
 #!/bin/bash
+# /etc/profile
 # Managed by Salt - DO NOT EDIT MANUALLY
 
-if [ -n "${__ETC_BASH_SOURCED}" ]; then
+if [ -n "${__ETC_PROFILE_SOURCED}" ]; then
     return 0
 fi
 
@@ -18,4 +19,4 @@ if [ -d /etc/profile.d ]; then
 fi
 
 __ETC_PROFILE_SOURCED=1
-export __ETC_BASH_SOURCED
+export __ETC_PROFILE_SOURCED

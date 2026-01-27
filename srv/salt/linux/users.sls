@@ -80,6 +80,17 @@ skel_files:
     - require:
       - file: {{ username }}_home_directory
 
+# Deploy {{ username }} .zshrc
+{{ username }}_bashrc:
+  file.managed:
+    - name: {{ user_home }}/.zshrc
+    - source: salt://linux/files/etc-skel/.zshrc
+    - user: {{ username }}
+    - group: {{ username }}
+    - mode: "0644"
+    - require:
+      - file: {{ username }}_home_directory
+
 {% set ssh_keys = userdata.get('ssh_keys', []) %}
 {% if ssh_keys %}
 # Create {{ username }} .ssh directory

@@ -1,0 +1,9 @@
+if [ -n "${__ETC_ZSH_ZPROFILE_SOURCED}" ]; then
+    return 0
+fi
+
+emulate bash -Lc 'source /etc/profile'
+
+
+__ETC_ZSH_ZPROFILE_SOURCED=1
+export __ETC_ZSH_ZPROFILE_SOURCED
