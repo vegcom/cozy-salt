@@ -1,0 +1,27 @@
+# ────────────────────────────────────────────────────────────────
+# /etc/systemd/system/home-{{ user }}-scratch.mount
+# ────────────────────────────────────────────────────────────────
+# Cozy‑Ops Mount Unit Template: scratch@.mount
+# Creates an ephemeral tmpfs scratchpad at /home/{{ user }}/scratch
+# Zero disk writes. Predictable.
+# https://www.freedesktop.org/software/systemd/man/latest/systemd-mount.html
+# ────────────────────────────────────────────────────────────────
+
+[Unit]
+Description=Ephemeral scratchpad for {{ user }} (tmpfs, cozy-ops style)
+Documentation=man:systemd.mount(5)
+
+[Mount]
+What=tmpfs
+Where=/home/{{ user }}/scratch
+Type=tmpfs
+
+# Options tuned for comfort and safety:
+#   size=4G       → bounded RAM usage
+#   mode=700      → private workspace
+#   noatime       → no metadata churn
+#   nodev,nosuid  → keep it simple and safe
+Options=size=4G,mode=700,noatime,nodev,nosuid
+
+[Install]
+WantedBy=multi-user.target

@@ -6,9 +6,58 @@
 | delivery  | ✅  | ✅  | 🔴  | 🔴  | 🔴  |
 | audit     | ✅  | 🔴  | 🔴  | 🔴  | 🔴  |
 
-## URGENT
+## Pending testing
 
-### Windows bootstrap - delivery
+```powershell
+# Developer mode
+reg add "hklm\software\microsoft\windows\currentversion\appmodelunlock" /v "AllowDevelopmentWithoutDevLicense" /t reg_dword /d 1 /f
+
+DISM /Online /Add-Capability /CapabilityName:Tools.DeveloperMode.Core~~~~0.0.1.0
+
+# WSL
+dism /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all
+```
+
+## pending deployment
+
+### URGENT
+
+#### Upmost urgency
+
+- remove obsurd redundancy in provisioning/packages.sls
+  - osmap https://docs.saltproject.io/salt/user-guide/en/latest/topics/jinja.html
+- [x] fix pillar merge order and priority (refactor/pillar-load-order branch)
+  - common → os → dist → class → users → host
+    - host is LAST = final word on machine-specific overrides
+    - each layer can append to or overwrite previous
+  - [x] top.sls refactored with clear layer comments
+  - [x] fixed host_file path check (/srv/pillar/ not /srv/salt/pillar/)
+  - [x] users/*.sls now loaded (Layer 5)
+  - [ ] all values audited
+  - [ ] all values used where expected
+  - [ ] no unexpected values remain
+- templates in provisioning/{windws,linux}/templates
+  - see below regarding all complex logic ( where possible ) deferred to templates
+- all complex sls files doing file.managed with content are deferred to templates
+  - all macros are in srv/salt/\_macros
+  - all complex logic is reduced to macro or templates
+
+
+<https://gist.github.com/Rishikant181/e26fb23d4c57db74bddaa0a57b26cd26#5-creating-a-script-to-switch-back-to-desktop-mode-close-steam>
+
+### CCache for arch
+
+- <https://man.archlinux.org/man/makepkg.conf.5>
+- <https://wiki.archlinux.org/title/Ccache>
+
+#### Second highest urgency
+
+- remove code duplicaton, scan deeply it's actually worse than you think
+  - a lot can be macros
+  - a lot is split into multipul files ( e.g. homebrew and brew sls files )
+  - a lot is just nasty to look at and hacky during spin-up
+
+#### Windows bootstrap - delivery
 
 - fixes WinRM (cmd.run block)
 - starts salt-minion
@@ -129,13 +178,14 @@ HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
   - TODO: Consider `srv/salt/common/acl.sls` for group membership management
   - TODO: Windows equivalent using `icacls` or PowerShell ACL cmdlets
 
-- [ ] Pillar load order audit
-  - Validate all pillar files are included in top.sls (mgmt.sls was missing)
-  - Check for duplicate/conflicting keys across pillar files
-  - Reduce redundant comments in pillar files
-  - Document pillar merge behavior and precedence
-  - Verify per-user pillar files (users/*.sls) merge correctly with common/users.sls
-  - Fix password/passwords key mismatch (pillar uses `passwords`, states expect `password`)
+- [~] Pillar load order audit (in progress: refactor/pillar-load-order)
+  - [x] Validate all pillar files are included in top.sls (mgmt.sls was missing)
+  - [x] Check for duplicate/conflicting keys across pillar files
+    - Added `pacman:repos_extra` pattern for append behavior
+  - [x] Reduce redundant comments in pillar files (refactor/pillar-load-order)
+  - [x] Document pillar merge behavior and precedence (in top.sls comments)
+  - [x] Verify per-user pillar files (users/*.sls) merge correctly with common/users.sls
+  - [x] Fix password/passwords key mismatch (users/*.sls: passwords → password)
 
 - [ ] Provisioning directory cleanup
   - `provisioning/linux/files/steamdeck/` - weird path, doesn't follow `target-path` convention

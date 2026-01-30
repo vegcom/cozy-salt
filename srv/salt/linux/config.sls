@@ -140,7 +140,7 @@ pam_lastlog2_silent:
 sshd_hardening_config:
   file.managed:
     - name: /etc/ssh/sshd_config.d/99-hardening.conf
-    - source: salt://_templates/sshd_hardening.conf.jinja
+    - source: salt://linux/templates/sshd_hardening.conf.jinja
     - template: jinja
     - mode: "0644"
     - makedirs: True
@@ -165,6 +165,7 @@ hosts_entry_{{ hostname | replace('.', '_') }}:
   host.present:
     - name: {{ hostname }}
     - ip: {{ ip }}
+    - clean: True
 {% endfor %}
 
 # Configure DNS search domain (skip in containers - they have their own DNS)

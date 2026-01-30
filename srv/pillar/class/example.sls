@@ -8,11 +8,13 @@ workstation_role: workstation-full
 locales:
   - en_US.UTF-8
 
+# pacman:repos_extra appends to base repos (dist/arch.sls)
+# Use repos_extra to ADD new repos, not replace existing
 pacman:
-  repos:
-    chaotic_aur:
+  repos_extra:
+    my_custom_repo:
       enabled: true
-      server: "https://chaotic.cx/arch/aarch64"
+      server: "https://example.com/arch/$arch"
 
 display:
   rotation:

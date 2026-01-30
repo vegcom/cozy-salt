@@ -4,7 +4,10 @@
 
 {% if grains['os_family'] == 'Arch' %}
 
-{% set pacman_repos = salt['pillar.get']('pacman:repos') or {} %}
+{# Base repos from dist/arch.sls, extras from class/host append via pacman:repos_extra #}
+{% set pacman_repos = salt['pillar.get']('pacman:repos', {}) %}
+{% set pacman_repos_extra = salt['pillar.get']('pacman:repos_extra', {}) %}
+{% do pacman_repos.update(pacman_repos_extra) %}
 
 # =============================================================================
 # CHAOTIC AUR PREREQUISITES
@@ -64,22 +67,17 @@ pacman_conf:
         # Managed by cozy-salt - DO NOT EDIT MANUALLY
 
         [options]
-        #
-        # Arch Linux repository mirrorlist
-        # See ArchWiki (Mirrors) and Pacman/Tips#Enabling_parallel_downloads for more info on how to rate limit with aria2, wget and powerpill.
         Architecture = auto
         HoldPkg = pacman glibc
         IgnorePkg = less
-        ILoveCandy
         LocalFileSigLevel = Optional
         ParallelDownloads = 5
         SigLevel = Required DatabaseOptional
+        #XferCommand = /usr/local/bin/aria2-wrapper %u %o
+        ILoveCandy
         VerbosePkgLists
         CheckSpace
         Color
-
-
-        XferCommand = /usr/local/bin/aria2-wrapper %u %o
 
         #
         # By default, pacman accepts packages signed by keys that it knows about.
@@ -97,8 +95,14 @@ pacman_conf:
         {%- if repo_config.get('Include') %}
         Include = {{ repo_config.get('Include') }}
         {%- endif %}
+        {%- if repo_config.get('include') %}
+        Include = {{ repo_config.get('include') }}
+        {%- endif %}
         {%- if repo_config.get('SigLevel') %}
         SigLevel = {{ repo_config.get('SigLevel') }}
+        {%- endif %}
+        {%- if repo_config.get('siglevel') %}
+        SigLevel = {{ repo_config.get('liglevel') }}
         {%- endif %}
         {%- endif %}
         {%- endfor %}

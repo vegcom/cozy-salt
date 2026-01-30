@@ -20,7 +20,7 @@ users:
     ssh_keys:
       # Add public SSH keys for remote access
       - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIxxxxxxxxxxxx...your-public-key
-    passwords: "demo_PlzChange"
+    password: "demo_PlzChange"
     github:
       # Email and name auto-deployed to .gitconfig.local [user] section
       email: user+github@example.com
