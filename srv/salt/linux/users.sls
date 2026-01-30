@@ -81,10 +81,21 @@ skel_files:
       - file: {{ username }}_home_directory
 
 # Deploy {{ username }} .zshrc
-{{ username }}_bashrc:
+{{ username }}_zshrc:
   file.managed:
     - name: {{ user_home }}/.zshrc
     - source: salt://linux/files/etc-skel/.zshrc
+    - user: {{ username }}
+    - group: {{ username }}
+    - mode: "0644"
+    - require:
+      - file: {{ username }}_home_directory
+
+# Deploy {{ username }} tmux service
+{{ username }}_tmux_service:
+  file.managed:
+    - name: {{ user_home }}/.config/systemd/user/tmux@.service
+    - source: salt://linux/files/etc-skel/.config/systemd/user/tmux@.service
     - user: {{ username }}
     - group: {{ username }}
     - mode: "0644"
@@ -114,6 +125,45 @@ skel_files:
       - file: {{ username }}_ssh_directory
 {% endfor %}
 {% endif %}
+
+# Create {{ username }} scratch mount
+{% for user_name in managed_users %}
+scratch_mount_{{ username }}:
+  file.managed:
+    - name: /etc/systemd/system/home-{{ username }}-scratch.mount
+    - source: salt://linux/templates/scratch-mount.jinja
+    - user_name: {{ username }}
+    - template: jinja
+    - mode: "0644"
+    - makedirs: True
+
+# Create {{ username }} scratch automount
+{{ username }}_scratch_automount:
+  file.managed:
+    - name: /etc/systemd/system/home-{{ username }}-scratch.automount
+    - source: salt://linux/templates/scratch-automount.jinja
+    - user_name: {{ username }}
+    - template: jinja
+    - mode: "0644"
+    - makedirs: True
+
+# Create {{ username }} scratch directory
+{{ username }}_scratch_directory:
+  file.directory:
+    - name: {{ userdata.get('home_prefix', '/home') }}/{{ username }}/scratch
+    - user: {{ username }}
+    - group: {{ username }}
+    - mode: "0700"
+    - makedirs: True
+    - require:
+      - file: {{ username }}_home_directory
+
+scratch_automount_enable:
+  service.enabled:
+    - name: home-{{ username }}-scratch.automount
+    - file: {{ username }}_scratch_directory
+{% endfor %}
+
 
 {% endfor %}
 
