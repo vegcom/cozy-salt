@@ -1,18 +1,18 @@
 # ────────────────────────────────────────────────────────────────
-# /etc/systemd/system/home-{{ user }}-scratch.automount
+# /etc/systemd/system/home-{{ username }}-scratch.automount
 # ────────────────────────────────────────────────────────────────
 # Cozy‑Ops Automount Template: scratch@.automount
-# Lazily creates /home/{{ user }}/scratch on first access.
+# Lazily creates /home/{{ username }}/scratch on first access.
 # Keeps boot clean and avoids unnecessary mounts.
 # https://www.freedesktop.org/software/systemd/man/latest/systemd.automount.html
 # ────────────────────────────────────────────────────────────────
 
 [Unit]
-Description=Automount trigger for {{ user }}'s scratchpad
+Description=Automount trigger for {{ username }}'s scratchpad
 Documentation=man:systemd.automount(5)
 
 [Automount]
-Where=/home/%i/scratch
+Where=/home/{{ username }}/scratch
 
 [Install]
 WantedBy=multi-user.target

@@ -3,9 +3,9 @@
 # Available to all users
 # Managed by Salt - DO NOT EDIT MANUALLY
 
-if [ "$SHELL" == "/bin/bash" ];then
+if [ -n "$BASH_VERSION" ]; then
     __conda_setup="$('/opt/miniforge3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
-elif [ "$SHELL" == "/bin/zsh" ];then
+elif [ -n "$ZSH_VERSION" ]; then
     __conda_setup="$('/opt/miniforge3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
 fi
 
@@ -22,14 +22,14 @@ else
 fi
 unset __conda_setup
 
-MAMBA_EXE='/opt/miniforge3/bin/mamba'
 MAMBA_ROOT_PREFIX='/opt/miniforge3'
+MAMBA_EXE="${MAMBA_ROOT_PREFIX}bin/mamba"
 export MAMBA_EXE
 export MAMBA_ROOT_PREFIX
 
-if [ "$SHELL" == "/bin/bash" ];then
+if [ -n "$BASH_VERSION" ]; then
 	__mamba_setup="$("$MAMBA_EXE" shell hook --shell bash --root-prefix "$MAMBA_ROOT_PREFIX" 2> /dev/null)"
-elif [ "$SHELL" == "/bin/zsh" ];then
+elif [ -n "$ZSH_VERSION" ]; then
 	__mamba_setup="$("$MAMBA_EXE" shell hook --shell zsh --root-prefix "$MAMBA_ROOT_PREFIX" 2> /dev/null)"
 fi
 

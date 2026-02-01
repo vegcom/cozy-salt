@@ -107,7 +107,7 @@ skel_files:
 # Create {{ username }} .ssh directory
 {{ username }}_ssh_directory:
   file.directory:
-    - name: {{ userdata.get('home_prefix', '/home') }}/{{ username }}/.ssh
+    - name: {{ user_home }}/.ssh
     - user: {{ username }}
     - group: {{ username }}
     - mode: "0700"
@@ -127,12 +127,11 @@ skel_files:
 {% endif %}
 
 # Create {{ username }} scratch mount
-{% for user_name in managed_users %}
 scratch_mount_{{ username }}:
   file.managed:
     - name: /etc/systemd/system/home-{{ username }}-scratch.mount
     - source: salt://linux/templates/scratch-mount.jinja
-    - user_name: {{ username }}
+    - username: {{ username }}
     - template: jinja
     - mode: "0644"
     - makedirs: True
@@ -150,7 +149,7 @@ scratch_mount_{{ username }}:
 # Create {{ username }} scratch directory
 {{ username }}_scratch_directory:
   file.directory:
-    - name: {{ userdata.get('home_prefix', '/home') }}/{{ username }}/scratch
+    - name: {{ user_home }}/scratch
     - user: {{ username }}
     - group: {{ username }}
     - mode: "0700"
@@ -158,13 +157,10 @@ scratch_mount_{{ username }}:
     - require:
       - file: {{ username }}_home_directory
 
-scratch_automount_enable:
+scratch_automount_enable_{{ username }}:
   service.enabled:
     - name: home-{{ username }}-scratch.automount
     - file: {{ username }}_scratch_directory
-{% endfor %}
-
-
 {% endfor %}
 
 # Create sudoers file for cozyusers group (NOPASSWD for all commands)

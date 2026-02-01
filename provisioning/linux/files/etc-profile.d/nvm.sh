@@ -20,7 +20,7 @@ if [ -d "$NVM_DIR/bin" ]; then
 fi
 
 
-if [ "$SHELL" == "/bin/bash" ];then
+if [ -n "$BASH_VERSION" ]; then
   # Source NVM bash completion if available
   if [ -s "$NVM_DIR/bash_completion" ]; then
     . "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

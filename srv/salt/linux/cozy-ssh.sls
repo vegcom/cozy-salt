@@ -8,26 +8,26 @@
 {% set managed_users = salt['pillar.get']('managed_users', []) %}
 {% set git_identity = salt['pillar.get']('git:identity_file', '/root/.ssh/id_ed25519') %}
 
-# Clone cozy-ssh repo to /opt/cozy/cozy-ssh
-cozy_ssh_repo:
-  git.latest:
-    - name: git@github.com:vegcom/cozy-ssh.git
-    - target: {{ repo_path }}
-    - branch: main
-    - force_reset: True
-    - identity: {{ git_identity }}
-    - require:
-      - file: cozy_opt_dir
+# # Clone cozy-ssh repo to /opt/cozy/cozy-ssh
+# cozy_ssh_repo:
+#   git.latest:
+#     - name: git@github.com:vegcom/cozy-ssh.git
+#     - target: {{ repo_path }}
+#     - branch: main
+#     - force_reset: True
+#     - identity: {{ git_identity }}
+#     - require:
+#       - file: cozy_opt_dir
 
-# Set permissions on repo (readable by cozyusers)
-cozy_ssh_repo_perms:
-  file.directory:
-    - name: {{ repo_path }}
-    - mode: "0755"
-    - recurse:
-      - mode
-    - require:
-      - git: cozy_ssh_repo
+# # Set permissions on repo (readable by cozyusers)
+# cozy_ssh_repo_perms:
+#   file.directory:
+#     - name: {{ repo_path }}
+#     - mode: "0755"
+#     - recurse:
+#       - mode
+#     - require:
+#       - git: cozy_ssh_repo
 
 # FIXME: need to copy not symlink
 # # Per-user SSH symlinks and directories

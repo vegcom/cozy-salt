@@ -21,7 +21,7 @@ include:
 sshd_hardening_config:
   file.managed:
     - name: {{ sshd_config_d }}\99-hardening.conf
-    - source: salt://_templates/sshd_hardening.conf.jinja
+    - source: salt://linux/templates/sshd_hardening.conf.jinja
     - template: jinja
     - makedirs: True
 
@@ -50,7 +50,7 @@ windows_hosts_entries:
     - name: |
         $hostsFile = "C:\Windows\System32\drivers\etc\hosts"
         $entries = @(
-        {% for hostname, ip in hosts.items() %}
+        {% for ip, hostname in hosts.items() %}
           "{{ ip }} {{ hostname }}",
         {% endfor %}
         )

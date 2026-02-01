@@ -30,12 +30,15 @@ miniforge_permissions:
 {% for package in packages.get('pip_base', []) %}
 install_pip_base_{{ package | replace('-', '_') }}:
   cmd.run:
-    - name: {{ pip_bin }} install --no-progress {{ package }}
+    - name: {{ pip_bin }} install {{ package }}
     {% if grains['os_family'] == 'Windows' %}
     - shell: pwsh
+    - require:
+      - cmd: miniforge_install
+    {% else %}
+    - require:
+      - file: miniforge_permissions
     {% endif %}
     - runas: {{ service_user }}
     - unless: {{ pip_bin }} show {{ package }}
-    - require:
-      - file: miniforge_permissions
 {% endfor %}
