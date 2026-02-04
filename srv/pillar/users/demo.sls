@@ -8,6 +8,9 @@ users:
     fullname: Example User
     shell: /bin/bash
     home_prefix: /home
+    # UID/GID for SMB/NFS consistency (start at 3000+)
+    # uid: 3004
+    # gid: 3004
     linux_groups:
       - cozyusers
       - libvirt

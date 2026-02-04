@@ -3,6 +3,7 @@
 # Dynamically creates groups from user linux_groups definitions
 # Managed users can run docker and sudo commands without password
 
+{%- from "_macros/dotfiles.sls" import user_dotfile %}
 {% set users = salt['pillar.get']('users', {}) %}
 
 # ============================================================================
@@ -27,10 +28,13 @@ skel_files:
 {% endfor %}
 
 # Create groups dynamically (must exist before users are added)
+# GIDs from pillar groups:{name}:gid or user uid for primary groups
+{% set pillar_groups = salt['pillar.get']('groups', {}) %}
 {% for group in all_groups %}
 {{ group }}_group:
   group.present:
     - name: {{ group }}
+    {% if pillar_groups.get(group, {}).get('gid') %}- gid: {{ pillar_groups[group].gid }}{% endif %}
     - order: 1
 {% endfor %}
 
@@ -46,6 +50,8 @@ skel_files:
     - shell: {{ userdata.get('shell', '/bin/bash') }}
     - groups: {{ user_groups | tojson }}
     - remove_groups: False
+    {% if userdata.get('uid') %}- uid: {{ userdata.uid }}{% endif %}
+    {% if userdata.get('gid') %}- gid: {{ userdata.gid }}{% endif %}
     - order: 10
     - require:
       - file: skel_files
@@ -69,38 +75,10 @@ skel_files:
     - require:
       - user: {{ username }}_user
 
-# Deploy {{ username }} .bashrc
-{{ username }}_bashrc:
-  file.managed:
-    - name: {{ user_home }}/.bashrc
-    - source: salt://linux/files/etc-skel/.bashrc
-    - user: {{ username }}
-    - group: {{ username }}
-    - mode: "0644"
-    - require:
-      - file: {{ username }}_home_directory
-
-# Deploy {{ username }} .zshrc
-{{ username }}_zshrc:
-  file.managed:
-    - name: {{ user_home }}/.zshrc
-    - source: salt://linux/files/etc-skel/.zshrc
-    - user: {{ username }}
-    - group: {{ username }}
-    - mode: "0644"
-    - require:
-      - file: {{ username }}_home_directory
-
-# Deploy {{ username }} tmux service
-{{ username }}_tmux_service:
-  file.managed:
-    - name: {{ user_home }}/.config/systemd/user/tmux@.service
-    - source: salt://linux/files/etc-skel/.config/systemd/user/tmux@.service
-    - user: {{ username }}
-    - group: {{ username }}
-    - mode: "0644"
-    - require:
-      - file: {{ username }}_home_directory
+# Deploy user dotfiles via macro
+{{ user_dotfile(username, user_home, '.bashrc', 'salt://linux/files/etc-skel/.bashrc') }}
+{{ user_dotfile(username, user_home, '.zshrc', 'salt://linux/files/etc-skel/.zshrc') }}
+{{ user_dotfile(username, user_home, '.config/systemd/user/tmux@.service', 'salt://linux/files/etc-skel/.config/systemd/user/tmux@.service') }}
 
 {% set ssh_keys = userdata.get('ssh_keys', []) %}
 {% if ssh_keys %}
