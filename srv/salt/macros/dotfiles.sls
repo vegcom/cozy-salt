@@ -4,7 +4,7 @@
 {#- Get platform-appropriate user home directory path -#}
 {%- macro get_user_home(username) -%}
   {%- if grains['os_family'] == 'Windows' -%}
-    {{ salt['environ.get']('USERPROFILE', 'C:\\Users\\' ~ username) }}
+    C:\Users\{{ username }}
   {%- else -%}
     /home/{{ username }}
   {%- endif -%}
