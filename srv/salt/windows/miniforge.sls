@@ -37,6 +37,7 @@ miniforge_install:
     - creates: {{ miniforge_path }}\Scripts\conda.exe
     - require:
       - cmd: miniforge_download
+      - cmd: opt_acl_cozyusers
 
 
 miniforge_clean:

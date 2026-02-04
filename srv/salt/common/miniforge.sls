@@ -35,6 +35,7 @@ install_pip_base_{{ package | replace('-', '_') }}:
     - shell: pwsh
     - require:
       - cmd: miniforge_install
+      - cmd: opt_acl_cozyusers
     {% else %}
     - require:
       - file: miniforge_permissions
