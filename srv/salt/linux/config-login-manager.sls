@@ -25,37 +25,37 @@ sddm_main_config:
 sddm_wayland_conf:
   file.managed:
     - name: /etc/sddm.conf.d/wayland.conf
-    - source: salt://linux/files/sddm/wayland.conf
+    - source: salt://linux/files/etc-sddm.conf.d/wayland.conf
     - makedirs: True
 
 sddm_virtualkbd_conf:
   file.managed:
     - name: /etc/sddm.conf.d/virtualkbd.conf
-    - source: salt://linux/files/sddm/virtualkbd.conf
+    - source: salt://linux/files/etc-sddm.conf.d/virtualkbd.conf
     - makedirs: True
 
 sddm_avatar_conf:
   file.managed:
     - name: /etc/sddm.conf.d/avatar.conf
-    - source: salt://linux/files/sddm/avatar.conf
+    - source: salt://linux/files/etc-sddm.conf.d/avatar.conf
     - makedirs: True
 
 sddm_theme_conf:
   file.managed:
     - name: /etc/sddm.conf.d/theme.conf
-    - source: salt://linux/files/sddm/theme.conf
+    - source: salt://linux/files/etc-sddm.conf.d/theme.conf
     - makedirs: True
 
 sddm_cleanenv_conf:
   file.managed:
     - name: /etc/sddm.conf.d/cleanenv.conf
-    - source: salt://linux/files/sddm/cleanenv.conf
+    - source: salt://linux/files/etc-sddm.conf.d/cleanenv.conf
     - makedirs: True
 
 sddm_general_conf:
   file.managed:
     - name: /etc/sddm.conf.d/general.conf
-    - source: salt://linux/files/sddm/general.conf
+    - source: salt://linux/files/etc-sddm.conf.d/general.conf
     - makedirs: True
 
 # =============================================================================
@@ -142,7 +142,7 @@ sddm_disabled:
 steamdeck_sleep_hook:
   file.managed:
     - name: /usr/lib/systemd/system-sleep/deck.sh
-    - source: salt://linux/files/steamdeck/deck.sh
+    - source: salt://linux/files/usr-lib-systemd-system-sleep/deck.sh
     - mode: "0755"
     - makedirs: True
 {% endif %}

@@ -24,8 +24,6 @@ dism /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all
 
 #### Upmost urgency
 
-- remove obsurd redundancy in provisioning/packages.sls
-  - osmap https://docs.saltproject.io/salt/user-guide/en/latest/topics/jinja.html
 - [x] fix pillar merge order and priority (refactor/pillar-load-order branch)
   - common → os → dist → class → users → host
     - host is LAST = final word on machine-specific overrides
@@ -171,13 +169,6 @@ HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
   - Disable UAC for managed systems to allow silent elevation (Start-Process -Verb RunAs)
   - Registry: `HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\EnableLUA = 0`
   - Or GPO deployment for domain-joined systems
-- [ ] Common ACL state for group management
-  - Macro created: `srv/salt/macros/acl.sls` with `cozy_acl()`
-  - Currently inline in nvm.sls, miniforge.sls, rust.sls
-  - TODO: Centralize cozyusers group creation (currently ad-hoc)
-  - TODO: Consider `srv/salt/common/acl.sls` for group membership management
-  - TODO: Windows equivalent using `icacls` or PowerShell ACL cmdlets
-
 - [~] Pillar load order audit (in progress: refactor/pillar-load-order)
   - [x] Validate all pillar files are included in top.sls (mgmt.sls was missing)
   - [x] Check for duplicate/conflicting keys across pillar files
@@ -187,15 +178,7 @@ HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
   - [x] Verify per-user pillar files (users/*.sls) merge correctly with common/users.sls
   - [x] Fix password/passwords key mismatch (users/*.sls: passwords → password)
 
-- [ ] Provisioning directory cleanup
-  - `provisioning/linux/files/steamdeck/` - weird path, doesn't follow `target-path` convention
-  - `provisioning/linux/files/sddm/` - should be `etc-sddm.conf.d/` or similar
-  - States reference both `/etc/sddm.conf` and `/etc/sddm.conf.d` - consolidate
-  - All paths should mirror target with `-` replacing `/` (e.g., `etc-skel`, `opt-cozy`)
-
-- [ ] Debug atuin integration (check: installed? PATH? .bashrc init? bash-preexec?)
 - [ ] Move tests/ to cozy-salt-enrollment submodule (test_states.py, test_linting.py)
-- [ ] Validate and enforce package_metadata (conflicts, exclude, provides resolution)
 
 ## Backlog
 
