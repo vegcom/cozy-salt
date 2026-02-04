@@ -5,42 +5,19 @@
 {% from '_macros/windows.sls' import get_winget_user, get_winget_path, get_users_with_profiles with context %}
 
 # ============================================================================
-# BOOTSTRAP: Download and install winget (Windows Package Manager)
+# WINGET: Users get winget via Microsoft Store on first login
 # ============================================================================
-# NOTE: AppX/MSIX packages CANNOT be installed by SYSTEM account.
-# We must install as a real user who has logged in and has winget.
+# ProfileList-based detection ensures we only install for users who have
+# actually logged in and have a working winget. No bundle install needed.
 
 {# Find user with winget installed via macro #}
 {% set winget_user = get_winget_user() %}
 {% set winget_path = get_winget_path(winget_user) %}
 
-{# Winget bundle for fresh installs #}
-{% set winget_url = salt['pillar.get']('bootstrap:url:winget') %}
-{% set winget_bundle = 'C:\\opt\\cozy\\temp\\AppInstaller.msixbundle' %}
-
 {# pwsh - from pillar #}
 {% set pwsh_url = salt['pillar.get']('bootstrap:url:pwsh') %}
 {% set service_user = salt['pillar.get']('service_user', {}) %}
 {% set svc_name = service_user.get('name', 'cozy-salt-svc') %}
-
-winget-bundle-fetch:
-  file.managed:
-    - name: {{ winget_bundle }}
-    - source: {{ winget_url }}
-    - makedirs: True
-    - skip_verify: True
-
-# Install winget as real user elevated (SYSTEM cannot install AppX packages)
-# Uses Start-Process -Verb RunAs for elevation (UAC disabled via GPO)
-winget-install-user:
-  cmd.run:
-    - name: Start-Process -FilePath powershell -ArgumentList '-Command', 'Add-AppxPackage -Path {{ winget_bundle }}' -Verb RunAs -Wait
-    - shell: powershell
-    - runas: {{ winget_user }}
-    - require:
-      - file: winget-bundle-fetch
-      - user: {{ winget_user }}_user
-      - user: {{ svc_name }}_service_account
 
 # PowerShell Modules (from powershell_gallery) - requires pwsh installed
 {% set all_pwsh_modules = packages.windows.get('pwsh_modules', []) %}
@@ -104,9 +81,7 @@ winget_runtime_{{ pkg | replace('.', '_') | replace('-', '_') }}:
     - shell: powershell
     - name: '{{ winget_path }} install --scope machine --accept-source-agreements --accept-package-agreements --exact --id {{ pkg }}'
     - unless: '{{ winget_path }} list --exact --id {{ pkg }} | Select-String -Quiet -Pattern ''{{ pkg }}'''
-    - onlyif: Test-Path '{{ winget_path }}'
-    - require:
-      - cmd: winget-install-user
+    - onlyif: (Test-Path '{{ winget_path }}') -and (& '{{ winget_path }}' --version 2>$null)
 {% endfor %}
 {% endfor %}
 {% endif %}
@@ -121,9 +96,7 @@ winget_{{ pkg | replace('.', '_') | replace('-', '_') }}:
     - runas: {{ winget_user }}
     - shell: powershell
     - unless: '{{ winget_path }} list --exact --id {{ pkg }} | Select-String -Quiet -Pattern ''{{ pkg }}'''
-    - onlyif: Test-Path '{{ winget_path }}'
-    - require:
-      - cmd: winget-install-user
+    - onlyif: (Test-Path '{{ winget_path }}') -and (& '{{ winget_path }}' --version 2>$null)
 {% endfor %}
 {% endfor %}
 {% endif %}
