@@ -10,11 +10,18 @@
 {% set global_tokens = salt['pillar.get']('github:tokens', []) %}
 {% set users_data = salt['pillar.get']('users', {}) %}
 # Configure git to trust all directories (works around Git 2.36+ dubious ownership check)
-# Run once before deploying to any user (runs as minion user on Windows, first managed user on Linux)
+# On Windows: use --system so it applies to all users including SYSTEM (which runs git.latest)
+# On Linux: use --global for the root user running Salt
 git_safe_directory_all:
   cmd.run:
+{% if is_windows %}
+    - name: git config --system --add safe.directory '*'
+    - unless: git config --system --get-regexp '^safe.directory' | Select-String -Quiet '\*'
+    - shell: powershell
+{% else %}
     - name: git config --global --add safe.directory '*'
     - unless: git config --global --get-regexp '^safe.directory' | grep -q '\*'
+{% endif %}
 
 # Deploy to each managed user
 {% for username in managed_users %}
