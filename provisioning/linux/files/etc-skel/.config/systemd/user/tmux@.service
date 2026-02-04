@@ -1,0 +1,21 @@
+# ~/.config/systemd/user/tmux@.service
+[Unit]
+Description=tmux session %i
+Documentation=man:tmux(1)
+After=default.target
+
+[Service]
+Type=forking
+# Each session gets its own socket
+Environment=TMUX_SOCKET=%h/.tmux/sockets/%i.sock
+# Start a named session using the custom socket
+ExecStart=/usr/bin/tmux -S ${TMUX_SOCKET} new-session -d -s %i
+# Kill only this session, not the whole server
+ExecStop=/usr/bin/tmux -S ${TMUX_SOCKET} kill-session -t %i
+# Don't let systemd kill the whole tmux server if other sessions exist
+KillMode=process
+Restart=no
+Environment=TERM=tmux-256color
+
+[Install]
+WantedBy=default.target

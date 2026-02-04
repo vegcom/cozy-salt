@@ -2,7 +2,6 @@
 # /etc/zshrc
 # Managed by Salt - DO NOT EDIT MANUALLY
 
-emulate zsh
 autoload -Uz compinit
 compinit -u
 
@@ -34,4 +33,3 @@ fi
 
 __ETC_ZSHRC_SOURCED=1
 export __ETC_ZSHRC_SOURCED
-
