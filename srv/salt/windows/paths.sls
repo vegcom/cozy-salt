@@ -4,7 +4,9 @@
 # Also handles cozyusers group and WindowsApps permissions for winget access
 
 {% set winget_path = salt['pillar.get']('paths:winget', 'C:\\Program Files\\WindowsApps\\Microsoft.DesktopAppInstaller_1.27.460.0_x64__8wekyb3d8bbwe') %}
+{% from '_macros/windows.sls' import get_users_with_profiles with context %}
 {% set managed_users = salt['pillar.get']('managed_users', []) %}
+{% set users_with_profiles = get_users_with_profiles() | from_json %}
 
 {% set opt_paths = [
   'C:\\opt\\nvm',
@@ -90,7 +92,7 @@ paths_broadcast_env_change_system:
     - onchanges:
       - reg: opt_paths_update
 
-{% for user in managed_users %}
+{% for user in users_with_profiles %}
 paths_broadcast_env_change_{{ user }}:
   cmd.run:
     - name: rundll32.exe user32.dll,UpdatePerUserSystemParameters ,1 ,True

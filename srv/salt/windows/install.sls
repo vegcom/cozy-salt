@@ -2,7 +2,7 @@
 # Packages defined in provisioning/packages.sls
 
 {% import_yaml 'packages.sls' as packages %}
-{% from '_macros/windows.sls' import get_winget_user, get_winget_path with context %}
+{% from '_macros/windows.sls' import get_winget_user, get_winget_path, get_users_with_profiles with context %}
 
 # ============================================================================
 # BOOTSTRAP: Download and install winget (Windows Package Manager)
@@ -125,8 +125,9 @@ winget_{{ pkg | replace('.', '_') | replace('-', '_') }}:
 {% endif %}
 
 # Installs userland packages, user scope (each user's own winget)
-{% set users = salt['pillar.get']('managed_users', []) %}
-{% for user in users %}
+# Only install for users with real profiles (ProfileList registry check)
+{% set users_with_profiles = get_users_with_profiles() | from_json %}
+{% for user in users_with_profiles %}
 {% set user_winget = 'C:\\Users\\' ~ user ~ '\\AppData\\Local\\Microsoft\\WindowsApps\\winget.exe' %}
   {% for category, pkgs in packages.windows.winget.userland.items() %}
     {% for pkg in pkgs %}
