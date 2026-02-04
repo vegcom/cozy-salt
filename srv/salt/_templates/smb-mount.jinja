@@ -1,0 +1,23 @@
+# ────────────────────────────────────────────────────────────────
+# /etc/systemd/system/home-{{ username }}-{{ share_name }}.mount
+# ────────────────────────────────────────────────────────────────
+# Cozy‑Ops Mount Unit Template: smb@.mount
+# CIFS/SMB mount at /home/{{ username }}/{{ mountpoint }}
+# https://www.freedesktop.org/software/systemd/man/latest/systemd-mount.html
+# https://github.com/vegcom/cozy-share
+# ────────────────────────────────────────────────────────────────
+
+[Unit]
+Description=SMB share {{ share_name }} for {{ username }}
+Documentation=man:systemd.mount(5) man:mount.cifs(8)
+After=network-online.target
+Wants=network-online.target
+
+[Mount]
+What={{ device }}
+Where=/home/{{ username }}/{{ mountpoint }}
+Type=cifs
+Options=credentials={{ credentials_file }},uid={{ uid }},gid={{ gid }},{{ mount_opts }}
+
+[Install]
+WantedBy=multi-user.target

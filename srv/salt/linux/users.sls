@@ -71,9 +71,11 @@ skel_files:
     - mode: "0755"
     - makedirs: True
     - follow_symlinks: False
-    - recurse:
-      - user
-      - group
+    - exclude_pat:
+      - E@\.npm.*
+      - E@\.cache.*
+      - E@node_modules.*
+      - E@\.local/share/Trash.*
     - require:
       - user: {{ username }}_user
 
@@ -143,13 +145,15 @@ scratch_automount_enable_{{ username }}:
     - file: {{ username }}_scratch_directory
 
 # SMB mounts for {{ username }} (from pillar smb:{share_name})
-# Requires: uid/gid set, credentials at /etc/samba/creds/{username}
+# Uses systemd .mount/.automount units for lazy mounting + network resilience
 {% set smb_shares = salt['pillar.get']('smb', {}) %}
 {% if userdata.get('uid') and smb_shares %}
 {% for share_name, share_config in smb_shares.items() %}
-{% set mount_path = user_home ~ '/' ~ share_config.get('mountpoint', share_name) %}
+{% set mountpoint = share_config.get('mountpoint', share_name) %}
+{% set mount_path = user_home ~ '/' ~ mountpoint %}
 {% set creds_path = share_config.get('credentials_path', '/etc/samba/creds') %}
 {% set creds_file = creds_path ~ '/' ~ username %}
+{% set unit_name = 'home-' ~ username ~ '-' ~ mountpoint %}
 
 {{ username }}_smb_creds_dir:
   file.directory:
@@ -182,20 +186,48 @@ scratch_automount_enable_{{ username }}:
     - require:
       - file: {{ username }}_home_directory
 
-{{ username }}_smb_{{ share_name }}_mount:
-  mount.mounted:
-    - name: {{ mount_path }}
+# Systemd mount unit for {{ share_name }}
+{{ username }}_smb_{{ share_name }}_mount_unit:
+  file.managed:
+    - name: /etc/systemd/system/{{ unit_name }}.mount
+    - source: salt://_templates/smb-mount.jinja
+    - template: jinja
+    - mode: "0644"
+    - makedirs: True
+    - username: {{ username }}
+    - share_name: {{ share_name }}
+    - mountpoint: {{ mountpoint }}
     - device: {{ share_config.device }}
-    - fstype: {{ share_config.get('fstype', 'cifs') }}
-    - opts: credentials={{ creds_file }},uid={{ userdata.uid }},gid={{ userdata.gid }},{{ share_config.get('opts', 'vers=3.0') }}
-    - persist: True
-    - mkmnt: True
+    - credentials_file: {{ creds_file }}
+    - uid: {{ userdata.uid }}
+    - gid: {{ userdata.gid }}
+    - mount_opts: {{ share_config.get('opts', 'vers=3.0') }}
     - require:
       - file: {{ username }}_smb_{{ share_name }}_dir
+
+# Systemd automount unit for {{ share_name }}
+{{ username }}_smb_{{ share_name }}_automount_unit:
+  file.managed:
+    - name: /etc/systemd/system/{{ unit_name }}.automount
+    - source: salt://_templates/smb-automount.jinja
+    - template: jinja
+    - mode: "0644"
+    - makedirs: True
+    - username: {{ username }}
+    - share_name: {{ share_name }}
+    - mountpoint: {{ mountpoint }}
+    - require:
+      - file: {{ username }}_smb_{{ share_name }}_mount_unit
+
+# Enable automount (lazy mount on access)
+{{ username }}_smb_{{ share_name }}_automount_enable:
+  service.enabled:
+    - name: {{ unit_name }}.automount
+    - require:
+      - file: {{ username }}_smb_{{ share_name }}_automount_unit
 {% if userdata.get('smb_password') %}
       - file: {{ username }}_smb_creds_file
 {% endif %}
-    - onlyif: test -f {{ creds_file }}
 {% endfor %}
 {% endif %}
 {% endfor %}

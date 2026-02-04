@@ -1,0 +1,21 @@
+# ────────────────────────────────────────────────────────────────
+# /etc/systemd/system/home-{{ username }}-{{ share_name }}.automount
+# ────────────────────────────────────────────────────────────────
+# Cozy‑Ops Automount Template: smb@.automount
+# Lazily mounts /home/{{ username }}/{{ mountpoint }} on first access.
+# Keeps boot clean and tolerates network flakiness.
+# https://www.freedesktop.org/software/systemd/man/latest/systemd.automount.html
+# https://github.com/vegcom/cozy-share
+# ────────────────────────────────────────────────────────────────
+
+[Unit]
+Description=Automount trigger for {{ username }}'s {{ share_name }} share
+Documentation=man:systemd.automount(5)
+After=network-online.target
+
+[Automount]
+Where=/home/{{ username }}/{{ mountpoint }}
+TimeoutIdleSec=300
+
+[Install]
+WantedBy=multi-user.target
