@@ -34,7 +34,7 @@
   attributesfile = ~/.gitattributes.local
   excludesfile = ~/.gitignore
   excludesfile = ~/.gitignore.local
-  autocrlf = true
+  autocrlf = false
   eol = lf
 
 [merge]

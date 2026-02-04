@@ -23,7 +23,7 @@ fi
 unset __conda_setup
 
 MAMBA_ROOT_PREFIX='/opt/miniforge3'
-MAMBA_EXE="${MAMBA_ROOT_PREFIX}bin/mamba"
+MAMBA_EXE="${MAMBA_ROOT_PREFIX}/bin/mamba"
 export MAMBA_EXE
 export MAMBA_ROOT_PREFIX
 

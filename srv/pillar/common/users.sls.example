@@ -12,5 +12,19 @@ github:
 # Individual user configs defined in srv/pillar/users/{username}.sls
 managed_users:
   - admin
-  - vegcom
-  - eve
+  - demo
+
+# Shared group GIDs (start at 3000 range for SMB/NFS consistency)
+# User primary groups use same GID as user UID
+groups:
+  cozyusers:
+    gid: 3000
+
+# SMB mounts for users (shared git repo, etc.)
+smb:
+  git_share:
+    device: //nas.local/git
+    mountpoint: git  # relative to user home
+    fstype: cifs
+    opts: vers=3.0,soft,rw
+    credentials_path: /etc/samba/creds
