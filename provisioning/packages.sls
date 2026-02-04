@@ -201,10 +201,14 @@ windows:
     system:
       sync_backup: [FreeFileSync, Syncthing]
       file_management: [7zip, WinSCP]
+      communication: [Telegram.TelegramDesktop, Vencord.Vesktop]
       compression: [PeaZip, Zipier]
+      games: [Valve.Steam]
       terminal: [Alacritty.Alacritty, ConEmu, WindowsTerminal]
       shell: [Git.Git, Microsoft.Powershell, StardustXR.Starship]
-      editor: [Vim.Vim, NeovimProject.Neovim]
+      editor: [Vim.Vim, NeovimProject.Neovim, Obsidian.Obsidian]
+      browser: [Google.Chrome]
+      utilities: [VB-Audio.VoiceMeeter]
       development:
         - GitHub.GitHubDesktop
         - Gitleaks.Gitleaks
@@ -214,10 +218,10 @@ windows:
         - Microsoft.VisualStudioCode
     userland:
       media: [ImageMagick.ImageMagick, Wwweasel.PicView, Gyan.FFmpeg, HandBrake.HandBrake]
-      games: [GOG.GalaxyClient, Epic.EpicGamesLauncher, Valve.Steam]
-      communication: [Vencord.Vesktop, Telegram.TelegramDesktop, Mozilla.Thunderbird]
-      browser: [Google.Chrome]
-      utilities: [qBittorrent.qBittorrent, ntop.ntop, VB-Audio.VoiceMeeter, WerWolv.ImHex, JohnMacFarlane.Pandoc]
+      games: []
+      communication: []
+      browser: []
+      utilities: [qBittorrent.qBittorrent, WerWolv.ImHex]
 
 # ============================================================================
 # LANGUAGE-SPECIFIC PACKAGES

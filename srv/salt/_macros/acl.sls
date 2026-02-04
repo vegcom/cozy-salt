@@ -10,7 +10,6 @@
     - acl_name: {{ group }}
     - perms: {{ perms }}
     - recurse: True
-    - quiet: True
 
 {{ path | replace('/', '_') | replace('.', '_') }}_acl_default:
   acl.present:
