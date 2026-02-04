@@ -1,6 +1,6 @@
 # Macro for role-aware package installation
 # Consolidates debian.sls and rhel.sls duplicate logic
-# Usage: {{ role_aware_packages('ubuntu', docker_apt_require=True) }}
+# Usage: role_aware_packages('ubuntu', docker_apt_require=True)
 
 {%- macro role_aware_packages(os_name, docker_apt_require=False) %}
 {% set workstation_role = salt['pillar.get']('workstation_role', 'workstation-full') %}
