@@ -130,7 +130,7 @@ skel_files:
 scratch_mount_{{ username }}:
   file.managed:
     - name: /etc/systemd/system/home-{{ username }}-scratch.mount
-    - source: salt://linux/templates/scratch-mount.jinja
+    - source: salt://_templates/scratch-mount.jinja
     - username: {{ username }}
     - template: jinja
     - mode: "0644"
@@ -140,7 +140,7 @@ scratch_mount_{{ username }}:
 {{ username }}_scratch_automount:
   file.managed:
     - name: /etc/systemd/system/home-{{ username }}-scratch.automount
-    - source: salt://linux/templates/scratch-automount.jinja
+    - source: salt://_templates/scratch-automount.jinja
     - user_name: {{ username }}
     - template: jinja
     - mode: "0644"

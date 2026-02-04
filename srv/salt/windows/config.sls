@@ -21,7 +21,7 @@ include:
 sshd_hardening_config:
   file.managed:
     - name: {{ sshd_config_d }}\99-hardening.conf
-    - source: salt://linux/templates/sshd_hardening.conf.jinja
+    - source: salt://_templates/sshd_hardening.conf.jinja
     - template: jinja
     - makedirs: True
 
