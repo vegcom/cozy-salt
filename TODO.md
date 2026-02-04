@@ -158,6 +158,10 @@ HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
 
 ## Active
 
+- [ ] Audit Windows installers for ProfileList-based user detection
+  - winget, miniforge, rust, nvm on Windows
+  - Use `get_winget_user()` macro pattern (ProfileList registry check)
+  - Service accounts can't run AppX/MSIX - need real interactive user
 - [ ] Windows UAC management via GPO or registry [see](#urgent)
   - Disable UAC for managed systems to allow silent elevation (Start-Process -Verb RunAs)
   - Registry: `HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\EnableLUA = 0`
@@ -175,6 +179,10 @@ HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
 
 ## Backlog
 
+- [ ] Extract distro_aliases + package_metadata.provides to separate .map file
+  - `provisioning/distro.map` or `provisioning/packages.map`
+  - Use `import_yaml` to load, cleaner separation from pkg lists
+  - Salt osmap pattern: https://docs.saltproject.io/salt/user-guide/en/latest/topics/jinja.html
 - [ ] Auto-inject "Managed by Salt - DO NOT EDIT MANUALLY" headers
   - Enumerate all provisioning files referenced in state sources (salt:// paths)
   - Inject header on file deploy if not present
