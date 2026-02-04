@@ -8,7 +8,7 @@ windows_profile_health_check:
   cmd.run:
     - name: |
         $tempProfiles = Get-ChildItem C:\Users -Directory -ErrorAction SilentlyContinue |
-          Where-Object { $_.Name -match '\.\w+-\w+$' }
+          Where-Object { $_.Name -match '\.\w+-\w+' }
         if ($tempProfiles) {
           Write-Host "WARNING: Detected temporary/corrupted profiles:"
           $tempProfiles | ForEach-Object { Write-Host "  - $($_.FullName)" }
