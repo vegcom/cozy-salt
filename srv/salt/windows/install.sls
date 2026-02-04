@@ -70,11 +70,15 @@ chocolatey-install:
 ] %}
 
 # Enable Chocolatey features
+# Note: choco returns exit code 2 when config is already set (not an error)
 {% for feature in enable_choco_features %}
 choco_feature_{{ feature }}_enabled:
   cmd.run:
     - name: choco feature enable -n={{ feature }}
     - shell: cmd
+    - success_retcodes:
+      - 0
+      - 2
     - require:
       - chocolatey: chocolatey-install
 {% endfor %}
