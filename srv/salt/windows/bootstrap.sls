@@ -67,10 +67,14 @@ uac_disable_virtualization:
 # PowerShell Configuration
 # ============================================================================
 
+# Set execution policy via registry - more reliable than cmdlet on fresh installs
+# (Set-ExecutionPolicy can fail if Microsoft.PowerShell.Security module isn't loaded)
 powershell_execution_policy:
-  cmd.run:
-    - name: Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope LocalMachine -Force
-    - shell: powershell
+  reg.present:
+    - name: HKLM\SOFTWARE\Microsoft\PowerShell\1\ShellIds\Microsoft.PowerShell
+    - vname: ExecutionPolicy
+    - vdata: Bypass
+    - vtype: REG_SZ
 
 # ============================================================================
 # Disable Consumer Junk
