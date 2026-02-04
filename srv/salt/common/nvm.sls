@@ -31,11 +31,12 @@ install_npm_global_packages:
     - require:
       - cmd: nvm_use_default
     {% else %}
-    - name: NPM_CONFIG_PREFIX={{ nvm_path }} npm install --prefer-dedupe --foreground-scripts  --no-audit  --no-fund -g {{ npm_packages | join(' ') }}
+    - name: NPM_CONFIG_PREFIX={{ nvm_path }} npm install --prefer-dedupe --foreground-scripts --no-audit --no-fund -g {{ npm_packages | join(' ') }}
     - shell: /bin/bash
     - env:
       - BASH_ENV: /etc/profile.d/nvm.sh
       - NVM_DIR: {{ nvm_path }}
+    - unless: test -d {{ nvm_path }}/lib/node_modules/@anthropic-ai
     - require:
       - cmd: nvm_install_default_version
     {% endif %}

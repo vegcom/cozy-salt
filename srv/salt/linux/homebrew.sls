@@ -72,3 +72,16 @@ homebrew_update:
     - require:
       - cmd: homebrew_install
     - unless: test -f {{ homebrew_base }}/var/homebrew/.last_update_timestamp
+
+# Install packages from provisioning/packages.sls brew list
+{% import_yaml "packages.sls" as packages %}
+{% set brew_packages = packages.get('brew', []) %}
+{% if brew_packages %}
+install_brew_packages:
+  cmd.run:
+    - name: {{ homebrew_base }}/bin/brew install {{ brew_packages | join(' ') }}
+    - runas: {{ service_user }}
+    - unless: test ! -x {{ homebrew_base }}/bin/brew
+    - require:
+      - cmd: homebrew_update
+{% endif %}

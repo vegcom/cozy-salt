@@ -34,11 +34,7 @@ miniforge_system_profile:
     - source: salt://linux/files/etc-profile.d/miniforge.sh
     - mode: "0644"
 
-nvm_system_profile:
-  file.managed:
-    - name: /etc/profile.d/nvm.sh
-    - source: salt://linux/files/etc-profile.d/nvm.sh
-    - mode: "0644"
+# nvm.sh deployed by linux/nvm.sls (avoid double deploy)
 
 yay_wrapper_profile:
   file.managed:
@@ -140,7 +136,7 @@ pam_lastlog2_silent:
 sshd_hardening_config:
   file.managed:
     - name: /etc/ssh/sshd_config.d/99-hardening.conf
-    - source: salt://linux/templates/sshd_hardening.conf.jinja
+    - source: salt://_templates/sshd_hardening.conf.jinja
     - template: jinja
     - mode: "0644"
     - makedirs: True

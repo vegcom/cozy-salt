@@ -23,7 +23,7 @@ nvm_directory:
     - user: {{ service_user }}
     - group: cozyusers
     - makedirs: True
-    - clean: True
+    - clean: False
 
 # Download and install NVM system-wide
 # NVM_DIR - custom installation path (no trailing slash!)
@@ -72,7 +72,7 @@ nvm_install_default_version:
         nvm install {{ default_version }} && nvm alias default {{ default_version }}
     - shell: /bin/bash
     - runas: {{ service_user }}
-    - creates: {{ nvm_path }}/versions/node/v*/bin/node
+    - unless: test -d {{ nvm_path }}/versions/node
     - require:
       - cmd: nvm_download_and_install
       - file: nvm_profile

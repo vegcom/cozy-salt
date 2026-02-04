@@ -44,8 +44,8 @@ scheduled_tasks:
       file: windows/tasks/kubernetes/open_webui_port_forward.xml
       enabled: False
 
-# Salt scheduler - Windows health check
-# Runs DISM ScanHealth weekly; bad return triggers reactor -> emergency-maint.ps1
+# Salt scheduler - Windows health check (stays minion-side)
+# Highstates moved to master (srv/master.d/schedule.conf)
 schedule:
   windows_health_check:
     function: cmd.script
