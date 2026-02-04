@@ -158,6 +158,17 @@ HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
 
 ## Active
 
+### Windows highstate fixes (2025-02)
+
+- [x] Choco feature states return exit code 2 for "already set" (564b8c1)
+- [x] Winget userland installs fail for users without profiles (733a86b)
+- [x] Git safe.directory not set for SYSTEM user (542d64a)
+- [x] PowerShell execution policy fails on fresh install (883d72a)
+- [ ] Profile health check regex syntax error
+  - Missing closing quote in `-match '\.\w+-\w+` pattern
+
+### ProfileList user detection
+
 - [ ] Audit Windows installers for ProfileList-based user detection
   - winget, miniforge, rust, nvm on Windows
   - Use `get_winget_user()` macro pattern (ProfileList registry check)
