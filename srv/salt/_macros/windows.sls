@@ -5,7 +5,7 @@
   Returns: newline-separated list of usernames with real Windows profiles
 #}
 {%- macro _get_real_profiles() -%}
-{%- set profile_cmd = 'powershell -Command "(Get-ChildItem \'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\ProfileList\' | % { (Get-ItemProperty $_.PSPath).ProfileImagePath } | ? { $_ -like \'C:\\Users\\*\' }) -replace \'C:\\\\Users\\\\\', \'\'"' -%}
+{%- set profile_cmd = 'powershell -Command "Get-ChildItem \'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\ProfileList\' | % { (Get-ItemProperty $_.PSPath).ProfileImagePath } | ? { $_ -like \'C:\\Users\\*\' } | % { Split-Path $_ -Leaf }"' -%}
 {{ salt['cmd.run'](profile_cmd, shell='cmd') }}
 {%- endmacro -%}
 
