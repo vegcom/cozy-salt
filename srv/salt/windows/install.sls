@@ -141,7 +141,7 @@ winget_userland_{{ user | replace('.', '_') | replace('-', '_') }}_{{ pkg | repl
     - runas: {{ user }}
     - shell: powershell
     - unless: '{{ user_winget }} list --exact --id {{ pkg }} | Select-String -Quiet -Pattern ''{{ pkg }}'''
-    - onlyif: Test-Path '{{ user_winget }}'
+    - onlyif: (Test-Path '{{ user_winget }}') -and (& '{{ user_winget }}' --version 2>$null)
     {% endfor %}
   {% endfor %}
 {% endfor %}
