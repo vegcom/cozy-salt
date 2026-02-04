@@ -2,24 +2,23 @@
 
 {#
   _get_real_profiles() - Internal helper to get users with ProfileList entries
-  Returns: list of usernames with real Windows profiles
+  Returns: newline-separated list of usernames with real Windows profiles
 #}
 {%- macro _get_real_profiles() -%}
-{%- set profile_cmd = 'powershell -Command "(Get-ChildItem \'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\ProfileList\' | % { (Get-ItemProperty $_.PSPath).ProfileImagePath } | ? { $_ -match \'C:\\\\Users\\\\\' }) -replace \'C:\\\\Users\\\\\', \'\'"' -%}
+{%- set profile_cmd = 'powershell -Command "(Get-ChildItem \'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\ProfileList\' | % { (Get-ItemProperty $_.PSPath).ProfileImagePath } | ? { $_ -like \'C:\\Users\\*\' }) -replace \'C:\\\\Users\\\\\', \'\'"' -%}
 {{ salt['cmd.run'](profile_cmd, shell='cmd') }}
 {%- endmacro -%}
 
 {#
   get_users_with_profiles() - Get managed_users that have real Windows profiles
-  Returns: list of usernames (managed_users filtered by ProfileList registry)
+  Returns: comma-separated string of usernames (use .split(',') to iterate)
 
   Uses ProfileList registry to detect users who have actually logged in,
   not just users with a home directory created.
 
   Usage:
     {% from '_macros/windows.sls' import get_users_with_profiles with context %}
-    {% set real_users = get_users_with_profiles() %}
-    {% for user in real_users %}
+    {% for user in get_users_with_profiles().split(',') %}
     ...
     {% endfor %}
 #}
@@ -32,7 +31,7 @@
     {%- do valid_users.append(user) -%}
   {%- endif -%}
 {%- endfor -%}
-{{ valid_users | tojson }}
+{{ valid_users | join(',') }}
 {%- endmacro -%}
 
 {#

@@ -126,7 +126,7 @@ winget_{{ pkg | replace('.', '_') | replace('-', '_') }}:
 
 # Installs userland packages, user scope (each user's own winget)
 # Only install for users with real profiles (ProfileList registry check)
-{% set users_with_profiles = get_users_with_profiles() | from_json %}
+{% set users_with_profiles = get_users_with_profiles().split(',') | reject('equalto', '') | list %}
 {% for user in users_with_profiles %}
 {% set user_winget = 'C:\\Users\\' ~ user ~ '\\AppData\\Local\\Microsoft\\WindowsApps\\winget.exe' %}
   {% for category, pkgs in packages.windows.winget.userland.items() %}
