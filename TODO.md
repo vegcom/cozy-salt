@@ -48,13 +48,6 @@ dism /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all
 - <https://man.archlinux.org/man/makepkg.conf.5>
 - <https://wiki.archlinux.org/title/Ccache>
 
-#### Second highest urgency
-
-- remove code duplicaton, scan deeply it's actually worse than you think
-  - a lot can be macros
-  - a lot is split into multipul files ( e.g. homebrew and brew sls files )
-  - a lot is just nasty to look at and hacky during spin-up
-
 #### Windows bootstrap - delivery
 
 - fixes WinRM (cmd.run block)
