@@ -11,6 +11,10 @@ users:
     # UID/GID for SMB/NFS consistency (start at 3000+)
     # uid: 3004
     # gid: 3004
+    # SMB credentials (for shared mounts defined in common/users.sls)
+    # smb_password: supersecret
+    # smb_username: example_user  # optional, defaults to username
+    # smb_domain: WORKGROUP       # optional
     linux_groups:
       - cozyusers
       - libvirt

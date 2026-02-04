@@ -139,6 +139,63 @@ scratch_automount_enable_{{ username }}:
   service.enabled:
     - name: home-{{ username }}-scratch.automount
     - file: {{ username }}_scratch_directory
+
+# SMB mounts for {{ username }} (from pillar smb:{share_name})
+# Requires: uid/gid set, credentials at /etc/samba/creds/{username}
+{% set smb_shares = salt['pillar.get']('smb', {}) %}
+{% if userdata.get('uid') and smb_shares %}
+{% for share_name, share_config in smb_shares.items() %}
+{% set mount_path = user_home ~ '/' ~ share_config.get('mountpoint', share_name) %}
+{% set creds_path = share_config.get('credentials_path', '/etc/samba/creds') %}
+{% set creds_file = creds_path ~ '/' ~ username %}
+
+{{ username }}_smb_creds_dir:
+  file.directory:
+    - name: {{ creds_path }}
+    - mode: "0700"
+    - makedirs: True
+
+{% if userdata.get('smb_password') %}
+{{ username }}_smb_creds_file:
+  file.managed:
+    - name: {{ creds_file }}
+    - contents: |
+        username={{ userdata.get('smb_username', username) }}
+        password={{ userdata.smb_password }}
+        {% if userdata.get('smb_domain') %}domain={{ userdata.smb_domain }}{% endif %}
+    - mode: "0600"
+    - user: root
+    - group: root
+    - require:
+      - file: {{ username }}_smb_creds_dir
+{% endif %}
+
+{{ username }}_smb_{{ share_name }}_dir:
+  file.directory:
+    - name: {{ mount_path }}
+    - user: {{ username }}
+    - group: {{ username }}
+    - mode: "0750"
+    - makedirs: True
+    - require:
+      - file: {{ username }}_home_directory
+
+{{ username }}_smb_{{ share_name }}_mount:
+  mount.mounted:
+    - name: {{ mount_path }}
+    - device: {{ share_config.device }}
+    - fstype: {{ share_config.get('fstype', 'cifs') }}
+    - opts: credentials={{ creds_file }},uid={{ userdata.uid }},gid={{ userdata.gid }},{{ share_config.get('opts', 'vers=3.0') }}
+    - persist: True
+    - mkmnt: True
+    - require:
+      - file: {{ username }}_smb_{{ share_name }}_dir
+{% if userdata.get('smb_password') %}
+      - file: {{ username }}_smb_creds_file
+{% endif %}
+    - onlyif: test -f {{ creds_file }}
+{% endfor %}
+{% endif %}
 {% endfor %}
 
 # Create sudoers file for cozyusers group (NOPASSWD for all commands)
