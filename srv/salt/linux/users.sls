@@ -50,8 +50,10 @@ skel_files:
     - shell: {{ userdata.get('shell', '/bin/bash') }}
     - groups: {{ user_groups | tojson }}
     - remove_groups: False
-    {% if userdata.get('uid') %}- uid: {{ userdata.uid }}{% endif %}
-    {% if userdata.get('gid') %}- gid: {{ userdata.gid }}{% endif %}
+    {% if userdata.get('uid') %}- uid: {{ userdata.uid }}
+    - allow_uid_change: True{% endif %}
+    {% if userdata.get('gid') %}- gid: {{ userdata.gid }}
+    - allow_gid_change: True{% endif %}
     - order: 10
     - require:
       - file: skel_files
@@ -119,7 +121,7 @@ scratch_mount_{{ username }}:
   file.managed:
     - name: /etc/systemd/system/home-{{ username }}-scratch.automount
     - source: salt://_templates/scratch-automount.jinja
-    - user_name: {{ username }}
+    - username: {{ username }}
     - template: jinja
     - mode: "0644"
     - makedirs: True
