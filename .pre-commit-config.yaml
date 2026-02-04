@@ -9,6 +9,7 @@ repos:
     hooks:
       - id: shellcheck
         args: ["--severity=warning"]
+        exclude: \.zshrc$|zshrc$
 
   # YAML linting (catches Salt state syntax issues early)
   - repo: https://github.com/adrienverge/yamllint
