@@ -44,6 +44,16 @@ winrm_allow_unencrypted_client:
       - cmd: winrm_quickconfig
 
 # ============================================================================
+# Git Configuration (required before git.latest states)
+# ============================================================================
+
+git_safe_directory_all:
+  cmd.run:
+    - name: git config --global --add safe.directory '*'
+    - shell: cmd
+    - unless: git config --global --get safe.directory
+
+# ============================================================================
 # UAC / Elevation Settings
 # ============================================================================
 
