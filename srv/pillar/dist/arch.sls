@@ -65,7 +65,7 @@ capability_meta:
 pacman:
   repos:
     kde-unstable:
-      enabled: true
+      enabled: false
       Include: /etc/pacman.d/mirrorlist
     core:
       enabled: true
@@ -76,9 +76,6 @@ pacman:
     multilib:
       enabled: true
       Include: /etc/pacman.d/mirrorlist
-    chaotic_aur:
-      enabled: false
-      server: "https://chaotic.cx/chaotic-aur/{{ cpu_arch }}"
 
 steamdeck:
   sddm:

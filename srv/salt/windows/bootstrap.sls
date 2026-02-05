@@ -150,7 +150,7 @@ winget_bootstrap:
 
 install_powershell:
   cmd.run:
-    - name: {{ winget_path }} install Microsoft.PowerShell --accept-source-agreements --accept-package-agreements --disable-interactivity
+    - name: {{ winget_path }} install Microsoft.PowerShell --source winget --accept-source-agreements --accept-package-agreements --disable-interactivity
     - shell: powershell
     - runas: {{ winget_user }}
     - env:
@@ -162,7 +162,7 @@ install_powershell:
 
 install_git:
   cmd.run:
-    - name: {{ winget_path }} install Git.Git --accept-source-agreements --accept-package-agreements --disable-interactivity
+    - name: {{ winget_path }} install Git.Git --source winget --accept-source-agreements --accept-package-agreements --disable-interactivity
     - shell: powershell
     - runas: {{ winget_user }}
     - env:
