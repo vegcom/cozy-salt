@@ -59,10 +59,11 @@ homebrew_profile:
       - cmd: homebrew_acl_permissions
 
 # Update Homebrew after installation (must run as non-root user)
-# Fix missing git remote if needed, then update
+# Fix missing git remote and safe.directory if needed, then update
 homebrew_update:
   cmd.run:
     - name: |
+        git config --global --add safe.directory {{ homebrew_base }}/Homebrew
         cd {{ homebrew_base }}/Homebrew
         if ! git remote get-url origin >/dev/null 2>&1; then
           git remote add origin https://github.com/Homebrew/brew.git

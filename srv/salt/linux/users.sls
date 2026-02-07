@@ -41,13 +41,24 @@ skel_files:
 # Iterate over users from pillar and create each one
 {% for username, userdata in users.items() %}
 {% set user_groups = userdata.get('linux_groups', ['cozyusers']) %}
+{% set user_shell = userdata.get('shell', '/bin/bash') %}
+
+# Create {{ username }}'s primary group (if gid specified, group must exist first)
+{% if userdata.get('gid') %}
+{{ username }}_primary_group:
+  group.present:
+    - name: {{ username }}
+    - gid: {{ userdata.gid }}
+    - order: 5
+{% endif %}
+
 # Create {{ username }} user
 {{ username }}_user:
   user.present:
     - name: {{ username }}
     - fullname: {{ userdata.get('fullname', username) }}
     - home: {{ userdata.get('home_prefix', '/home') }}/{{ username }}
-    - shell: {{ userdata.get('shell', '/bin/bash') }}
+    - shell: {{ user_shell }}
     - groups: {{ user_groups | tojson }}
     - remove_groups: False
     {% if userdata.get('uid') %}- uid: {{ userdata.uid }}
@@ -60,6 +71,12 @@ skel_files:
 {% for group in user_groups %}
       - group: {{ group }}_group
 {% endfor %}
+{% if userdata.get('gid') %}
+      - group: {{ username }}_primary_group
+{% endif %}
+{% if 'zsh' in user_shell %}
+      - pkg: shell_packages
+{% endif %}
 
 # Create {{ username }} home directory
 {% set user_home = userdata.get('home_prefix', '/home') ~ '/' ~ username %}

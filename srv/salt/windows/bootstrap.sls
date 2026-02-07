@@ -6,6 +6,18 @@
 {% from '_macros/windows.sls' import get_winget_user, get_winget_path with context %}
 
 # ============================================================================
+# Salt Minion Configuration (ensure master is correct)
+# ============================================================================
+{% set salt_master = salt['pillar.get']('salt:master', 'guava.local') %}
+
+minion_master_config:
+  file.managed:
+    - name: C:\salt\conf\minion.d\master.conf
+    - contents: |
+        master: {{ salt_master }}
+    - makedirs: True
+
+# ============================================================================
 # WinRM Configuration (Salt communication foundation)
 # ============================================================================
 
@@ -137,17 +149,6 @@ disable_delivery_optimization:
 {% set winget_user = get_winget_user() %}
 {% set winget_path = get_winget_path(winget_user) %}
 
-winget_bootstrap:
-  cmd.run:
-    - name: >
-        {{ winget_path }} source enable msstore --accept-source-agreements --disable-interactivity;
-        {{ winget_path }} source update --disable-interactivity
-    - shell: powershell
-    - runas: {{ winget_user }}
-    - onlyif: Test-Path '{{ winget_path }}'
-    - env:
-        WINGET_DISABLE_INTERACTIVE: "1"
-
 install_powershell:
   cmd.run:
     - name: {{ winget_path }} install Microsoft.PowerShell --source winget --accept-source-agreements --accept-package-agreements --disable-interactivity
@@ -157,8 +158,7 @@ install_powershell:
         WINGET_DISABLE_INTERACTIVE: "1"
     - unless: Get-Command pwsh -ErrorAction SilentlyContinue
     - onlyif: Test-Path '{{ winget_path }}'
-    - require:
-      - cmd: winget_bootstrap
+    - timeout: 300
 
 install_git:
   cmd.run:
@@ -169,8 +169,7 @@ install_git:
         WINGET_DISABLE_INTERACTIVE: "1"
     - unless: Get-Command git -ErrorAction SilentlyContinue
     - onlyif: Test-Path '{{ winget_path }}'
-    - require:
-      - cmd: winget_bootstrap
+    - timeout: 300
 
 
 # ============================================================================

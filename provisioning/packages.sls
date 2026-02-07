@@ -147,81 +147,43 @@ arch:
 # WINDOWS PACKAGES
 # ============================================================================
 windows:
-  pwsh_modules:
-    - PSReadLine
-    - PowerShellGet
-    - Microsoft.WinGet.Client
-    - Microsoft.WinGet.CommandNotFound
-    - powershell-yaml
-    - PSFzf
-    - PSWindowsUpdate
-    - Terminal-Icons
-    - Microsoft.PowerShell.Utility
-
-  choco:
-    - chocolatey-compatibility.extension
-    - chocolatey-core.extension
-    - chocolatey-font-helpers.extension
-    - cheatengine
-    - colortool
-    - Cygwin
-    - dive
-    - docker-cli
-    - docker-compose
-    - make
-    - nerd-fonts-FiraCode
-    - nerd-fonts-Hack
-    - vim
-    - winbtrfs
-
+  pwsh_modules: [PSReadLine, PowerShellGet, Microsoft.WinGet.Client, Microsoft.WinGet.CommandNotFound, powershell-yaml, PSFzf, PSWindowsUpdate, Terminal-Icons, Microsoft.PowerShell.Utility]
+  choco: [chocolatey-compatibility.extension, chocolatey-core.extension, chocolatey-font-helpers.extension, cheatengine, colortool, Cygwin, dive, docker-cli, docker-compose, make,  vim, winbtrfs]
   winget:
     runtimes:
       ui_libraries: [Microsoft.UI.Xaml.2.7, Microsoft.UI.Xaml.2.8, Microsoft.VCLibs.Desktop.14]
-      vcredist:
-        - Microsoft.VCRedist.2008.x64
-        - Microsoft.VCRedist.2008.x86
-        - Microsoft.VCRedist.2010.x64
-        - Microsoft.VCRedist.2010.x86
-        - Microsoft.VCRedist.2012.x64
-        - Microsoft.VCRedist.2012.x86
-        - Microsoft.VCRedist.2013.x64
-        - Microsoft.VCRedist.2013.x86
-        - Microsoft.VCRedist.2015+.x64
-        - Microsoft.VCRedist.2015+.x86
+      vcredist: [Microsoft.VCRedist.2008.x64, Microsoft.VCRedist.2008.x86, Microsoft.VCRedist.2010.x64, Microsoft.VCRedist.2010.x86, Microsoft.VCRedist.2012.x64, Microsoft.VCRedist.2012.x86, Microsoft.VCRedist.2013.x64, Microsoft.VCRedist.2013.x86, Microsoft.VCRedist.2015+.x64, Microsoft.VCRedist.2015+.x86]
       sdks: [Microsoft.WindowsADK, Microsoft.WindowsSDK.10.0.18362, Microsoft.NuGet, Microsoft.AppInstaller, Microsoft.AppInstallerFileBuilder]
-      dotnet:
-        - Microsoft.DotNet.AspNetCore.9
-        - Microsoft.DotNet.DesktopRuntime.8
-        - Microsoft.DotNet.DesktopRuntime.9
-        - Microsoft.DotNet.DesktopRuntime.10
-        - Microsoft.DotNet.Framework.DeveloperPack.4.6
-        - Microsoft.DotNet.HostingBundle.8
-        - Microsoft.DotNet.Runtime.8
-        - Microsoft.DotNet.Runtime.10
+      dotnet: [Microsoft.DotNet.AspNetCore.9, Microsoft.DotNet.DesktopRuntime.8, Microsoft.DotNet.DesktopRuntime.9, Microsoft.DotNet.DesktopRuntime.10, Microsoft.DotNet.Framework.DeveloperPack.4.6, Microsoft.DotNet.HostingBundle.8, Microsoft.DotNet.Runtime.8, Microsoft.DotNet.Runtime.10]
     system:
-      sync_backup: [FreeFileSync, Syncthing]
-      file_management: [7zip, WinSCP]
-      communication: [Telegram.TelegramDesktop, Vencord.Vesktop]
-      compression: [PeaZip, Zipier]
-      games: [Valve.Steam]
-      terminal: [Alacritty.Alacritty, ConEmu, WindowsTerminal]
+      sync_backup: [Syncthing.Syncthing, Martchus.syncthingtray]
+      file_management: [7zip.7zip, WinSCP.WinSCP]
+      compression: [Giorgiotani.Peazip]
+      terminal: [Alacritty.Alacritty, Maximus5.ConEmu, Microsoft.WindowsTerminal]
       shell: [Git.Git, Microsoft.Powershell, StardustXR.Starship]
-      editor: [Vim.Vim, NeovimProject.Neovim, Obsidian.Obsidian]
-      browser: [Google.Chrome]
-      utilities: [VB-Audio.VoiceMeeter]
-      development:
-        - GitHub.GitHubDesktop
-        - Gitleaks.Gitleaks
-        - JetBrains.IntelliJIDEA.Community
-        - Microsoft.VisualStudio.BuildTools
-        - Microsoft.VisualStudio.Community
-        - Microsoft.VisualStudioCode
-    userland:
+      editor: [Obsidian.Obsidian]
+      games: [Valve.Steam]
+      utilities: [VB-Audio.VoiceMeeter, CodeSector.TeraCopy, AntibodySoftware.WizTree, qBittorrent.qBittorrent, WerWolv.ImHex]
       media: [ImageMagick.ImageMagick, Wwweasel.PicView, Gyan.FFmpeg, HandBrake.HandBrake]
-      games: []
-      communication: []
-      browser: []
-      utilities: [qBittorrent.qBittorrent, WerWolv.ImHex]
+      communication: [Vencord.Vesktop, hoppscotch.Hoppscotch]
+      browser: [Google.Chrome]
+      development: [GitHub.GitHubDesktop, GitHub.cli, Gitleaks.Gitleaks, JetBrains.IntelliJIDEA.Community, Microsoft.VisualStudio.BuildTools, Microsoft.VisualStudio.Community, Microsoft.VisualStudioCode, MSYS2.MSYS2]
+      hardware: [ BitSum.ParkControl, BitSum.ProcessLasso, Guru3D.RTSS, Rem0o.FanControl, TechPowerUp.NVCleanstall, Wagnardsoft.DisplayDriverUninstaller]
+      rgb_peripherals: [namazso.PawnIO, Nefarius.HidHide, Olivia.VIA, OpenRGB.OpenRGB, ViGEm.ViGEmBus]
+      networking: [Apple.Bonjour, Insecure.Nmap, SSHFS-Win.SSHFS-Win, WinFsp.WinFsp, WiresharkFoundation.Wireshark]
+      kubernetes: [Kubecolor.kubecolor]
+      media_creative: [Audacity.Audacity, Cockos.REAPER, Inkscape.Inkscape, KDE.Krita, rocksdanister.LivelyWallpaper]
+      ricing: [Rainmeter.Rainmeter]
+    userland:
+      communication: [Telegram.TelegramDesktop]
+      utilities: [Microsoft.PowerToys, Microsoft.Sysinternals.Autoruns, Microsoft.Sysinternals.ProcessExplorer, Rclone.Rclone, Rufus.Rufus]
+      development: [DenoLand.Deno, direnv.direnv, Hashicorp.Terraform, Hashicorp.TerraformLanguageServer, nektos.act, waterlan.dos2unix, jqlang.jq]
+      kubernetes: [Helm.Helm, Kubernetes.kubectl, stern.stern]
+      hardware: [LibreHardwareMonitor.LibreHardwareMonitor]
+      networking: [evsar3.sshfs-win-manager]
+      gaming: [HeroicGamesLauncher.HeroicGamesLauncher, mtkennerly.ludusavi, Playnite.Playnite, SpecialK.SpecialK]
+      media_creative: [yt-dlp.yt-dlp]
+      desktop_customization: [AutoHotkey.AutoHotkey, File-New-Project.EarTrumpet]
 
 # ============================================================================
 # LANGUAGE-SPECIFIC PACKAGES
