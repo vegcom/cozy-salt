@@ -71,7 +71,7 @@ choco_{{ pkg | replace('.', '_') | replace('-', '_') }}:
 {% endif %}
 
 # Install Winget runtime packages, machine scope (run as user with winget)
-{% if packages.windows.winget_runtimes is defined %}
+{% if packages.windows.winget.runtimes is defined %}
 {% for category, pkgs in packages.windows.winget.runtimes.items() %}
 {% for pkg in pkgs %}
 winget_runtime_{{ pkg | replace('.', '_') | replace('-', '_') }}:
@@ -91,7 +91,7 @@ winget_runtime_{{ pkg | replace('.', '_') | replace('-', '_') }}:
 # time, bump per-package via a pillar override or increase the default here.
 
 # Install Winget packages by category, machine scope (run as user with winget)
-{% if packages.windows.winget_system is defined %}
+{% if packages.windows.winget.system is defined %}
 {% for category, pkgs in packages.windows.winget.system.items() %}
 {% for pkg in pkgs %}
 winget_{{ pkg | replace('.', '_') | replace('-', '_') }}:

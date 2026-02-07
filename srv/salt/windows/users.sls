@@ -8,7 +8,7 @@ windows_profile_health_check:
   cmd.run:
     - name: |
         $tempProfiles = Get-ChildItem C:\Users -Directory -ErrorAction SilentlyContinue |
-          Where-Object { $_.Name -match '\.\w+-\w+' }
+          Where-Object { $_.Name -match '\.\w+-\w+$' }
         if ($tempProfiles) {
           Write-Host "WARNING: Detected temporary/corrupted profiles:"
           $tempProfiles | ForEach-Object { Write-Host "  - $($_.FullName)" }
@@ -21,7 +21,7 @@ windows_profile_health_check:
           exit 1
         }
         Write-Host "Profile health check passed - no temp profiles detected"
-    - shell: pwsh
+    - shell: powershell
     - order: 1
 
 {% set users = salt['pillar.get']('users', {}) %}
