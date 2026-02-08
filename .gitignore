@@ -1,4 +1,5 @@
 !srv/pillar/users/demo.sls
+!srv/pillar/host/example.sls
 .claude/
 .coverage
 .env
@@ -18,3 +19,4 @@ srv/pillar/secrets/init.sls
 srv/pillar/users/*.sls
 srv/salt/keys/master/
 srv/salt/keys/minion/
+srv/pillar/host/*.sls

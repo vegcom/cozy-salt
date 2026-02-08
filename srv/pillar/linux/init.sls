@@ -44,6 +44,8 @@ linux:
     enabled: false
 
 role_capabilities:
+  minimal: []  # No pkg capabilities - just homebrew, ssh-keys, dotfiles
+
   workstation-minimal:
     - core_utils
     - shell_enhancements

@@ -1,6 +1,6 @@
 [init]
-  templateDir = ~/.git_template
   defaultBranch = main
+  templateDir = ~/.git_template
 
 [push]
   default = current
@@ -10,32 +10,33 @@
 
 [alias]
   aa = add --all
-  br = branch
-  ff = fetch -fk --all
   ap = add --patch
+  br = branch
+  branches = for-each-ref --sort=-committerdate --format=\"%(color:blue)%(authordate:relative)\t%(color:red)%(authorname)\t%(color:white)%(color:bold)%(refname:short)\" refs/remotes
+  brs = branches
   ci = commit -S -v
   co = checkout
-  pf = push --force-with-lease
-  st = status
-  ll = log --graph --oneline --show-signature
-  mr = !sh -c 'git fetch $1 merge-requests/$2/head:mr-$1-$2 && git checkout mr-$1-$2' -
   dh = diff --full-index --binary --find-copies-harder --ignore-cr-at-eol --ignore-space-at-eol --pickaxe-all --compact-summary --shortstat --exit-code --color-moved=dimmed-zebra --color-moved-ws=allow-indentation-change  --diff-algorithm=histogram
+  ff = fetch -fk --all
+  kamino = clone --recursive
   la = log --diff-filter=A
   ld = log --diff-filter=D
+  ll = log --graph --oneline --show-signature
   lm = log --diff-filter=M
-  wip = commit -v -S --allow-empty -m 'WIP'
+  mr = !sh -c 'git fetch $1 merge-requests/$2/head:mr-$1-$2 && git checkout mr-$1-$2' -
   mru = for-each-ref --sort=-committerdate --count=10 refs/heads/ --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(color:red)%(objectname:short)%(color:reset) - %(contents:subject) - %(authorname) (%(color:green)%(committerdate:relative)%(color:reset))'
-  brs = branches
-  kamino = clone --recursive
-  branches = for-each-ref --sort=-committerdate --format=\"%(color:blue)%(authordate:relative)\t%(color:red)%(authorname)\t%(color:white)%(color:bold)%(refname:short)\" refs/remotes
+  pf = push --force-with-lease
+  st = status
+  wip = commit -v -S --allow-empty -m 'WIP'
 
 [core]
   attributesfile = ~/.gitattributes
   attributesfile = ~/.gitattributes.local
-  excludesfile = ~/.gitignore
-  excludesfile = ~/.gitignore.local
   autocrlf = false
   eol = lf
+  excludesfile = ~/.gitignore
+  excludesfile = ~/.gitignore.local
+  sharedRepository = group
 
 [merge]
   ff = only
@@ -62,5 +63,4 @@
   forceSignAnnotated = true
 
 [credential]
-  helper = store
   helper = cache --timeout=3600
