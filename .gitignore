@@ -20,3 +20,4 @@ srv/pillar/users/*.sls
 srv/salt/keys/master/
 srv/salt/keys/minion/
 srv/pillar/host/*.sls
+JOURNAL.md*
