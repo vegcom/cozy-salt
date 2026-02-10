@@ -91,12 +91,18 @@ winget_runtime_{{ pkg | replace('.', '_') | replace('-', '_') }}:
 # time, bump per-package via a pillar override or increase the default here.
 
 # Install Winget packages by category, machine scope (run as user with winget)
+# noscope list = packages that choke on --scope machine flag (360 noscope lol)
+{% set noscope_pkgs = packages.windows.winget.get('noscope', []) %}
 {% if packages.windows.winget.system is defined %}
 {% for category, pkgs in packages.windows.winget.system.items() %}
 {% for pkg in pkgs %}
 winget_{{ pkg | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
+{% if pkg in noscope_pkgs %}
+    - name: '{{ winget_path }} install --accept-source-agreements --accept-package-agreements --disable-interactivity --exact --id {{ pkg }}'
+{% else %}
     - name: '{{ winget_path }} install --scope machine --accept-source-agreements --accept-package-agreements --disable-interactivity --exact --id {{ pkg }}'
+{% endif %}
     - runas: {{ winget_user }}
     - shell: powershell
     - unless: '{{ winget_path }} list --exact --id {{ pkg }} | Select-String -Quiet -Pattern ''{{ pkg }}'''

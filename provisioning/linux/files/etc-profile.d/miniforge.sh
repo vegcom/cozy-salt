@@ -42,7 +42,9 @@ else
 fi
 unset __mamba_setup
 
-if [ -f "/opt/miniforge3/etc/profile.d/mamba.sh" ]; then
-    # shellcheck disable=SC1091
-    . "/opt/miniforge3/etc/profile.d/mamba.sh"
+# Does not like ZSH
+if [ -n "$BASH_VERSION" ]; then
+    if [ -f "/opt/miniforge3/etc/profile.d/mamba.sh" ]; then
+        # shellcheck disable=SC1091
+    fi
 fi

@@ -2,15 +2,24 @@
 # Iterates over users defined in pillar (srv/pillar/common/users.sls)
 # Creates managed users with appropriate Windows groups (Administrators, Users)
 
+{% set users = salt['pillar.get']('users', {}) %}
+{% set managed_users = salt['pillar.get']('managed_users', []) %}
+
 # Profile health check - detect corrupted/temp profiles before proceeding
-# Temp profiles have .MACHINENAME suffix (e.g., user.DESKTOP-ABC123)
+# Checks for folders like admin.rocket, vegcom.DESKTOP-ABC123 where base name is a managed user
 windows_profile_health_check:
   cmd.run:
     - name: |
+        $managedUsers = @({{ managed_users | map('tojson') | join(', ') }})
         $tempProfiles = Get-ChildItem C:\Users -Directory -ErrorAction SilentlyContinue |
-          Where-Object { $_.Name -match '\.\w+-\w+$' }
+          Where-Object {
+            if ($_.Name -match '^([^.]+)\.(.+)$') {
+              $baseUser = $matches[1]
+              $managedUsers -contains $baseUser
+            } else { $false }
+          }
         if ($tempProfiles) {
-          Write-Host "WARNING: Detected temporary/corrupted profiles:"
+          Write-Host "WARNING: Detected temporary/corrupted profiles for managed users:"
           $tempProfiles | ForEach-Object { Write-Host "  - $($_.FullName)" }
           Write-Host ""
           Write-Host "These indicate profile corruption (SID mismatch or failed profile load)."
@@ -23,9 +32,6 @@ windows_profile_health_check:
         Write-Host "Profile health check passed - no temp profiles detected"
     - shell: powershell
     - order: 1
-
-{% set users = salt['pillar.get']('users', {}) %}
-{% set managed_users = salt['pillar.get']('managed_users', []) %}
 
 # Iterate over managed_users only (admin excluded on Windows, uses built-in Administrator)
 {% for username in managed_users %}
@@ -41,6 +47,39 @@ windows_profile_health_check:
     - enforce_password: False
     - win_logonscript: C:\\opt\cozy\login.ps1
 
+# Fix ProfileList registry to ensure correct profile path
+# Must run before first login to prevent .MACHINENAME suffix profiles
+{{ username }}_fix_profile_path:
+  cmd.run:
+    - name: |
+        $username = '{{ username }}'
+        $expectedPath = "C:\Users\$username"
+
+        # Get user SID
+        $user = Get-LocalUser -Name $username -ErrorAction SilentlyContinue
+        if (-not $user) { Write-Host "User not found"; exit 0 }
+        $sid = $user.SID.Value
+
+        # Check/fix ProfileList registry
+        $profileListPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\$sid"
+        if (Test-Path $profileListPath) {
+          $currentPath = (Get-ItemProperty $profileListPath -Name ProfileImagePath -ErrorAction SilentlyContinue).ProfileImagePath
+          if ($currentPath -and $currentPath -ne $expectedPath) {
+            Write-Host "Fixing profile path: $currentPath -> $expectedPath"
+            Set-ItemProperty $profileListPath -Name ProfileImagePath -Value $expectedPath
+          }
+        } else {
+          # Create ProfileList entry if missing
+          Write-Host "Creating ProfileList entry for $username"
+          New-Item -Path $profileListPath -Force | Out-Null
+          Set-ItemProperty $profileListPath -Name ProfileImagePath -Value $expectedPath
+          Set-ItemProperty $profileListPath -Name Flags -Value 0 -Type DWord
+          Set-ItemProperty $profileListPath -Name State -Value 0 -Type DWord
+        }
+    - shell: powershell
+    - require:
+      - user: {{ username }}_user
+
 # Force profile creation by running a command as the user
 # This ensures Windows creates the profile before we try to manage files in it
 {{ username }}_initialize_profile:
@@ -50,6 +89,7 @@ windows_profile_health_check:
     - shell: cmd
     - require:
       - user: {{ username }}_user
+      - cmd: {{ username }}_fix_profile_path
 
 # Add {{ username }} to Windows groups using PowerShell
 # Salt's user.present groups parameter has a bug on Windows (ValueError: list.remove)

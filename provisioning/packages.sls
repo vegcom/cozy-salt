@@ -154,17 +154,17 @@ windows:
       ui_libraries: [Microsoft.UI.Xaml.2.7, Microsoft.UI.Xaml.2.8, Microsoft.VCLibs.Desktop.14]
       vcredist: [Microsoft.VCRedist.2008.x64, Microsoft.VCRedist.2008.x86, Microsoft.VCRedist.2010.x64, Microsoft.VCRedist.2010.x86, Microsoft.VCRedist.2012.x64, Microsoft.VCRedist.2012.x86, Microsoft.VCRedist.2013.x64, Microsoft.VCRedist.2013.x86, Microsoft.VCRedist.2015+.x64, Microsoft.VCRedist.2015+.x86]
       sdks: [Microsoft.WindowsADK, Microsoft.WindowsSDK.10.0.18362, Microsoft.NuGet, Microsoft.AppInstaller, Microsoft.AppInstallerFileBuilder]
-      dotnet: [Microsoft.DotNet.AspNetCore.9, Microsoft.DotNet.DesktopRuntime.8, Microsoft.DotNet.DesktopRuntime.9, Microsoft.DotNet.DesktopRuntime.10, Microsoft.DotNet.Framework.DeveloperPack.4.6, Microsoft.DotNet.HostingBundle.8, Microsoft.DotNet.Runtime.8, Microsoft.DotNet.Runtime.10]
+      dotnet: [Microsoft.DotNet.DesktopRuntime.8, Microsoft.DotNet.DesktopRuntime.9, Microsoft.DotNet.Framework.DeveloperPack.4.6, Microsoft.DotNet.Runtime.8, Microsoft.DotNet.Runtime.9]
     system:
       sync_backup: [Syncthing.Syncthing, Martchus.syncthingtray]
       file_management: [7zip.7zip, WinSCP.WinSCP]
       compression: [Giorgiotani.Peazip]
       terminal: [Alacritty.Alacritty, Maximus5.ConEmu, Microsoft.WindowsTerminal]
-      shell: [Git.Git, Microsoft.Powershell, StardustXR.Starship]
+      shell: [Git.Git, Microsoft.PowerShell, Starship.Starship]
       editor: [Obsidian.Obsidian]
       games: [Valve.Steam]
-      utilities: [VB-Audio.VoiceMeeter, CodeSector.TeraCopy, AntibodySoftware.WizTree, qBittorrent.qBittorrent, WerWolv.ImHex]
-      media: [ImageMagick.ImageMagick, Wwweasel.PicView, Gyan.FFmpeg, HandBrake.HandBrake]
+      utilities: [VB-Audio.Voicemeeter.Potato, CodeSector.TeraCopy, AntibodySoftware.WizTree, qBittorrent.qBittorrent, WerWolv.ImHex]
+      media: [ImageMagick.ImageMagick, Ruben2776.PicView, Gyan.FFmpeg, HandBrake.HandBrake, SplitmediaLabs.XSplitBroadcaster]
       communication: [Vencord.Vesktop, hoppscotch.Hoppscotch]
       browser: [Google.Chrome]
       development: [GitHub.GitHubDesktop, GitHub.cli, Gitleaks.Gitleaks, JetBrains.IntelliJIDEA.Community, Microsoft.VisualStudio.BuildTools, Microsoft.VisualStudio.Community, Microsoft.VisualStudioCode, MSYS2.MSYS2]
@@ -174,9 +174,11 @@ windows:
       kubernetes: [Kubecolor.kubecolor]
       media_creative: [Audacity.Audacity, Cockos.REAPER, Inkscape.Inkscape, KDE.Krita, rocksdanister.LivelyWallpaper]
       ricing: [Rainmeter.Rainmeter]
+    # 360 noscope - packages that choke on --scope machine flag
+    noscope: [Microsoft.PowerShell, Starship.Starship, VB-Audio.Voicemeeter, Ruben2776.PicView, Olivia.VIA, Insecure.Nmap, Microsoft.UI.Xaml.2.7, Microsoft.UI.Xaml.2.8, Microsoft.AppInstallerFileBuilder, Microsoft.WindowsSDK.10.0.18362]
     userland:
       communication: [Telegram.TelegramDesktop]
-      utilities: [Microsoft.PowerToys, Microsoft.Sysinternals.Autoruns, Microsoft.Sysinternals.ProcessExplorer, Rclone.Rclone, Rufus.Rufus]
+      utilities: [Microsoft.PowerToys, Microsoft.Sysinternals.Autoruns, Microsoft.Sysinternals.ProcessExplorer, Rclone.Rclone, Rufus.Rufus, input-leap.input-leap]
       development: [DenoLand.Deno, direnv.direnv, Hashicorp.Terraform, Hashicorp.TerraformLanguageServer, nektos.act, waterlan.dos2unix, jqlang.jq]
       kubernetes: [Helm.Helm, Kubernetes.kubectl, stern.stern]
       hardware: [LibreHardwareMonitor.LibreHardwareMonitor]
@@ -188,22 +190,22 @@ windows:
 # ============================================================================
 # LANGUAGE-SPECIFIC PACKAGES
 # ============================================================================
-pip_base: [pip, setuptools, wheel, pipx, uv]
+pip_base: [pip, setuptools, wheel, pipx, uv, pre-commit, ipython]
 
 npm_global:
   - "@anthropic-ai/claude-code"
-  - "better-ccflare"
-  - "pnpm"
-  - "bun"
-  - "tsx"
+  - better-ccflare
+  - pnpm
+  - bun
+  - tsx
   - "@angular/cli"
   - "@nestjs/cli"
   - "@vue/cli"
-  - "create-react-app"
-  - "webpack"
-  - "nodemon"
-  - "pm2"
-  - "serverless"
-  - "cdk"
+  - create-react-app
+  - webpack
+  - nodemon
+  - pm2
+  - serverless
+  - cdk
 
 brew: [atuin, carapace, pandoc, weasyprint, zoxide, dive]
