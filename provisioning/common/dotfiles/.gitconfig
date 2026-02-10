@@ -2,6 +2,9 @@
   defaultBranch = main
   templateDir = ~/.git_template
 
+[gpg]
+  format = ssh
+
 [push]
   default = current
 
