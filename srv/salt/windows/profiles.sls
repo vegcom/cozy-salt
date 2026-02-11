@@ -19,31 +19,21 @@ pwsh_profile_repo:
 
 # Symlink profile file
 pwsh_profile_symlink:
-  cmd.run:
-    - name: |
-        if (Test-Path "{{ pwsh_profile_dir }}\Microsoft.PowerShell_profile.ps1") {
-          Remove-Item "{{ pwsh_profile_dir }}\Microsoft.PowerShell_profile.ps1" -Force
-        }
-        New-Item -ItemType SymbolicLink -Path "{{ pwsh_profile_dir }}\Microsoft.PowerShell_profile.ps1" -Target "{{ repo_path }}\Microsoft.PowerShell_profile.ps1"
-    - shell: powershell
+  file.symlink:
+    - name: '{{ pwsh_profile_dir }}\Microsoft.PowerShell_profile.ps1'
+    - target: '{{ repo_path }}\Microsoft.PowerShell_profile.ps1'
+    - force: True
     - require:
       - git: pwsh_profile_repo
-    # - unless: >
-    #     (Get-Item "{{ pwsh_profile_dir }}\Microsoft.PowerShell_profile.ps1" -ErrorAction SilentlyContinue).LinkType -eq 'SymbolicLink'
 
 # Symlink config.d directory
 pwsh_config_d_symlink:
-  cmd.run:
-    - name: |
-        if (Test-Path "{{ pwsh_profile_dir }}\config.d") {
-          Remove-Item "{{ pwsh_profile_dir }}\config.d" -Recurse -Force
-        }
-        New-Item -ItemType SymbolicLink -Path "{{ pwsh_profile_dir }}\config.d" -Target "{{ repo_path }}\config.d"
-    - shell: powershell
+  file.symlink:
+    - name: '{{ pwsh_profile_dir }}\config.d'
+    - target: '{{ repo_path }}\config.d'
+    - force: True
     - require:
       - git: pwsh_profile_repo
-    # - unless: >
-    #     (Get-Item "{{ pwsh_profile_dir }}\config.d" -ErrorAction SilentlyContinue).LinkType -eq 'SymbolicLink'
 
 # Ensure repo is readable by all users
 pwsh_profile_acl:
