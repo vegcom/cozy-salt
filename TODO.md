@@ -1,10 +1,10 @@
 # cozy-salt TODO
 
-| thanks to | eve | veg | 3rd | 4th | 5th |
+| thanks to | eve | veg | june | 4th | 5th |
 | --------- | --- | --- | --- | --- | --- |
-| design    | ✅  | ✅  | 🔴  | 🔴  | 🔴  |
-| delivery  | ✅  | ✅  | 🔴  | 🔴  | 🔴  |
-| audit     | ✅  | 🔴  | 🔴  | 🔴  | 🔴  |
+| design    | ✅  | ✅  | ✅  | 🔴  | 🔴  |
+| delivery  | ✅  | ✅  | ✅  | 🔴  | 🔴  |
+| audit     | ✅  | 🔴  | ✅  | 🔴  | 🔴  |
 
 ## Pending testing
 
@@ -39,7 +39,6 @@ dism /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all
 - all complex sls files doing file.managed with content are deferred to templates
   - all macros are in srv/salt/\_macros
   - all complex logic is reduced to macro or templates
-
 
 <https://gist.github.com/Rishikant181/e26fb23d4c57db74bddaa0a57b26cd26#5-creating-a-script-to-switch-back-to-desktop-mode-close-steam>
 
@@ -193,7 +192,7 @@ HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
 - [ ] Extract distro_aliases + package_metadata.provides to separate .map file
   - `provisioning/distro.map` or `provisioning/packages.map`
   - Use `import_yaml` to load, cleaner separation from pkg lists
-  - Salt osmap pattern: https://docs.saltproject.io/salt/user-guide/en/latest/topics/jinja.html
+  - Salt osmap pattern: <https://docs.saltproject.io/salt/user-guide/en/latest/topics/jinja.html>
 - [ ] Auto-inject "Managed by Salt - DO NOT EDIT MANUALLY" headers
   - Enumerate all provisioning files referenced in state sources (salt:// paths)
   - Inject header on file deploy if not present
