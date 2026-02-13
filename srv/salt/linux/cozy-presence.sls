@@ -62,12 +62,14 @@ cozy-presence-service-file:
     - source: salt://linux/files/etc-systemd-user/cozy-presence@.service
     - mode: 644
 
-# Enable and start service
 cozy-presence-service:
-  service.running:
-    - name: cozy-presence@{{ run_user }}
-    - enable: True
-    - user: {{ run_user }}
+  cmd.run:
+    - name: |
+        systemctl --user daemon-reload
+        systemctl --user enable --now cozy-presence@{{ run_user }}.service
+    - runas: {{ run_user }}
+    - env:
+        XDG_RUNTIME_DIR: /run/user/{{ salt['user.info'](run_user)['uid'] }}
     - require:
       - file: cozy-presence-service-file
       - cmd: cozy-presence-deps
