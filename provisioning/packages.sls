@@ -168,7 +168,7 @@ windows:
       communication: [Vencord.Vesktop, hoppscotch.Hoppscotch]
       browser: [Google.Chrome]
       development: [GitHub.GitHubDesktop, GitHub.cli, Gitleaks.Gitleaks, JetBrains.IntelliJIDEA.Community, Microsoft.VisualStudio.BuildTools, Microsoft.VisualStudio.Community, Microsoft.VisualStudioCode, MSYS2.MSYS2]
-      hardware: [BitSum.ParkControl, BitSum.ProcessLasso, Guru3D.RTSS, TechPowerUp.NVCleanstall, Wagnardsoft.DisplayDriverUninstaller]
+      hardware: [BitSum.ParkControl, BitSum. ProcessLasso, Guru3D.RTSS, TechPowerUp.NVCleanstall, Wagnardsoft.DisplayDriverUninstaller, REALiX.HWiNFO]
       rgb_peripherals: [namazso.PawnIO, Nefarius.HidHide, Olivia.VIA, OpenRGB.OpenRGB, ViGEm.ViGEmBus]
       networking: [Apple.Bonjour, Insecure.Nmap, SSHFS-Win.SSHFS-Win, WinFsp.WinFsp, WiresharkFoundation.Wireshark]
       kubernetes: [Kubecolor.kubecolor]
@@ -181,7 +181,6 @@ windows:
       utilities: [Microsoft.PowerToys, Microsoft.Sysinternals.Autoruns, Microsoft.Sysinternals.ProcessExplorer, Rclone.Rclone, Rufus.Rufus]
       development: [DenoLand.Deno, direnv.direnv, Hashicorp.Terraform, Hashicorp.TerraformLanguageServer, nektos.act, waterlan.dos2unix, jqlang.jq]
       kubernetes: [Helm.Helm, Kubernetes.kubectl, stern.stern]
-      hardware: [LibreHardwareMonitor.LibreHardwareMonitor]
       networking: [evsar3.sshfs-win-manager]
       gaming: [HeroicGamesLauncher.HeroicGamesLauncher, mtkennerly.ludusavi, Playnite.Playnite, SpecialK.SpecialK]
       media_creative: [yt-dlp.yt-dlp]
@@ -190,7 +189,7 @@ windows:
 # ============================================================================
 # LANGUAGE-SPECIFIC PACKAGES
 # ============================================================================
-pip_base: [pip, setuptools, wheel, pipx, uv, pre-commit, ipython]
+pip_base: [pip, setuptools, wheel, pipx, uv, pre-commit, ipython, pytest]
 
 npm_global:
   - "@anthropic-ai/claude-code"
