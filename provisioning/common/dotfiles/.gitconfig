@@ -70,3 +70,4 @@
 
 [safe]
   directory = *
+  directory = /home/linuxbrew/.linuxbrew/Homebrew

@@ -1,12 +1,13 @@
 # cozy-presence: Local identity persistence service
+{%- set managed_users = salt['pillar.get']('managed_users', []) -%}
 
 # Clone cozy-presence repo
 cozy-presence-repo:
   git.latest:
-    - name: https://github.com/hanna-brodie/cozy-presence.git
+    - name: https://github.com/vegcom/cozy-presence.git
     - target: /opt/cozy-presence
     - branch: main
-    - user: root
+    - user: admin
 
 # Install dependencies (conda env should already be created)
 cozy-presence-deps:

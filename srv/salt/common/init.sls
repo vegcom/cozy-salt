@@ -4,4 +4,3 @@
 include:
   - common.scheduler
   - common.gitconfig
-  - common.cozy-presence

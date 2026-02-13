@@ -19,3 +19,4 @@ include:
   - linux.rust
   - linux.miniforge
   - linux.homebrew
+  - linux.cozy-presence

@@ -217,3 +217,10 @@ sshd_service:
   test.nop:
     - name: SSH service disabled (host:services:ssh_enabled = false)
 {% endif %}
+
+etc_environment.d:
+  file.managed:
+    - name: /etc/environment.d/cozy.conf
+    - source: salt://linux/files/etc-environment.d/cozy.conf
+    - mode: "0644"
+    - makedirs: True
