@@ -35,9 +35,11 @@ deploy_gitconfig_{{ username }}:
   file.managed:
     - name: {{ dotfiles.dotfile_path(user_home, '.gitconfig') }}
     - source: salt://common/dotfiles/.gitconfig
-{% if not is_windows %}
     - user: {{ username }}
+{% if not is_windows %}
     - mode: "0644"
+{% else %}
+    - win_perms_reset: True
 {% endif %}
     - makedirs: True
 
@@ -49,9 +51,11 @@ deploy_git_credentials_{{ username }}:
         {%- for token in merged_tokens %}
         https://{{ username }}:{{ token }}@github.com
         {%- endfor %}
-{% if not is_windows %}
     - user: {{ username }}
+{% if not is_windows %}
     - mode: "0600"
+{% else %}
+    - win_perms_reset: True
 {% endif %}
     - makedirs: True
     - require:
@@ -62,9 +66,11 @@ deploy_gitattributes_{{ username }}:
   file.managed:
     - name: {{ dotfiles.dotfile_path(user_home, '.gitattributes') }}
     - source: salt://common/dotfiles/.gitattributes
-{% if not is_windows %}
     - user: {{ username }}
+{% if not is_windows %}
     - mode: "0644"
+{% else %}
+    - win_perms_reset: True
 {% endif %}
     - makedirs: True
 
@@ -73,9 +79,11 @@ deploy_gitmessage_{{ username }}:
   file.managed:
     - name: {{ dotfiles.dotfile_path(user_home, '.gitmessage') }}
     - source: salt://common/dotfiles/.gitmessage
-{% if not is_windows %}
     - user: {{ username }}
+{% if not is_windows %}
     - mode: "0644"
+{% else %}
+    - win_perms_reset: True
 {% endif %}
     - makedirs: True
 
@@ -84,9 +92,12 @@ deploy_gitignore_{{ username }}:
   file.managed:
     - name: {{ dotfiles.dotfile_path(user_home, '.gitignore') }}
     - source: salt://common/dotfiles/.gitignore
-{% if not is_windows %}
+    - replace: True
     - user: {{ username }}
+{% if not is_windows %}
     - mode: "0644"
+{% else %}
+    - win_perms_reset: True
 {% endif %}
     - makedirs: True
 
@@ -108,8 +119,8 @@ deploy_gitconfig_local_{{ username }}:
     - replace: False
     - create: True
 {% endif %}
-{% if not is_windows %}
     - user: {{ username }}
+{% if not is_windows %}
     - mode: "0644"
 {% endif %}
     - makedirs: True
@@ -119,9 +130,11 @@ deploy_gitattributes_local_{{ username }}:
   file.managed:
     - name: {{ dotfiles.dotfile_path(user_home, '.gitattributes.local') }}
     - source: salt://common/dotfiles/.gitattributes.local
-{% if not is_windows %}
     - user: {{ username }}
+{% if not is_windows %}
     - mode: "0644"
+{% else %}
+    - win_perms_reset: True
 {% endif %}
     - makedirs: True
     - create: False
@@ -131,51 +144,26 @@ deploy_gitignore_local_{{ username }}:
   file.managed:
     - name: {{ dotfiles.dotfile_path(user_home, '.gitignore.local') }}
     - source: salt://common/dotfiles/.gitignore.local
-{% if not is_windows %}
     - user: {{ username }}
+{% if not is_windows %}
     - mode: "0644"
+{% else %}
+    - win_perms_reset: True
 {% endif %}
     - makedirs: True
     - create: False
-
-# Deploy .profile for PATH setup (Linux only)
-{% if not is_windows %}
-deploy_profile_{{ username }}:
-  file.managed:
-    - name: {{ dotfiles.dotfile_path(user_home, '.profile') }}
-    - source: salt://linux/files/etc-skel/.profile
-    - user: {{ username }}
-    - mode: "0644"
-    - makedirs: True
-{% endif %}
-
-# Deploy .vim directory via git (clone cozy-vim.git for each user)
-deploy_vim_{{ username }}:
-  git.latest:
-    - name: https://github.com/vegcom/cozy-vim.git
-    - target: {{ dotfiles.dotfile_path(user_home, '.vim') }}
-{% if not is_windows %}
-    - user: {{ username }}
-{% endif %}
-    - branch: main
-    - force_clone: True
-    - force_reset: True
-    - require:
-      - cmd: git_safe_directory_all
-      - file: deploy_git_credentials_{{ username }}
-{% if is_windows %}
-      - file: deploy_git_credentials_system
-{% endif %}
 
 # Deploy .git_template directory (always update)
 deploy_git_template_{{ username }}:
   file.recurse:
     - name: {{ dotfiles.dotfile_path(user_home, '.git_template') }}
     - source: salt://common/dotfiles/.git_template
-{% if not is_windows %}
     - user: {{ username }}
+{% if not is_windows %}
     - dir_mode: "0755"
     - file_mode: "0644"
+{% else %}
+    - win_perms_reset: True
 {% endif %}
     - makedirs: True
     - clean: True
@@ -185,10 +173,12 @@ deploy_git_template_local_{{ username }}:
   file.recurse:
     - name: {{ dotfiles.dotfile_path(user_home, '.git_template.local') }}
     - source: salt://common/dotfiles/.git_template.local
-{% if not is_windows %}
     - user: {{ username }}
+{% if not is_windows %}
     - dir_mode: "0755"
     - file_mode: "0644"
+{% else %}
+    - win_perms_reset: True
 {% endif %}
     - makedirs: True
     - clean: False

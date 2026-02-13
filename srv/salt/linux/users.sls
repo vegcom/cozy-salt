@@ -99,6 +99,8 @@ skel_files:
 # Deploy user dotfiles via macro
 {{ user_dotfile(username, user_home, '.bashrc', 'salt://linux/files/etc-skel/.bashrc') }}
 {{ user_dotfile(username, user_home, '.zshrc', 'salt://linux/files/etc-skel/.zshrc') }}
+{{ user_dotfile(username, user_home, '.profile', 'salt://linux/files/etc-skel/.profile') }}
+
 {% set ssh_keys = userdata.get('ssh_keys', []) %}
 {% if ssh_keys %}
 # Create {{ username }} .ssh directory
