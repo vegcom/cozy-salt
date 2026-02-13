@@ -19,6 +19,7 @@ miniforge_permissions:
     - name: {{ miniforge_path }}
     - user: {{ service_user }}
     - group: cozyusers
+    - dir_mode: "0775"
     - recurse:
       - user
       - group
