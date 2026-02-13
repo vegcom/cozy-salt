@@ -1,3 +1,6 @@
+.stfolder
+.stignore
+.stversions/
 **/__pycache__/
 **/.cache
 **/.claude
