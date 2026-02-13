@@ -42,9 +42,8 @@ else
 fi
 unset __mamba_setup
 
-# Does not like ZSH
 if [ -n "$BASH_VERSION" ]; then
-    if [ -f "/opt/miniforge3/etc/profile.d/mamba.sh" ]; then
-        # shellcheck disable=SC1091
-    fi
+    eval "$(mamba shell hook --shell bash)"
+elif [ -n "$ZSH_VERSION" ]; then
+    eval "$(mamba shell hook --shell zsh)"
 fi
