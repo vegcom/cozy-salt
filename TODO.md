@@ -136,6 +136,12 @@ HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
   PathUnexpanded = 1
 ```
 
+## Seperation of duty
+
+- [ ] Refactor config.sls
+  - Presently config.sls is doing a lot of heavy lifting
+  - Can be seperated by module/state
+
 ## Reactor
 
 - [ ] Windows health-check reactor
