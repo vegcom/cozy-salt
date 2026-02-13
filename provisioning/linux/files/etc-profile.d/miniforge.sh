@@ -43,7 +43,7 @@ fi
 unset __mamba_setup
 
 if [ -n "$BASH_VERSION" ]; then
-    eval "$(mamba shell hook --shell bash)"
+    eval "$(conda shell.bash hook)"
 elif [ -n "$ZSH_VERSION" ]; then
-    eval "$(mamba shell hook --shell zsh)"
+    eval "$(conda shell.zsh hook)"
 fi
