@@ -10,32 +10,3 @@ if [[ -f "$HOME"/.zshrc.local ]]; then
   # shellcheck disable=SC1091
   source "$HOME"/.zshrc.local
 fi
-
-if [ -n "${__USER_ZSH_ZPROFILE_SOURCED}" ]; then
-    if [ -n "${__USER_ZSHRC_SOURCED}" ]; then
-        return 0
-    fi
-fi
-
-# Carapace
-if command -v carapace >/dev/null; then
-    eval "$(carapace _carapace zsh)"
-fi
-
-# Zoxide
-if command -v zoxide >/dev/null; then
-    eval "$(zoxide init zsh)"
-fi
-
-# Starship
-if command -v starship >/dev/null; then
-    eval "$(starship init zsh)"
-fi
-
-# Atuin (Zsh mode)
-if command -v atuin >/dev/null; then
-    eval "$(atuin init zsh)"
-fi
-
-__USER_ZSHRC_SOURCED=1
-export __USER_ZSHRC_SOURCED
