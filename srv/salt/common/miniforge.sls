@@ -12,6 +12,21 @@
   {% set uv_bin = miniforge_path ~ '/bin/uv' %}
 {% endif %}
 
+# Install pip base packages in miniforge base environment
+{% for package in packages.get('pip_base', []) %}
+install_pip_base_{{ package | replace('-', '_') }}:
+  cmd.run:
+    - name: {{ pip_bin }} install {{ package }}
+    {% if grains['os_family'] == 'Windows' %}
+    - shell: pwsh
+    - require:
+      - cmd: miniforge_install
+      - cmd: opt_acl_cozyusers
+    {% endif %}
+    - runas: {{ service_user }}
+    - unless: {{ pip_bin }} show {{ package }}
+{% endfor %}
+
 {% if grains['os_family'] != 'Windows' %}
 # Fix miniforge3 permissions for managed user to install packages
 miniforge_permissions:
@@ -25,22 +40,7 @@ miniforge_permissions:
       - group
     - require:
       - cmd: miniforge_install
-{% endif %}
-
-# Install pip base packages in miniforge base environment
 {% for package in packages.get('pip_base', []) %}
-install_pip_base_{{ package | replace('-', '_') }}:
-  cmd.run:
-    - name: {{ pip_bin }} install {{ package }}
-    {% if grains['os_family'] == 'Windows' %}
-    - shell: pwsh
-    - require:
-      - cmd: miniforge_install
-      - cmd: opt_acl_cozyusers
-    {% else %}
-    - require:
-      - file: miniforge_permissions
-    {% endif %}
-    - runas: {{ service_user }}
-    - unless: {{ pip_bin }} show {{ package }}
+      - cmd: install_pip_base_{{ package | replace('-', '_') }}
 {% endfor %}
+{% endif %}
