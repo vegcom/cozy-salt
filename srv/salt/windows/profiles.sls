@@ -8,7 +8,7 @@
 {% set repo_path = 'C:\\opt\\cozy\\cozy-pwsh' %}
 {% set winget_user = get_winget_user() %}
 
-# Clone cozy-pwsh repo to C:\opt\cozy-pwsh
+# Clone cozy-pwsh repo to C:\opt\cozy\cozy-pwsh
 pwsh_profile_repo:
   git.latest:
     - name: https://github.com/vegcom/cozy-pwsh.git

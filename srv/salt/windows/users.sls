@@ -44,11 +44,23 @@ windows_profile_health_check:
     - password: {{ userdata.get('password', '') }}
     - password_lock: False
     - empty_password: {{ 'True' if not userdata.get('password') else 'False' }}
-    - enforce_password: False
+    - enforce_password: {{ 'True' if userdata.get('password') else 'False' }}
     - win_logonscript: C:\\opt\cozy\login.ps1
+    - win_profile: C:\Users\{{ username }}\
 
-# Fix ProfileList registry to ensure correct profile path
-# Must run before first login to prevent .MACHINENAME suffix profiles
+# Force profile creation by running a command as the user
+# Must run BEFORE registry fix — Windows needs a stable profile load first
+# Modifying ProfileList before provisioning completes causes .bak SID keys
+{{ username }}_initialize_profile:
+  cmd.run:
+    - name: whoami
+    - runas: {{ username }}
+    - shell: cmd
+    - require:
+      - user: {{ username }}_user
+
+# Post-check: fix ProfileList registry if path is wrong
+# Runs AFTER profile is stable to avoid .bak rename (SID conflict)
 {{ username }}_fix_profile_path:
   cmd.run:
     - name: |
@@ -79,17 +91,7 @@ windows_profile_health_check:
     - shell: powershell
     - require:
       - user: {{ username }}_user
-
-# Force profile creation by running a command as the user
-# This ensures Windows creates the profile before we try to manage files in it
-{{ username }}_initialize_profile:
-  cmd.run:
-    - name: whoami
-    - runas: {{ username }}
-    - shell: cmd
-    - require:
-      - user: {{ username }}_user
-      - cmd: {{ username }}_fix_profile_path
+      - cmd: {{ username }}_initialize_profile
 
 # Add {{ username }} to Windows groups using PowerShell
 # Salt's user.present groups parameter has a bug on Windows (ValueError: list.remove)
