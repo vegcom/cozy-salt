@@ -66,8 +66,12 @@
   forceSignAnnotated = true
 
 [credential]
+  helper = store
   helper = cache --timeout=3600
 
 [safe]
   directory = *
   directory = /home/linuxbrew/.linuxbrew/Homebrew
+
+[user]
+	signingkey = ~/.ssh/keys/git.pub

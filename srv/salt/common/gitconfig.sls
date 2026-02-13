@@ -143,7 +143,7 @@ deploy_gitignore_local_{{ username }}:
 deploy_profile_{{ username }}:
   file.managed:
     - name: {{ dotfiles.dotfile_path(user_home, '.profile') }}
-    - source: salt://common/dotfiles/.profile
+    - source: salt://linux/files/etc-skel/.profile
     - user: {{ username }}
     - mode: "0644"
     - makedirs: True
