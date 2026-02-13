@@ -155,12 +155,15 @@ apt_allow_unauthenticated:
     - name: Skipping APT config on non-Debian system
 {% endif %}
 
+# TODO: support dicts of lists for name and ip for a short name.
 # Manage /etc/hosts entries for network services (from pillar.network.hosts)
-{% for hostname, ip in hosts.items() %}
-hosts_entry_{{ hostname | replace('.', '_') }}:
+{% for ips, hostname in hosts.items() %}
+hosts_entry_{{ hostname.split(' ')[0] | replace('.', '_') }}:
   host.present:
     - name: {{ hostname }}
+    {%- for ip in ips.split(' ')%}
     - ip: {{ ip }}
+    {%- endfor %}
     - clean: True
 {% endfor %}
 
