@@ -55,7 +55,7 @@ export cozy_render
 
 
 cozy_persist_shell(){
-  if [ -n "$1" ];then 
+  if [ -n "$1" ];then
     _host=${1}
     _port=${2:-22}
     while ! ssh "${_host}" ; do sleep 15 ; nc -vzw 5 "${_host}" 22 ; done

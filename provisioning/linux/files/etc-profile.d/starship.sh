@@ -20,4 +20,3 @@
 # elif [ "$SHELL" == "/bin/zsh" ];then
 #   eval "$(starship init zsh)" 2>/dev/null || true
 # fi
-
