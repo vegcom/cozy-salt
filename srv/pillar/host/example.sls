@@ -27,6 +27,8 @@ network:
       comment: example host
       ips:
         - 127.0.0.1
+        - ::1
       names:
-        - example
-        - example.local
+        - localhost
+        - localhost.local
+        - localhost.localdomain
