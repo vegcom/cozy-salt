@@ -138,6 +138,17 @@ deploy_gitignore_local_{{ username }}:
     - makedirs: True
     - create: False
 
+# Deploy .profile for PATH setup (Linux only)
+{% if not is_windows %}
+deploy_profile_{{ username }}:
+  file.managed:
+    - name: {{ dotfiles.dotfile_path(user_home, '.profile') }}
+    - source: salt://common/dotfiles/.profile
+    - user: {{ username }}
+    - mode: "0644"
+    - makedirs: True
+{% endif %}
+
 # Deploy .vim directory via git (clone cozy-vim.git for each user)
 deploy_vim_{{ username }}:
   git.latest:

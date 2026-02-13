@@ -1,0 +1,16 @@
+#!/bin/bash
+# cozy-presence CLI wrapper
+
+# Add conda env to PATH
+export PATH="/opt/miniconda/envs/cozy-presence/bin:$PATH"
+export PYTHONPATH="/opt/cozy-presence/src:$PYTHONPATH"
+
+# Run the CLI
+exec python -c "
+import sys
+sys.path.insert(0, '/opt/cozy-presence/src')
+from cozy_presence.cli import app
+import sys
+sys.argv[0] = 'presence'
+app()
+" "$@"
