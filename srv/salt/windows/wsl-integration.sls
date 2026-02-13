@@ -17,6 +17,6 @@ detect_wsl:
 # Run Docker WSL context configuration script
 run_configure_docker_wsl_context:
   cmd.run:
-    - name: pwsh -ExecutionPolicy Bypass -File C:\opt\cozy\configure-docker-wsl-context.ps1
+    - name: pwsh -ExecutionPolicy Bypass -File C:\opt\cozy\bin\configure-docker-wsl-context.ps1
     - shell: pwsh
     - unless: docker context ls --format "{{ '{{.Name}}' }}" | findstr /C:"wsl"

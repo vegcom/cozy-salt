@@ -1,13 +1,10 @@
 # cozy-presence: Local identity persistence service
+{% from "_macros/git-repo.sls" import git_repo %}
 {%- set managed_users = salt['pillar.get']('managed_users', []) -%}
+{%- set run_user = managed_users[0] -%}
 
-# Clone cozy-presence repo
-cozy-presence-repo:
-  git.latest:
-    - name: https://github.com/vegcom/cozy-presence.git
-    - target: /opt/cozy-presence
-    - branch: main
-    - user: admin
+# Clone cozy-presence repo (token from pillar)
+{{ git_repo('cozy-presence', '/opt/cozy/cozy-presence', run_user) }}
 
 # Install dependencies (conda env should already be created)
 cozy-presence-deps:
@@ -16,14 +13,14 @@ cozy-presence-deps:
         source /opt/miniconda/bin/activate cozy-presence && \
         pip install typer rich --quiet
     - require:
-      - git: cozy-presence-repo
+      - git: cozy_presence_repo
 
 # Create data directory
 cozy-presence-data-dir:
   file.directory:
-    - name: /home/{{ pillar.get('users', {}).get(managed_users[0], {}).get('name', 'vegcom') }}/.presence
-    - user: {{ pillar.get('users', {}).get(managed_users[0], {}).get('name', 'vegcom') }}
-    - group: {{ pillar.get('users', {}).get(managed_users[0], {}).get('name', 'vegcom') }}
+    - name: /home/{{ run_user }}/.presence
+    - user: {{ run_user }}
+    - group: {{ run_user }}
     - mode: 700
     - makedirs: True
 
@@ -34,7 +31,7 @@ cozy-presence-cli:
     - source: salt://common/files/opt-cozy/bin/presence
     - mode: 755
     - require:
-      - git: cozy-presence-repo
+      - git: cozy_presence_repo
 
 # Install systemd service
 cozy-presence-service-file:
@@ -42,6 +39,8 @@ cozy-presence-service-file:
     - name: /etc/systemd/system/cozy-presence.service
     - source: salt://common/services/cozy-presence.service
     - template: jinja
+    - context:
+        run_user: {{ run_user }}
     - mode: 644
 
 # Enable and start service
@@ -54,4 +53,4 @@ cozy-presence-service:
       - cmd: cozy-presence-deps
       - file: cozy-presence-data-dir
     - watch:
-      - git: cozy-presence-repo
+      - git: cozy_presence_repo
