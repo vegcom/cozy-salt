@@ -7,32 +7,7 @@ Wants=network.target
 Type=simple
 User={{ run_user }}
 Environment=PYTHONPATH=/opt/cozy/cozy-presence/src
-ExecStart=/opt/miniconda/envs/cozy-presence/bin/python -c "
-import sys, time
-sys.path.insert(0, '/opt/cozy/cozy-presence/src')
-from cozy_presence.store import Store
-from cozy_presence.index import Index
-from cozy_presence.sync import SyncClient
-
-# Initialize components
-store = Store()
-index = Index()
-sync = SyncClient()
-
-print('cozy-presence daemon started')
-
-# Bootstrap index on startup
-if index.available:
-    entities = store.all_entities()
-    if entities:
-        count = index.bootstrap(entities)
-        print(f'Bootstrapped {count} entities')
-
-# Keep alive
-while True:
-    time.sleep(60)
-    # TODO: periodic sync, health checks, etc.
-"
+ExecStart=/opt/miniforge3/envs/cozy-presence/bin/python /opt/cozy/cozy-presence/bin/cozy-presence-daemon.py
 Restart=always
 RestartSec=10
 
