@@ -5,7 +5,7 @@
 repos:
   # Shell script linting
   - repo: https://github.com/shellcheck-py/shellcheck-py
-    rev: v0.10.0.1
+    rev: v0.11.0.1
     hooks:
       - id: shellcheck
         args: ["--severity=warning"]
@@ -13,7 +13,7 @@ repos:
 
   # YAML linting (catches Salt state syntax issues early)
   - repo: https://github.com/adrienverge/yamllint
-    rev: v1.35.1
+    rev: v1.38.0
     hooks:
       - id: yamllint
         args: ["--strict", "-d", "{extends: relaxed, rules: {line-length: {max: 200}}}"]
@@ -21,7 +21,7 @@ repos:
 
   # Python linting (for Salt modules)
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.8.6
+    rev: v0.15.1
     hooks:
       - id: ruff
         args: ["--fix"]
@@ -29,7 +29,7 @@ repos:
 
   # General file hygiene
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
         exclude: \.md$
