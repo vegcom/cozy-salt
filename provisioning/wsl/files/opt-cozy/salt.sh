@@ -33,7 +33,7 @@ fi
 
 # Start the Docker socket proxy first (for Windows access)
 echo "Starting Docker socket proxy..."
-docker compose -f /opt/cozy/docker-proxy.yaml up -d
+docker compose -f /opt/cozy/bin/docker-proxy.yaml up -d
 
 # Start Salt Master
 echo "Starting Salt Master..."

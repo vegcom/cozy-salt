@@ -3,6 +3,7 @@
 #
 # Usage: docker compose -f /opt/cozy/docker-proxy.yaml up -d
 # Windows: docker context create wsl --docker "host=tcp://localhost:2375"
+# TODO: move to /opt/copzy/docker
 
 services:
   # Traefik for routing (optional, provides metrics/dashboard)

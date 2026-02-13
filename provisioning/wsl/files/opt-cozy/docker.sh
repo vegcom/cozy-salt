@@ -58,5 +58,6 @@ fi
 
 echo ""
 echo "=== Docker Socket Proxy Setup ==="
+# TODO: move to /opt/cozy/docker
 echo "Run 'docker compose -f /opt/cozy/docker-proxy.yaml up -d' to start the socket proxy"
 echo "Windows can then access Docker at tcp://localhost:2375"

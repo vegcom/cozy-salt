@@ -205,7 +205,7 @@ HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
 - [ ] IPA provisioning (awaiting secrets management solution - explore lightweight alternatives to Vault)
 - [ ] BM provisioning (awaiting foreman replacement - explore lightweight alternatives for x86_64 && arm)
 - [ ] Integrate cozy-fragments (Windows Terminal config fragments) - manual for now <<<git@github.com>:vegcom/cozy-fragments.git>>
-- [x] Integrate cozy-ssh (SSH config framework) - `srv/salt/linux/cozy-ssh.sls` clones to `/opt/cozy/cozy-ssh`, symlinks per-user
+- [x] Integrate cozy-ssh (SSH config framework) - `srv/salt/linux/cozy-ssh.sls` clones to `/opt/cozy/cozy-ssh`, symlinks per-user - <https://github.com/vegcom/cozy-ssh>
 
 ## Pending review
 

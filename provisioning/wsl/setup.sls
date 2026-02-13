@@ -23,7 +23,7 @@
 # Docker proxy config (shared with linux)
 /opt/cozy/docker-proxy.yaml:
   file.managed:
-    - source: salt://provisioning/common/files/opt-cozy/docker-proxy.yaml
+    - source: salt://provisioning/common/files/opt-cozy-docker/docker-proxy.yaml
     - user: {{ grains['username'] }}
     - group: {{ grains['username'] }}
     - mode: "0644"
@@ -36,6 +36,7 @@ wsl_setup_instructions:
     - text: |
         WSL provisioning scripts deployed to /opt/cozy/
 
+        # TODO: Move to /opt/cozy/docker
         Run in order:
         1. /opt/cozy/docker.sh       - Install Docker
         2. /opt/cozy/enable-openssh.sh - Set up SSH on port 2222

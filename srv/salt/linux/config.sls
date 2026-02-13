@@ -79,7 +79,7 @@ cozy_opt_dir:
     - name: /opt/cozy
     - source: salt://linux/files/opt-cozy
     - makedirs: True
-    - mode: "0755"
+    - mode: "0775"
     - order: 1
     - recurse:
       - user
@@ -87,11 +87,11 @@ cozy_opt_dir:
 
 cozy_opts:
   file.recurse:
-    - name: /opt/cozy
+    - name: /opt/cozy/bin/
     - source: salt://linux/files/opt-cozy
     - include_empty: True
     - clean: False
-    - dir_mode: "0755"
+    - dir_mode: "0775"
     - file_mode: "0774"
     - order: 0
     - require:
@@ -100,19 +100,19 @@ cozy_opts:
 # Generate banners during highstate
 run_gen_motd:
   cmd.run:
-    - name: /opt/cozy/gen_motd.sh
+    - name: /opt/cozy/bin/gen_motd.sh
     - require:
       - file: cozy_opts
 
 run_gen_issue:
   cmd.run:
-    - name: /opt/cozy/gen_issue.sh
+    - name: /opt/cozy/bin/gen_issue.sh
     - require:
       - file: cozy_opts
 
 run_gen_issuenet:
   cmd.run:
-    - name: /opt/cozy/gen_issuenet.sh
+    - name: /opt/cozy/bin/gen_issuenet.sh
     - require:
       - file: cozy_opts
 

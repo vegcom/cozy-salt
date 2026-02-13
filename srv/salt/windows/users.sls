@@ -45,7 +45,7 @@ windows_profile_health_check:
     - password_lock: False
     - empty_password: {{ 'True' if not userdata.get('password') else 'False' }}
     - enforce_password: {{ 'True' if userdata.get('password') else 'False' }}
-    - win_logonscript: C:\\opt\cozy\login.ps1
+    - win_logonscript: C:\\opt\cozy\bin\login.ps1
     - win_profile: C:\Users\{{ username }}\
 
 # Force profile creation by running a command as the user

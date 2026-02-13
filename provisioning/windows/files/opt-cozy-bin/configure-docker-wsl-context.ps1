@@ -35,6 +35,7 @@ if ($LASTEXITCODE -eq 0) {
     Write-Host "Docker connection failed." -ForegroundColor Yellow
     Write-Host "Ensure WSL is running with Docker and the socket proxy:" -ForegroundColor Yellow
     Write-Host "  wsl -d Ubuntu" -ForegroundColor Gray
-    Write-Host "  /opt/cozy/docker.sh" -ForegroundColor Gray
+    Write-Host "  /opt/cozy/bin/docker.sh" -ForegroundColor Gray
+    # TODO: move to /opt/cozy/docker/
     Write-Host "  docker compose -f /opt/cozy/docker-proxy.yaml up -d" -ForegroundColor Gray
 }

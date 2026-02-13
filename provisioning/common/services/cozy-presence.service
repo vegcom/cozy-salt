@@ -5,11 +5,11 @@ Wants=network.target
 
 [Service]
 Type=simple
-User={{ pillar.get('users', {}).get(managed_users[0], {}).get('name', 'vegcom') }}
-Environment=PYTHONPATH=/opt/cozy-presence/src
+User={{ run_user }}
+Environment=PYTHONPATH=/opt/cozy/cozy-presence/src
 ExecStart=/opt/miniconda/envs/cozy-presence/bin/python -c "
 import sys, time
-sys.path.insert(0, '/opt/cozy-presence/src')
+sys.path.insert(0, '/opt/cozy/cozy-presence/src')
 from cozy_presence.store import Store
 from cozy_presence.index import Index
 from cozy_presence.sync import SyncClient

@@ -34,7 +34,7 @@ find ./provisioning -type f ! -name "*.sh" ! -name "*.ps1" -print0 2>/dev/null |
 
 # provisioning/*/* executable scripts → 775
 echo "Fixing provisioning scripts (775)..."
-find ./provisioning \( -path "*/opt-cozy/*.sh" -o -path "*/opt-cozy/*.ps1" \) -type f -print0 2>/dev/null | \
+find ./provisioning \( -path "*/opt-cozy/*.sh" -o -path "*/opt-cozy-bin/*.ps1" \) -type f -print0 2>/dev/null | \
   while IFS= read -r -d '' file; do
     [[ $(stat -c '%a' "$file") != 775 ]] && chmod 775 "$file" && ((changed++))
   done
