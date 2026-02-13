@@ -138,6 +138,8 @@ HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
 
 ## Modern changes
 
+### High
+
 - [ ] replace old admin references for install and defer to service user where possible, som examples below
   - `{% set service_user = salt['pillar.get']('managed_users', ['admin'])[0] %}`
   - `runas: admin`
