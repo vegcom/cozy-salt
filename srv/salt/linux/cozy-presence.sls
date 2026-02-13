@@ -54,21 +54,20 @@ cozy-presence-cli:
     - require:
       - git: cozy_presence_repo
 
+# TODO: Managed in srv/salt/linux/config.sls
 # Install systemd service
 cozy-presence-service-file:
   file.managed:
-    - name: /etc/systemd/system/cozy-presence.service
-    - source: salt://common/services/cozy-presence.service
-    - template: jinja
-    - context:
-        run_user: {{ run_user }}
+    - name: /etc/systemd/user/cozy-presence@.service
+    - source: salt://linux/files/etc-systemd-user/cozy-presence@.service
     - mode: 644
 
 # Enable and start service
 cozy-presence-service:
   service.running:
-    - name: cozy-presence
+    - name: cozy-presence@{{ run_user }}
     - enable: True
+    - user: {{ run_user }}
     - require:
       - file: cozy-presence-service-file
       - cmd: cozy-presence-deps

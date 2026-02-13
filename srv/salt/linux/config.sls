@@ -221,6 +221,20 @@ sshd_service:
     - name: SSH service disabled (host:services:ssh_enabled = false)
 {% endif %}
 
+etc_systemd_system_units:
+  file.directory:
+    - name: /etc/systemd/system
+    - user: root
+    - group: root
+    - mode: "0755"
+
+etc_systemd_user_units:
+  file.directory:
+    - name: /etc/systemd/user
+    - user: root
+    - group: root
+    - mode: "0755"
+
 cozy_etc_systemd_system:
   file.recurse:
     - name: /etc/systemd/system
@@ -232,7 +246,7 @@ cozy_etc_systemd_system:
     - file_mode: "0644"
     - dir_mode: "0755"
 
-cozy_etc_systemd_user:
+cozy_etc_systemd_user_units:
   file.recurse:
     - name: /etc/systemd/user
     - source: salt://linux/files/etc-systemd-user
