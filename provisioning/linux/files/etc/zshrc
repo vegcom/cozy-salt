@@ -5,7 +5,7 @@
 autoload -Uz compinit
 compinit -u
 
-if [ -n "${__ETC_ZSH_ZPROFILE_SOURCED}" ]; then
+if [ -n "${__ETC_ZSHRC_SOURCED}" ]; then
     if [ -n "${__ETC_ZSHRC_SOURCED}" ]; then
         return 0
     fi
