@@ -18,3 +18,15 @@ pacman:
       enabled: true
   # repos_extra adds NEW repos without replacing base repos
   repos_extra: {}
+
+# Hosts file entries for network services
+# Per-host overrides supported via pillar merge (e.g. localhost for self)
+network:
+  hosts:
+    example:
+      comment: example host
+      ips:
+        - 127.0.0.1
+      names:
+        - example
+        - example.local

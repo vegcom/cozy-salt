@@ -2,7 +2,6 @@
 # User environment, shell setup, and system configuration
 
 {% set network_config = salt['pillar.get']('network', {}) %}
-{% set hosts = network_config.get('hosts', {}) %}
 {% set dns = network_config.get('dns', {}) %}
 {% set is_container = salt['file.file_exists']('/.dockerenv') or
                       salt['file.file_exists']('/run/.containerenv') %}
@@ -160,17 +159,7 @@ apt_allow_unauthenticated:
     - name: Skipping APT config on non-Debian system
 {% endif %}
 
-# TODO: support dicts of lists for name and ip for a short name.
-# Manage /etc/hosts entries for network services (from pillar.network.hosts)
-{% for ips, hostname in hosts.items() %}
-hosts_entry_{{ hostname.split(' ')[0] | replace('.', '_') }}:
-  host.present:
-    - name: {{ hostname }}
-    {%- for ip in ips.split(' ')%}
-    - ip: {{ ip }}
-    {%- endfor %}
-    - clean: True
-{% endfor %}
+# Hosts entries managed in common.hosts (cross-platform)
 
 # Configure DNS search domain (skip in containers - they have their own DNS)
 {% if not is_container %}

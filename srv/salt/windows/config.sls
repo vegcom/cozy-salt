@@ -2,8 +2,6 @@
 # User setup, environment, and system configuration
 # See docs/modules/windows-config.md for configuration
 
-{% set network_config = salt['pillar.get']('network', {}) %}
-{% set hosts = network_config.get('hosts', {}) %}
 {% set paths = salt['pillar.get']('paths', {}) %}
 {% set sshd_config_d = paths.get('sshd_config_d', 'C:\\ProgramData\\ssh\\sshd_config.d') %}
 {% set pwsh_7_profile = paths.get('powershell_7_profile', 'C:\\Program Files\\PowerShell\\7') %}
@@ -44,23 +42,7 @@ uac_auto_elevate_admins:
     - vdata: 0
     - vtype: REG_DWORD
 
-# Manage Windows hosts file entries for network services (from pillar.network.hosts)
-windows_hosts_entries:
-  cmd.run:
-    - name: |
-        $hostsFile = "C:\Windows\System32\drivers\etc\hosts"
-        $entries = @(
-        {% for ip, hostname in hosts.items() %}
-          "{{ ip }} {{ hostname }}",
-        {% endfor %}
-        )
-        foreach ($entry in $entries) {
-          $exists = Select-String -Path $hostsFile -Pattern ([regex]::Escape($entry)) -Quiet -ErrorAction SilentlyContinue
-          if (-not $exists) {
-            Add-Content -Path $hostsFile -Value $entry
-          }
-        }
-    - shell: pwsh
+# Hosts entries managed in common.hosts (cross-platform)
 
 # Bootstrap script deployment
 opt-cozy:

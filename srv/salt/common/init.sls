@@ -5,3 +5,4 @@ include:
   - common.scheduler
   - common.gitconfig
   - common.vim
+  - common.hosts
