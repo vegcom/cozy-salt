@@ -11,7 +11,7 @@ fi
 if awk '/Ubuntu/ { found=1; exit } END { exit !found }' /etc/os-release ; then
   if [ -d /etc/bash_completion.d/ ] ; then
     # shellcheck disable=SC1091 disable=SC1090
-    source /etc/bash_completion.d/*.bash
+    . /etc/bash_completion.d/*.bash
   fi
 fi
 

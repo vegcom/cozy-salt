@@ -1,2 +1,2 @@
 #!/bin/zsh
-source /etc/profile
+. /etc/profile

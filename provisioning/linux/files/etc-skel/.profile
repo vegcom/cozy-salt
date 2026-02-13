@@ -2,6 +2,7 @@
 # ~/.profile
 # Managed by Salt - DO NOT EDIT MANUALLY
 
-# Source usrs own .profile.local
+if [[ -f "$HOME"/.bashrc.local ]]; then
 # shellcheck disable=SC1091
-source "$HOME"/.profile.local
+  . "$HOME"/.profile.local
+fi

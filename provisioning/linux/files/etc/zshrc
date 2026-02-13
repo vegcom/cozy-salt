@@ -6,9 +6,7 @@ autoload -Uz compinit
 compinit -u
 
 if [ -n "${__ETC_ZSHRC_SOURCED}" ]; then
-    if [ -n "${__ETC_ZSHRC_SOURCED}" ]; then
-        return 0
-    fi
+    return 0
 fi
 
 # Carapace
