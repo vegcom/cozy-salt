@@ -1,6 +1,9 @@
 #!/bin/bash
 # 2-path.sh
 
+# Salt onedir installs go here
+safe_append_path '/opt/saltstack/salt'
+
 # Build PATH the way both distros would love
 safe_append_path '/usr/local/sbin'
 safe_append_path '/usr/local/bin'
