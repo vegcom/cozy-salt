@@ -1,4 +1,3 @@
-# ~/.config/systemd/user/tmux@.service
 [Unit]
 Description=tmux session %i
 Documentation=man:tmux(1)

@@ -1,0 +1,17 @@
+[Unit]
+Description=CCFlare iptables rules
+After=tailscaled.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+
+ExecStartPre=-/sbin/iptables -D INPUT -p tcp --dport 8080 -j CCFlare
+ExecStartPre=-/sbin/iptables -F CCFlare
+ExecStartPre=-/sbin/iptables -X CCFlare
+
+ExecStart=/sbin/iptables -N CCFlare
+ExecStart=/sbin/iptables -A CCFlare -i lo -p tcp --dport 8080 -j ACCEPT
+ExecStart=/sbin/iptables -A CCFlare -i eth0 -p tcp --dport 8080 -j ACCEPT
+ExecStart=/sbin/iptables -A CCFlare -p tcp --dport 8080 -j DROP
+ExecStart=/sbin/iptables -A INPUT -p tcp --dport 8080 -j CCFlare

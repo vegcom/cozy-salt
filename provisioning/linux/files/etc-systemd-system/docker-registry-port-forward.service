@@ -1,5 +1,3 @@
-# ~/.config/systemd/user/docker-registry-forward.service
-# Simple unit to forward Docker registry
 [Unit]
 Description=Kubectl Port Forward Docker Registry
 

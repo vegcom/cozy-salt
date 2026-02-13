@@ -1,0 +1,18 @@
+[Unit]
+Description=Better CCFlare Server
+After=network.target better-ccflare-iptables.service
+
+[Service]
+Environment=PATH=/opt/nvm/versions/node/v24.13.0/bin/:/usr/local/bin:/usr/bin:/bin
+ExecStartPre=/opt/nvm/versions/node/v24.13.0/bin/npm install -g better-ccflare@latest
+ExecStart=/opt/nvm/versions/node/v24.13.0/bin/npx better-ccflare --serve
+Restart=on-failure
+RestartSec=5
+
+# Resource limits
+MemoryMax=4G
+MemoryHigh=2G
+CPUQuota=200%
+
+[Install]
+WantedBy=default.target

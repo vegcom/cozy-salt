@@ -1,5 +1,3 @@
-# ~/.config/systemd/user/open-webui-port-forward.service
-# Simple unit to forward Open WebUI pod port
 [Unit]
 Description=Kubectl Port Forward OpenWebUI
 

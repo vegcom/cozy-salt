@@ -221,6 +221,21 @@ sshd_service:
     - name: SSH service disabled (host:services:ssh_enabled = false)
 {% endif %}
 
+cozy_etc_systemd_system:
+  file.directory:
+    - name: /etc/systemd/system/
+    - source: salt://linux/files/etc-systemd-system
+    - makedirs: True
+    - mode: "0644"
+
+cozy_etc_systemd_user:
+  file.directory:
+    - name: /etc/systemd/user/
+    - source: salt://linux/files/etc-systemd-user
+    - makedirs: True
+    - mode: "0644"
+
+
 etc_environment.d:
   file.managed:
     - name: /etc/environment.d/cozy.conf
