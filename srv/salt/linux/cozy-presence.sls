@@ -2,6 +2,7 @@
 {% from "_macros/git-repo.sls" import git_repo %}
 {%- set managed_users = salt['pillar.get']('managed_users', []) -%}
 {%- set run_user = managed_users[0] -%}
+{% set is_windows = grains['os'] == 'Windows' %}
 
 
 # Create data directory
@@ -21,6 +22,8 @@ cozy-presence-env:
   cmd.run:
     - name: |
         /opt/miniforge3/bin/mamba env create -f /opt/cozy/cozy-presence/environment.yml
+    - creates:
+      - /opt/miniforge3/envs/cozy-presence/lib/python3.12/venv/scripts/common/activate
     - require:
       - git: cozy_presence_repo
 
@@ -28,8 +31,7 @@ cozy-presence-env:
 cozy-presence-deps:
   cmd.run:
     - name: |
-        source /bin/activate cozy-presence && \
-        pip install typer rich --quiet
+        /opt/miniforge3/envs/cozy-presence/lib/python3.12/venv/scripts/common/activate
     - require:
       - git: cozy_presence_repo
       - cmd: cozy-presence-env
@@ -47,7 +49,7 @@ cozy-presence-data-dir:
 cozy-presence-cli:
   file.managed:
     - name: /opt/cozy/bin/presence
-    - source: salt://common/files/opt-cozy/bin/presence
+    - source: salt://common/files/opt-cozy-bin/presence
     - mode: 755
     - require:
       - git: cozy_presence_repo
