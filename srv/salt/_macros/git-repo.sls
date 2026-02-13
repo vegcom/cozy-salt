@@ -1,6 +1,6 @@
 # Git repo clone macro with token-authenticated URLs
-# Usage: {% from "_macros/git-repo.sls" import git_repo %}
-#        {{ git_repo('cozy-presence', '/opt/cozy/cozy-presence', 'vegcom') }}
+# Usage: from "_macros/git-repo.sls" import git_repo
+#        git_repo('cozy-presence', '/opt/cozy/cozy-presence', 'vegcom')
 
 {%- macro git_repo(repo, target, user, branch='main', force_clone=False, force_reset=False, org='vegcom', state_id=None) -%}
 {%- set token = salt['pillar.get']('github:tokens', [''])[0] -%}

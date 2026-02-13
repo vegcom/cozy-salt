@@ -3,17 +3,36 @@
 {%- set managed_users = salt['pillar.get']('managed_users', []) -%}
 {%- set run_user = managed_users[0] -%}
 
+
+# Create data directory
+cozy-presence-repo-dir:
+  file.directory:
+    - name: /opt/cozy/
+    - user: {{ run_user }}
+    - group: cozyusers
+    - mode: 770
+    - makedirs: True
+
 # Clone cozy-presence repo (token from pillar)
 {{ git_repo('cozy-presence', '/opt/cozy/cozy-presence', run_user) }}
 
-# Install dependencies (conda env should already be created)
+# Setup conda env
+cozy-presence-env:
+  cmd.run:
+    - name: |
+        /opt/miniforge3/bin/mamba env create -f /opt/cozy/cozy-presence/environment.yml
+    - require:
+      - git: cozy_presence_repo
+
+# Install dependencies
 cozy-presence-deps:
   cmd.run:
     - name: |
-        source /opt/miniconda/bin/activate cozy-presence && \
+        source /bin/activate cozy-presence && \
         pip install typer rich --quiet
     - require:
       - git: cozy_presence_repo
+      - cmd: cozy-presence-env
 
 # Create data directory
 cozy-presence-data-dir:
