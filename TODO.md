@@ -136,6 +136,12 @@ HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
   PathUnexpanded = 1
 ```
 
+## Modern changes
+
+- [ ] replace old admin references for install and defer to service user where possible, som examples below
+  - `{% set service_user = salt['pillar.get']('managed_users', ['admin'])[0] %}`
+  - `runas: admin`
+
 ## Seperation of duty
 
 - [ ] Refactor config.sls
