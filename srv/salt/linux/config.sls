@@ -222,19 +222,26 @@ sshd_service:
 {% endif %}
 
 cozy_etc_systemd_system:
-  file.directory:
-    - name: /etc/systemd/system/
+  file.recurse:
+    - name: /etc/systemd/system
     - source: salt://linux/files/etc-systemd-system
-    - makedirs: True
-    - mode: "0644"
+    - include_empty: True
+    - clean: False
+    - user: root
+    - group: root
+    - file_mode: "0644"
+    - dir_mode: "0755"
 
 cozy_etc_systemd_user:
-  file.directory:
-    - name: /etc/systemd/user/
+  file.recurse:
+    - name: /etc/systemd/user
     - source: salt://linux/files/etc-systemd-user
-    - makedirs: True
-    - mode: "0644"
-
+    - include_empty: True
+    - clean: False
+    - user: root
+    - group: root
+    - file_mode: "0644"
+    - dir_mode: "0755"
 
 etc_environment.d:
   file.managed:
