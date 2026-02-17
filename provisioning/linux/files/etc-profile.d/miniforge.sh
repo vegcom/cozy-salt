@@ -10,17 +10,12 @@ CONDA_EXE="${CONDA_ROOT_PREFIX}/bin/conda"
 
 export MAMBA_EXE CONDA_EXE MAMBA_ROOT_PREFIX CONDA_ROOT_PREFIX
 
-# shellcheck disable=SC2139
-alias mamba="${MAMBA_EXE}"
-# shellcheck disable=SC2139
-alias conda="${CONDA_EXE}"
-
 if [ -n "$BASH_VERSION" ]; then
     if ! type -f conda &>/dev/null; then
-        eval "$(conda shell.bash hook)"
+        eval "$(${CONDA_EXE} shell.bash hook)" &>/dev/null
     fi
 elif [ -n "$ZSH_VERSION" ]; then
     if ! type -f conda &>/dev/null; then
-        eval "$(conda shell.zsh hook)"
+        eval "$(${CONDA_EXE} shell.zsh hook)" &>/dev/null
     fi
 fi
