@@ -3,6 +3,8 @@
 {%- set managed_users = salt['pillar.get']('managed_users', []) -%}
 {%- set run_user = managed_users[0] -%}
 {%- set cozy_presence_path = "/opt/cozy/cozy-presence" %}
+{%- set cozy_presence_env = "/opt/miniforge3/envs/cozy-presence" %}
+{%- set cozy_presence_bin = cozy_presence_env + "/bin" %}
 
 
 
@@ -25,7 +27,7 @@ cozy-presence-env:
     - name: |
         /opt/miniforge3/bin/mamba env create -f {{ cozy_presence_path }}/environment.yml
     - creates:
-      - /opt/miniforge3/envs/cozy-presence/lib/python3.12/venv/scripts/common/activate
+      - {{ cozy_presence_env }}/lib/python3.12/venv/scripts/common/activate
     - require:
       - git: cozy_presence_repo
 
@@ -33,18 +35,19 @@ cozy-presence-env:
 cozy-presence-deps:
   cmd.run:
     - name: |
-        /opt/miniforge3/envs/cozy-presence/lib/python3.12/venv/scripts/common/activate
+        {{ cozy_presence_env }}/lib/python3.12/venv/scripts/common/activate
     - require:
       - git: cozy_presence_repo
       - cmd: cozy-presence-env
 
-# DEBUG
-cozy-presence-pip:
-  cmd.run:
-    - name: pip install -e {{ cozy_presence_path }}
-    - require:
-      - git: cozy_presence_repo
-      - cmd: cozy-presence-env
+# FIXME: not-working
+# cozy-presence-pip:
+#   cmd.run:
+#     - name: {{ cozy_presence_bin }}/pip install -e {{ cozy_presence_path }}
+#     - runas: {{ run_user }}
+#     - require:
+#       - git: cozy_presence_repo
+#       - cmd: cozy-presence-env
 
 # Create data directory
 cozy-presence-data-dir:
