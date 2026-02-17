@@ -6,8 +6,6 @@
 {%- set cozy_presence_env = "/opt/miniforge3/envs/cozy-presence" %}
 {%- set cozy_presence_bin = cozy_presence_env + "/bin" %}
 
-
-
 # Create data directory
 cozy-presence-repo-dir:
   file.directory:
@@ -22,7 +20,7 @@ cozy-presence-repo-dir:
 {{ git_repo('cozy-presence', cozy_presence_path, run_user) }}
 
 # Setup conda env
-cozy-presence-env:
+cozy_presence_env_create:
   cmd.run:
     - name: |
         /opt/miniforge3/bin/mamba env create -f {{ cozy_presence_path }}/environment.yml
@@ -31,26 +29,25 @@ cozy-presence-env:
     - require:
       - git: cozy_presence_repo
 
-# Install dependencies
-cozy-presence-deps:
+# Update conda env
+cozy_presence_env_update:
   cmd.run:
     - name: |
-        {{ cozy_presence_env }}/lib/python3.12/venv/scripts/common/activate
+        /opt/miniforge3/bin/mamba env update -f {{ cozy_presence_path }}/environment.yml --prune
+    - require:
+      - cmd: cozy_presence_env_create
+
+# Install in conda env
+cozy_presence_pip:
+  cmd.run:
+    - name: |
+        {{ cozy_presence_bin }}/pip install -e {{ cozy_presence_path }}
     - require:
       - git: cozy_presence_repo
-      - cmd: cozy-presence-env
-
-# FIXME: not-working
-# cozy-presence-pip:
-#   cmd.run:
-#     - name: {{ cozy_presence_bin }}/pip install -e {{ cozy_presence_path }}
-#     - runas: {{ run_user }}
-#     - require:
-#       - git: cozy_presence_repo
-#       - cmd: cozy-presence-env
+      - cmd: cozy_presence_env_create
 
 # Create data directory
-cozy-presence-data-dir:
+cozy_presence_data_dir:
   file.directory:
     - name: /home/{{ run_user }}/.presence
     - user: {{ run_user }}
@@ -59,7 +56,7 @@ cozy-presence-data-dir:
     - makedirs: True
 
 # Install CLI wrapper
-cozy-presence-cli:
+cozy_presence_cli:
   file.managed:
     - name: /opt/cozy/bin/presence
     - source: salt://common/files/opt-cozy-bin/presence
@@ -69,13 +66,13 @@ cozy-presence-cli:
 
 # TODO: Managed in srv/salt/linux/config.sls
 # Install systemd service
-cozy-presence-service-file:
+cozy_presence_service_file:
   file.managed:
     - name: /etc/systemd/user/cozy-presence@.service
     - source: salt://linux/files/etc-systemd-user/cozy-presence@.service
     - mode: 644
 
-cozy-presence-service:
+cozy_presence_service:
   cmd.run:
     - name: |
         systemctl --user daemon-reload
@@ -84,8 +81,7 @@ cozy-presence-service:
     - env:
         XDG_RUNTIME_DIR: /run/user/{{ salt['user.info'](run_user)['uid'] }}
     - require:
-      - file: cozy-presence-service-file
-      - cmd: cozy-presence-deps
-      - file: cozy-presence-data-dir
+      - file: cozy_presence_service_file
+      - file: cozy_presence_data_dir
     - watch:
       - git: cozy_presence_repo
