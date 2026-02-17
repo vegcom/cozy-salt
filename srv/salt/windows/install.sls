@@ -80,7 +80,7 @@ winget_runtime_{{ pkg | replace('.', '_') | replace('-', '_') }}:
     - shell: powershell
     - name: '{{ winget_path }} install --scope machine --accept-source-agreements --accept-package-agreements --disable-interactivity --exact --id {{ pkg }}'
     - unless: '{{ winget_path }} list --exact --id {{ pkg }} | Select-String -Quiet -Pattern ''{{ pkg }}'''
-    - onlyif: (Test-Path '{{ winget_path }}') -and (& '{{ winget_path }}' --version 2>$null)
+    - onlyif: Test-Path '{{ winget_path }}'
     - timeout: 300
 {% endfor %}
 {% endfor %}
@@ -106,7 +106,7 @@ winget_{{ pkg | replace('.', '_') | replace('-', '_') }}:
     - runas: {{ winget_user }}
     - shell: powershell
     - unless: '{{ winget_path }} list --exact --id {{ pkg }} | Select-String -Quiet -Pattern ''{{ pkg }}'''
-    - onlyif: (Test-Path '{{ winget_path }}') -and (& '{{ winget_path }}' --version 2>$null)
+    - onlyif: Test-Path '{{ winget_path }}'
     - timeout: 300
 {% endfor %}
 {% endfor %}
@@ -125,7 +125,7 @@ winget_userland_{{ user | replace('.', '_') | replace('-', '_') }}_{{ pkg | repl
     - runas: {{ user }}
     - shell: powershell
     - unless: '{{ user_winget }} list --exact --id {{ pkg }} | Select-String -Quiet -Pattern ''{{ pkg }}'''
-    - onlyif: (Test-Path '{{ user_winget }}') -and (& '{{ user_winget }}' --version 2>$null)
+    - onlyif: Test-Path '{{ user_winget }}'
     - timeout: 300
     {% endfor %}
   {% endfor %}
