@@ -35,19 +35,23 @@ miniforge_system_profile:
 
 # nvm.sh deployed by linux/nvm.sls (avoid double deploy)
 
-yay_wrapper_profile:
-  file.managed:
-    - name: /etc/profile.d/yay-wrapper.sh
-    - source: salt://linux/files/etc-profile.d/yay-wrapper.sh
+cozy_etc_profiled_path:
+  file.directory:
+    - name: /etc/profile.d
+    - user: root
+    - group: root
     - mode: "0755"
 
-{% for include_file in include_files %}
-cozy_etc_profiled_{{ include_file | replace('-', '_') }}:
-  file.managed:
-    - name: /etc/profile.d/{{ include_file }}
-    - source: salt://linux/files/etc-profile.d/{{ include_file }}
-    - mode: "0644"
-{% endfor %}
+cozy_etc_profiled:
+  file.recurse:
+    - name: /etc/profile.d
+    - source: salt://linux/files/etc-profile.d/
+    - include_empty: True
+    - clean: False
+    - user: root
+    - group: root
+    - file_mode: "0644"
+    - dir_mode: "0755"
 
 cozy_etc_profile:
   file.managed:
@@ -222,13 +226,6 @@ etc_systemd_system_units:
     - group: root
     - mode: "0755"
 
-etc_systemd_user_units:
-  file.directory:
-    - name: /etc/systemd/user
-    - user: root
-    - group: root
-    - mode: "0755"
-
 cozy_etc_systemd_system:
   file.recurse:
     - name: /etc/systemd/system
@@ -239,6 +236,13 @@ cozy_etc_systemd_system:
     - group: root
     - file_mode: "0644"
     - dir_mode: "0755"
+
+etc_systemd_user_units:
+  file.directory:
+    - name: /etc/systemd/user
+    - user: root
+    - group: root
+    - mode: "0755"
 
 cozy_etc_systemd_user_units:
   file.recurse:
