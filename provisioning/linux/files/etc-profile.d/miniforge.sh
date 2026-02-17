@@ -16,7 +16,11 @@ alias mamba="${MAMBA_EXE}"
 alias conda="${CONDA_EXE}"
 
 if [ -n "$BASH_VERSION" ]; then
-    eval "$(conda shell.bash hook)"
+    if ! type -f conda &>/dev/null; then
+        eval "$(conda shell.bash hook)"
+    fi
 elif [ -n "$ZSH_VERSION" ]; then
-    eval "$(conda shell.zsh hook)"
+    if ! type -f conda &>/dev/null; then
+        eval "$(conda shell.zsh hook)"
+    fi
 fi
