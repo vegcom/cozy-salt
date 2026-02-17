@@ -89,10 +89,10 @@ cozy_opt_dir:
       - user
       - group
 
-cozy_opts:
+cozy_opt_bin:
   file.recurse:
     - name: /opt/cozy/bin/
-    - source: salt://linux/files/opt-cozy
+    - source: salt://linux/files/opt-cozy-bin
     - include_empty: True
     - clean: False
     - dir_mode: "0775"
@@ -106,19 +106,19 @@ run_gen_motd:
   cmd.run:
     - name: /opt/cozy/bin/gen_motd.sh
     - require:
-      - file: cozy_opts
+      - file: cozy_opt_bin
 
 run_gen_issue:
   cmd.run:
     - name: /opt/cozy/bin/gen_issue.sh
     - require:
-      - file: cozy_opts
+      - file: cozy_opt_bin
 
 run_gen_issuenet:
   cmd.run:
     - name: /opt/cozy/bin/gen_issuenet.sh
     - require:
-      - file: cozy_opts
+      - file: cozy_opt_bin
 
 # Silence pam_lastlog2 output on login (append 'silent' if missing)
 {% if grains['os_family'] == 'Debian' %}
