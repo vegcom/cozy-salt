@@ -2,7 +2,8 @@
 {% from "_macros/git-repo.sls" import git_repo %}
 {%- set managed_users = salt['pillar.get']('managed_users', []) -%}
 {%- set run_user = managed_users[0] -%}
-{% set is_windows = grains['os'] == 'Windows' %}
+{%- set cozy_presence_path = "/opt/cozy/cozy-presence" %}
+
 
 
 # Create data directory
@@ -13,15 +14,16 @@ cozy-presence-repo-dir:
     - group: cozyusers
     - mode: 770
     - makedirs: True
+    - creates: /opt/cozy/
 
 # Clone cozy-presence repo (token from pillar)
-{{ git_repo('cozy-presence', '/opt/cozy/cozy-presence', run_user) }}
+{{ git_repo('cozy-presence', cozy_presence_path, run_user) }}
 
 # Setup conda env
 cozy-presence-env:
   cmd.run:
     - name: |
-        /opt/miniforge3/bin/mamba env create -f /opt/cozy/cozy-presence/environment.yml
+        /opt/miniforge3/bin/mamba env create -f {{ cozy_presence_path }}/environment.yml
     - creates:
       - /opt/miniforge3/envs/cozy-presence/lib/python3.12/venv/scripts/common/activate
     - require:
@@ -32,6 +34,14 @@ cozy-presence-deps:
   cmd.run:
     - name: |
         /opt/miniforge3/envs/cozy-presence/lib/python3.12/venv/scripts/common/activate
+    - require:
+      - git: cozy_presence_repo
+      - cmd: cozy-presence-env
+
+# DEBUG
+cozy-presence-pip:
+  cmd.run:
+    - name: pip install -e {{ cozy_presence_path }}
     - require:
       - git: cozy_presence_repo
       - cmd: cozy-presence-env
