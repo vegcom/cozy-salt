@@ -56,7 +56,7 @@ export TMUX_TMPDIR="$HOME/scratch"
 export CCACHE_DIR="$HOME/scratch/ccache"
 export CCACHE_SLOPPINESS="locale,time_macros"
 export CCACHE_PATH="/usr/bin"
-export CCACHE_MAXSIZE="4G"
+export CCACHE_MAXSIZE="8G"
 export CCACHE_COMPRESS=true
 
 export CC="ccache gcc"
