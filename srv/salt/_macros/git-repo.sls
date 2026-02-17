@@ -16,5 +16,7 @@
 {%- endif %}
 {%- if force_reset %}
     - force_reset: True
+{%- else %}
+    - force_reset: remote-changes
 {%- endif %}
 {%- endmacro -%}
