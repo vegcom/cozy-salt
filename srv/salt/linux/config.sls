@@ -9,7 +9,6 @@
                 'microsoft' in salt['cmd.run']('cat /proc/version 2>/dev/null || echo ""', python_shell=True).lower() %}
 {# SSH port: 2222 for WSL (avoids Windows SSH on 22), 22 for native Linux #}
 {% set ssh_port = 2222 if is_wsl else salt['pillar.get']('ssh:port', 22) %}
-{% set include_files = ['0-functions.sh', '1-alias.sh', '2-path.sh', '9-cozy-msg.sh', 'cozy.sh', 'zzz-cozy-board.sh'] %}
 
 # NOTE: /etc/skel is now managed in linux/users.sls (must run before user.present)
 
@@ -19,21 +18,6 @@ tmux_system_config:
     - name: /etc/tmux.conf
     - source: salt://linux/files/etc/tmux.conf
     - mode: "0644"
-
-# Deploy profile.d initialization scripts
-starship_profile:
-  file.managed:
-    - name: /etc/profile.d/starship.sh
-    - source: salt://linux/files/etc-profile.d/starship.sh
-    - mode: "0644"
-
-miniforge_system_profile:
-  file.managed:
-    - name: /etc/profile.d/miniforge.sh
-    - source: salt://linux/files/etc-profile.d/miniforge.sh
-    - mode: "0644"
-
-# nvm.sh deployed by linux/nvm.sls (avoid double deploy)
 
 cozy_etc_profiled_path:
   file.directory:
