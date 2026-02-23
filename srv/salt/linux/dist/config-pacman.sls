@@ -69,7 +69,6 @@ pacman_conf:
         [options]
         Architecture = auto
         HoldPkg = pacman glibc
-        IgnorePkg = less
         LocalFileSigLevel = Optional
         ParallelDownloads = 5
         SigLevel = Required DatabaseOptional
