@@ -66,9 +66,10 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Install Salt Master, Minion, and SSH from pre-configured repos
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-      netcat-openbsd \
+      netcat-openbsd avahi-daemon tini\
       salt-master salt-minion salt-ssh && \
-    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/*
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/*
 
 # Create mount points with correct ownership
 # Note: /srv/salt/files is for provisioning files mounted separately
@@ -86,8 +87,11 @@ RUN sed -i 's/^#default_include: master.d\/\*.conf$/default_include: master.d\/*
 COPY scripts/docker/entrypoint-master.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint-master.sh
 
+# Copy avahi service files
+COPY srv/avahi/*.service /etc/avahi/services/
+
 # Note: Healthcheck is defined in docker-compose.yaml (preferred for flexibility)
-ENTRYPOINT ["/usr/local/bin/entrypoint-master.sh"]
+ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/entrypoint-master.sh"]
 
 # ============================================================================
 # STAGE 3: salt-minion-deb

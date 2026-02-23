@@ -1,0 +1,11 @@
+<?xml version="1.0" standalone='no'?>
+<!--*-nxml-*-->
+  <service-group>
+  <name replace-wildcards=yes">%h</name>
+  <service>
+    <type>_ssh._tcp</type>
+    <port>22</port>
+    <txt-record>sd=SaltStack</txt-record>
+    <txt-record>sd=Salt Master</txt-record>
+  </service>
+</service-group>

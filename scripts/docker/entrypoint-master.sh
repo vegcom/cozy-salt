@@ -5,17 +5,17 @@ set -e
 # Local dev bind-mounts keys from host, so this only runs in CI
 # Note: Docker creates empty directories when bind-mounting non-existent files
 master_pki="/etc/salt/pki/master"
-if [ ! -f "$master_pki/master.pem" ]; then
+if [[ ! -f "${master_pki}/master.pem" ]]; then
     echo "=== Generating master keys ==="
-    mkdir -p "$master_pki"
+    mkdir -p "${master_pki}"
     # Remove empty directories Docker may have created from missing bind mounts
-    [ -d "$master_pki/master.pem" ] && rmdir "$master_pki/master.pem" 2>/dev/null || true
-    [ -d "$master_pki/master.pub" ] && rmdir "$master_pki/master.pub" 2>/dev/null || true
-    openssl genrsa -out "$master_pki/master.pem" 4096 2>/dev/null
-    openssl rsa -in "$master_pki/master.pem" -pubout -out "$master_pki/master.pub" 2>/dev/null
-    chmod 600 "$master_pki/master.pem"
-    chmod 644 "$master_pki/master.pub"
-    chown -R salt:salt "$master_pki"
+    [[ -d "${master_pki}/master.pem" ]] && rmdir "${master_pki}/master.pem" 2>/dev/null || true
+    [[ -d "${master_pki}/master.pub" ]] && rmdir "${master_pki}/master.pub" 2>/dev/null || true
+    openssl genrsa -out "${master_pki}/master.pem" 4096 2>/dev/null
+    openssl rsa -in "${master_pki}/master.pem" -pubout -out "${master_pki}/master.pub" 2>/dev/null
+    chmod 600 "${master_pki}/master.pem"
+    chmod 644 "${master_pki}/master.pub"
+    chown -R salt:salt "${master_pki}"
     echo "  + Generated master.pem and master.pub"
 fi
 
@@ -25,22 +25,28 @@ fi
 preload_dir="/etc/salt/pki/master/minions-preload"
 minions_dir="/etc/salt/pki/master/minions"
 
-if [ -d "$preload_dir" ]; then
+if [[ -d "${preload_dir}" ]]; then
     echo "=== Pre-accepting minion keys ==="
-    mkdir -p "$minions_dir"
-    for key_file in "$preload_dir"/*.pub; do
-        if [ -f "$key_file" ]; then
-            minion_id=$(basename "$key_file" .pub)
+    mkdir -p "${minions_dir}"
+    for key_file in "${preload_dir}"/*.pub; do
+        if [[ -f "${key_file}" ]]; then
+            minion_id=$(basename "${key_file}" .pub)
             # Only copy if not already accepted (preserves any runtime key changes)
-            if [ ! -f "$minions_dir/$minion_id" ]; then
-                cp "$key_file" "$minions_dir/$minion_id"
-                echo "  + Pre-accepted $minion_id"
+            if [[ ! -f "${minions_dir}/${minion_id}" ]]; then
+                cp "${key_file}" "${minions_dir}/${minion_id}"
+                echo "  + Pre-accepted ${minion_id}"
             else
-                echo "  - $minion_id already accepted"
+                echo "  - ${minion_id} already accepted"
             fi
         fi
     done
 fi
+
+echo "===  Starting wsdd...=== "
+wsdd --shortlog &
+
+echo "===  Starting avahi-daemon...=== "
+avahi-daemon --no-drop-root --daemonize --debug &
 
 echo "=== Starting Salt Master ==="
 exec salt-master -l debug
