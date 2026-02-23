@@ -35,7 +35,11 @@ base:
   # Layer 4: Hardware class
   'G@biosvendor:Valve and G@boardname:Galileo':
     - match: compound
-    - class.galileo
+    - hardware.galileo
+
+  'G@biosvendor:"EDK II" and G@boardname:Jetson':
+    - match: compound
+    - hardware.jetson
 
   # Layer 5: Per-user configs
   '* and not G@id:__NEVER_MATCH__':

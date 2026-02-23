@@ -1,7 +1,11 @@
 #!jinja|yaml
 # Valve Galileo (Steam Deck) Hardware Class
 
-docker_enabled: False
+docker_enabled: True
+
+steamdeck:
+  autologin:
+    user: deck
 
 display:
   rotation:
@@ -23,6 +27,6 @@ linux:
       theme: astronaut
       deploy_fonts: true
     autologin:
-      user: false
+      user: deck
   bluetooth:
     enabled: true
