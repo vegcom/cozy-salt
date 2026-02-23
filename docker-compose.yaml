@@ -33,8 +33,8 @@ services:
     networks:
       salt-net:
       frontend:
-        ipv4_address: ${SALT_MASTER_IP:-10.0.0.254}
-    mac_address: ${SALT_MASTER_MAC:-02:42:ac:11:00:03}
+        ipv4_address: ${SALT_MASTER_IP:-10.0.0.220}
+    mac_address: ${SALT_MASTER_MAC:-02:42:ac:11:00:10}
     restart: unless-stopped
     expose:
       - "4505"  # Master pub (ZeroMQ)

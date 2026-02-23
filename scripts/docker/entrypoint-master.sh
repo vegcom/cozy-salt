@@ -49,4 +49,4 @@ echo "===  Starting avahi-daemon...=== "
 avahi-daemon --no-drop-root --daemonize --debug &
 
 echo "=== Starting Salt Master ==="
-exec salt-master -l debug
+exec salt-master -l error "$@"

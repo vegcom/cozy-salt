@@ -67,8 +67,10 @@ docker network create -d macvlan \
 ```
 
 ```bash
-ip link add frontend-shim link eth0 type macvlan  mode bridge
-ip addr add 10.0.0.254/32 dev frontend-shim
+# 10.0.0.254 is an unassigned IP
+ip link delete frontend-shim
+ip link add frontend-shim link eth0 type macvlan mode bridge
+ip addr add 10.0.0.254/24 dev frontend-shim
 ip link set frontend-shim up
 ```
 

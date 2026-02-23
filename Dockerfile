@@ -66,7 +66,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Install Salt Master, Minion, and SSH from pre-configured repos
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-      netcat-openbsd avahi-daemon tini\
+      netcat-openbsd avahi-daemon wsdd-server tini\
       salt-master salt-minion salt-ssh && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/*
