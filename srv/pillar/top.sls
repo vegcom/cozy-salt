@@ -43,8 +43,7 @@ base:
     - users.admin
     - users.vegcom
     - users.eve
-    # TODO: enable after testing so no fs conflicts occour
-    # - users.june
+    - users.june
 
   # Layer 6: Host-specific (FINAL - overrides everything)
 {% if salt['file.file_exists'](host_file) %}
