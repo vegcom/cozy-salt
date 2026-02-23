@@ -1,11 +1,5 @@
 # cozy-salt TODO
 
-| thanks to | eve | veg | june | 4th | 5th |
-| --------- | --- | --- | --- | --- | --- |
-| design    | ✅  | ✅  | ✅  | 🔴  | 🔴  |
-| delivery  | ✅  | ✅  | ✅  | 🔴  | 🔴  |
-| audit     | ✅  | 🔴  | ✅  | 🔴  | 🔴  |
-
 ## Pending testing
 
 ```powershell
@@ -201,6 +195,15 @@ HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
 
 - [ ] Move tests/ to cozy-salt-enrollment submodule (test_states.py, test_linting.py)
 
+## Linux / Infra
+
+- [ ] **k3s.sls**: evaluate multi-node cluster vs client-only mode before finalising state design
+- [ ] **k3s.sls**: replace `k3s_download_script` / `k3s_setup_script` `cmd.run` with `file.managed` + `cmd.run` pattern (binary from pillar-versioned URL + sha256 hash)
+- [ ] **cmd.run audit**: grep all states for `cmd.run.*(wget|curl)` and migrate to `file.managed` + `cmd.run` pattern (k3s pattern as reference)
+- [ ] **managed_users**: switch all `pillar.get('managed_users', [])` calls to `merge=True` so host pillars append instead of replace
+- [ ] **masters list**: add `salt.masters` to `srv/pillar/common/salt.sls`, wire into `linux/salt_minion.sls` + `windows/salt_minion.sls`
+- [ ] **salt_minion states**: create `common/salt_minion.sls`, `linux/salt_minion.sls`, `windows/salt_minion.sls` — manage minion config, source master from pillar
+
 ## Backlog
 
 - [ ] Extract distro_aliases + package_metadata.provides to separate .map file
@@ -232,4 +235,4 @@ HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
 - [x] Salt bootstrap to leverage fork [vegcom/salt-bootstrap/develop/bootstrap-salt.sh](https://raw.githubusercontent.com/vegcom/salt-bootstrap/develop/bootstrap-salt.sh)
   - Pending approval [saltstack/salt-bootstrap/pull/2101](https://github.com/saltstack/salt-bootstrap/pull/2101)
   - install on linux as `salt-bootstrap.sh onedir latest`
-  - `curl -fsSL https://raw.githubusercontent.com/vegcom/salt-bootstrap/refs/heads/develop/bootstrap-salt.sh | bash -s -- -D onedir latest`
+  - `curl -fsSL https://raw.githubusercontent.com/vegcom/salt-bootstrap/develop/bootstrap-salt.sh | bash -s -- -D onedir latest`
