@@ -65,7 +65,7 @@ capability_meta:
 pacman:
   repos:
     kde-unstable:
-      enabled: false
+      enabled: true
       Include: /etc/pacman.d/mirrorlist
     core:
       enabled: true
