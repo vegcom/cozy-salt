@@ -75,7 +75,7 @@ package_metadata:
     firewall: [ufw, firewalld, iptables-persistent]
 
   optional:
-    modern_cli_tools: [bat, fd, ripgrep, fzf, duf, ncdu, eza, delta, zoxide]
+    modern_cli_tools: [bat, fd, ripgrep, fzf, duf, ncdu, eza, zoxide]
     dev_extras: [gh, git-lfs, tig, lazygit]
     shell_extras: [zsh-autosuggestions, zsh-syntax-highlighting, starship]
 
@@ -139,8 +139,8 @@ arch:
   acl: [acl]
   kvm: [dnsmasq, edk2-ovmf, libvirt, qemu-desktop, virt-install, virt-manager]
   interpreters: [lua, perl, python, python-pip]
-  modern_cli_extras: [bottom, delta, eza, hyperfine, procs, tealdeer, tokei, zoxide]
-  fonts: [noto-fonts, noto-fonts-emoji, noto-fonts-cjk, ttf-fira-code, ttf-hac, ttf-jetbrains-mono, inter-font]
+  modern_cli_extras: [bottom, eza, hyperfine, procs, tealdeer, tokei, zoxide]
+  fonts: [noto-fonts, noto-fonts-emoji, noto-fonts-cjk, ttf-fira-code, ttf-hack, ttf-jetbrains-mono, inter-font]
   theming: [arc-gtk-theme, kvantum, papirus-icon-theme]
 
 # ============================================================================
