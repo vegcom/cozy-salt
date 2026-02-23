@@ -3,6 +3,8 @@
 # Copy this file and rename to {username}.sls (e.g., newuser.sls)
 # Each user gets their own file in srv/pillar/users/
 
+{% set docker_enabled = salt['pillar.get']('docker_enabled', False) %}
+
 users:
   example_user:
     fullname: Example User
@@ -19,7 +21,9 @@ users:
       - cozyusers
       - libvirt
       - kvm
-      # - docker  # Uncomment if Docker enabled
+{% if docker_enabled %}
+      - docker
+{% endif %}
     windows_groups:
       - Administrators
       - Users
