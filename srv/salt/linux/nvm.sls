@@ -39,13 +39,6 @@ nvm_download_and_install:
     - require:
       - file: nvm_directory
 
-  # # Deploy NVM profile.d initialization script first
-  # nvm_profile:
-  #   file.managed:
-  #     - name: /etc/profile.d/nvm.sh
-  #     - source: salt://linux/files/etc-profile.d/nvm.sh
-  #     - mode: "0644"
-
 nvm_directory_perms:
   file.directory:
     - name: {{ nvm_path }}
@@ -75,7 +68,6 @@ nvm_install_default_version:
     - unless: test -d {{ nvm_path }}/versions/node
     - require:
       - cmd: nvm_download_and_install
-      #- file: nvm_profile
       - file: nvm_directory_perms
     - env:
       - BASH_ENV: /etc/profile.d/nvm.sh
