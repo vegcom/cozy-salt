@@ -1,6 +1,6 @@
 # Windows Node.js version management via nvm-windows
 # System-wide installation to C:\opt\nvm (consistent with Linux /opt/nvm)
-{%- from "macros/windows.sls" import win_cmd %}
+{%- from "_macros/windows.sls" import win_cmd %}
 {% set nvm_config   = salt['pillar.get']('nvm', {}) %}
 {% set nvm_version  = nvm_config.get('default_version', 'lts') %}
 {% set npm_pkg      = "https://github.com/coreybutler/nvm-windows/releases/download/1.2.2/nvm-noinstall.zip" %}
