@@ -53,6 +53,25 @@ provisioning/      # Files to deploy (configs, scripts, templates)
 scripts/           # Enrollment, Docker entrypoints, utilities
 ```
 
+## Networking
+
+Create a macvlan network and bridge
+
+```bash
+# 10.0.0.0/24 is a standin
+docker network create -d macvlan \
+  --subnet=10.0.0.0/24 \
+  --gateway=10.0.0.1 \
+  -o parent=eth0 \
+  frontend
+```
+
+```bash
+ip link add frontend-shim link eth0 type macvlan  mode bridge
+ip addr add 10.0.0.254/32 dev frontend-shim
+ip link set frontend-shim up
+```
+
 ## Pillar Configuration
 
 **Hierarchy** (later levels override earlier):
