@@ -2,7 +2,7 @@
 # Deploys git dotfiles to all managed_users
 # See docs/modules/common-gitconfig.md for usage
 
-{% import 'macros/dotfiles.sls' as dotfiles %}
+{% import '_macros/dotfiles.sls' as dotfiles %}
 
 {% set managed_users = salt['pillar.get']('managed_users', []) %}
 {% set is_windows = grains['os'] == 'Windows' %}
