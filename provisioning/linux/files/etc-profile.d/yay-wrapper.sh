@@ -79,3 +79,7 @@ yay_fix() {
     "/usr/bin/yay" -S --noconfirm --asdeps --answerclean All --rebuildall \
     $(/usr/bin/yay -Qndq)
 }
+
+
+BUILDDIR=${HOME}/scratch/
+export BUILDDIR
