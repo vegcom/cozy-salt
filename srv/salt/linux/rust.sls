@@ -35,13 +35,6 @@ rust_download_and_install:
     - require:
       - cmd: rust_download_script
 
-# Deploy Rust profile.d initialization script
-rust_profile:
-  file.managed:
-    - name: /etc/profile.d/rust.sh
-    - source: salt://linux/files/etc-profile.d/rust.sh
-    - mode: "0644"
-
 # Install Rust components via common orchestration
 include:
   - common.rust

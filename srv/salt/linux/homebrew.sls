@@ -49,15 +49,6 @@ homebrew_acl_permissions:
     - require:
       - cmd: homebrew_install
 
-# Deploy profile.d script for system-wide brew initialization
-homebrew_profile:
-  file.managed:
-    - name: /etc/profile.d/homebrew.sh
-    - source: salt://linux/files/etc-profile.d/homebrew.sh
-    - mode: "0644"
-    - require:
-      - cmd: homebrew_acl_permissions
-
 # Update Homebrew after installation (must run as non-root user)
 # Fix missing git remote and safe.directory if needed, then update
 homebrew_update:
