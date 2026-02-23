@@ -172,7 +172,6 @@ skip_dns_config:
 # Implementation delegated to common.git_env module (platform-specific)
 include:
   - common.git_env
-  - linux.config-steamdeck
 
 # ============================================================================
 # Service Management (merged from services.sls)
