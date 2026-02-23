@@ -1,5 +1,18 @@
 # cozy-salt
 
+```plain
+   ╭────────────────────────────────────────╮
+   │    cozy‑salt — a comfy little salt     │
+   ╰────────────────────────────────────────╯
+                   (^-^)
+                          ✧
+                         ✧ ✧     Q(-_-q)
+                       ✧  ✧  ✧
+                         ✧ ✧
+                          ✧
+           (づ｡◕‿‿◕｡)づ
+```
+
 SaltStack IaC for Windows/Linux workstation provisioning. Master runs in Docker.
 
 ## [outstanding folks who made it so](AUTHORS.md)
