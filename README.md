@@ -84,7 +84,7 @@ ip route add 10.0.0.220/32 dev frontend-shim
 **Hierarchy** (later levels override earlier):
 
 1. **Global defaults**: `srv/pillar/linux/init.sls`, `srv/pillar/windows/init.sls`, `srv/pillar/dist/*.sls`
-2. **Hardware classes**: `srv/pillar/class/` (e.g., `galileo.sls` for Steam Deck)
+2. **Hardware classes**: `srv/pillar/hardware/` (e.g., `galileo.sls` for Steam Deck)
 3. **Per-host overrides**: `srv/pillar/host/example.sls` (copy template, rename to hostname)
 4. **User configurations**: `srv/pillar/users/` (individual user configs, see `demo.sls` template)
 5. **Secrets**: `srv/pillar/secrets/init.sls` (gitignored, tokens/credentials)
@@ -106,6 +106,36 @@ ip route add 10.0.0.220/32 dev frontend-shim
 - See `srv/pillar/users/demo.sls` for structure
 
 ## Enrollment
+
+OneDir install is proper install
+
+Related: <https://github.com/saltstack/salt-bootstrap/pull/2101> (Arch onedir fix)
+
+### Linux
+
+```shell
+# Win-Stall on GNU/LInux
+# Example master is 10.0.0.220
+salt='10.0.0.220'
+read -p "type Minion ID: " minion_id
+if [[ ! -n $host_name ]] ; then
+  curl -L https://raw.githubusercontent.com/saltstack/salt-bootstrap/develop/bootstrap-salt.sh | sh -s -- -A ${salt} -i ${minion_id} onedir
+fi
+```
+
+### Windows
+
+Uses `bootstrap-salt.ps1` (onedir) — consistent with Linux targets.
+Bootstrap handles version resolution + install. See `lib/windows/__init__.py`.
+
+```powershell
+# Install salt
+# Example master is 10.0.0.220
+Invoke-WebRequest -Uri https://packages.broadcom.com/artifactory/saltproject-generic/windows/3007.9/Salt-Minion-3007.9-Py3-AMD64-Setup.exe -OutFile "$env:TEMP\salt-minion.exe"
+& "$env:TEMP\salt-minion.exe" /S /master=10.0.0.220 /minion-name=windows-minion
+```
+
+### Pending
 
 `git submodule update --recursive --remote`
 
