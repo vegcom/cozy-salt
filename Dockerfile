@@ -93,6 +93,8 @@ COPY srv/avahi/*.service /etc/avahi/services/
 # Note: Healthcheck is defined in docker-compose.yaml (preferred for flexibility)
 ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/entrypoint-master.sh"]
 
+EXPOSE 4505/tcp 4506/tcp 5353/udp
+
 # ============================================================================
 # STAGE 3: salt-minion-deb
 # Debian/Ubuntu minion (Ubuntu 24.04)

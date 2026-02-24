@@ -244,13 +244,13 @@ lint-ps:
 
 # Master lifecycle
 up-master:
-	docker compose up -d salt-master
+	docker compose up -d salt
 
 down-master:
 	docker compose down
 
 restart-master:
-	docker compose restart salt-master
+	docker compose restart salt
 
 # Minion lifecycle (test containers)
 up-ubuntu-test:
@@ -280,10 +280,10 @@ down: down-master
 restart: restart-master
 
 status:
-	@echo "=== Container Status ===" && docker compose ps && echo "" && echo "=== Minion Connectivity ===" && docker compose exec -t salt-master salt-run manage.status 2>/dev/null || echo "(Master not running)"
+	@echo "=== Container Status ===" && docker compose ps && echo "" && echo "=== Minion Connectivity ===" && docker compose exec -t salt salt-run manage.status 2>/dev/null || echo "(Master not running)"
 
 logs:
-	docker compose logs -f salt-master
+	docker compose logs -f salt
 
 clean:
 	@echo "=== Cleaning test artifacts... ==="
@@ -315,7 +315,7 @@ perms:
 	./scripts/fix-permissions.sh
 
 shell:
-	docker compose exec -it salt-master /bin/bash
+	docker compose exec -it salt /bin/bash
 
 debug-minion: require-MINION
 	docker compose exec -it salt-minion-$(MINION)-test /bin/bash
@@ -324,7 +324,7 @@ logs-minion: require-MINION
 	docker compose logs -f salt-minion-$(MINION)-test
 
 state-check:
-	docker compose exec -t salt-master salt-call state.show_top 2>/dev/null || echo "Error: Check state syntax in srv/salt/"
+	docker compose exec -t salt salt-call state.show_top 2>/dev/null || echo "Error: Check state syntax in srv/salt/"
 
 # Validate .sls files for YAML/Jinja syntax errors
 # Uses containerized salt-call for consistent validation
@@ -335,9 +335,9 @@ validate-states:
 	@failed=0; \
 	for sls in $$(find srv/salt -name "*.sls" -type f ! -path "*/windows/*"); do \
 		salt_path="salt://$$(echo $$sls | sed 's|srv/salt/||')"; \
-		if ! docker compose exec -T salt-master salt-call --local --file-root=/srv/salt --file-root=/provisioning slsutil.renderer "$$salt_path" >/dev/null 2>&1; then \
+		if ! docker compose exec -T salt salt-call --local --file-root=/srv/salt --file-root=/provisioning slsutil.renderer "$$salt_path" >/dev/null 2>&1; then \
 			echo "FAIL: $$sls"; \
-			docker compose exec -T salt-master salt-call --local --file-root=/srv/salt --file-root=/provisioning slsutil.renderer "$$salt_path" 2>&1 | tail -5; \
+			docker compose exec -T salt salt-call --local --file-root=/srv/salt --file-root=/provisioning slsutil.renderer "$$salt_path" 2>&1 | tail -5; \
 			failed=$$((failed + 1)); \
 		else \
 			echo "  OK: $$sls"; \
@@ -400,59 +400,59 @@ salt-docs:
 # ---------------------------------------------------------------------------
 
 salt-doc:
-	docker compose exec -t salt-master salt '*' sys.doc
+	docker compose exec -t salt salt '*' sys.doc
 
 salt-doc-module: require-MODULE
-	docker compose exec -t salt-master salt '*' sys.doc $(MODULE)
+	docker compose exec -t salt salt '*' sys.doc $(MODULE)
 
 # ---------------------------------------------------------------------------
 # Ad-hoc Command Execution
 # ---------------------------------------------------------------------------
 
 salt-cmd: require-CMD
-	docker compose exec -t salt-master salt '*' cmd.run '$(CMD)'
+	docker compose exec -t salt salt '*' cmd.run '$(CMD)'
 
 salt-cmd-target: require-TARGET require-CMD
-	docker compose exec -t salt-master salt '$(TARGET)' cmd.run '$(CMD)'
+	docker compose exec -t salt salt '$(TARGET)' cmd.run '$(CMD)'
 
 # ---------------------------------------------------------------------------
 # Grains (System Info)
 # ---------------------------------------------------------------------------
 
 salt-grains:
-	docker compose exec -t salt-master salt '*' grains.items
+	docker compose exec -t salt salt '*' grains.items
 
 salt-grains-get: require-GRAIN
-	docker compose exec -t salt-master salt '*' grains.item $(GRAIN)
+	docker compose exec -t salt salt '*' grains.item $(GRAIN)
 
 # ---------------------------------------------------------------------------
 # State Management (specific states)
 # ---------------------------------------------------------------------------
 
 salt-state-sls: require-STATE
-	docker compose exec -t salt-master salt '*' state.sls $(STATE)
+	docker compose exec -t salt salt '*' state.sls $(STATE)
 
 salt-state-sls-test: require-STATE
-	docker compose exec -t salt-master salt '*' state.sls $(STATE) test=true
+	docker compose exec -t salt salt '*' state.sls $(STATE) test=true
 
 salt-state-show: require-STATE
-	docker compose exec -t salt-master salt '*' state.show_sls $(STATE)
+	docker compose exec -t salt salt '*' state.show_sls $(STATE)
 
 # ---------------------------------------------------------------------------
 # Cache Management
 # ---------------------------------------------------------------------------
 
 salt-cache-clear:
-	docker compose exec -t salt-master salt '*' saltutil.clear_cache
+	docker compose exec -t salt salt '*' saltutil.clear_cache
 
 # DEPRECATED: Use salt-cache-clear instead
 salt-clear_cache: salt-cache-clear
 
 salt-key-list:
-	docker compose exec -t salt-master salt-key -L
+	docker compose exec -t salt salt-key -L
 
 salt-key-status:
-	@echo "=== Minion Key Status ===" && docker compose exec -t salt-master salt-key -L
+	@echo "=== Minion Key Status ===" && docker compose exec -t salt salt-key -L
 
 # DEPRECATED: Keys are baked at build time - this target no longer needed
 salt-key-cleanup-test:
@@ -460,50 +460,50 @@ salt-key-cleanup-test:
 
 salt-key-accept: require-NAME
 	@echo "=== Accept a pending minion key ==="
-	docker compose exec -t salt-master salt-key -a "$(NAME)" -y || true
+	docker compose exec -t salt salt-key -a "$(NAME)" -y || true
 
 salt-key-delete: require-NAME
 	@echo "=== Delete a minion key ==="
-	docker compose exec -t salt-master salt-key -d "$(NAME)" -y || true
+	docker compose exec -t salt salt-key -d "$(NAME)" -y || true
 
 salt-key-reject: require-NAME
 	@echo "=== Reject a pending minion key ==="
-	docker compose exec -t salt-master salt-key -r "$(NAME)" -y || true
+	docker compose exec -t salt salt-key -r "$(NAME)" -y || true
 
 salt-key-accept-test:
 	@echo "=== Accepting pending test minion keys ==="
-	docker compose exec -t salt-master salt-key -a ubuntu-test -y || true
-	docker compose exec -t salt-master salt-key -a rhel-test -y || true
-	docker compose exec -t salt-master salt-key -L
+	docker compose exec -t salt salt-key -a ubuntu-test -y || true
+	docker compose exec -t salt salt-key -a rhel-test -y || true
+	docker compose exec -t salt salt-key -L
 
 salt-manage-status:
-	docker compose exec -t salt-master salt-run manage.status
+	docker compose exec -t salt salt-run manage.status
 
 salt-jobs-active:
-	docker compose exec -t salt-master salt-run jobs.active
+	docker compose exec -t salt salt-run jobs.active
 
 salt-jobs-list:
-	docker compose exec -t salt-master salt-run jobs.list_jobs
+	docker compose exec -t salt salt-run jobs.list_jobs
 
 salt-jobs-clear:
-	docker compose exec -t salt-master salt-run jobs.clear_old_jobs 2>/dev/null || echo "No old jobs to clear"
+	docker compose exec -t salt salt-run jobs.clear_old_jobs 2>/dev/null || echo "No old jobs to clear"
 
 salt-test-ping:
-	docker compose exec -t salt-master salt '*' test.ping
+	docker compose exec -t salt salt '*' test.ping
 
 salt-state-highstate:
-	docker compose exec -t salt-master salt '*' state.highstate
+	docker compose exec -t salt salt '*' state.highstate
 
 salt-state-highstate-test:
-	docker compose exec -t salt-master salt '*' state.highstate test=true
+	docker compose exec -t salt salt '*' state.highstate test=true
 
 salt-state-apply: require-MINION
 	@echo "=== Applying state to $(MINION) ==="
-	docker compose exec -t salt-master salt '$(MINION)' state.highstate
+	docker compose exec -t salt salt '$(MINION)' state.highstate
 
 salt-state-apply-test: require-MINION
 	@echo "=== Testing state on $(MINION) ==="
-	docker compose exec -t salt-master salt '$(MINION)' state.highstate test=true
+	docker compose exec -t salt salt '$(MINION)' state.highstate test=true
 
 # =========================================================================== #
 # Salt-call: On host blocks

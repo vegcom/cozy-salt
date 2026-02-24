@@ -39,7 +39,10 @@ services:
     expose:
       - "4505"  # Master pub (ZeroMQ)
       - "4506"  # Minion ret (ZeroMQ)
+      - "5353"  # Avahi (MDNS)
     volumes:
+      # Local service discovery
+      - /var/run/dbus:/var/run/dbus
       # Salt file roots - use bind mount with subpath
       - ./srv/salt:/srv/salt:ro
       - ./srv/pillar:/srv/pillar:ro

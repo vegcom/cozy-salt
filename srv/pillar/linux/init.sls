@@ -20,6 +20,7 @@ workstation_role: 'workstation-base'
 host:
   capabilities:
     kvm: {{ 'kvm-host' in salt['grains.get']('roles', []) }}
+    k3s: {{ 'k3s-host' in salt['grains.get']('roles', []) }}
   services:
     ssh_enabled: {{ not (salt['file.file_exists']('/.dockerenv') or salt['file.file_exists']('/run/.containerenv')) }}
 
@@ -42,9 +43,6 @@ linux:
       user: false
   bluetooth:
     enabled: false
-
-role_capabilities:
-  minimal: []  # No pkg capabilities - just homebrew, ssh-keys, dotfiles
 
   workstation-minimal:
     - core_utils
@@ -120,6 +118,8 @@ capability_meta:
     has_user_groups:
       - kvm
       - libvirt
+  k3s:
+    pillar_gate: host:capabilities:k3s
   interpreters:
     state_name: interpreter_packages
   shell_history:

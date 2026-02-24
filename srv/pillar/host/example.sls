@@ -10,6 +10,11 @@ locales:
 host:
   capabilities:
     kvm: true
+    k3s: true
+
+k3s:
+  role: server
+  args: "--disable-servicelb --disable-traefik --disable-metrics-server --disable-network-policy --disable-cloud-controller --debug"
 
 # To enable chaotic_aur (already defined in dist/arch.sls as disabled):
 pacman:

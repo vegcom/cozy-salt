@@ -26,6 +26,7 @@ base:
   'G@os_family:Debian or G@os_family:RedHat or G@os_family:Arch':
     - match: compound
     - linux
+    - linux.k3s
 
   # Layer 3: Distribution
   'G@os_family:Arch':
@@ -42,6 +43,7 @@ base:
     - hardware.jetson
 
   # Layer 5: Per-user configs
+  # TODO: following a similar pattern to "Layer 6", eval based on managed_users, not clearly listed in pillar like this
   '* and not G@id:__NEVER_MATCH__':
     - match: compound
     - users.admin

@@ -74,6 +74,11 @@ ip addr add 10.0.0.254/24 dev frontend-shim
 ip link set frontend-shim up
 ```
 
+```bash
+# 10.0.0.220 is the default salt master IP
+ip route add 10.0.0.220/32 dev frontend-shim
+```
+
 ## Pillar Configuration
 
 **Hierarchy** (later levels override earlier):
