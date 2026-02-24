@@ -37,24 +37,31 @@ base:
   'G@biosvendor:Valve and G@boardname:Galileo':
     - match: compound
     - hardware.galileo
+    - users.deck
 
   'G@biosvendor:"EDK II" and G@boardname:Jetson':
     - match: compound
     - hardware.jetson
+    - users.nvidia
 
   'G@kernelrelease:*rpt-rpi*':
     - match: compound
     - hardware.rpi
 
 
-  # Layer 5: Per-user configs
-  # TODO: following a similar pattern to "Layer 6", eval based on managed_users, not clearly listed in pillar like this
+  # Layer 5: Per-user configs (gated on common managed_users)
+  {% set users_dir = '/srv/pillar/users/' %}
+  {% set skip_users = ['demo'] %}
+  {% set common = salt['slsutil.renderer'](path='/srv/pillar/common/users.sls', default_renderer='jinja|yaml') %}
+  {% set common_managed = common.get('managed_users', []) %}
   '* and not G@id:__NEVER_MATCH__':
     - match: compound
-    - users.admin
-    - users.vegcom
-    - users.eve
-    - users.june
+    {% for user_file in salt['file.find'](users_dir, type='f', name='*.sls') | sort %}
+    {% set uname = user_file | replace(users_dir, '') | replace('.sls', '') %}
+    {% if uname not in skip_users and uname in common_managed %}
+    - users.{{ uname }}
+    {% endif %}
+    {% endfor %}
 
   # Layer 6: Host-specific (FINAL - overrides everything)
 {% if salt['file.file_exists'](host_file) %}

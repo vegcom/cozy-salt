@@ -4,9 +4,11 @@
 
 users:
   deck:
-    fullname: deck
+    fullname: SteamDeck - A cozy little crashcart
     shell: /bin/bash
     home_prefix: /home
+    uid: 4001
+    gid: 4001
     ssh_keys: []
     linux_groups:
 {% if docker_enabled %}
