@@ -13,7 +13,7 @@ aur_user: {{ detected_user }}
 pacman:
   repos:
     kde-unstable:
-      enabled: true
+      enabled: false
       Include: /etc/pacman.d/mirrorlist
     core:
       enabled: true
