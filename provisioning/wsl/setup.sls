@@ -9,6 +9,7 @@
     - group: {{ grains['username'] }}
     - makedirs: True
 
+# TODO: just drop the files in /opt/cozy/script like in linux.config
 {% for script in ['docker.sh', 'salt.sh', 'enable-openssh.sh'] %}
 /opt/cozy/{{ script }}:
   file.managed:

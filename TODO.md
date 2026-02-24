@@ -17,9 +17,16 @@
 ## Admin references
 
 - [x] replace old admin references for install and defer to service user where possible, som examples below
+  - example of modern `srv/salt/common/docker.sls`
   - `{% set service_user = salt['pillar.get']('managed_users', ['admin'])[0] %}`
   - `runas: admin`
   - `srv/pillar/mgmt.sls` `cozy-salt-svc`
+
+## Docker
+
+- [ ] use modern docker install scheme
+  - [ ] `provisioning/wsl/setup.sls`
+  - [ ] `13,20: {% for script in ['docker.sh', 'salt.sh', 'enable-openssh.sh'] %}`
 
 ## Seperation of duty
 
