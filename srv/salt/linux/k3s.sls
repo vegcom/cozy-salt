@@ -7,10 +7,10 @@
 
 {% set k3s_channel = salt['pillar.get']('k3s:channel', 'latest') %}
 {% set k3s_role = salt['pillar.get']('k3s:role', 'agent') %}
-{% set k3s_args = salt['pillar.get']('k3s:args', k3s_role + " " + '--flannel-backend=none --docker --debug') %}
-{% set k3s_server = salt['pillar.get']('k3s:server', 'k3s-server') %}
-{% set k3s_token = salt['pillar.get']('k3s:token') %}
-
+{% set k3s_args = salt['pillar.get']('k3s:args', '--docker') %}
+{% set k3s_exec = [k3s_role, k3s_args] | join(' ') %}
+{% set k3s_host = salt['pillar.get']('k3s:server', 'k3s-server') %}
+{% set k3s_auth = salt['pillar.get']('k3s:token') %}
 
 k3s_download_script:
   file.managed:
@@ -22,13 +22,30 @@ k3s_download_script:
 k3s_setup_script:
   cmd.run:
     - name: bash /tmp/k3s-init.sh
-    #- unless: command -v k3s
     - require:
       - file: k3s_download_script
     - env:
+      - INSTALL_K3S_FORCE_RESTART: "true"
+      - INSTALL_K3S_SKIP_ENABLE: "true"
+      - INSTALL_K3S_SKIP_START: "true"
       - INSTALL_K3S_CHANNEL: "{{ k3s_channel }}"
-      - INSTALL_K3S_EXEC: "{{ k3s_args }}"
-      - K3S_TOKEN: "{{ k3s_token }}"
+      - INSTALL_K3S_EXEC: "{{ k3s_exec }}"
+      - K3S_TOKEN: "{{ k3s_auth }}"
 {%- if not k3s_role == "server" %}
-      - K3S_URL: {{ k3s_server }}
+      - K3S_URL: {{ k3s_host }}
 {%- endif %}
+
+k3s_uninstall_script:
+  cmd.run:
+    - name: /usr/local/bin/k3s-uninstall.sh
+    - onfail:
+      - service: k3s_service_start
+    - require:
+      - cmd: k3s_setup_script
+
+k3s_service_start:
+  service.running:
+    - name: k3s.service
+    - enable: True
+    - require:
+      - cmd: k3s_setup_script
