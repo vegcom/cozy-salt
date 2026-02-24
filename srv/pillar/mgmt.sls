@@ -5,4 +5,3 @@
 
 service_user:
   name: cozy-salt-svc
-  password: "cozy"
