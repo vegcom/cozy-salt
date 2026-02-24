@@ -1,17 +1,5 @@
 # cozy-salt TODO
 
-## Pending testing
-
-```powershell
-# Developer mode
-reg add "hklm\software\microsoft\windows\currentversion\appmodelunlock" /v "AllowDevelopmentWithoutDevLicense" /t reg_dword /d 1 /f
-
-DISM /Online /Add-Capability /CapabilityName:Tools.DeveloperMode.Core~~~~0.0.1.0
-
-# WSL
-dism /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all
-```
-
 ## pending deployment
 
 ### URGENT
@@ -34,8 +22,6 @@ dism /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all
   - all macros are in srv/salt/\_macros
   - all complex logic is reduced to macro or templates
 
-<https://gist.github.com/Rishikant181/e26fb23d4c57db74bddaa0a57b26cd26#5-creating-a-script-to-switch-back-to-desktop-mode-close-steam>
-
 ## Modern changes
 
 ### High
@@ -52,13 +38,13 @@ dism /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all
 
 ## Reactor
 
-- [ ] Windows health-check reactor
+- [x] Windows health-check reactor
   - Scheduler: `Dism /Online /Cleanup-Image /ScanHealth`
   - Reactor: on bad return (exit 1), fire `emergency-maint.ps1`
   - Scripts: `provisioning/windows/files/opt-cozy/emergency-maint.ps1`
 
-- [ ] Auto inject headers w reactor
-  - review auto-inject ( git, file )
+- [-] ~Auto inject headers w reactor~
+  - ~review auto-inject ( git, file )~
 
 ```jinja
 # auto_inject:
@@ -107,20 +93,21 @@ dism /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all
 - [x] **k3s.sls**: replace `k3s_download_script` / `k3s_setup_script` `cmd.run` with `file.managed` + `cmd.run` pattern (binary from pillar-versioned URL + sha256 hash)
 - [ ] **cmd.run audit**: grep all states for `cmd.run.*(wget|curl)` and migrate to `file.managed` + `cmd.run` pattern (k3s pattern as reference)
 - [x] **managed_users**: switch all `pillar.get('managed_users', [])` calls to `merge=True` so host pillars append instead of replace
-- [ ] **masters list**: add `salt.masters` to `srv/pillar/common/salt.sls`, wire into `linux/salt_minion.sls` + `windows/salt_minion.sls`
-- [ ] **salt_minion states**: create `common/salt_minion.sls`, `linux/salt_minion.sls`, `windows/salt_minion.sls` — manage minion config, source master from pillar
+- [x] **masters list**: add `salt.masters` to `srv/pillar/common/salt.sls`, wire into `linux/salt_minion.sls` + `windows/salt_minion.sls`
+  - [x] salt.master not salt.masters
+- [x] **salt_minion states**: create `common/salt_minion.sls`, `linux/salt_minion.sls`, `windows/salt_minion.sls` — manage minion config, source master from pillar
 
 ## Backlog
 
-- [ ] Extract distro_aliases + package_metadata.provides to separate .map file
+- [x] Extract distro_aliases + package_metadata.provides to separate .map file
   - `provisioning/distro.map` or `provisioning/packages.map`
   - Use `import_yaml` to load, cleaner separation from pkg lists
   - Salt osmap pattern: <https://docs.saltproject.io/salt/user-guide/en/latest/topics/jinja.html>
-- [ ] Auto-inject "Managed by Salt - DO NOT EDIT MANUALLY" headers
-  - Enumerate all provisioning files referenced in state sources (salt:// paths)
-  - Inject header on file deploy if not present
-  - Pre-commit hook or salt state to automate
-  - Prevents manual effort, ensures consistency
+- [-] ~Auto-inject "Managed by Salt - DO NOT EDIT MANUALLY" headers~
+  - ~Enumerate all provisioning files referenced in state sources (salt:// paths)~
+  - ~Inject header on file deploy if not present~
+  - ~Pre-commit hook or salt state to automate~
+  - ~Prevents manual effort, ensures consistency~
 - [ ] Cull verbose inline comments from .sls files, move to proper docs
 
 ## Future
