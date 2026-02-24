@@ -30,3 +30,14 @@ linux:
       user: deck
   bluetooth:
     enabled: true
+
+pacman:
+  repos:
+    jupiter-main:
+      enabled: true
+      siglevel: Never
+      server: https://steamdeck-packages.steamos.cloud/archlinux-mirror/$repo/os/$arch
+    holo-main:
+      enabled: true
+      siglevel: Never
+      server: https://steamdeck-packages.steamos.cloud/archlinux-mirror/$repo/os/$arch

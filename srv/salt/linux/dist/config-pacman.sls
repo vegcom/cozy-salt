@@ -31,14 +31,13 @@ pacman_conf:
         Architecture = auto
         HoldPkg = pacman glibc
         LocalFileSigLevel = Optional
-        ParallelDownloads = 5
-        SigLevel = Required DatabaseOptional
-        #XferCommand = /usr/local/bin/aria2-wrapper %u %o
+        SigLevel = Optional DatabaseOptional
+        XferCommand = /usr/local/bin/aria2-wrapper %u %o
+        ParallelDownloads = 8
         ILoveCandy
         VerbosePkgLists
         CheckSpace
         Color
-        SigLevel = Required DatabaseRequired
         {%- if pacman_repos %}
         {%- for repo_name, repo_config in pacman_repos.items() %}
         {%- if repo_config.get('enabled', false) %}
@@ -66,11 +65,43 @@ pacman_conf:
         {%- endif %}
 
 
-pacman_sync_after_config:
+pacman_init_key:
   cmd.run:
-    - name: pacman -Syyu --noconfirm && pacman -Scc --noconfirm
+    - name: pacman-key --init
     - require:
       - file: pacman_conf
+
+pacman_sync_key:
+  cmd.run:
+    - name: pacman-key --populate
+    - require:
+      - cmd: pacman_init_key
+
+pacman_install_reflector:
+  pkg.installed:
+    - name: reflector
+    - require:
+      - cmd: pacman_sync_key
+
+pacman_refresh_repo:
+  cmd.run:
+    - name: reflector --latest 5 --sort rate --save /etc/pacman.d/mirrorlist
+    - require:
+      - pkg: pacman_install_reflector
+
+pacman_sync_repo:
+  cmd.run:
+    - name: pacman -Syy
+    - require:
+      - cmd: pacman_refresh_repo
+
+pacman_update:
+  cmd.run:
+    - name: pacman -Su --noconfirm && pacman -Scc --noconfirm
+    - require:
+      - cmd: pacman_sync_repo
+
+
 
 {% else %}
 

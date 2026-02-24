@@ -9,18 +9,24 @@
 
 aur_user: {{ detected_user }}
 
-{% set cpu_arch = salt['pillar.get']('cpu_arch', 'x86_64') %}
 pacman:
   repos:
     kde-unstable:
       enabled: false
-      Include: /etc/pacman.d/mirrorlist
+      include: /etc/pacman.d/mirrorlist
+      server: https://repo.c48.uk/arch/$repo/os/$arch
     core:
       enabled: true
-      Include: /etc/pacman.d/mirrorlist
+      include: /etc/pacman.d/mirrorlist
+      server: https://repo.c48.uk/arch/$repo/os/$arch
     extra:
       enabled: true
-      Include: /etc/pacman.d/mirrorlist
+      include: /etc/pacman.d/mirrorlist
+      server: https://repo.c48.uk/arch/$repo/os/$arch
     multilib:
       enabled: true
-      Include: /etc/pacman.d/mirrorlist
+      include: /etc/pacman.d/mirrorlist
+      server: https://repo.c48.uk/arch/$repo/os/$arch
+    chaotic-aur:
+      enabled: true
+      server: https://builds.garudalinux.org/repos/$repo/$arch
