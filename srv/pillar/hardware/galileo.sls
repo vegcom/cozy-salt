@@ -1,6 +1,9 @@
 #!jinja|yaml
 # Valve Galileo (Steam Deck) Hardware Class
 
+managed_users:
+  - deck
+
 docker_enabled: True
 
 steamdeck:

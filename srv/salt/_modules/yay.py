@@ -15,7 +15,7 @@ Usage from states:
         - pkgs:
           - package1
           - package2
-        - runas: admin
+        - runas: cozy-salt-svc
 """
 
 import logging

@@ -15,7 +15,7 @@ if command -v aria2c >/dev/null 2>&1; then
         --log-level=quiet \
         --max-tries=8 \
         --retry-wait=5 \
-        --max-connection-per-server=4 \
+        --max-connection-per-server=8 \
         --max-file-not-found=10 \
         --min-split-size=1M \
         --no-conf \
@@ -34,6 +34,6 @@ if command -v aria2c >/dev/null 2>&1; then
 fi
 
 # fallback to built-in downloader
-echo "aria2c failed, falling back to curl/wget-style downloader" >&2
+echo "aria2c failed, falling back to curl/wget-style downloader"
 curl -L --fail --retry 5 --retry-delay 5 -o "$OUT" "$URL" \
   || wget --tries=5 --waitretry=5 -O "$OUT" "$URL"

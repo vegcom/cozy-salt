@@ -14,17 +14,17 @@ Usage in states:
         - pkgs:
           - firefox
           - chromium
-        - runas: admin
+        - runas: cozy-salt-svc
 
     single_package:
       yay.installed:
         - name: neovim
-        - runas: admin
+        - runas: cozy-salt-svc
 
     removed_package:
       yay.removed:
         - name: unwanted-pkg
-        - runas: admin
+        - runas: cozy-salt-svc
 """
 
 import logging
@@ -52,12 +52,12 @@ def installed(name=None, pkgs=None, runas=None, refresh=False, **kwargs):
             - firefox
             - chromium
             - neovim
-          - runas: admin
+          - runas: cozy-salt-svc
 
       single_package:
         yay.installed:
           - name: htop
-          - runas: admin
+          - runas: cozy-salt-svc
   """
   ret = {
     "name": name if name else "yay.installed",
@@ -149,7 +149,7 @@ def removed(name, runas=None, **kwargs):
       unwanted_package:
         yay.removed:
           - name: some-package
-          - runas: admin
+          - runas: cozy-salt-svc
   """
   ret = {
     "name": name,
@@ -200,7 +200,7 @@ def uptodate(name="yay.uptodate", runas=None, refresh=True, **kwargs):
   Example:
       system_upgraded:
         yay.uptodate:
-          - runas: admin
+          - runas: cozy-salt-svc
   """
   ret = {
     "name": name,

@@ -4,7 +4,7 @@
 {% if salt['grains.get']('virtual', '') in ['docker', 'container', 'lxc'] %}
   {% set detected_user = 'root' %}
 {% else %}
-  {% set detected_user = salt['environ.get']('SUDO_USER') or salt['environ.get']('LOGNAME') or salt['environ.get']('USER') or 'admin' %}
+  {% set detected_user = salt['environ.get']('SUDO_USER') or salt['environ.get']('LOGNAME') or salt['environ.get']('USER') or 'cozy-salt-svc' %}
 {% endif %}
 
 aur_user: {{ detected_user }}

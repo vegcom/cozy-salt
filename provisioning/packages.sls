@@ -10,7 +10,7 @@
 # ============================================================================
 # SHARED PACKAGE LISTS (DRY - referenced by distro sections below)
 # ============================================================================
-{% set _core = ['curl', 'git', 'jq', 'rsync', 'tree', 'unzip', 'wget'] %}
+{% set _core = ['curl', 'git', 'jq', 'rsync', 'tree', 'unzip', 'wget', 'aria2'] %}
 {% set _monitoring_base = ['htop', 'lsof', 'ltrace', 'strace', 'sysstat'] %}
 {% set _shell = ['bash-completion', 'screen', 'tmux', 'shellcheck', 'zsh'] %}
 {% set _build_base = ['autoconf', 'automake', 'cmake'] %}
