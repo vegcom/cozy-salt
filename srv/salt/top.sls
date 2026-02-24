@@ -22,3 +22,8 @@ base:
   'os_family:Arch':
     - match: grain
     - linux
+
+  # Raspberry Pi hardware
+  'G@kernelrelease:*rpt-rpi*':
+    - match: compound
+    - linux.hardware.rpi

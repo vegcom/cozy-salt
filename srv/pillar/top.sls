@@ -42,6 +42,11 @@ base:
     - match: compound
     - hardware.jetson
 
+  'G@kernelrelease:*rpt-rpi*':
+    - match: compound
+    - hardware.rpi
+
+
   # Layer 5: Per-user configs
   # TODO: following a similar pattern to "Layer 6", eval based on managed_users, not clearly listed in pillar like this
   '* and not G@id:__NEVER_MATCH__':
