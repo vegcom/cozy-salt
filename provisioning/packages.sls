@@ -12,7 +12,7 @@
 # ============================================================================
 {% set _core = ['curl', 'git', 'jq', 'rsync', 'tree', 'unzip', 'wget'] %}
 {% set _monitoring_base = ['htop', 'lsof', 'ltrace', 'strace', 'sysstat'] %}
-{% set _shell = ['bash-completion', 'screen', 'tmux', 'shellcheck'] %}
+{% set _shell = ['bash-completion', 'screen', 'tmux', 'shellcheck', 'zsh'] %}
 {% set _build_base = ['autoconf', 'automake', 'cmake'] %}
 {% set _net_base = ['nmap', 'socat', 'tcpdump', 'traceroute', 'avahi'] %}
 {% set _compress_base = ['bzip2', 'zip'] %}

@@ -17,7 +17,7 @@
 {% set github_token = salt['pillar.get']('github:access_token', '') %}
 
 # Get role capabilities from pillar (centralized in srv/pillar/linux/init.sls)
-{% set role_capabilities = salt['pillar.get']('role_capabilities', {}) %}
+{% set role_capabilities = salt['pillar.get']('linux', {}) %}
 {% set capabilities = role_capabilities.get(workstation_role, role_capabilities.get('workstation-full', [])) %}
 
 include:
