@@ -36,100 +36,6 @@ dism /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all
 
 <https://gist.github.com/Rishikant181/e26fb23d4c57db74bddaa0a57b26cd26#5-creating-a-script-to-switch-back-to-desktop-mode-close-steam>
 
-### CCache for arch
-
-- <https://man.archlinux.org/man/makepkg.conf.5>
-- <https://wiki.archlinux.org/title/Ccache>
-
-#### Windows bootstrap - delivery
-
-- fixes WinRM (cmd.run block)
-- starts salt-minion
-
-**Script state** - "get me to the point where Salt can talk to you."
-
-**Bootstrap state** - "Make you behave like a predictable Windows target."
-
-**Normal states** - "Make you you (hostname, roles, apps, cozy stuff)."
-
-### Windows bootstrap - cmd
-
-- enforce w **cmd.run**
-
-- **provide for new provisions** via script, **enforce** once salted
-
-```cmd
-# Disable CredSSP requirement
-winrm set winrm/config/client/auth @{CredSSP="false"}
-winrm set winrm/config/service/auth @{CredSSP="false"}
-
-# Allow unencrypted
-winrm set winrm/config/service @{AllowUnencrypted="true"}
-winrm set winrm/config/client @{AllowUnencrypted="true"}
-```
-
-### Windows regedit
-
-- enforce with `reg.present`
-- **provide for new provisions** via script, **enforce** once salted
-
-```sls
-# Disable “Admin Approval Mode” for the built‑in Administrator
-HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
-  FilterAdministratorToken = 0 (DWORD)
-
-# Make PowerShell execution deterministic
-Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope LocalMachine -Force
-
-# Disable consumer junk
-HKLM\SOFTWARE\Policies\Microsoft\Windows\CloudContent
-  DisableConsumerFeatures = 1 (DWORD)
-
-HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
-  EnableFirstLogonAnimation = 0 (DWORD)
-
-HKLM\SOFTWARE\Policies\Microsoft\Windows\CloudContent
-  DisableSoftLanding = 1 (DWORD)
-
-# Disable reboot‑blocking auto‑updates
-HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU
-  NoAutoRebootWithLoggedOnUsers = 1 (DWORD)
-  AUOptions = 2 (DWORD) ; notify only
-
-# Disable Delivery Optimization
-HKLM\SOFTWARE\Policies\Microsoft\Windows\DeliveryOptimization
-  DODownloadMode = 0 (DWORD)
-
-# Disable environment virtualization
-HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\System
-  EnableVirtualization = 0 (DWORD)
-
-# Force environment broadcast after changes
-## Salt does not automatically broadcast WM_SETTINGCHANGE, so Windows services won’t see updated PATH
-broadcast_env_change:
-  cmd.run:
-    - name: 'powershell -NoLogo -NoProfile -Command "[Environment]::SetEnvironmentVariable(\"PATH\", $env:PATH, \"Machine\")"'
-    - onchanges:
-      - reg: set_path
-
-# Make sure SYSTEM sees the same PATH as users
-## Since Salt runs as SYSTEM, you want SYSTEM’s environment to match HKLM exactly
-sync_system_env:
-  cmd.run:
-    - name: 'powershell -NoLogo -NoProfile -Command "Set-Item -Path Env:PATH -Value (Get-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment\" -Name PATH).PATH"'
-    - onchanges:
-      - reg: set_path
-
-# disable PATH poisoning
-## Windows sometimes prepends random entries (OneDrive, OEM tools, etc.)
-HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer
-  DisallowWin32kSystemCallFilter = 1
-
-## disable “auto‑repair” of PATH
-HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
-  PathUnexpanded = 1
-```
-
 ## Modern changes
 
 ### High
@@ -171,16 +77,16 @@ HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
 - [x] Winget userland installs fail for users without profiles (733a86b)
 - [x] Git safe.directory not set for SYSTEM user (542d64a)
 - [x] PowerShell execution policy fails on fresh install (883d72a)
-- [ ] Profile health check regex syntax error
+- [x] Profile health check regex syntax error
   - Missing closing quote in `-match '\.\w+-\w+` pattern
 
 ### ProfileList user detection
 
-- [ ] Audit Windows installers for ProfileList-based user detection
+- [x] Audit Windows installers for ProfileList-based user detection
   - winget, miniforge, rust, nvm on Windows
   - Use `get_winget_user()` macro pattern (ProfileList registry check)
   - Service accounts can't run AppX/MSIX - need real interactive user
-- [ ] Windows UAC management via GPO or registry [see](#urgent)
+- [x] Windows UAC management via GPO or registry [see](#urgent)
   - Disable UAC for managed systems to allow silent elevation (Start-Process -Verb RunAs)
   - Registry: `HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\EnableLUA = 0`
   - Or GPO deployment for domain-joined systems
@@ -197,10 +103,10 @@ HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
 
 ## Linux / Infra
 
-- [ ] **k3s.sls**: evaluate multi-node cluster vs client-only mode before finalising state design
-- [ ] **k3s.sls**: replace `k3s_download_script` / `k3s_setup_script` `cmd.run` with `file.managed` + `cmd.run` pattern (binary from pillar-versioned URL + sha256 hash)
+- [x] **k3s.sls**: evaluate multi-node cluster vs client-only mode before finalising state design
+- [x] **k3s.sls**: replace `k3s_download_script` / `k3s_setup_script` `cmd.run` with `file.managed` + `cmd.run` pattern (binary from pillar-versioned URL + sha256 hash)
 - [ ] **cmd.run audit**: grep all states for `cmd.run.*(wget|curl)` and migrate to `file.managed` + `cmd.run` pattern (k3s pattern as reference)
-- [ ] **managed_users**: switch all `pillar.get('managed_users', [])` calls to `merge=True` so host pillars append instead of replace
+- [x] **managed_users**: switch all `pillar.get('managed_users', [])` calls to `merge=True` so host pillars append instead of replace
 - [ ] **masters list**: add `salt.masters` to `srv/pillar/common/salt.sls`, wire into `linux/salt_minion.sls` + `windows/salt_minion.sls`
 - [ ] **salt_minion states**: create `common/salt_minion.sls`, `linux/salt_minion.sls`, `windows/salt_minion.sls` — manage minion config, source master from pillar
 
