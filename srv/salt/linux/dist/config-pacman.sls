@@ -59,7 +59,7 @@ pacman_conf:
         SigLevel = {{ repo_config.get('SigLevel') }}
         {%- endif %}
         {%- if repo_config.get('siglevel') %}
-        SigLevel = {{ repo_config.get('liglevel') }}
+        SigLevel = {{ repo_config.get('siglevel') }}
         {%- endif %}
         {%- endif %}
         {%- endfor %}
@@ -68,12 +68,17 @@ pacman_conf:
 
 pacman_sync_after_config:
   cmd.run:
-    - name: pacman -Syy
+    - name: |
+      pacman -Syyu --noconfirm && \
+      pacman -Scc --noconfirm
     - require:
       - file: pacman_conf
+
 {% else %}
+
 # Not an Arch-based system, skipping pacman configuration
 pacman_config_skipped:
   test.nop:
     - name: Not an Arch-based system - skipping pacman config
+
 {% endif %}
