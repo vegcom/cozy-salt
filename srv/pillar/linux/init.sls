@@ -1,9 +1,6 @@
 #!jinja|yaml
 # Linux Pillar Data
 
-{% set cpu_arch = 'aarch64' if salt['grains.get']('cpuarch') == 'aarch64' else 'x86_64' %}
-cpu_arch: {{ cpu_arch }}
-
 {% if salt['grains.get']('virtual', '') in ['docker', 'container', 'lxc'] %}
   {% set detected_user = 'root' %}
 {% else %}

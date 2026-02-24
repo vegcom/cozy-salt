@@ -5,6 +5,7 @@
 
 {% set miniforge_versions = salt['pillar.get']('versions:miniforge', {}) %}
 {% set miniforge_version = miniforge_versions.get('version', '24.11.3-0') %}
+{%- set cpu_arch = salt['grains.get']('cpuarch', 'x86_64') %}
 {# Path configuration from pillar with defaults #}
 {% set miniforge_path = salt['pillar.get']('install_paths:miniforge:linux', '/opt/miniforge3') %}
 {%- set service_user = salt['pillar.get']('service_user:name', 'cozy-salt-svc') %}
@@ -23,7 +24,7 @@ miniforge_directory:
 miniforge_download:
   cmd.run:
     - name: |
-        curl -fsSL -o /tmp/miniforge-init.sh https://github.com/conda-forge/miniforge/releases/download/{{ miniforge_version }}/Miniforge3-Linux-x86_64.sh
+        curl -fsSL -o /tmp/miniforge-init.sh https://github.com/conda-forge/miniforge/releases/download/{{ miniforge_version }}/Miniforge3-Linux-{{ cpu_arch }}.sh
     - creates: /tmp/miniforge-init.sh
 
 # Install miniforge system-wide
