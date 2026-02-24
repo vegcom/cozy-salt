@@ -3,12 +3,12 @@
 # Available to all users
 # Managed by Salt - DO NOT EDIT MANUALLY
 
-MAMBA_ROOT_PREFIX='/opt/miniforge3'
-MAMBA_EXE="${MAMBA_ROOT_PREFIX}/bin/mamba"
 CONDA_ROOT_PREFIX='/opt/miniforge3'
 CONDA_EXE="${CONDA_ROOT_PREFIX}/bin/conda"
 
-export MAMBA_EXE CONDA_EXE MAMBA_ROOT_PREFIX CONDA_ROOT_PREFIX
+if [ ! -f "$CONDA_EXE" ]; then
+    return
+fi
 
 if [ -n "$BASH_VERSION" ]; then
     if ! type -f conda &>/dev/null; then
