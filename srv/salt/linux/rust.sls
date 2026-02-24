@@ -20,7 +20,6 @@ rust_directory:
 rust_download_script:
   cmd.run:
     - name: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o /tmp/rustup-init.sh && chmod +x /tmp/rustup-init.sh
-    - creates: /tmp/rustup-init.sh
     - require:
       - file: rust_directory
 

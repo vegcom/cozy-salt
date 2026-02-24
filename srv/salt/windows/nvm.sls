@@ -17,7 +17,6 @@ nvm_download:
     - name: >
         pwsh -NoLogo -Command
         "Invoke-WebRequest -Uri '{{ npm_pkg }}' -OutFile {{ nvm_tmp }}"
-    - creates: {{ nvm_tmp }}
 
 nvm_install:
   cmd.run:

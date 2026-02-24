@@ -25,7 +25,6 @@ miniforge_download:
   cmd.run:
     - name: |
         curl -fsSL -o /tmp/miniforge-init.sh https://github.com/conda-forge/miniforge/releases/download/{{ miniforge_version }}/Miniforge3-Linux-{{ cpu_arch }}.sh
-    - creates: /tmp/miniforge-init.sh
 
 # Install miniforge system-wide
 # -b = batch mode (non-interactive)

@@ -23,7 +23,6 @@ miniforge_download:
     - name: >
         pwsh -NoLogo -Command
         "Invoke-WebRequest -Uri 'https://github.com/conda-forge/miniforge/releases/download/{{ miniforge_version }}/Miniforge3-Windows-x86_64.exe' -OutFile {{ miniforge_tmp }}"
-    - creates: {{ miniforge_tmp }}
     - require:
       - file: miniforge_directory
 

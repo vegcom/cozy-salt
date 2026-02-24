@@ -15,7 +15,6 @@ windhawk_download:
     - name: >
         pwsh -NoLogo -Command
         "Invoke-WebRequest -Uri 'https://github.com/ramensoftware/windhawk/releases/download/v{{ windhawk_version }}/windhawk_setup.exe' -OutFile {{ windhawk_tmp }}"
-    - creates: {{ windhawk_tmp }}
     - require:
       - file: windhawk_directory
 

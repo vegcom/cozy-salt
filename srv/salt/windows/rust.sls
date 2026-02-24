@@ -17,7 +17,6 @@ rust_directory:
 rust_download:
   cmd.run:
     - name: pwsh -Command "Invoke-WebRequest -Uri https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe -OutFile {{ rust_path }}\rustup-init.exe"
-    - creates: {{ rust_path }}\rustup-init.exe
     - require:
       - file: rust_directory
 
