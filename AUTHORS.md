@@ -2,7 +2,7 @@
 
 ## Crafted with care by
 
-**June**-mindfulness and caution, someone who's **fundamental** in _“folding duplcation into reusability”_
+**June**—mindfulness and caution, someone who's **fundamental** in _“folding duplcation into reusability”_
 
 **Eve**—design instincts, personality touches, and the immortal _“games go last”_ philosophy.
 
