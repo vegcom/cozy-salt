@@ -7,9 +7,7 @@
 {% set miniforge_version = miniforge_versions.get('version', '24.11.3-0') %}
 {# Path configuration from pillar with defaults #}
 {% set miniforge_path = salt['pillar.get']('install_paths:miniforge:linux', '/opt/miniforge3') %}
-{# TODO: prep for service_user will be pillar service_user: buildgirl probs #}
-{% set managed_users = salt['pillar.get']('managed_users', [], merge=True) %}
-{% set service_user = managed_users[0] if managed_users else 'nobody' %}
+{%- set service_user = salt['pillar.get']('service_user:name', 'cozy-salt-svc') %}
 
 # Create nvm directory first (NVM installer requires it to exist)
 miniforge_directory:

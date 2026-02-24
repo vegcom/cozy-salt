@@ -11,9 +11,7 @@
 {% set nvm_version = nvm_versions.get('version', 'v0.40.1') %}
 {# Path configuration from pillar with defaults #}
 {% set nvm_path = salt['pillar.get']('install_paths:nvm:linux', '/opt/nvm') %}
-{# TODO: prep for service_user will be pillar service_user: buildgirl probs #}
-{% set managed_users = salt['pillar.get']('managed_users', [], merge=True) %}
-{% set service_user = managed_users[0] if managed_users else 'nobody' %}
+{%- set service_user = salt['pillar.get']('service_user:name', 'cozy-salt-svc') %}
 
 # Create nvm directory first (NVM installer requires it to exist)
 nvm_directory:

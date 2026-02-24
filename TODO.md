@@ -16,7 +16,7 @@
 
 ## Admin references
 
-- [ ] replace old admin references for install and defer to service user where possible, som examples below
+- [x] replace old admin references for install and defer to service user where possible, som examples below
   - `{% set service_user = salt['pillar.get']('managed_users', ['admin'])[0] %}`
   - `runas: admin`
   - `srv/pillar/mgmt.sls` `cozy-salt-svc`
@@ -37,11 +37,6 @@
   - `provisioning/distro.map` or `provisioning/packages.map`
   - Use `import_yaml` to load, cleaner separation from pkg lists
   - Salt osmap pattern: <https://docs.saltproject.io/salt/user-guide/en/latest/topics/jinja.html>
-- [-] ~Auto-inject "Managed by Salt - DO NOT EDIT MANUALLY" headers~
-  - ~Enumerate all provisioning files referenced in state sources (salt:// paths)~
-  - ~Inject header on file deploy if not present~
-  - ~Pre-commit hook or salt state to automate~
-  - ~Prevents manual effort, ensures consistency~
 - [ ] Cull verbose inline comments from .sls files, move to proper docs
 
 ## Feature

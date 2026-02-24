@@ -50,7 +50,7 @@
 {% endif %}
 
 {% if cap_meta.get('has_user_groups') %}
-{% set user = salt['pillar.get']('user:name', 'admin') %}
+{%- set user = salt['pillar.get']('service_user:name', 'cozy-salt-svc') %}
 {{ cap_key }}_user_groups:
   user.present:
     - name: {{ user }}

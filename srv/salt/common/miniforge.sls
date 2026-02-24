@@ -1,7 +1,7 @@
 # Common Miniforge/Conda package orchestration
 
 {% import_yaml "packages.sls" as packages %}
-{% set service_user = salt['pillar.get']('managed_users', ['admin'])[0] %}
+{%- set service_user = salt['pillar.get']('service_user:name', 'cozy-salt-svc') %}
 {% if grains['os_family'] == 'Windows' %}
   {% set miniforge_path = salt['pillar.get']('install_paths:miniforge:windows', 'C:\\opt\\miniforge3') %}
   {% set pip_bin = miniforge_path ~ '\\Scripts\\pip.exe' %}
