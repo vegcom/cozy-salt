@@ -58,9 +58,10 @@ scripts/           # Enrollment, Docker entrypoints, utilities
 Create a macvlan network and bridge
 
 ```bash
-# 10.0.0.0/24 is a standin
+# 10.0.0.0/16 is a standin
+# Dictates ingress, make sure every host that needs on is includd in your subnet
 docker network create -d macvlan \
-  --subnet=10.0.0.0/24 \
+  --subnet=10.0.0.0/16 \
   --gateway=10.0.0.1 \
   -o parent=eth0 \
   frontend
@@ -70,7 +71,7 @@ docker network create -d macvlan \
 # 10.0.0.254 is an unassigned IP
 ip link delete frontend-shim
 ip link add frontend-shim link eth0 type macvlan mode bridge
-ip addr add 10.0.0.254/24 dev frontend-shim
+ip addr add 10.0.0.254/16 dev frontend-shim
 ip link set frontend-shim up
 ```
 
