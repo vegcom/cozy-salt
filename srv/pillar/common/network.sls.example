@@ -1,0 +1,41 @@
+# Network Configuration
+# DNS, hosts, and network-level settings for all platforms
+
+network:
+  # DNS configuration (for bare metal/VMs, skipped in containers)
+  dns:
+    search_domain: local
+    nameservers:
+      - 10.0.0.1
+      - 1.1.1.1
+      - 1.0.0.1
+
+  # Hosts file entries for network services
+  # Per-host overrides supported via pillar merge (e.g. localhost for self)
+  hosts:
+
+    unifi:
+      comment: UniFi Controller
+      ips:
+        - 10.0.0.1
+      names:
+        - unifi
+        - unifi.local
+        - gw
+        - gw.local
+
+    cozy-share:
+      comment: SMB / NAS share
+      ips:
+        - 10.0.0.200
+      names:
+        - cozy-share
+        - cozy-share.local
+
+    salt:
+      ips:
+        - 10.0.0.220
+      names:
+        - salt
+        - salt.local
+        - salt.localdomain

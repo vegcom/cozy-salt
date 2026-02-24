@@ -23,3 +23,4 @@ srv/pillar/secrets/init.sls
 srv/pillar/users/*.sls
 srv/salt/keys/master/
 srv/salt/keys/minion/
+srv/pillar/common/network.sls
