@@ -14,7 +14,7 @@ host:
 
 k3s:
   role: server
-  args: "--embedded-registry --disable-cloud-controller --debug"
+  args: "--disable=servicelb --disable=traefik --disable-cloud-controller --data-dir=/storage/k3s/"
 
 # To enable chaotic_aur (already defined in dist/arch.sls as disabled):
 pacman:
