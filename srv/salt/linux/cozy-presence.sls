@@ -8,7 +8,7 @@
 {%- set cozy_presence_bin = cozy_presence_env + "/bin" %}
 
 {%- if run_user_info %}
-# Create data directory
+# Create /opt/cozy/ with correct ownership (always enforced, no creates guard)
 cozy-presence-repo-dir:
   file.directory:
     - name: /opt/cozy/
@@ -16,10 +16,9 @@ cozy-presence-repo-dir:
     - group: cozyusers
     - mode: 770
     - makedirs: True
-    - creates: /opt/cozy/
 
 # Clone cozy-presence repo (token from pillar)
-{{ git_repo('cozy-presence', cozy_presence_path, run_user) }}
+{{ git_repo('cozy-presence', cozy_presence_path, run_user, require_file='cozy-presence-repo-dir') }}
 
 # Setup conda env
 cozy_presence_env_create:
