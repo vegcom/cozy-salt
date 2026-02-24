@@ -7,7 +7,7 @@
 
 {% set k3s_channel = salt['pillar.get']('k3s:channel', 'latest') %}
 {% set k3s_role = salt['pillar.get']('k3s:role', 'agent') %}
-{% set k3s_args = salt['pillar.get']('k3s:args', k3s_role + " " + '--flannel-backend=none --debug') %}
+{% set k3s_args = salt['pillar.get']('k3s:args', k3s_role + " " + '--flannel-backend=none --docker --debug') %}
 {% set k3s_server = salt['pillar.get']('k3s:server', 'k3s-server') %}
 {% set k3s_token = salt['pillar.get']('k3s:token') %}
 
@@ -26,7 +26,6 @@ k3s_setup_script:
     - require:
       - file: k3s_download_script
     - env:
-      - INSTALL_K3S_SYMLINK: "force"
       - INSTALL_K3S_CHANNEL: "{{ k3s_channel }}"
       - INSTALL_K3S_EXEC: "{{ k3s_args }}"
       - K3S_TOKEN: "{{ k3s_token }}"
