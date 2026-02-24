@@ -1,6 +1,5 @@
 #!jinja|yaml
-# Valve Galileo (Steam Deck) Hardware Class
-
+# Nvidia Jetson Hardware Class
 docker_enabled: True
 
 managed_users:
