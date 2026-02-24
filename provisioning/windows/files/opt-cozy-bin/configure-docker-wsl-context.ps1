@@ -1,43 +1,22 @@
 # configure-docker-wsl-context.ps1 - Windows Docker WSL integration
 # Sets up Docker context to use WSL's Docker daemon via TCP proxy
-
-# FIXME: refactor to be much more slim no prints required beyond standard pass/fail, steps are not helpful
+# Managed by Salt - DO NOT EDIT MANUALLY
 
 $ErrorActionPreference = "SilentlyContinue"
 
-Write-Host "=== Windows Provisioning ===" -ForegroundColor Cyan
+if (-not (Get-Command docker -ErrorAction SilentlyContinue)) { exit 0 }
 
-# Check if Docker CLI is available (installed via Salt state)
-if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
-    Write-Host "Docker CLI not found. Run 'salt-call state.apply' first." -ForegroundColor Yellow
-    exit 0
-}
-
-# Check if WSL context already exists (idempotent check)
 $contextList = docker context ls --format "{{.Name}}" 2>$null
-$existingContext = $contextList -split "`n" | Where-Object { $_ -eq "wsl" }
+$hasContext = $contextList -split "`n" | Where-Object { $_ -eq "wsl" }
 
-if ($existingContext) {
-    Write-Host "Docker context 'wsl' already exists" -ForegroundColor Green
-} else {
-    Write-Host "Creating Docker context 'wsl'..."
-    docker context create wsl --docker "host=tcp://127.0.0.1:2375"
-    Write-Host "Docker context 'wsl' created successfully" -ForegroundColor Green
+if (-not $hasContext) {
+    docker context create wsl --docker "host=tcp://127.0.0.1:2375" 2>$null
 }
 
-# Test connection
-Write-Host ""
-Write-Host "Testing Docker connection..." -ForegroundColor Cyan
-$dockerInfo = docker info 2>&1
-if ($LASTEXITCODE -eq 0) {
-    Write-Host "Docker connection successful!" -ForegroundColor Green
-    Write-Host ""
-    Write-Host "Docker is accessible via WSL at tcp://127.0.0.1:2375"
-} else {
-    Write-Host "Docker connection failed." -ForegroundColor Yellow
-    Write-Host "Ensure WSL is running with Docker and the socket proxy:" -ForegroundColor Yellow
-    Write-Host "  wsl -d Ubuntu" -ForegroundColor Gray
-    Write-Host "  /opt/cozy/bin/docker.sh" -ForegroundColor Gray
-    # TODO: move to /opt/cozy/docker/
-    Write-Host "  docker compose -f /opt/cozy/docker-proxy.yaml up -d" -ForegroundColor Gray
+docker context use wsl 2>$null
+docker info 2>$null | Out-Null
+
+if ($LASTEXITCODE -ne 0) {
+    docker context use default 2>$null
+    exit 1
 }

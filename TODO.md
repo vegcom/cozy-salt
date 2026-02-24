@@ -25,8 +25,6 @@
 ## Docker
 
 - [ ] use modern docker install scheme
-  - [ ] `provisioning/wsl/setup.sls`
-  - [ ] `13,20: {% for script in ['docker.sh', 'salt.sh', 'enable-openssh.sh'] %}`
 
 ## Seperation of duty
 
