@@ -68,9 +68,7 @@ pacman_conf:
 
 pacman_sync_after_config:
   cmd.run:
-    - name: |
-      pacman -Syyu --noconfirm && \
-      pacman -Scc --noconfirm
+    - name: pacman -Syyu --noconfirm && pacman -Scc --noconfirm
     - require:
       - file: pacman_conf
 

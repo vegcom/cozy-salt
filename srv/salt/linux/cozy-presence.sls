@@ -1,11 +1,13 @@
 # cozy-presence: Local identity persistence service
 {% from "_macros/git-repo.sls" import git_repo %}
 {%- set managed_users = salt['pillar.get']('managed_users', [], merge=True) -%}
-{%- set run_user = managed_users[0] -%}
+{%- set run_user = managed_users[0] if managed_users else '' -%}
+{%- set run_user_info = salt['user.info'](run_user) if run_user else {} -%}
 {%- set cozy_presence_path = "/opt/cozy/cozy-presence" %}
 {%- set cozy_presence_env = "/opt/miniforge3/envs/cozy-presence" %}
 {%- set cozy_presence_bin = cozy_presence_env + "/bin" %}
 
+{%- if run_user_info %}
 # Create data directory
 cozy-presence-repo-dir:
   file.directory:
@@ -79,9 +81,17 @@ cozy_presence_service:
         systemctl --user enable --now cozy-presence@{{ run_user }}.service
     - runas: {{ run_user }}
     - env:
-        XDG_RUNTIME_DIR: /run/user/{{ salt['user.info'](run_user)['uid'] }}
+        XDG_RUNTIME_DIR: /run/user/{{ run_user_info['uid'] }}
     - require:
       - file: cozy_presence_service_file
       - file: cozy_presence_data_dir
     - watch:
       - git: cozy_presence_repo
+
+{%- else %}
+
+cozy_presence_noop:
+  test.nop:
+    - name: Cozy Presence requires a user account to run
+
+{%- endif %}
