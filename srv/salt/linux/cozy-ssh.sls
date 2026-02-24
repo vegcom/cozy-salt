@@ -5,7 +5,7 @@
 
 {% set repo_path = '/opt/cozy/cozy-ssh' %}
 {% set users = salt['pillar.get']('users', {}) %}
-{% set managed_users = salt['pillar.get']('managed_users', []) %}
+{% set managed_users = salt['pillar.get']('managed_users', [], merge=True) %}
 {% set git_identity = salt['pillar.get']('git:identity_file', '/root/.ssh/id_ed25519') %}
 
 # # Clone cozy-ssh repo to /opt/cozy/cozy-ssh

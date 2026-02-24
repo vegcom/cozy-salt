@@ -3,7 +3,7 @@
 # Pillar: users:{username}:environment_d:{filename}: {VAR: value, ...}
 
 {% set users = salt['pillar.get']('users', {}) %}
-{% set managed_users = salt['pillar.get']('managed_users', []) %}
+{% set managed_users = salt['pillar.get']('managed_users', [], merge=True) %}
 
 {% for username in managed_users %}
 {% set userdata = users.get(username, {}) %}

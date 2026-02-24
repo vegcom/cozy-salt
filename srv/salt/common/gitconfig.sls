@@ -4,7 +4,7 @@
 
 {% import '_macros/dotfiles.sls' as dotfiles %}
 
-{% set managed_users = salt['pillar.get']('managed_users', []) %}
+{% set managed_users = salt['pillar.get']('managed_users', [], merge=True) %}
 {% set is_windows = grains['os'] == 'Windows' %}
 {# Merge global and user-specific github tokens #}
 {% set global_tokens = salt['pillar.get']('github:tokens', []) %}

@@ -2,7 +2,7 @@
 # Deploys ssh dotfiles to all managed_users
 {% from "_macros/git-repo.sls" import git_repo %}
 {% set users = salt['pillar.get']('users', {}) %}
-{% set managed_users = salt['pillar.get']('managed_users', []) %}
+{% set managed_users = salt['pillar.get']('managed_users', [], merge=True) %}
 {% for username in managed_users %}
   {% set userdata = users.get(username, {}) %}
   {% if grains['os'] == 'Windows' %}

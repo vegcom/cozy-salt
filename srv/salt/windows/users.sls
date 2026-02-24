@@ -3,7 +3,7 @@
 # Creates managed users with appropriate Windows groups (Administrators, Users)
 
 {% set users = salt['pillar.get']('users', {}) %}
-{% set managed_users = salt['pillar.get']('managed_users', []) %}
+{% set managed_users = salt['pillar.get']('managed_users', [], merge=True) %}
 
 # Profile health check - detect corrupted/temp profiles before proceeding
 # Checks for folders like admin.rocket, vegcom.DESKTOP-ABC123 where base name is a managed user

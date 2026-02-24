@@ -11,7 +11,7 @@
 {% set homebrew_parent = homebrew_base.rsplit('/', 1)[0] if '/' in homebrew_base else '/home/linuxbrew' %}
 {# Use first managed user for homebrew operations (homebrew rejects root) #}
 {# TODO: prep for service_user will be pillar service_user: buildgirl probs #}
-{% set managed_users = salt['pillar.get']('managed_users', []) %}
+{% set managed_users = salt['pillar.get']('managed_users', [], merge=True) %}
 {% set service_user = managed_users[0] if managed_users else 'nobody' %}
 
 # Create parent directory owned by service_user

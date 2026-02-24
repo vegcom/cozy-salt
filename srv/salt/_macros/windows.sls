@@ -23,7 +23,7 @@
     {% endfor %}
 #}
 {%- macro get_users_with_profiles() -%}
-{%- set managed_users = salt['pillar.get']('managed_users', []) -%}
+{%- set managed_users = salt['pillar.get']('managed_users', [], merge=True) -%}
 {%- set real_profiles = _get_real_profiles().splitlines() -%}
 {%- set valid_users = [] -%}
 {%- for user in managed_users -%}
@@ -46,7 +46,7 @@
     {% set winget_user = get_winget_user() %}
 #}
 {%- macro get_winget_user() -%}
-{%- set managed_users = salt['pillar.get']('managed_users', []) -%}
+{%- set managed_users = salt['pillar.get']('managed_users', [], merge=True) -%}
 {%- set service_user = salt['pillar.get']('service_user:name', 'cozy-salt-svc') -%}
 {%- set real_profiles = _get_real_profiles().splitlines() -%}
 {#- Prefer managed_users with real profiles over service account -#}

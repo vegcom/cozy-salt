@@ -5,7 +5,7 @@
 
 {% set winget_path = salt['pillar.get']('paths:winget', 'C:\\Program Files\\WindowsApps\\Microsoft.DesktopAppInstaller_1.27.460.0_x64__8wekyb3d8bbwe') %}
 {% from '_macros/windows.sls' import get_users_with_profiles with context %}
-{% set managed_users = salt['pillar.get']('managed_users', []) %}
+{% set managed_users = salt['pillar.get']('managed_users', [], merge=True) %}
 {% set users_with_profiles = get_users_with_profiles().split(',') | reject('equalto', '') | list %}
 
 {% set opt_paths = [

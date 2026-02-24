@@ -1,6 +1,6 @@
 # cozy-presence: Local identity persistence service
 {% from "_macros/git-repo.sls" import git_repo %}
-{%- set managed_users = salt['pillar.get']('managed_users', []) -%}
+{%- set managed_users = salt['pillar.get']('managed_users', [], merge=True) -%}
 {%- set run_user = managed_users[0] -%}
 {%- set cozy_presence_path = "/opt/cozy/cozy-presence" %}
 {%- set cozy_presence_env = "/opt/miniforge3/envs/cozy-presence" %}
