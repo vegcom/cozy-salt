@@ -17,3 +17,19 @@
     - home: /var/lib/cozy-salt-svc
     - createhome: True
     - groups: []
+
+# sudoers for cozy-salt-svc user operations (NOPASSWD)
+{{ svc_name }}_sudoers:
+  file.managed:
+    - name: /etc/sudoers.d/cozy-salt-svc
+    - contents: |
+        Cmnd_Alias PACMAN_CMDS = /usr/bin/pacman, /usr/bin/pacman-key, /usr/bin/pacstrap
+        Cmnd_Alias MGMT_CMDS = /usr/bin/iptables
+        Cmnd_Alias SYSTEMD_CMDS = /usr/bin/systemctl, /usr/bin/journalctl, /usr/bin/systemd-resolve
+        {{ svc_name }} ALL=(ALL:ALL) NOPASSWD: PACMAN_CMDS, SYSTEMD_CMDS, MGMT_CMDS
+    - mode: "0440"
+    - user: root
+    - group: root
+    - makedirs: True
+    - require:
+      - group: cozyusers_group
