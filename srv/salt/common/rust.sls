@@ -28,5 +28,4 @@ rust_install_components:
     - unless: test -f {{ clippy_check }}
     - require:
       - cmd: rust_download_and_install
-      - file: rust_profile
     {% endif %}
