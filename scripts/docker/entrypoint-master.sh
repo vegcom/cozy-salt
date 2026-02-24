@@ -42,11 +42,11 @@ if [[ -d "${preload_dir}" ]]; then
     done
 fi
 
-echo "===  Starting wsdd...=== "
+echo "[entrypoint] Starting wsdd..."
 wsdd --shortlog &
 
-echo "===  Starting avahi-daemon...=== "
+echo "[entrypoint] Starting avahi-daemon..."
 avahi-daemon --no-drop-root --daemonize --debug &
 
-echo "=== Starting Salt Master ==="
+echo "[entrypoint] Starting Salt Master..."
 exec salt-master -l error "$@"
