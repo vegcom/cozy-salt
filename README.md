@@ -15,6 +15,9 @@
 
 SaltStack IaC for Windows/Linux workstation provisioning. Master runs in Docker.
 
+> [!NOTE]
+> [AI-generated docs available on DeepWiki](https://deepwiki.com/vegcom/cozy-salt) — auto-generated, may drift.
+
 ## [outstanding folks who made it so](AUTHORS.md)
 
 - Listed in [AUTHORS.md](AUTHORS.md)
