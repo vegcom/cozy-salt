@@ -49,4 +49,4 @@ echo "[entrypoint] Starting avahi-daemon..."
 avahi-daemon --no-drop-root --daemonize --debug &
 
 echo "[entrypoint] Starting Salt Master..."
-exec salt-master -l error "$@"
+exec salt-master -l debug
