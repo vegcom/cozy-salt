@@ -1,6 +1,8 @@
 # configure-docker-wsl-context.ps1 - Windows Docker WSL integration
 # Sets up Docker context to use WSL's Docker daemon via TCP proxy
 
+# FIXME: refactor to be much more slim no prints required beyond standard pass/fail, steps are not helpful
+
 $ErrorActionPreference = "SilentlyContinue"
 
 Write-Host "=== Windows Provisioning ===" -ForegroundColor Cyan

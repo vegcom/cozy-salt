@@ -5,9 +5,6 @@ if [ -n "${__ETC_BASHRC_SOURCED}" ]; then
     return 0
 fi
 
-# FIXME: this doesn't actually work well on archlinux presently,
-#   some stub work in /etc-profile.d/0-functions.sh
-#   Presently we _THINK_ it works on ubuntu, but i forgot ngl
 if awk '/Ubuntu/ { found=1; exit } END { exit !found }' /etc/os-release ; then
   if [ -d /etc/bash_completion.d/ ] ; then
     # shellcheck disable=SC1091 disable=SC1090

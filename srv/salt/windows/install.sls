@@ -86,10 +86,6 @@ winget_runtime_{{ pkg | replace('.', '_') | replace('-', '_') }}:
 {% endfor %}
 {% endif %}
 
-# TODO: timeout=300 is a soft safety net for winget hangs (e.g. installers that
-# launch the app post-install and never exit). If a legit large install needs more
-# time, bump per-package via a pillar override or increase the default here.
-
 # Install Winget packages by category, machine scope (run as user with winget)
 # noscope list = packages that choke on --scope machine flag (360 noscope lol)
 {% set noscope_pkgs = packages.windows.winget.get('noscope', []) %}

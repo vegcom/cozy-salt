@@ -1,9 +1,11 @@
 # Docker Socket Proxy for Windows Access
 # Exposes Docker daemon to Windows via TCP
-#
-# Usage: docker compose -f /opt/cozy/docker-proxy.yaml up -d
 # Windows: docker context create wsl --docker "host=tcp://localhost:2375"
-# TODO: move to /opt/copzy/docker
+
+
+# TODO: move to /opt/cozy/docker
+# Usage: docker compose -f /opt/cozy/docker/docker-proxy.yaml up -d
+
 
 services:
   # Traefik for routing (optional, provides metrics/dashboard)

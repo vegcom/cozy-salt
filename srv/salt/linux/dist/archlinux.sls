@@ -12,7 +12,6 @@
 {% set os_name = 'arch' %}
 {% set workstation_role = salt['pillar.get']('workstation_role', 'workstation-full') %}
 {% set capability_meta = salt['pillar.get']('capability_meta', {}) %}
-{# TODO: prep for service_user will be pillar service_user: buildgirl probs #}
 {% set service_user = salt['pillar.get']('aur_user', 'cozy-salt-svc') %}
 {% set github_token = salt['pillar.get']('github:access_token', '') %}
 

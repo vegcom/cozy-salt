@@ -36,7 +36,7 @@ safe_comp_deprecate_func() {
 }
 
 safe_comp_deprecate_var() {
-    # FIXME: must replicate original function
+    # NIT: must replicate original function
     #     * stub is unsafe and untrustworthy
     :;
 }

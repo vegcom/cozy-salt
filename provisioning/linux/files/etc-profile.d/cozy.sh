@@ -49,10 +49,6 @@ export TMUX_TMPDIR="$HOME/scratch"
 #------------------------------------------------------------------------------
 # Compile
 #------------------------------------------------------------------------------
-# TODO: requires review https://wiki.archlinux.org/title/Ccache
-# NIT: maybe break off to per dist template if required
-# notes
-# - https://itsfoss.gitlab.io/post/how-to-speed-up-compilation-process-when-installing-packages-from-aur/
 export CCACHE_DIR="$HOME/scratch/ccache"
 export CCACHE_SLOPPINESS="locale,time_macros"
 export CCACHE_PATH="/usr/bin"

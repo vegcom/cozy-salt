@@ -65,7 +65,7 @@ cozy_presence_cli:
     - require:
       - git: cozy_presence_repo
 
-# TODO: Managed in srv/salt/linux/config.sls
+# XXX: Managed in srv/salt/linux/config.sls
 # Install systemd service
 cozy_presence_service_file:
   file.managed:

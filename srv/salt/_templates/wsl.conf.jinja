@@ -6,12 +6,9 @@
 systemd=true
 
 [network]
-# Prevent WSL from auto-generating /etc/hosts and /etc/resolv.conf
-# This allows Salt to manage DNS configuration without conflicts
 generateHosts = false
 generateResolvConf = false
 
 [interop]
-# Enable Windows interoperability
 enabled = true
-appendWindowsPath = true
+appendWindowsPath = false

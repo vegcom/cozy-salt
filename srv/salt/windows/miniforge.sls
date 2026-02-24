@@ -2,8 +2,6 @@
 # See docs/modules/windows-miniforge.md for configuration
 # PATH updates handled by windows.paths (avoids race conditions)
 
-# TODO: check TODO.md for more information on pending regedit tweaks. may deffer to salt/windows/regedit.sls
-
 {% set miniforge_versions = salt['pillar.get']('versions:miniforge', {}) %}
 {% set miniforge_version  = miniforge_versions.get('version', '24.11.3-0') %}
 {# Path configuration from pillar with defaults #}
@@ -47,23 +45,6 @@ miniforge_clean:
     - require:
       - cmd: miniforge_install
       - file: miniforge_directory
-
-# FIXME: THis is useless our windows porfile does this it's loaded via git
-# # Initialize conda for PowerShell in system-wide profile
-# # Appends conda-hook.ps1 sourcing to AllUsersAllHosts profile (pwsh7)
-# miniforge_powershell_profile:
-#   file.append:
-#     - name: {{ pwsh_7_profile }}\profile.ps1
-#     - text: |
-#         # Conda initialization (managed by Salt)
-#         if (Test-Path "{{ miniforge_path }}\shell\condabin\conda-hook.ps1") {
-#             . "{{ miniforge_path }}\shell\condabin\conda-hook.ps1"
-#         }
-#     - makedirs: True
-#     # - unless: 'pwsh -NoProfile -Command "Test-Path ''{{ pwsh_7_profile }}\profile.ps1'' -and (Get-Content ''{{ pwsh_7_profile }}\profile.ps1'' -Raw) -match ''conda-hook''"'
-#     - require:
-#       - cmd: miniforge_install
-#       - cmd: powershell_profile_deployed
 
 # Set system-wide environment variable for Miniforge/Conda
 miniforge_conda_home:
