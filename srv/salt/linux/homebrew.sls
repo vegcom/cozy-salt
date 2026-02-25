@@ -1,14 +1,10 @@
 # Linux Homebrew installation
-{%- from "_macros/acl.sls" import cozy_acl %}
-
 {# Path configuration from pillar with defaults #}
 {% set homebrew_base = salt['pillar.get']('install_paths:homebrew:linux', '/home/linuxbrew/.linuxbrew') %}
 {# Extract parent directory for initial creation #}
 {% set homebrew_parent = homebrew_base.rsplit('/', 1)[0] if '/' in homebrew_base else '/home/linuxbrew' %}
 {%- set service_user = salt['pillar.get']('service_user:name', 'cozy-salt-svc') %}
 
-# Create parent directory owned by service_user
-# Homebrew installer will create .linuxbrew subdirectory
 linuxbrew_directory:
   file.directory:
     - name: {{ homebrew_parent }}
@@ -18,9 +14,6 @@ linuxbrew_directory:
     - makedirs: True
     - order: 20
 
-# Download and execute Homebrew installer (default supported path)
-# Runs as service_user (Homebrew rejects root execution)
-# NONINTERACTIVE=1 suppresses prompts
 homebrew_install:
   cmd.run:
     - name: |
@@ -32,10 +25,25 @@ homebrew_install:
     - require:
       - file: linuxbrew_directory
 
-{{ cozy_acl(homebrew_base) }}
+homebrew_svc_acl:
+  acl.present:
+    - name: {{ homebrew_base }}
+    - acl_type: user
+    - acl_name: {{ service_user }}
+    - perms: rwx
+    - recurse: True
+    - require:
+      - cmd: homebrew_install
 
-# Update Homebrew after installation (must run as non-root user)
-# Fix missing git remote and safe.directory if needed, then update
+homebrew_svc_acl_default:
+  acl.present:
+    - name: {{ homebrew_base }}
+    - acl_type: default:user
+    - acl_name: {{ service_user }}
+    - perms: rwx
+    - require:
+      - cmd: homebrew_install
+
 homebrew_update:
   cmd.run:
     - name: |
@@ -50,7 +58,6 @@ homebrew_update:
       - cmd: homebrew_install
     - unless: test -f {{ homebrew_base }}/var/homebrew/.last_update_timestamp
 
-# Install packages from provisioning/packages.sls brew list
 {% import_yaml "packages.sls" as packages %}
 {% set brew_packages = packages.get('brew', []) %}
 {% if brew_packages %}
