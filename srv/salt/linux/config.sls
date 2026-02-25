@@ -5,8 +5,7 @@
 {% set dns = network_config.get('dns', {}) %}
 {% set is_container = salt['file.file_exists']('/.dockerenv') or
                       salt['file.file_exists']('/run/.containerenv') %}
-{% set is_wsl = salt['file.file_exists']('/proc/version') and
-                'microsoft' in salt['cmd.run']('cat /proc/version 2>/dev/null || echo ""', python_shell=True).lower() %}
+{% set is_wsl = grains.get('kernel_release', '').find('WSL') != -1 %}
 {# SSH port: 2222 for WSL (avoids Windows SSH on 22), 22 for native Linux #}
 {% set ssh_port = 2222 if is_wsl else salt['pillar.get']('ssh:port', 22) %}
 

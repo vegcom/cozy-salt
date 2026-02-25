@@ -4,7 +4,7 @@
 
 {% set os_family = grains['os_family'] %}
 {% set is_kali = grains.get('os', '') == 'Kali' %}
-{% set is_wsl = salt['file.file_exists']('/proc/version') and 'microsoft' in salt['cmd.run']('cat /proc/version 2>/dev/null || echo ""', python_shell=True).lower() %}
+{% set is_wsl = grains.get('kernel_release', '').find('WSL') != -1 %}
 
 # Install Docker using official installer script (handles repo setup and GPG keys automatically)
 # Works on Debian, Ubuntu, CentOS, RHEL, Fedora via get.docker.com

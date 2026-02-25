@@ -2,8 +2,7 @@
 # Must run BEFORE linux.config to prevent WSL from overwriting /etc/hosts and /etc/resolv.conf
 # Configures: systemd enablement + DNS control
 
-{% set is_wsl = grains.get('kernel_release', '').find('WSL') != -1 or
-                 grains.get('kernel_release', '').find('Microsoft') != -1 %}
+{% set is_wsl = grains.get('kernel_release', '').find('WSL') != -1 %}
 
 {% if is_wsl %}
 wsl_config:
