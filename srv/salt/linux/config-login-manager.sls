@@ -22,41 +22,23 @@ sddm_main_config:
     - user: root
     - group: root
 
-sddm_wayland_conf:
-  file.managed:
-    - name: /etc/sddm.conf.d/wayland.conf
-    - source: salt://linux/files/etc-sddm.conf.d/wayland.conf
-    - makedirs: True
+sddm_opt_path:
+  file.directory:
+    - name: /etc/sddm.conf.d/
+    - user: root
+    - group: root
+    - mode: "0755"
 
-sddm_virtualkbd_conf:
-  file.managed:
-    - name: /etc/sddm.conf.d/virtualkbd.conf
-    - source: salt://linux/files/etc-sddm.conf.d/virtualkbd.conf
-    - makedirs: True
-
-sddm_avatar_conf:
-  file.managed:
-    - name: /etc/sddm.conf.d/avatar.conf
-    - source: salt://linux/files/etc-sddm.conf.d/avatar.conf
-    - makedirs: True
-
-sddm_theme_conf:
-  file.managed:
-    - name: /etc/sddm.conf.d/theme.conf
-    - source: salt://linux/files/etc-sddm.conf.d/theme.conf
-    - makedirs: True
-
-sddm_cleanenv_conf:
-  file.managed:
-    - name: /etc/sddm.conf.d/cleanenv.conf
-    - source: salt://linux/files/etc-sddm.conf.d/cleanenv.conf
-    - makedirs: True
-
-sddm_general_conf:
-  file.managed:
-    - name: /etc/sddm.conf.d/general.conf
-    - source: salt://linux/files/etc-sddm.conf.d/general.conf
-    - makedirs: True
+sddm_opt_configs:
+  file.recurse:
+    - name: /etc/sddm.conf.d/
+    - source: salt://linux/files/etc-sddm.conf.d
+    - include_empty: True
+    - clean: True
+    - user: root
+    - group: root
+    - file_mode: "0644"
+    - dir_mode: "0755"
 
 # =============================================================================
 # SDDM THEME DEPLOYMENT (Pillar-gated)
@@ -116,6 +98,20 @@ sddm_autologin_conf:
         User={{ autologin_user }}
         Session={{ autologin_session }}
     - makedirs: True
+
+# nopasswdlogin group checked by /etc/pam.d/sddm-autologin on Arch
+# pam_succeed_if.so user ingroup nopasswdlogin — no PAM edits needed
+sddm_nopasswdlogin_group:
+  group.present:
+    - name: nopasswdlogin
+
+sddm_autologin_user_nopasswd:
+  user.present:
+    - name: {{ autologin_user }}
+    - groups: [nopasswdlogin]
+    - remove_groups: False
+    - require:
+      - group: sddm_nopasswdlogin_group
 
 {% else %}
 # Autologin disabled (set linux:login_manager:autologin:user to enable)

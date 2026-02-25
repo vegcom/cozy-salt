@@ -37,6 +37,7 @@ linux:
       theme: astronaut
       deploy_fonts: true
     autologin:
+      session: plasma
       user: false
   bluetooth:
     enabled: false
