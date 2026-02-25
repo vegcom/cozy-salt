@@ -26,7 +26,11 @@
   ld = log --diff-filter=D
   ll = log --graph --oneline --show-signature
   lm = log --diff-filter=M
-  lr = log --after="1 days ago" --pretty=format:"%h - %an, %ad : %s" --date=short
+  l1day = log --after="1 day ago" --date=short --pretty=format:"%h %ad %s"
+  lweek = log --after="1 week ago" --date=short --pretty=format:"%h %ad %s"
+  ltoday = log --after="midnight" --date=short --pretty=format:"%h %ad %s"
+  lmonday = log --after="last Monday" --date=short --pretty=format:"%h %ad %s"
+  lmonth = log --after="1 month ago" --date=short --pretty=format:"%h %ad %s"
   mr = !sh -c 'git fetch $1 merge-requests/$2/head:mr-$1-$2 && git checkout mr-$1-$2' -
   mru = for-each-ref --sort=-committerdate --count=10 refs/heads/ --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(color:red)%(objectname:short)%(color:reset) - %(contents:subject) - %(authorname) (%(color:green)%(committerdate:relative)%(color:reset))'
   pf = push --force-with-lease
