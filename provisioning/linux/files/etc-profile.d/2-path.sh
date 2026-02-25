@@ -17,7 +17,7 @@ safe_append_path '/usr/local/games'
 safe_append_path '/usr/games'
 
 # Now we ship our own jazz
-safe_append_path '/opt/cozy'
+safe_append_path '/opt/cozy/bin'
 
 # Export once, and only once
 export PATH

@@ -30,7 +30,6 @@ if ! type -a cozy-render  &>/dev/null ; then
   alias cozy-render=cozy_render
 fi
 
-
 if ! type -a cozy-persist-shell  &>/dev/null ; then
   alias cozy-persist-shell=cozy_persist_shell
 fi

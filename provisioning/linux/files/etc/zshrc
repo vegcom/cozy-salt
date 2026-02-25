@@ -5,9 +5,6 @@
 autoload -Uz compinit
 compinit -u
 
-if [ -n "${__ETC_ZSHRC_SOURCED}" ]; then
-    return 0
-fi
 
 # Carapace
 if command -v carapace >/dev/null; then
@@ -28,6 +25,3 @@ fi
 if command -v atuin >/dev/null; then
     eval "$(atuin init zsh)"
 fi
-
-__ETC_ZSHRC_SOURCED=1
-export __ETC_ZSHRC_SOURCED

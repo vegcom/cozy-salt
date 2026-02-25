@@ -11,11 +11,7 @@ if [ ! -f "$CONDA_EXE" ]; then
 fi
 
 if [ -n "$BASH_VERSION" ]; then
-    if ! type -f conda &>/dev/null; then
-        eval "$(${CONDA_EXE} shell.bash hook)" &>/dev/null
-    fi
+    eval "$(${CONDA_EXE} shell.bash hook)" &>/dev/null
 elif [ -n "$ZSH_VERSION" ]; then
-    if ! type -f conda &>/dev/null; then
-        eval "$(${CONDA_EXE} shell.zsh hook)" &>/dev/null
-    fi
+    eval "$(${CONDA_EXE} shell.zsh hook)" &>/dev/null
 fi
