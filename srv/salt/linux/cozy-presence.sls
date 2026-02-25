@@ -38,7 +38,7 @@ cozy_presence_env_update:
         /opt/miniforge3/bin/mamba env update -f {{ cozy_presence_path }}/environment.yml --prune
     - user: {{ run_user }}
     - onchanges:
-      - git: cozy_presence
+      - git: cozy_presence_repo
     - require:
       - cmd: cozy_presence_env_create
 
