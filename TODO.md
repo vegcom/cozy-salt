@@ -1,5 +1,15 @@
 # cozy-salt TODO
 
+## CI/CD
+
+- [ ] enable and debug `.github/workflows/test-states.yml`
+
+## Tests
+
+- [ ] minion container tests are not automated, this needs to be put back in place
+  - [ ] containers must be evaluated
+  - each changed state could also go through pre-commit for evaluation this way
+
 ## Pillar
 
 - [x] fix pillar merge order and priority (refactor/pillar-load-order branch)
@@ -24,7 +34,7 @@
 
 ## Docker
 
-- [ ] use modern docker install scheme
+- [x] use modern docker install scheme
 
 ## Seperation of duty
 
@@ -32,9 +42,19 @@
   - Presently config.sls is doing a lot of heavy lifting
   - Can be seperated by module/state
 
-## Linux / Infra
+## Infra
 
 - [ ] **cmd.run audit**: grep all states for `cmd.run.*(wget|curl)` and migrate to `file.managed` + `cmd.run` pattern ([k3s](./srv/salt/linux/k3s.sls) pattern as reference)
+  - [ ] windows
+    - [ ] miniforge
+    - [ ] nvm
+    - [ ] windhawk
+    - [ ] ... find more ...
+  - [ ] linux
+    - [ ] miniforge
+    - [ ] nvm
+    - [ ] rust
+    - [ ] ... find more ...
 
 ## Backlog
 
@@ -44,6 +64,11 @@
   - Salt osmap pattern: <https://docs.saltproject.io/salt/user-guide/en/latest/topics/jinja.html>
 - [ ] Cull verbose inline comments from .sls files, move to proper docs
 
+## Git Hooks
+
+- [ ] Convert `provisioning/common/dotfiles/.git_template/hooks/commit-msg` to Python for Windows compatibility
+
 ## Feature
 
 - [ ] Integrate cozy-fragments (Windows Terminal config fragments) - manual for now <<<git@github.com>:vegcom/cozy-fragments.git>>
+- [ ] Wire up template `srv/salt/_templates/alacritty.jinja` path depends on OS
