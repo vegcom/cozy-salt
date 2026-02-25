@@ -1,3 +1,4 @@
 [user]
-	email =
-	name =
+  email =
+  name =
+  signingkey = ~/.ssh/keys/git.pub

@@ -2,9 +2,6 @@
   defaultBranch = main
   templateDir = ~/.git_template
 
-[gpg]
-  format = ssh
-
 [push]
   default = current
 
@@ -27,9 +24,12 @@
   ll = log --graph --oneline --show-signature
   lm = log --diff-filter=M
   l1day = log --after="1 day ago" --date=short --pretty=format:"%h %ad %s"
+  l1d = l1day
   lweek = log --after="1 week ago" --date=short --pretty=format:"%h %ad %s"
+  lw = lweek
   ltoday = log --after="midnight" --date=short --pretty=format:"%h %ad %s"
   lmonday = log --after="last Monday" --date=short --pretty=format:"%h %ad %s"
+  lmo = lmonday
   lmonth = log --after="1 month ago" --date=short --pretty=format:"%h %ad %s"
   mr = !sh -c 'git fetch $1 merge-requests/$2/head:mr-$1-$2 && git checkout mr-$1-$2' -
   mru = for-each-ref --sort=-committerdate --count=10 refs/heads/ --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(color:red)%(objectname:short)%(color:reset) - %(contents:subject) - %(authorname) (%(color:green)%(committerdate:relative)%(color:reset))'
@@ -39,11 +39,9 @@
 
 [core]
   attributesfile = ~/.gitattributes
-  attributesfile = ~/.gitattributes.local
   autocrlf = false
   eol = lf
   excludesfile = ~/.gitignore
-  excludesfile = ~/.gitignore.local
   sharedRepository = group
 
 [merge]
@@ -70,13 +68,14 @@
 [tag]
   forceSignAnnotated = true
 
-[credential]
-  helper = store
-  helper = cache --timeout=3600
-
 [safe]
   directory = *
   directory = /home/linuxbrew/.linuxbrew/Homebrew
 
-[user]
-	signingkey = ~/.ssh/keys/git.pub
+[gpg]
+  format = ssh
+
+[credential]
+  # https://git-scm.com/docs/gitcredentials
+  helper = store
+  helper = cache --timeout=3600

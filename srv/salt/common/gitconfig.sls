@@ -168,6 +168,18 @@ deploy_git_template_{{ username }}:
     - makedirs: True
     - clean: True
 
+{% if not is_windows %}
+# Fix hook executability (file.recurse sets 0644 for everything)
+git_template_hooks_executable_{{ username }}:
+  file.directory:
+    - name: {{ dotfiles.dotfile_path(user_home, '.git_template/hooks') }}
+    - file_mode: "0755"
+    - recurse:
+      - mode
+    - require:
+      - file: deploy_git_template_{{ username }}
+{% endif %}
+
 # Deploy .git_template.local directory (preserve user additions)
 deploy_git_template_local_{{ username }}:
   file.recurse:

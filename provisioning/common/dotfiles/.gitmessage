@@ -1,8 +1,9 @@
+
+
+
 # - You are safe.
-
-
 # <type>: <short summary>
-# Types: feat, fix, docs, style, refactor, perf, test, chore, build, ci
+# Types: feat, fix, fixme, docs, tidy, style, refactor, perf, test, chore, wip, security, build, ci
 
 # Summary (required)
 # - Keep under 72 characters

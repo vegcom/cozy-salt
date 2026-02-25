@@ -1,0 +1,28 @@
+#!/bin/sh
+# commit-msg: enforce conventional commit style
+# format: type: description
+# valid types based on project conventions
+
+MSG_FILE="$1"
+MSG=$(cat "$MSG_FILE")
+
+# Skip merge commits, fixup/squash, and WIP
+case "$MSG" in
+  Merge*|Revert*|fixup\!*|squash\!*) exit 0 ;;
+esac
+
+VALID_TYPES="feat|fix|fixme|chore|docs|tidy|refactor|test|wip|security|style|perf|ci|build"
+PATTERN="^($VALID_TYPES)(\(.+\))?: .{1,}"
+
+if ! echo "$MSG" | grep -qE "$PATTERN"; then
+  echo ""
+  echo "  bad commit message: '$MSG'"
+  echo ""
+  echo "  format:  type: description"
+  echo "  example: feat: add user provisioning for june"
+  echo ""
+  echo "  valid types: feat fix fixme chore docs tidy"
+  echo "               refactor test wip security style perf ci build"
+  echo ""
+  exit 1
+fi

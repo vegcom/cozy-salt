@@ -1,3 +1,4 @@
+# Dotfiles - always LF (prevents vimrc/bashrc issues on Linux)
 * text=auto eol=lf
 
 .aliases text eol=lf
@@ -36,6 +37,7 @@
 *.yml text eol=lf
 *.zsh text eol=lf
 Dockerfile* text eol=lf
+PKGBUILD text eol=lf
 
 *.gif binary
 *.gz binary
@@ -44,3 +46,6 @@ Dockerfile* text eol=lf
 *.png binary
 *.tar binary
 *.zip binary
+
+# local overrides
+!include ~/.gitattributes.local
