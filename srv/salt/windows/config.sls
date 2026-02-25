@@ -43,14 +43,3 @@ uac_auto_elevate_admins:
     - vtype: REG_DWORD
 
 # Hosts entries managed in common.hosts (cross-platform)
-
-
-# ============================================================================
-# Service Management (merged from services.sls)
-# ============================================================================
-
-# Ensure Salt Minion service is running
-salt_minion_service:
-  service.running:
-    - name: salt-minion
-    - enable: True

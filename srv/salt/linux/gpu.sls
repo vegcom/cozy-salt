@@ -1,6 +1,5 @@
 # GPU Detection - Sets grain for platform-specific GPU driver installation
 # Detects: nvidia, amd (Steam Deck/RDNA), other (intel/generic/none)
-# Primarily used by Linux, but detects on all platforms for consistency
 
 detect_gpu_type:
   cmd.run:

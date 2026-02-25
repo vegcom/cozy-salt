@@ -8,19 +8,125 @@
 # See provisioning/packages.sls for full package definitions
 # See srv/pillar/arch/init.sls for capability_meta and aur_user
 
-{% import_yaml 'packages.sls' as packages %}
-{% set os_name = 'arch' %}
-{% set workstation_role = salt['pillar.get']('workstation_role', 'workstation-full') %}
-{% set capability_meta = salt['pillar.get']('capability_meta', {}) %}
-{% set service_user = salt['pillar.get']('aur_user', 'cozy-salt-svc') %}
-{% set github_token = salt['pillar.get']('github:access_token', '') %}
+{%- import_yaml 'packages.sls' as packages %}
+{%- set os_name = 'arch' %}
+{%- set workstation_role = salt['pillar.get']('workstation_role', 'workstation-full') %}
+{%- set capability_meta = salt['pillar.get']('capability_meta', {}) %}
+{%- set service_user = salt['pillar.get']('aur_user', 'cozy-salt-svc') %}
+{%- set github_token = salt['pillar.get']('github:access_token', '') %}
 
 # Get role capabilities from pillar (centralized in srv/pillar/linux/init.sls)
-{% set role_capabilities = salt['pillar.get']('linux', {}) %}
-{% set capabilities = role_capabilities.get(workstation_role, role_capabilities.get('workstation-full', [])) %}
+{%- set role_capabilities = salt['pillar.get']('linux', {}) %}
+{%- set capabilities = role_capabilities.get(workstation_role, role_capabilities.get('workstation-full', [])) %}
 
+{%- if grains['os_family'] == 'Arch' %}
 include:
-  - common.gpu
+  - linux.docker
+  - linux.gpu
+
+# ============================================================================
+# Arch Linux Pacman Repository Configuration
+# ----------------------------------------------------------------------------
+# Manages /etc/pacman.conf and installs repo keyrings
+# Only runs on Arch-based systems
+# ============================================================================
+
+{# Base repos from dist/arch.sls, extras from class/host append via pacman:repos_extra #}
+{%- set pacman_repos = salt['pillar.get']('pacman:repos', {}) %}
+{%- set pacman_repos_extra = salt['pillar.get']('pacman:repos_extra', {}) %}
+{%- do pacman_repos.update(pacman_repos_extra) %}
+cozy_arch_downloader:
+  file.managed:
+    - name: /usr/local/bin/aria2-wrapper
+    - source: salt://linux/files/usr-local-bin/aria2-wrapper
+    - mode: "0775"
+    - user: root
+    - group: cozyusers
+
+# Deploys /etc/pacman.conf with repos from pillar
+# Preserves existing settings outside of repo sections
+pacman_conf:
+  file.managed:
+    - name: /etc/pacman.conf
+    - mode: "0644"
+    - user: root
+    - group: root
+    - contents: |
+        # Arch Linux repository configuration
+        # Managed by cozy-salt - DO NOT EDIT MANUALLY
+        [options]
+        Architecture = auto
+        HoldPkg = pacman glibc
+        LocalFileSigLevel = Optional
+        SigLevel = Optional DatabaseOptional
+        XferCommand = /usr/local/bin/aria2-wrapper %u %o
+        ParallelDownloads = 8
+        ILoveCandy
+        VerbosePkgLists
+        CheckSpace
+        Color
+        {%- if pacman_repos %}
+        {%- for repo_name, repo_config in pacman_repos.items() %}
+        {%- if repo_config.get('enabled', false) %}
+        [{{ repo_name }}]
+        {%- if repo_config.get('Server') %}
+        Server = {{ repo_config.get('Server') }}
+        {%- endif %}
+        {%- if repo_config.get('server') %}
+        Server = {{ repo_config.get('server') }}
+        {%- endif %}
+        {%- if repo_config.get('Include') %}
+        Include = {{ repo_config.get('Include') }}
+        {%- endif %}
+        {%- if repo_config.get('include') %}
+        Include = {{ repo_config.get('include') }}
+        {%- endif %}
+        {%- if repo_config.get('SigLevel') %}
+        SigLevel = {{ repo_config.get('SigLevel') }}
+        {%- endif %}
+        {%- if repo_config.get('siglevel') %}
+        SigLevel = {{ repo_config.get('siglevel') }}
+        {%- endif %}
+        {%- endif %}
+        {%- endfor %}
+        {%- endif %}
+
+
+pacman_init_key:
+  cmd.run:
+    - name: pacman-key --init
+    - require:
+      - file: pacman_conf
+
+pacman_sync_key:
+  cmd.run:
+    - name: pacman-key --populate
+    - require:
+      - cmd: pacman_init_key
+
+pacman_install_reflector:
+  pkg.installed:
+    - name: reflector
+    - require:
+      - cmd: pacman_sync_key
+
+pacman_refresh_repo:
+  cmd.run:
+    - name: reflector --latest 5 --sort rate --save /etc/pacman.d/mirrorlist
+    - require:
+      - pkg: pacman_install_reflector
+
+pacman_sync_repo:
+  cmd.run:
+    - name: pacman -Syy
+    - require:
+      - cmd: pacman_refresh_repo
+
+pacman_update:
+  cmd.run:
+    - name: pacman -Su --noconfirm && pacman -Scc --noconfirm
+    - require:
+      - cmd: pacman_sync_repo
 
 # ============================================================================
 # PACMAN DATABASE SYNC - Run before any package installation
@@ -83,27 +189,27 @@ yay_install:
 # ============================================================================
 # FOUNDATION: core_utils via yay (runs first, others depend on this)
 # ============================================================================
-{% if 'core_utils' in capabilities and 'core_utils' in packages.get(os_name, {}) %}
-{% set core_meta = capability_meta.get('core_utils', {'state_name': 'core_utils_packages'}) %}
+{%- if 'core_utils' in capabilities and 'core_utils' in packages.get(os_name, {}) %}
+{%- set core_meta = capability_meta.get('core_utils', {'state_name': 'core_utils_packages'}) %}
 {{ core_meta.state_name }}:
   yay.installed:
     - pkgs: {{ packages[os_name].core_utils | tojson }}
     - runas: {{ service_user }}
     - require:
       - cmd: yay_install
-{% endif %}
+{%- endif %}
 
 # ============================================================================
 # CAPABILITIES: Loop through all non-foundation capabilities via yay
 # ============================================================================
-{% for cap_key, cap_meta in capability_meta.items() %}
+{%- for cap_key, cap_meta in capability_meta.items() %}
 {# Skip foundation (handled above) and capabilities not in current role #}
-{% if not cap_meta.get('is_foundation', false) and cap_key in capabilities %}
+{%- if not cap_meta.get('is_foundation', false) and cap_key in capabilities %}
 {# Check packages exist for this distro #}
-{% if cap_key in packages.get(os_name, {}) %}
+{%- if cap_key in packages.get(os_name, {}) %}
 {# Check pillar gate if defined (e.g., kvm needs host:capabilities:kvm) #}
-{% set pillar_gate = cap_meta.get('pillar_gate') %}
-{% if not pillar_gate or salt['pillar.get'](pillar_gate, False) %}
+{%- set pillar_gate = cap_meta.get('pillar_gate') %}
+{%- if not pillar_gate or salt['pillar.get'](pillar_gate, False) %}
 
 # --- {{ cap_key }} ---
 {{ cap_meta.state_name }}:
@@ -115,17 +221,17 @@ yay_install:
     - onfail_stop: True
 
 {# Post-install: Enable service if specified #}
-{% if cap_meta.get('has_service') %}
+{%- if cap_meta.get('has_service') %}
 {{ cap_meta.has_service }}_service:
   service.running:
     - name: {{ cap_meta.has_service }}
     - enable: True
     - require:
       - yay: {{ cap_meta.state_name }}
-{% endif %}
+{%- endif %}
 
 {# Post-install: Add user to groups if specified #}
-{% if cap_meta.get('has_user_groups') %}
+{%- if cap_meta.get('has_user_groups') %}
 {{ cap_key }}_user_groups:
   user.present:
     - name: {{ service_user }}
@@ -133,9 +239,18 @@ yay_install:
     - remove_groups: False
     - require:
       - yay: {{ cap_meta.state_name }}
-{% endif %}
+{%- endif %}
 
-{% endif %}{# pillar_gate #}
-{% endif %}{# packages exist #}
-{% endif %}{# not foundation and in capabilities #}
-{% endfor %}
+{%- endif %}{# pillar_gate #}
+{%- endif %}{# packages exist #}
+{%- endif %}{# not foundation and in capabilities #}
+{%- endfor %}
+
+{%- else %}
+
+# Not an Arch-based system, skipping pacman configuration
+pacman_config_skipped:
+  test.nop:
+    - name: Not an Arch-based system - skipping pacman config
+
+{%- endif %}

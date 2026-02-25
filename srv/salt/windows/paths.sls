@@ -17,7 +17,7 @@
   'C:\\opt\\windhawk',
   'C:\\opt\\wt',
   'C:\\opt\\msys',
-  'C:\\opt\\cozy',
+  'C:\\opt\\cozy\\bin',
   winget_path
 ] %}
 

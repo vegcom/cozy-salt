@@ -6,7 +6,7 @@
 {% from "_macros/dist-packages.sls" import role_aware_packages %}
 
 include:
-  - common.docker
-  - common.gpu
+  - linux.docker
+  - linux.gpu
 
 {{ role_aware_packages('rhel') }}
