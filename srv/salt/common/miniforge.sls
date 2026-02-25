@@ -12,6 +12,17 @@
   {% set uv_bin = miniforge_path ~ '/bin/uv' %}
 {% endif %}
 
+# Disable PS1 change
+miniforge_changeps1:
+  cmd.run:
+    - name: conda config --set changeps1 False
+    - runas: {{ service_user }}
+
+miniforge_canary:
+  cmd.run:
+    - name: conda config --add channels conda-canary
+    - runas: {{ service_user }}
+
 # Install pip base packages in miniforge base environment
 {% for package in packages.get('pip_base', []) %}
 install_pip_base_{{ package | replace('-', '_') }}:
