@@ -5,7 +5,7 @@
 # Structure: distro_aliases, package_metadata, per-distro packages, windows, pip/npm/brew
 # Capability groups: core_utils, shell_enhancements, monitoring, compression, vcs_extras,
 #                    modern_cli, security, acl, build_tools, networking, kvm
-# Arch-only: modern_cli_extras, interpreters, fonts, theming
+# Arch-only: modern_cli_extras, interpreters, fonts, theming, gui
 
 # ============================================================================
 # SHARED PACKAGE LISTS (DRY - referenced by distro sections below)
@@ -142,6 +142,8 @@ arch:
   modern_cli_extras: [bottom, eza, hyperfine, procs, tealdeer, tokei, zoxide]
   fonts: [noto-fonts, noto-fonts-emoji, noto-fonts-cjk, ttf-fira-code, ttf-hack, ttf-jetbrains-mono, inter-font]
   theming: [arc-gtk-theme, kvantum, papirus-icon-theme]
+  display: [weston]
+  gui: [plasma, hyprland]
 
 # ============================================================================
 # WINDOWS PACKAGES

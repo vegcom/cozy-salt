@@ -105,6 +105,7 @@ sddm_theme_disabled:
 # AUTOLOGIN CONFIGURATION (Pillar-gated)
 # =============================================================================
 {% set autologin_user = salt['pillar.get']('linux:login_manager:autologin:user', false) %}
+{% set autologin_session = salt['pillar.get']('linux:login_manager:autologin:session', false) %}
 {% if autologin_user %}
 
 sddm_autologin_conf:
@@ -113,7 +114,7 @@ sddm_autologin_conf:
     - contents: |
         [Autologin]
         User={{ autologin_user }}
-        Session=awesome
+        Session={{ autologin_session }}
     - makedirs: True
 
 {% else %}

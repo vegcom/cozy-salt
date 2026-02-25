@@ -170,7 +170,14 @@ class PackageValidator:
     # Arch can have extra groups
     shared_groups = ubuntu_groups
     arch_only_groups = arch_groups - shared_groups
-    arch_only_required = {"interpreters", "modern_cli_extras", "fonts", "theming"}
+    arch_only_required = {
+      "interpreters",
+      "modern_cli_extras",
+      "fonts",
+      "theming",
+      "display",
+      "gui",
+    }
 
     if arch_only_groups != arch_only_required:
       missing = arch_only_required - arch_only_groups

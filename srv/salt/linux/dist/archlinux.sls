@@ -4,7 +4,7 @@
 #   - workstation-minimal: core + shell
 #   - workstation-base: minimal + monitoring, compression, vcs, modern-cli, security, acl
 #   - workstation-developer: base + build tools, networking, kvm
-#   - workstation-full (default): all capabilities + interpreters, shells, CLI extras, fonts, theming
+#   - workstation-full (default): all capabilities + interpreters, shells, CLI extras, fonts, theming, display, gui
 # See provisioning/packages.sls for full package definitions
 # See srv/pillar/arch/init.sls for capability_meta and aur_user
 
@@ -21,7 +21,6 @@
 
 {%- if grains['os_family'] == 'Arch' %}
 include:
-  - linux.docker
   - linux.gpu
 
 # ============================================================================

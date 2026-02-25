@@ -6,10 +6,6 @@ managed_users:
 
 docker_enabled: True
 
-steamdeck:
-  autologin:
-    user: deck
-
 display:
   rotation:
     enabled: false
@@ -30,6 +26,7 @@ linux:
       theme: astronaut
       deploy_fonts: true
     autologin:
+      session: plasma.desktop
       user: deck
   bluetooth:
     enabled: true
