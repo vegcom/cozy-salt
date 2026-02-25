@@ -1,0 +1,17 @@
+[Unit]
+Description=Macvlan shim for Docker frontend network
+After=network.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/sbin/ip link add {{ shim_name }} link {{ parent }} type macvlan mode bridge
+ExecStart=/sbin/ip addr add {{ shim_ip }}/24 dev {{ shim_name }}
+ExecStart=/sbin/ip link set {{ shim_name }} up
+{% for route in routes %}
+ExecStart=/sbin/ip route add {{ route }}/32 dev {{ shim_name }}
+{% endfor %}
+ExecStop=/sbin/ip link delete {{ shim_name }}
+
+[Install]
+WantedBy=multi-user.target

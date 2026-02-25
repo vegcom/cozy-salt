@@ -1,3 +1,4 @@
+# C:\opt\cozy\bin\mount-share.ps1
 param(
     [string]$ShareServer,
     [string]$ShareName,
@@ -18,17 +19,15 @@ if (-not $existing) {
     cmdkey /add:$ShareServer /user:$User /pass:($Cred.GetNetworkCredential().Password)
 }
 
-# --- Offline Files ---
-$offlineFiles = Get-WmiObject -Namespace "root\cimv2" -Class Win32_OfflineFilesCache
-if (-not $offlineFiles.Enabled) {
-    $offlineFiles.Enable()
-}
-
-# --- Pinning ---
-$cache = New-Object -ComObject OfflineFiles.Cache
-$item = $cache.GetItem($src_path)
-if (-not $item.IsPinned) {
-    $cache.Pin($src_path, $true)
+# --- Offline Files + Pinning (optional, skipped if feature not available) ---
+try {
+    $offlineFiles = Get-WmiObject -Namespace "root\cimv2" -Class Win32_OfflineFilesCache -ErrorAction Stop
+    if (-not $offlineFiles.Enabled) { $offlineFiles.Enable() }
+    $cache = New-Object -ComObject OfflineFiles.Cache -ErrorAction Stop
+    $item = $cache.GetItem($src_path)
+    if (-not $item.IsPinned) { $cache.Pin($src_path, $true) }
+} catch {
+    Write-Host "Offline Files not available, skipping pin: $_"
 }
 
 # --- Symlink ---

@@ -3,6 +3,7 @@
 
 include:
   - windows.bootstrap
+  - windows.scripts
   - windows.salt_minion
   - windows.users
   - windows.service-account

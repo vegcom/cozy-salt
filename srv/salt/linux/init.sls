@@ -17,6 +17,7 @@ include:
   - linux.wsl-config      # WSL-specific config (must run before linux.config)
   - linux.config          # Includes service management (merged from services.sls)
   - linux.docker-proxy    # Deploy Docker socket proxy for TCP access
+  - linux.macvlan-shim    # Macvlan shim for host→container routing (noop if pillar unset)
   - linux.users           # Create users (requires groups + shell_packages)
   - linux.nvm
   - linux.rust

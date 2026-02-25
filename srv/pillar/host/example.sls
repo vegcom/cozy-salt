@@ -37,3 +37,12 @@ network:
         - localhost
         - localhost.local
         - localhost.localdomain
+
+# Macvlan shim for Docker frontend network
+macvlan_shim:
+  parent: eth0
+  shim_name: frontend-shim
+  shim_ip: 10.0.0.254
+  routes:
+    - 10.0.0.23
+    - 10.0.0.45

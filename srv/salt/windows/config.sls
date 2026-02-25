@@ -6,7 +6,7 @@
 {% set sshd_config_d = paths.get('sshd_config_d', 'C:\\ProgramData\\ssh\\sshd_config.d') %}
 {% set pwsh_7_profile = paths.get('powershell_7_profile', 'C:\\Program Files\\PowerShell\\7') %}
 {% set pwsh_exe = pwsh_7_profile + "\\pwsh.exe" %}
-{% set opt_cozy = "C:\\opt\\cozy\\bin\\" %}
+
 
 # WSL-specific configuration (detection and Docker context setup)
 # Export git user config as environment variables for vim
@@ -44,24 +44,6 @@ uac_auto_elevate_admins:
 
 # Hosts entries managed in common.hosts (cross-platform)
 
-# Bootstrap script deployment
-cozy_opt_bin:
-  file.directory:
-    - name: {{ opt_cozy }}
-    - source: salt://windows/files/opt-cozy-bin/
-    - makedirs: True
-    - order: 1
-
-cozy_opt_scripts:
-  file.recurse:
-    - name: {{ opt_cozy }}
-    - source: salt://windows/files/opt-cozy-bin/
-    - makedirs: True
-    - win_owner: Administrators
-    - win_inheritance: True
-    - order: 0
-    - require:
-      - file: cozy_opt_bin
 
 # ============================================================================
 # Service Management (merged from services.sls)

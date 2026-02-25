@@ -95,12 +95,13 @@ windows_profile_health_check:
 
 {{ username }}_mount_git:
   cmd.run:
-    - name: >
-        powershell.exe -ExecutionPolicy Bypass -File C:\scripts\mount-share.ps1
-        -ShareServer COZY-SHARE
-        -ShareName Git
-        -ShareUser {{ username }}
-        -SharePass {{ pillar['git_pass'] }}
+    - name: |
+        pwsh -ExecutionPolicy Bypass -File C:\opt\cozy\bin\mount-share.ps1
+          -ShareServer COZY-SHARE
+          -ShareName Git
+          -ShareUser {{ username }}
+          -SharePass {{ userdata.get('smb_password', '') }}
+    - runas: {{ username }}
 
 # Add {{ username }} to Windows groups using PowerShell
 # Salt's user.present groups parameter has a bug on Windows (ValueError: list.remove)

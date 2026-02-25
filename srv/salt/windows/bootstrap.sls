@@ -1,9 +1,10 @@
 # Windows Bootstrap State
 # "Make you behave like a predictable Windows target"
-# Run EARLY - before normal states, after script state gets Salt talking
-# See TODO.md for full context
 
 {% from '_macros/windows.sls' import get_winget_user, get_winget_path with context %}
+
+{% set winget_user = get_winget_user() %}
+{% set winget_path = get_winget_path(winget_user) %}
 
 # ============================================================================
 # WinRM Configuration (Salt communication foundation)
@@ -127,15 +128,9 @@ disable_delivery_optimization:
     - vdata: 0
     - vtype: REG_DWORD
 
-
 # ============================================================================
-# Bootstrap Package Installation (using powershell 5.1, not pwsh)
-# These MUST install before any state that uses shell: pwsh or git.latest
-# Winget is per-user - detect user who has logged in
+# Required Packages
 # ============================================================================
-
-{% set winget_user = get_winget_user() %}
-{% set winget_path = get_winget_path(winget_user) %}
 
 install_powershell:
   cmd.run:
@@ -159,9 +154,8 @@ install_git:
     - onlyif: Test-Path '{{ winget_path }}'
     - timeout: 300
 
-
 # ============================================================================
-# C:\opt Directory Structure and Permissions
+# Required Paths
 # ============================================================================
 
 opt_directory:
@@ -186,12 +180,12 @@ opt_acl_cozyusers:
       - file: opt_directory
 
 # ============================================================================
-# Environment Variable Management
-# ============================================================================
-
+# Update Paths
+# ----------------------------------------------------------------------------
 # Force environment broadcast after PATH changes
 # Salt doesn't send WM_SETTINGCHANGE, so services won't see updated PATH
-# Uses rundll32 to broadcast WM_SETTINGCHANGE without C# interop
+# ============================================================================
+
 broadcast_env_change:
   cmd.run:
     - name: rundll32.exe user32.dll,UpdatePerUserSystemParameters ,1 ,True

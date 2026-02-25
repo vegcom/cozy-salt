@@ -11,12 +11,12 @@ users:
     shell: /bin/bash
     home_prefix: /home
     # UID/GID for SMB/NFS consistency (start at 3000+)
-    # uid: 3004
-    # gid: 3004
+    uid: 3042
+    gid: 3042
     # SMB credentials (for shared mounts defined in common/users.sls)
-    # smb_password: supersecret
-    # smb_username: example_user  # optional, defaults to username
-    # smb_domain: WORKGROUP       # optional
+    smb_password: supersecret
+    smb_username: example_user  # optional, defaults to username
+    smb_domain: WORKGROUP       # optional
     linux_groups:
       - cozyusers
       - libvirt
