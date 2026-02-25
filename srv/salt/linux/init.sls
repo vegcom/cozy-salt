@@ -6,6 +6,7 @@
 #   users:   requires groups + shell_packages
 
 include:
+  - linux.salt_minion     # Configures salt minion.d/99-cozy.conf
   - linux.groups          # Create groups + skel + sudoers (no pkg deps)
   - linux.service-account # Create service account for system operations
   - linux.install         # Role-aware package installation + Docker + GPU detection

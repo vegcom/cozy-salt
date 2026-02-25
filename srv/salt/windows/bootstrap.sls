@@ -6,18 +6,6 @@
 {% from '_macros/windows.sls' import get_winget_user, get_winget_path with context %}
 
 # ============================================================================
-# Salt Minion Configuration (ensure master is correct)
-# ============================================================================
-{% set salt_master = salt['pillar.get']('salt:master', 'guava.local') %}
-
-minion_master_config:
-  file.managed:
-    - name: C:\salt\conf\minion.d\master.conf
-    - contents: |
-        master: {{ salt_master }}
-    - makedirs: True
-
-# ============================================================================
 # WinRM Configuration (Salt communication foundation)
 # ============================================================================
 

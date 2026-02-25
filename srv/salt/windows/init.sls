@@ -2,8 +2,8 @@
 # Includes all Windows state modules
 
 include:
-  # Bootstrap FIRST - WinRM, UAC, C:\opt ACLs
   - windows.bootstrap
+  - windows.salt_minion
   - windows.users
   - windows.service-account
   - windows.paths
