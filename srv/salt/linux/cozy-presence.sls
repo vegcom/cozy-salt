@@ -35,6 +35,8 @@ cozy_presence_env_update:
   cmd.run:
     - name: |
         /opt/miniforge3/bin/mamba env update -f {{ cozy_presence_path }}/environment.yml --prune
+    - onchanges:
+      - git: cozy-presence
     - require:
       - cmd: cozy_presence_env_create
 
@@ -65,7 +67,6 @@ cozy_presence_cli:
     - require:
       - git: cozy_presence_repo
 
-# XXX: Managed in srv/salt/linux/config.sls
 # Install systemd service
 cozy_presence_service_file:
   file.managed:
