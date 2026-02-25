@@ -6,7 +6,7 @@
 {% import_yaml 'packages.sls' as packages %}
 {% set workstation_role = salt['pillar.get']('workstation_role', 'workstation-full') %}
 {% set capability_meta = salt['pillar.get']('capability_meta', {}) %}
-{% set role_capabilities = salt['pillar.get']('role_capabilities', {}) %}
+{% set role_capabilities = salt['pillar.get']('linux', {}) %}
 {% set capabilities = role_capabilities.get(workstation_role, role_capabilities.get('workstation-full', [])) %}
 
 # ============================================================================
