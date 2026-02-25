@@ -17,6 +17,19 @@
 {% set user_tokens = users_data.get(username, {}).get('github', {}).get('tokens', []) %}
 {% set merged_tokens = global_tokens + user_tokens %}
 
+# Deploy base .gitconfig (always update)
+deploy_gitconfig_{{ username }}:
+  file.managed:
+    - name: {{ dotfiles.dotfile_path(user_home, '.gitconfig') }}
+    - source: salt://common/dotfiles/.gitconfig
+    - user: {{ username }}
+{% if not is_windows %}
+    - mode: "0644"
+{% else %}
+    - win_perms_reset: True
+{% endif %}
+    - makedirs: True
+
 # Deploy .git-credentials from merged global and user-specific tokens
 deploy_git_credentials_{{ username }}:
   file.managed:
@@ -127,18 +140,3 @@ git_template_hooks_executable_{{ username }}:
 {% endif %}
 
 {% endfor %}
-
-# On Windows: Deploy global .git-credentials to SYSTEM's home
-# (SYSTEM runs the minion and needs credentials to clone private repos)
-{% if is_windows %}
-deploy_git_credentials_system:
-  file.managed:
-    - name: C:\Windows\System32\config\systemprofile\.git-credentials
-    - contents: |
-        {%- for token in global_tokens %}
-        https://oauth2:{{ token }}@github.com
-        {%- endfor %}
-    - makedirs: True
-    - require:
-      - cmd: git_safe_directory_all
-{% endif %}
