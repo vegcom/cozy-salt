@@ -37,6 +37,7 @@ bootstrap_packages:
     - pkgs:
       - git
       - base-devel
+      - aria2
     - require:
       - pacman: pacman_sync
 

@@ -9,19 +9,6 @@
 {# Merge global and user-specific github tokens #}
 {% set global_tokens = salt['pillar.get']('github:tokens', []) %}
 {% set users_data = salt['pillar.get']('users', {}) %}
-# Configure git to trust all directories (works around Git 2.36+ dubious ownership check)
-# On Windows: use --system so it applies to all users including SYSTEM (which runs git.latest)
-# On Linux: use --global for the root user running Salt
-git_safe_directory_all:
-  cmd.run:
-{% if is_windows %}
-    - name: git config --system --add safe.directory '*'
-    - unless: git config --system --get-regexp '^safe.directory' | Select-String -Quiet '\*'
-    - shell: powershell
-{% else %}
-    - name: git config --global --add safe.directory '*'
-    - unless: git config --global --get-regexp '^safe.directory' | grep -q '\*'
-{% endif %}
 
 # Deploy to each managed user
 {% for username in managed_users %}
@@ -29,19 +16,6 @@ git_safe_directory_all:
 {# Merge global and user-specific github tokens #}
 {% set user_tokens = users_data.get(username, {}).get('github', {}).get('tokens', []) %}
 {% set merged_tokens = global_tokens + user_tokens %}
-
-# Deploy base .gitconfig (always update)
-deploy_gitconfig_{{ username }}:
-  file.managed:
-    - name: {{ dotfiles.dotfile_path(user_home, '.gitconfig') }}
-    - source: salt://common/dotfiles/.gitconfig
-    - user: {{ username }}
-{% if not is_windows %}
-    - mode: "0644"
-{% else %}
-    - win_perms_reset: True
-{% endif %}
-    - makedirs: True
 
 # Deploy .git-credentials from merged global and user-specific tokens
 deploy_git_credentials_{{ username }}:
@@ -125,34 +99,6 @@ deploy_gitconfig_local_{{ username }}:
 {% endif %}
     - makedirs: True
 
-# Deploy .gitattributes.local (create once only, user customizations)
-deploy_gitattributes_local_{{ username }}:
-  file.managed:
-    - name: {{ dotfiles.dotfile_path(user_home, '.gitattributes.local') }}
-    - source: salt://common/dotfiles/.gitattributes.local
-    - user: {{ username }}
-{% if not is_windows %}
-    - mode: "0644"
-{% else %}
-    - win_perms_reset: True
-{% endif %}
-    - makedirs: True
-    - create: False
-
-# Deploy .gitignore.local (create once only, user customizations)
-deploy_gitignore_local_{{ username }}:
-  file.managed:
-    - name: {{ dotfiles.dotfile_path(user_home, '.gitignore.local') }}
-    - source: salt://common/dotfiles/.gitignore.local
-    - user: {{ username }}
-{% if not is_windows %}
-    - mode: "0644"
-{% else %}
-    - win_perms_reset: True
-{% endif %}
-    - makedirs: True
-    - create: False
-
 # Deploy .git_template directory (always update)
 deploy_git_template_{{ username }}:
   file.recurse:
@@ -179,21 +125,6 @@ git_template_hooks_executable_{{ username }}:
     - require:
       - file: deploy_git_template_{{ username }}
 {% endif %}
-
-# Deploy .git_template.local directory (preserve user additions)
-deploy_git_template_local_{{ username }}:
-  file.recurse:
-    - name: {{ dotfiles.dotfile_path(user_home, '.git_template.local') }}
-    - source: salt://common/dotfiles/.git_template.local
-    - user: {{ username }}
-{% if not is_windows %}
-    - dir_mode: "0755"
-    - file_mode: "0644"
-{% else %}
-    - win_perms_reset: True
-{% endif %}
-    - makedirs: True
-    - clean: False
 
 {% endfor %}
 

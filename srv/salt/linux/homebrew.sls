@@ -1,9 +1,5 @@
-# Linux Homebrew installation with ACL-based permission management
-# Uses default supported path: /home/linuxbrew/.linuxbrew
-# ACL permissions allow multiple users to manage packages via cozyusers group
-# Requires git and build-essential (already in packages)
-# Requires acl package (for setfacl permissions)
-# Note: cozyusers group created in linux.users state
+# Linux Homebrew installation
+{%- from "_macros/acl.sls" import cozy_acl %}
 
 {# Path configuration from pillar with defaults #}
 {% set homebrew_base = salt['pillar.get']('install_paths:homebrew:linux', '/home/linuxbrew/.linuxbrew') %}
@@ -36,15 +32,7 @@ homebrew_install:
     - require:
       - file: linuxbrew_directory
 
-# Set ACL permissions for cozyusers group on Homebrew directories
-# Allows group members to read, write, and install packages
-homebrew_acl_permissions:
-  cmd.run:
-    - name: |
-        setfacl -R -m g:cozyusers:rwx {{ homebrew_base }}
-        setfacl -R -d -m g:cozyusers:rwx {{ homebrew_base }}
-    - require:
-      - cmd: homebrew_install
+{{ cozy_acl(homebrew_base) }}
 
 # Update Homebrew after installation (must run as non-root user)
 # Fix missing git remote and safe.directory if needed, then update
