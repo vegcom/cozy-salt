@@ -175,7 +175,6 @@ class PackageValidator:
       "modern_cli_extras",
       "fonts",
       "theming",
-      "display",
       "gui",
     }
 

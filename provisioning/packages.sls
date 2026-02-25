@@ -142,8 +142,7 @@ arch:
   modern_cli_extras: [bottom, eza, hyperfine, procs, tealdeer, tokei, zoxide]
   fonts: [noto-fonts, noto-fonts-emoji, noto-fonts-cjk, ttf-fira-code, ttf-hack, ttf-jetbrains-mono, inter-font]
   theming: [arc-gtk-theme, kvantum, papirus-icon-theme]
-  display: [weston]
-  gui: [plasma, hyprland]
+  gui: [plasma-meta, hyprland, plasma-keyboard]
 
 # ============================================================================
 # WINDOWS PACKAGES

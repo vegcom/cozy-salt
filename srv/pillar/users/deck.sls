@@ -16,3 +16,4 @@ users:
 {% endif %}
       - libvirt
       - kvm
+      - nopasswdlogin

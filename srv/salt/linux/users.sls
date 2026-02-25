@@ -32,9 +32,7 @@
 {% if userdata.get('gid') %}
       - group: {{ username }}_primary_group
 {% endif %}
-{% if 'zsh' in user_shell %}
-      - pkg: shell_packages
-{% endif %}
+
 
 # Create {{ username }} home directory
 {% set user_home = userdata.get('home_prefix', '/home') ~ '/' ~ username %}

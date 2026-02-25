@@ -86,7 +86,6 @@ linux:
     - modern_cli_extras
     - fonts
     - theming
-    - display
     - gui
 
 capability_meta:
@@ -130,7 +129,5 @@ capability_meta:
     state_name: font_packages
   theming:
     state_name: theming_packages
-  display:
-    state_name: display_packages
   gui:
     state_name: gui_packages

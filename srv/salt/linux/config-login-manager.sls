@@ -99,22 +99,50 @@ sddm_autologin_conf:
         Session={{ autologin_session }}
     - makedirs: True
 
-# nopasswdlogin group checked by /etc/pam.d/sddm-autologin on Arch
-# pam_succeed_if.so user ingroup nopasswdlogin — no PAM edits needed
-sddm_nopasswdlogin_group:
-  group.present:
-    - name: nopasswdlogin
+pamd_nopasswdlogin_dir:
+  file.directory:
+    - name: /etc/pam.d/
+    - user: root
+    - group: root
+    - mode: "0755"
 
-sddm_autologin_user_nopasswd:
-  user.present:
-    - name: {{ autologin_user }}
-    - groups: [nopasswdlogin]
-    - remove_groups: False
+pamd_nopasswdlogin_files:
+  file.recurse:
+    - name: /etc/pam.d/
+    - source: salt://linux/files/etc-pam.d
+    - clean: False
+    - user: root
+    - group: root
+    - file_mode: "0644"
+    - dir_mode: "0755"
     - require:
-      - group: sddm_nopasswdlogin_group
+      - file: pamd_nopasswdlogin_dir
+
+sddm_pam_nopasswdlogin:
+  file.replace:
+    - name: /etc/pam.d/sddm
+    - pattern: '^#%PAM-1\.0\n(?!auth\s+include\s+sddm-nopasswdlogin)'
+    - repl: "#%PAM-1.0\nauth        include     sddm-nopasswdlogin\n"
+    - flags: ['MULTILINE']
+    - require:
+      - file: pamd_nopasswdlogin_files
+
+kde_pam_nopasswdlogin:
+  file.replace:
+    - name: /etc/pam.d/kde
+    - pattern: '^#%PAM-1\.0\n(?!auth\s+include\s+kde-nopasswdlogin)'
+    - repl: "#%PAM-1.0\nauth        include     kde-nopasswdlogin\n"
+    - flags: ['MULTILINE']
+    - require:
+      - file: pamd_nopasswdlogin_files
 
 {% else %}
 # Autologin disabled (set linux:login_manager:autologin:user to enable)
+
+sddm_autologin_conf:
+  file.absent:
+    - name: /etc/sddm.conf.d/autologin.conf
+
 sddm_autologin_disabled:
   test.nop:
     - name: Autologin disabled
