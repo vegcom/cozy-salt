@@ -9,7 +9,7 @@
 
 {%- if run_user_info %}
 # Create /opt/cozy/ with correct ownership (always enforced, no creates guard)
-cozy-presence-repo-dir:
+cozy_presence_repo_dir:
   file.directory:
     - name: /opt/cozy/
     - user: {{ run_user }}
@@ -18,13 +18,14 @@ cozy-presence-repo-dir:
     - makedirs: True
 
 # Clone cozy-presence repo (token from pillar)
-{{ git_repo('cozy-presence', cozy_presence_path, run_user, require_file='cozy-presence-repo-dir') }}
+{{ git_repo('cozy-presence', cozy_presence_path, run_user, state_id='cozy_presence_repo' ,require_file='cozy_presence_repo_dir') }}
 
 # Setup conda env
 cozy_presence_env_create:
   cmd.run:
     - name: |
         /opt/miniforge3/bin/mamba env create -f {{ cozy_presence_path }}/environment.yml
+    - user: {{ run_user }}
     - creates:
       - {{ cozy_presence_env }}/lib/python3.12/venv/scripts/common/activate
     - require:
@@ -35,8 +36,9 @@ cozy_presence_env_update:
   cmd.run:
     - name: |
         /opt/miniforge3/bin/mamba env update -f {{ cozy_presence_path }}/environment.yml --prune
+    - user: {{ run_user }}
     - onchanges:
-      - git: cozy-presence
+      - git: cozy_presence
     - require:
       - cmd: cozy_presence_env_create
 
@@ -45,6 +47,10 @@ cozy_presence_pip:
   cmd.run:
     - name: |
         {{ cozy_presence_bin }}/pip install -e {{ cozy_presence_path }}
+    - user: {{ run_user }}
+    - onchanges:
+      - cmd: cozy_presence_env_create
+      - cmd: cozy_presence_env_update
     - require:
       - git: cozy_presence_repo
       - cmd: cozy_presence_env_create
