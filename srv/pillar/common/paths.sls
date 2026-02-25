@@ -27,8 +27,8 @@ install_paths:
 
   # Primary cozy-salt working directory
   cozy:
-    linux: /opt/cozy
-    windows: C:\opt\cozy
+    linux: /opt/cozy/bin
+    windows: C:\opt\cozy\bin
 
   # Homebrew (Linux-only)
   homebrew:
