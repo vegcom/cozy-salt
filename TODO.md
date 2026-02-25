@@ -46,11 +46,13 @@
 
 - [ ] **cmd.run audit**: grep all states for `cmd.run.*(wget|curl)` and migrate to `file.managed` + `cmd.run` pattern ([k3s](./srv/salt/linux/k3s.sls) pattern as reference)
   - [ ] windows
+    - [ ] Invoke-WebRequest
     - [ ] miniforge
     - [ ] nvm
     - [ ] windhawk
     - [ ] ... find more ...
   - [ ] linux
+    - [ ] curl & wget
     - [ ] miniforge
     - [ ] nvm
     - [ ] rust
@@ -70,5 +72,5 @@
 
 ## Feature
 
-- [ ] Integrate cozy-fragments (Windows Terminal config fragments) - manual for now <<<git@github.com>:vegcom/cozy-fragments.git>>
+- [x] Integrate cozy-fragments (Windows Terminal config fragments) - wired via srv/salt/windows/wt.sls
 - [ ] Wire up template `srv/salt/_templates/alacritty.jinja` path depends on OS

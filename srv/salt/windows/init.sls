@@ -16,3 +16,4 @@ include:
   - windows.windhawk
   - windows.tasks
   - windows.wsl-integration
+  - windows.wt

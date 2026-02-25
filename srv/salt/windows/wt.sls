@@ -1,45 +1,48 @@
-{% set wt_versions = salt['pillar.get']('versions:wt', {}) %}
-{% set wt_version  = wt_versions.get('version', '1.23.13503.0') %}
-{% set wt_path     = 'C:\\opt\\wt' %}
-{% set wt_bin      = 'C:\\opt\\wt\\terminal-' + wt_version %}
-{% set wt_tmp      = '$env:TEMP\\wt-install.exe' %}
+{% from "_macros/git-repo.sls" import git_repo %}
+{%- set managed_users = salt['pillar.get']('managed_users', [], merge=True) -%}
+{%- set run_user = managed_users[0] if managed_users else '' -%}
+{%- set run_user_info = salt['user.info'](run_user) if run_user else {} -%}
+{%- set cozy_path = 'C:\\opt\\cozy\\' %}
+{%- set cozy_fragments_path = cozy_path ~ 'cozy-fragments\\' %}
+{%- set cozy_fragments_script = cozy_fragments_path ~ 'install.ps1' %}
+{%- set twilite_theme_dir = 'C:\\ProgramData\\Microsoft\\Windows Terminal\\Fragments\\Twilite'%}
+{%- set twilite_theme_install_uri = "https://raw.githubusercontent.com/vegcom/WindowsTerminal-Twilite/main/install.ps1" %}
 
-# Create C:\opt\wt directory for consistency
-wt_directory:
+{%- if run_user_info %}
+cozy_fragments_repo_dir:
   file.directory:
-    - name: {{ wt_path }}
+    - name: '{{ cozy_path }}'
+    - user: {{ run_user }}
+    - group: cozyusers
+    - mode: 770
     - makedirs: True
 
-# Download wt installer
-wt_download:
+{{ git_repo('cozy-fragments', cozy_fragments_path, run_user, state_id='cozy_fragments_repo' ,require_file='cozy_fragments_repo_dir') }}
+
+cozy_fragments_install:
   cmd.run:
-    - name: >
-        pwsh -NoLogo -Command
-        "Invoke-WebRequest -Uri 'https://github.com/microsoft/terminal/releases/download/v{{ wt_version }}/Microsoft.WindowsTerminal_{{ wt_version }}_x64.zip' -OutFile '{{ wt_tmp }}'"
-    - creates: {{ wt_tmp }}
+    - name: pwsh -Command "& {{ cozy_fragments_script }}"
+    - shell: pwsh
+    - cwd: '{{ cozy_fragments_path }}'
+    - onchanges:
+      - git: cozy_fragments_repo
     - require:
-      - file: wt_directory
+      - file: cozy_fragments_repo_dir
+      - git: cozy_fragments_repo
+{%- else %}
+cozy_fragments_noop:
+  test.nop:
+    - name: Cozy fragments requires a user account to run
+{%- endif %}
 
-wt_install:
+twilite_theme_install:
   cmd.run:
-    - name: >
-        pwsh -NoLogo -Command
-        "Expand-Archive -Path {{ wt_tmp }} -DestinationPath {{ wt_path }} -Force"
-    - creates: {{ wt_path }}
+    - name: pwsh -Command "iex ((New-Object System.Net.WebClient).DownloadString('{{ twilite_theme_install_uri }}'))"
+    - shell: pwsh
+    - env:
+      - themeDir: {{ twilite_theme_dir }}
+    - onchanges:
+      - git: cozy_fragments_repo
     - require:
-      - cmd: wt_download
-
-{% for item in ("wt.exe", "WindowsTerminal.exe") %}
-{{ item | replace('.', '_') }}_symlink:
-  file.symlink:
-    - name: {{ wt_path }}\{{ item }}
-    - target: {{ wt_bin }}\{{ item }}
-    - user: Administrator
-    - group: Administrators
-    - require:
-      - cmd: wt_install
-{% endfor %}
-
-# Install base pip packages via common orchestration
-include:
-  - windows.paths
+      - file: cozy_fragments_repo_dir
+      - git: cozy_fragments_repo
