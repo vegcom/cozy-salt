@@ -20,6 +20,7 @@
   {%- set k3s_uninstall_script = "/usr/local/bin/k3s-agent-uninstall.sh" %}
 {%- endif %}
 {%- set k3s_exec = [k3s_role, k3s_args, k3s_args_extra] | join(' ') | trim %}
+# TODO: set/get from pillar
 {%- set kubeconfig_raw = salt['mine.get']('guava', 'k3s_kubeconfig').get('guava', '') %}
 {%- set kubeconfig = kubeconfig_raw | replace('https://127.0.0.1:6443', k3s_host) if kubeconfig_raw else '' %}
 
