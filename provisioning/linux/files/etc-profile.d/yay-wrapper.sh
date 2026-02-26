@@ -5,12 +5,11 @@
 
 # Only apply on Arch Linux / derivative systems
 if [ ! -f /etc/arch-release ] ; then
+  if [ ! -f /etc/artix-release ] ; then
     return 0
+  fi
 fi
 
-if [ ! -f /etc/artix-release ] ; then
-	return 0
-fi
 
 #------------------------------------------------------------------------------
 # YAY WRAPPER: Clean environment for AUR operations
