@@ -26,6 +26,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Set up CI pillar stubs (gitignored files)
+        run: |
+          cp srv/pillar/common/users.sls.example srv/pillar/common/users.sls
+          cp srv/pillar/common/network.sls.example srv/pillar/common/network.sls
+          cp srv/pillar/secrets/init.sls.example srv/pillar/secrets/init.sls
+
       - name: Generate master keys (gitignored, required for bind mount)
         run: |
           mkdir -p srv/salt/keys/master
