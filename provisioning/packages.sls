@@ -195,7 +195,7 @@ windows:
 # ============================================================================
 # LANGUAGE-SPECIFIC PACKAGES
 # ============================================================================
-pip_base: [pip, setuptools, wheel, pipx, uv, pre-commit, ipython, pytest]
+pip_base: [pip, setuptools, wheel, pipx, uv, pre-commit, ipython, pytest, mypy, ruff]
 
 npm_global:
   - "@anthropic-ai/claude-code"
