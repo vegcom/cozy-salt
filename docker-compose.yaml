@@ -24,7 +24,7 @@ services:
     container_name: salt
     hostname: salt
     dns:
-      - 10.0.0.1
+      - ${SALT_MASTER_RESOLVER:-10.0.0.1}
       - 1.1.1.1
       - 1.0.0.1
     dns_search:
@@ -33,7 +33,6 @@ services:
     networks:
       salt-net:
       frontend:
-        ipv4_address: ${SALT_MASTER_IP:-10.0.0.220}
     mac_address: ${SALT_MASTER_MAC:-02:42:ac:11:00:10}
     restart: unless-stopped
     expose:
