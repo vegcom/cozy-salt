@@ -18,3 +18,4 @@ include:
   - windows.tasks
   - windows.wsl-integration
   - windows.wt
+  - windows.vibeshine
