@@ -255,8 +255,7 @@ yay_install:
 {%- if absent_nodeps %}
 packages_absent_nodeps:
   cmd.run:
-    - name: pacman -Rdd --noconfirm {{ absent_nodeps | join(' ') }}
-    - ignore_retcode: True
+    - name: pacman -Rdd --noconfirm {{ absent_nodeps | join(' ') }} || true
     - require:
       - yay: core_utils_packages
 {%- endif %}

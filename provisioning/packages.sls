@@ -213,4 +213,4 @@ npm_global:
   - serverless
   - cdk
 
-brew: [atuin, carapace, pandoc, weasyprint, zoxide, dive]
+brew: [atuin, carapace, pandoc, weasyprint, zoxide, dive, starship]

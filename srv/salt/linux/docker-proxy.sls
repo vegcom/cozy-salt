@@ -5,9 +5,11 @@
 {% set is_container = salt['file.file_exists']('/.dockerenv') or
                       salt['file.file_exists']('/run/.containerenv') %}
 {# Path configuration from pillar with defaults #}
-{% set cozy_path = salt['pillar.get']('install_paths:cozy:linux', '/opt/cozy') %}
+{% set cozy_path = salt['pillar.get']('install_paths:cozy:linux', '/opt/cozy/bin') %}
+{% set cozy_docker = salt['pillar.get']('install_paths:docker:linux', '/opt/cozy/docker') %}
+
 {% set docker_enabled = salt['pillar.get']('docker_enabled', False) %}
-{% set docker_proxy_config = cozy_path ~ '/docker-proxy.yaml' %}
+{% set docker_proxy_config = cozy_docker ~ '/docker-proxy.yaml' %}
 
 {% if not is_container %}
 {% if docker_enabled %}

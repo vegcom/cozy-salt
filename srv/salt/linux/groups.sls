@@ -61,3 +61,19 @@ cozyusers_sudoers:
     - makedirs: True
     - require:
       - group: cozyusers_group
+
+{% if "nopasswdlogin" in all_groups %}
+# sudoers for nopasswdlogin group
+nopasswdlogin_sudoers:
+  file.managed:
+    - name: /etc/sudoers.d/nopasswdlogin
+    - contents: |
+        # Allow nopasswdlogin group to run all commands with password
+        %nopasswdlogin ALL=(ALL:ALL) ALL
+    - mode: "0440"
+    - user: root
+    - group: root
+    - makedirs: True
+    - require:
+      - group: nopasswdlogin_group
+{% endif %}

@@ -30,6 +30,10 @@ install_paths:
     linux: /opt/cozy/bin
     windows: C:\opt\cozy\bin
 
+  docker:
+    linux: /opt/cozy/docker
+    windows: C:\opt\cozy\docker
+
   # Homebrew (Linux-only)
   homebrew:
     linux: /home/linuxbrew/.linuxbrew
