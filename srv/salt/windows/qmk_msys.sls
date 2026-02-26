@@ -1,5 +1,5 @@
-{% set qmk_msys_versions = salt['pillar.get']('versions:qmk_msys', {}) %}
-{% set qmk_msys_version  = qmk_msys_versions.get('version', '1.12.0') %}
+{% set _pinned = salt['pillar.get']('versions:qmk_msys:version', '') %}
+{% set qmk_msys_version = _pinned or salt['github_release.latest']('qmk/qmk_distro_msys') %}
 {% set qmk_msys_path     = "C:\\opt\\qmk_msys" %}
 {% set qmk_msys_tmp      = "$env:TEMP\\qmk_msys-install.exe" %}
 {% set qmk_shortcut      = "C:\\opt\\qmk_msys\\QMK MSYS.lnk"%}

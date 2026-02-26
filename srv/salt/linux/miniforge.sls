@@ -3,8 +3,8 @@
 
 {%- from "_macros/acl.sls" import cozy_acl %}
 
-{% set miniforge_versions = salt['pillar.get']('versions:miniforge', {}) %}
-{% set miniforge_version = miniforge_versions.get('version', '24.11.3-0') %}
+{% set _pinned = salt['pillar.get']('versions:miniforge:version', '') %}
+{% set miniforge_version = _pinned or salt['github_release.latest']('conda-forge/miniforge') %}
 {%- set cpu_arch = salt['grains.get']('cpuarch', 'x86_64') %}
 {# Path configuration from pillar with defaults #}
 {% set miniforge_path = salt['pillar.get']('install_paths:miniforge:linux', '/opt/miniforge3') %}

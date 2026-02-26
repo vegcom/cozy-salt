@@ -2,8 +2,8 @@
 # See docs/modules/windows-miniforge.md for configuration
 # PATH updates handled by windows.paths (avoids race conditions)
 
-{% set miniforge_versions = salt['pillar.get']('versions:miniforge', {}) %}
-{% set miniforge_version  = miniforge_versions.get('version', '24.11.3-0') %}
+{% set _pinned = salt['pillar.get']('versions:miniforge:version', '') %}
+{% set miniforge_version  = _pinned or salt['github_release.latest']('conda-forge/miniforge') %}
 {# Path configuration from pillar with defaults #}
 {% set miniforge_path     = salt['pillar.get']('install_paths:miniforge:windows', 'C:\\opt\\miniforge3') %}
 {% set miniforge_tmp      = '$env:TEMP\\miniforge-install.exe' %}

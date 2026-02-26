@@ -1,5 +1,5 @@
-{% set windhawk_versions = salt['pillar.get']('versions:windhawk', {}) %}
-{% set windhawk_version  = windhawk_versions.get('version', '1.7.3') %}
+{% set _pinned = salt['pillar.get']('versions:windhawk:version', '') %}
+{% set windhawk_version = _pinned or salt['github_release.latest']('ramensoftware/windhawk') %}
 {% set windhawk_path     = 'C:\\opt\\windhawk' %}
 {% set windhawk_tmp      = '$env:TEMP\\windhawk-install.exe' %}
 
