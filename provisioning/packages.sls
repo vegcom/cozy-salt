@@ -144,9 +144,9 @@ arch:
   theming: [kvantum]
   gui: [plasma-meta, hyprland, plasma-keyboard]
   debugging: [downgrade]
-  gaming: [waydroid-launcher-git, protontricks, steam, gamescope,  lib32-gamescope-plus, mangohud ]
-  sound: []  # TODO: further reason to **some** pillar pkgs
-  kernel: []  # TODO: Pillar kernel stuff
+  gaming: [waydroid-launcher-git, protontricks, steam, gamescope,  lib32-gamescope-plus, mangohud, moonlight-qt]
+  sound: []
+  kernel: []
   container: [docker, docker-buildx]
 
 # ============================================================================
