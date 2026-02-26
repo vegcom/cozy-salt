@@ -49,7 +49,7 @@ packages_extra:
       - linux-firmware-neptune-qcom
       - linux-firmware-neptune-qlogic
       - linux-firmware-neptune-whence
-    deck_tools: [alsa-ucm-conf, amd-ucode, caps, dkms, fan-control, noise-suppression-for-voice, steamdeck-dkms, steamdeck-dsp, steamdeck-dsp-debug, upower, vpower]
+    deck_tools: [alsa-ucm-conf, amd-ucode, caps, dkms, fan-control, noise-suppression-for-voice, sof-firmware, steamdeck-dkms, steamdeck-dsp, steamdeck-dsp-debug, upower, vpower]
 
 pacman:
   repos:

@@ -145,7 +145,7 @@ arch:
   gui: [plasma-meta, hyprland, plasma-keyboard]
   debugging: [downgrade]
   gaming: [waydroid-launcher-git, protontricks, steam, gamescope,  lib32-gamescope-plus, mangohud, moonlight-qt]
-  sound: []
+  sound: [pipewire, pipewire-alsa, pipewire-pulse, wireplumber]
   kernel: []
   container: [docker, docker-buildx]
 
