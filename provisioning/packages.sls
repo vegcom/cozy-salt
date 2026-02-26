@@ -141,8 +141,12 @@ arch:
   interpreters: [lua, perl, python, python-pip]
   modern_cli_extras: [bottom, eza, hyperfine, procs, tealdeer, tokei, zoxide]
   fonts: [noto-fonts, noto-fonts-emoji, noto-fonts-cjk, ttf-fira-code, ttf-hack, ttf-jetbrains-mono, inter-font]
-  theming: [arc-gtk-theme, kvantum, papirus-icon-theme]
+  theming: [kvantum]
   gui: [plasma-meta, hyprland, plasma-keyboard]
+  debugging: [downgrade]
+  gaming: [waydroid-launcher-git, protontricks, steam, gamescope,  lib32-gamescope-plus, mangohud ]
+  sound: []  # TODO: further reason to **some** pillar pkgs
+  kernel: []  # TODO: Pillar kernel stuff
 
 # ============================================================================
 # WINDOWS PACKAGES

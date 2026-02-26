@@ -87,6 +87,9 @@ linux:
     - fonts
     - theming
     - gui
+    - debugging
+    - gaming
+    - sound
 
 capability_meta:
   core_utils:
@@ -129,5 +132,14 @@ capability_meta:
     state_name: font_packages
   theming:
     state_name: theming_packages
+  # TODO: come back after arch deck nonsense
   gui:
     state_name: gui_packages
+  debugging:
+    state_name: debugging_packages
+  gaming:
+    state_name: gaming_packages
+  sound:
+    state_name: sound_packages
+  kernel:
+    state_name: kernel_packages

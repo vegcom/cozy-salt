@@ -58,7 +58,7 @@ pacman_conf:
         HoldPkg = pacman glibc
         LocalFileSigLevel = Optional
         SigLevel = Optional DatabaseOptional
-        XferCommand = /usr/local/bin/aria2-wrapper %u %o
+        #XferCommand = /usr/local/bin/aria2-wrapper %u %o
         ParallelDownloads = 8
         ILoveCandy
         VerbosePkgLists
@@ -243,6 +243,50 @@ yay_install:
 {%- endif %}{# pillar_gate #}
 {%- endif %}{# packages exist #}
 {%- endif %}{# not foundation and in capabilities #}
+{%- endfor %}
+
+# ============================================================================
+# PACKAGES ABSENT: pillar-defined packages to remove (before extras)
+# ============================================================================
+{%- set packages_absent = salt['pillar.get']('packages_absent:' ~ os_name, {}) %}
+{%- set absent_nodeps = packages_absent.get('nodeps', []) %}
+{%- set absent_normal = packages_absent.get('normal', []) %}
+
+{%- if absent_nodeps %}
+packages_absent_nodeps:
+  cmd.run:
+    - name: pacman -Rdd --noconfirm {{ absent_nodeps | join(' ') }}
+    - onlyif: pacman -Q {{ absent_nodeps | join(' ') }}
+    - require:
+      - yay: core_utils_packages
+{%- endif %}
+
+{%- if absent_normal %}
+packages_absent_normal:
+  pkg.removed:
+    - pkgs: {{ absent_normal | tojson }}
+    - require:
+      - yay: core_utils_packages
+{%- endif %}
+
+# ============================================================================
+# PACKAGES EXTRA: pillar-defined additional packages per capability
+# ============================================================================
+{%- set packages_extra = salt['pillar.get']('packages_extra:' ~ os_name, {}) %}
+{%- for cap_key, extra_pkgs in packages_extra.items() %}
+{%- if extra_pkgs %}
+
+# --- extra: {{ cap_key }} ---
+packages_extra_{{ cap_key }}:
+  yay.installed:
+    - pkgs: {{ extra_pkgs | tojson }}
+    - runas: {{ service_user }}
+    - require:
+      - yay: core_utils_packages
+{%- if absent_nodeps %}
+      - cmd: packages_absent_nodeps
+{%- endif %}
+{%- endif %}
 {%- endfor %}
 
 {%- else %}

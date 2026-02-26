@@ -9,10 +9,16 @@
 # Install Docker using official installer script (handles repo setup and GPG keys automatically)
 # Works on Debian, Ubuntu, CentOS, RHEL, Fedora via get.docker.com
 # TODO: move to salt/linux/docker
+{% if os_family == 'Arch' %}
+docker_install:
+  test.nop:
+    - name: Docker managed via yay on Arch
+{% else %}
 docker_install:
   cmd.run:
     - name: curl -fsSL https://get.docker.com -o /tmp/get-docker.sh && sh /tmp/get-docker.sh
     - creates: /usr/bin/docker
+{% endif %}
 
 {% if os_family == 'Debian' %}
 {% if is_kali or is_wsl %}

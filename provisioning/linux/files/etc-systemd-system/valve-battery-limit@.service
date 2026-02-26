@@ -1,0 +1,12 @@
+[Unit]
+Description=System Battery Limit Service
+Documentation=https://bbs.archlinux.org/viewtopic.php?pid=2260851#p2260851
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/bash -c 'echo %i | tee $(grep -l "steamdeck_hwmon" /sys/class/hwmon/hwmon*/name | sed "s/name$/max_battery_charge_level/")'
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

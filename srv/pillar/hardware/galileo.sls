@@ -31,6 +31,26 @@ linux:
   bluetooth:
     enabled: true
 
+packages_absent:
+  arch:
+    nodeps: [linux-firmware]
+    normal: []
+
+packages_extra:
+  arch:
+    kernel: [linux-bazzite-bin]
+    firmware:
+      - linux-firmware-neptune
+      - linux-firmware-neptune-bnx2x
+      - linux-firmware-neptune-liquidio
+      - linux-firmware-neptune-marvell
+      - linux-firmware-neptune-mellanox
+      - linux-firmware-neptune-nfp
+      - linux-firmware-neptune-qcom
+      - linux-firmware-neptune-qlogic
+      - linux-firmware-neptune-whence
+    deck_tools: [alsa-ucm-conf, amd-ucode, caps, dkms, fan-control, noise-suppression-for-voice, steamdeck-dkms, steamdeck-dsp, steamdeck-dsp-debug, upower, vpower]
+
 pacman:
   repos:
     jupiter-main:

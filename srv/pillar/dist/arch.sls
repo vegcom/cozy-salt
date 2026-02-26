@@ -14,19 +14,16 @@ pacman:
     kde-unstable:
       enabled: false
       include: /etc/pacman.d/mirrorlist
-      server: https://repo.c48.uk/arch/$repo/os/$arch
     core:
       enabled: true
       include: /etc/pacman.d/mirrorlist
-      server: https://repo.c48.uk/arch/$repo/os/$arch
     extra:
       enabled: true
       include: /etc/pacman.d/mirrorlist
-      server: https://repo.c48.uk/arch/$repo/os/$arch
     multilib:
       enabled: true
       include: /etc/pacman.d/mirrorlist
-      server: https://repo.c48.uk/arch/$repo/os/$arch
     chaotic-aur:
-      enabled: true
+      enabled: false
+      siglevel: never
       server: https://builds.garudalinux.org/repos/$repo/$arch

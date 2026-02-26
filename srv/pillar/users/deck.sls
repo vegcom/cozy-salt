@@ -17,3 +17,4 @@ users:
       - libvirt
       - kvm
       - nopasswdlogin
+      - input
