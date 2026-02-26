@@ -3,7 +3,7 @@ set -e
 
 # Configure minion master and ID from environment variables
 MINION_ID="${MINION_ID:-ubuntu-test}"
-echo "master: ${SALT_MASTER:-salt-master}" > /etc/salt/minion.d/master.conf
+echo "master: ${SALT_MASTER:-salt}" > /etc/salt/minion.d/master.conf
 echo "id: ${MINION_ID}" > /etc/salt/minion.d/id.conf
 
 # Load pre-shared keys if available for this minion ID

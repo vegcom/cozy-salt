@@ -5,7 +5,7 @@ $ErrorActionPreference = "Stop"
 $ProgressPreference = "SilentlyContinue"
 
 # Configuration (use env vars if available, else defaults)
-$MasterHost = $env:SALT_MASTER_HOST ?? "salt-master"
+$MasterHost = $env:SALT_MASTER_HOST ?? "salt"
 $MinionId = $env:SALT_MINION_ID ?? "windows-test"
 $SaltVersion = $env:SALT_VERSION ?? "3007.10"
 
