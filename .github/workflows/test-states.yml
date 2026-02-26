@@ -26,6 +26,9 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Create frontend network (macvlan in prod, bridge in CI)
+        run: docker network create frontend || true
+
       - name: Test Salt states (ubuntu + rhel)
         run: pytest tests/ -m "ubuntu or rhel"
 
