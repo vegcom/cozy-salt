@@ -35,6 +35,7 @@
 ## Docker
 
 - [x] use modern docker install scheme
+- [ ] Gate `container` capability in `srv/pillar/linux/init.sls` with `pillar_gate: docker_enabled` to skip docker install on non-docker hosts
 
 ## Seperation of duty
 

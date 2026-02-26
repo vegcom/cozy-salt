@@ -204,8 +204,8 @@ yay_install:
 {%- for cap_key, cap_meta in capability_meta.items() %}
 {# Skip foundation (handled above) and capabilities not in current role #}
 {%- if not cap_meta.get('is_foundation', false) and cap_key in capabilities %}
-{# Check packages exist for this distro #}
-{%- if cap_key in packages.get(os_name, {}) %}
+{# Check packages exist for this distro and list is non-empty #}
+{%- if packages.get(os_name, {}).get(cap_key) %}
 {# Check pillar gate if defined (e.g., kvm needs host:capabilities:kvm) #}
 {%- set pillar_gate = cap_meta.get('pillar_gate') %}
 {%- if not pillar_gate or salt['pillar.get'](pillar_gate, False) %}
@@ -256,7 +256,7 @@ yay_install:
 packages_absent_nodeps:
   cmd.run:
     - name: pacman -Rdd --noconfirm {{ absent_nodeps | join(' ') }}
-    - onlyif: pacman -Q {{ absent_nodeps | join(' ') }}
+    - ignore_retcode: True
     - require:
       - yay: core_utils_packages
 {%- endif %}

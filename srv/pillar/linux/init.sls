@@ -68,6 +68,8 @@ linux:
     - build_tools
     - networking
     - kvm
+    - debugging
+    - container
 
   workstation-full:
     - core_utils
@@ -90,6 +92,7 @@ linux:
     - debugging
     - gaming
     - sound
+    - container
 
 capability_meta:
   core_utils:
@@ -143,3 +146,5 @@ capability_meta:
     state_name: sound_packages
   kernel:
     state_name: kernel_packages
+  container:
+    state_name: container_packages

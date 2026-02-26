@@ -147,6 +147,7 @@ arch:
   gaming: [waydroid-launcher-git, protontricks, steam, gamescope,  lib32-gamescope-plus, mangohud ]
   sound: []  # TODO: further reason to **some** pillar pkgs
   kernel: []  # TODO: Pillar kernel stuff
+  container: [docker, docker-buildx]
 
 # ============================================================================
 # WINDOWS PACKAGES
