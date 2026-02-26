@@ -10,6 +10,9 @@ if [ ! -f "$CONDA_EXE" ]; then
     return
 fi
 
+CONDA_CHANGEPS1=false
+export CONDA_CHANGEPS1
+
 if [ -n "$BASH_VERSION" ]; then
     eval "$(${CONDA_EXE} shell.bash hook)" &>/dev/null
 elif [ -n "$ZSH_VERSION" ]; then
