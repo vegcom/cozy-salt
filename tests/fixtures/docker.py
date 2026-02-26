@@ -249,7 +249,7 @@ class ContainerManager:
       # Capture JSON output
       result = self.exec_salt_call(config.container_name, output_format="json")
 
-      return result.stdout
+      return result.stdout or result.stderr
 
     finally:
       # Always clean up
