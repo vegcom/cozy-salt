@@ -39,13 +39,9 @@ make test-ubuntu
 
 # Test on RHEL container
 make test-rhel
-
-# Enroll a new minion (Linux)
-sudo python3 scripts/enrollment/install-minion.py \
-  --master salt.example.com \
-  --minion-id myhost \
-  --roles workstation,developer
 ```
+
+[enroll new devices](#enrollment)
 
 ## Structure
 

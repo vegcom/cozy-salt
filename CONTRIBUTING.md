@@ -101,13 +101,27 @@ When adding a new module:
 
 ## Submodules
 
-|                                       repo                                        |                        path                         |
-| :-------------------------------------------------------------------------------: | :-------------------------------------------------: |
-| [vegcom/cozy-salt-enrollment.git](https://github.com/vegcom/cozy-salt-enrollment) |     [scripts/enrollment/](./scripts/enrollment/)    |
+| repo | path |
+| :--- | :--- |
+| [vegcom/cozy-salt-enrollment.git](https://github.com/vegcom/cozy-salt-enrollment) | [scripts/enrollment/](./scripts/enrollment/) |
 
 ## Dynamic Git Deployments
 
-|                                       repo                                        |                        deployment                        |
-| :-------------------------------------------------------------------------------: | :-----------------------------------------------------: |
-|           [vegcom/cozy-vim.git](https://github.com/vegcom/cozy-vim)               |    `~/.vim` (per-user via git.latest in gitconfig.sls)   |
-|          [vegcom/cozy-pwsh.git](https://github.com/vegcom/cozy-pwsh)              | `C:\Program Files\PowerShell\7` (system-wide via windows/profiles.sls) |
+| repo | deployment |
+| :--- | :--------- |
+| [vegcom/cozy-vim](https://github.com/vegcom/cozy-vim) | `~/.vim` (per-user via git_repo macro in common/vim.sls) |
+| [vegcom/cozy-pwsh](https://github.com/vegcom/cozy-pwsh) | `C:\Program Files\PowerShell\7` (system-wide via windows/profiles.sls) |
+| [vegcom/cozy-presence](https://github.com/vegcom/cozy-presence) | `/opt/cozy/cozy-presence` (linux service via linux/cozy-presence.sls) |
+| [vegcom/cozy-fragments](https://github.com/vegcom/cozy-fragments) | `C:\opt\cozy\cozy-fragments` (Windows Terminal fragments via windows/wt.sls) |
+| [vegcom/cozy-ssh](https://github.com/vegcom/cozy-ssh) | `~/.ssh` (per-user via common/ssh.sls, cross-platform) |
+
+## Ecosystem (not yet integrated)
+
+| repo | description |
+| :--- | :---------- |
+| [vegcom/cozy-share](https://github.com/vegcom/cozy-share) | SMB/file share management |
+| [vegcom/cozy-scale](https://github.com/vegcom/cozy-scale) | scaling / infra tooling |
+| [vegcom/cozy-dash](https://github.com/vegcom/cozy-dash) | dashboard |
+| [vegcom/cozy-archiso](https://github.com/vegcom/cozy-archiso) | Arch ISO builder |
+| [vegcom/cozy-pxe](https://github.com/vegcom/cozy-pxe) | PXE boot |
+| [vegcom/cozy-ipa](https://github.com/vegcom/cozy-ipa) | IPA / identity management |
