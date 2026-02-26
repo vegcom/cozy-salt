@@ -147,6 +147,11 @@ Invoke-WebRequest -Uri https://packages.broadcom.com/artifactory/saltproject-gen
   - [install-minion.ps1](scripts/enrollment/install-minion.ps1)
 - **Windows (Dockur)**: See [scripts/enrollment/WINDOWS.md](scripts/enrollment/WINDOWS.md)
 
+### Theme and customization
+
+> [!NOTE]
+> [Themeing and customization](https://github.com/vegcom/Twilite-Theme) — leverages **Twilite**: _A theme for those who love a cute purple hue._
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the **3 rules** and development workflow.
