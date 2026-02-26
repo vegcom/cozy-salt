@@ -15,11 +15,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install pytest
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Test Salt states (ubuntu + rhel with shared master)
-        run: ./tests/test-states-json.sh ci
+      - name: Test Salt states (ubuntu + rhel)
+        run: pytest tests/ -m "ubuntu or rhel"
 
       - name: Upload test results
         if: always()
@@ -28,6 +36,7 @@ jobs:
           name: state-results
           path: tests/output/*.json
           retention-days: 30
+          if-no-files-found: ignore
 
   report:
     name: Test Report
@@ -38,11 +47,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
       - name: Download test results
+        id: download
         uses: actions/download-artifact@v4
         with:
           name: state-results
           path: test-results
+        continue-on-error: true
 
       - name: Generate test summary
         run: |
