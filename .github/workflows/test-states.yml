@@ -26,6 +26,14 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Generate master keys (gitignored, required for bind mount)
+        run: |
+          mkdir -p srv/salt/keys/master
+          openssl genrsa -out srv/salt/keys/master/master.pem 4096 2>/dev/null
+          openssl rsa -in srv/salt/keys/master/master.pem -pubout -out srv/salt/keys/master/master.pub 2>/dev/null
+          chmod 600 srv/salt/keys/master/master.pem
+          chmod 644 srv/salt/keys/master/master.pub
+
       - name: Create frontend network (macvlan in prod, bridge in CI)
         run: docker network create frontend || true
 
