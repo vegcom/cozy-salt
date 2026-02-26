@@ -16,9 +16,6 @@ display:
 pipewire:
   quantum: {}
 
-bluetooth:
-  enabled: true
-
 linux:
   login_manager:
     sddm:
@@ -49,7 +46,7 @@ packages_extra:
       - linux-firmware-neptune-qcom
       - linux-firmware-neptune-qlogic
       - linux-firmware-neptune-whence
-    deck_tools: [alsa-ucm-conf, amd-ucode, caps, dkms, fan-control, noise-suppression-for-voice, sof-firmware, steamdeck-dkms, steamdeck-dsp, steamdeck-dsp-debug, upower, vpower, ludusavi-bin, steam-boilr-gui]
+    deck_tools: [alsa-ucm-conf, amd-ucode, caps, dkms, fan-control, noise-suppression-for-voice, sof-firmware, steamdeck-dkms, steamdeck-dsp, steamdeck-dsp-debug, upower, vpower, ludusavi-bin, steam-boilr-gui, hunspell, hunspell-fr, hunspell-en_gb, hunspell-en_us,hunspell-ja]
 
 pacman:
   repos:
