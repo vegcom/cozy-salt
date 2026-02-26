@@ -246,10 +246,12 @@ class ContainerManager:
         logs = self.get_container_logs(config.container_name)
         raise ContainerError(f"Timeout waiting for highstate.\nLogs:\n{logs}")
 
-      # Capture JSON output
+      # Capture JSON output (salt-call may write JSON to stderr or mix both)
       result = self.exec_salt_call(config.container_name, output_format="json")
+      combined = result.stdout + result.stderr
+      logger.debug(f"salt-call output ({len(combined)} bytes): {combined[:500]!r}")
 
-      return result.stdout or result.stderr
+      return combined
 
     finally:
       # Always clean up
