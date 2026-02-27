@@ -29,7 +29,8 @@ skel_files:
 {% endfor %}
 
 # Collect all unique groups from user definitions
-{% set all_groups = [] %}
+# cozyusers is always required (NVM, miniforge, ACL states depend on it)
+{% set all_groups = ['cozyusers'] %}
 {% for username, userdata in users.items() %}
   {% for group in userdata.get('linux_groups', ['cozyusers']) %}
     {% if group not in all_groups %}
