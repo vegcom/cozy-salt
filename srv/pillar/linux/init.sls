@@ -142,6 +142,8 @@ capability_meta:
     state_name: debugging_packages
   gaming:
     state_name: gaming_packages
+  sync_backup:
+    state_name: sync_backup_packages
   sound:
     state_name: sound_packages
   kernel:
