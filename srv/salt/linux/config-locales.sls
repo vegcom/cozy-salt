@@ -44,12 +44,16 @@ generate_locales:
 
 {% elif os_family == 'RedHat' %}
 
-# RHEL/Rocky: install glibc-langpack-XX for each locale
+# RHEL/Rocky: install glibc-langpack-XX per unique language code
+{% set lang_codes = [] %}
 {% for locale in locales %}
 {% set lang_code = locale.split('_')[0] %}
+{% if lang_code not in lang_codes %}
+{% do lang_codes.append(lang_code) %}
 install_langpack_{{ lang_code }}:
   pkg.installed:
     - name: glibc-langpack-{{ lang_code }}
+{% endif %}
 {% endfor %}
 
 {% else %}
