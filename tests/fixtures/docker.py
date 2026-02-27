@@ -259,4 +259,11 @@ class ContainerManager:
       all_logs = master_logs.stdout + master_logs.stderr
       if all_logs.strip():
         logger.info("=== Salt master logs ===\n%s", all_logs[-3000:])
+      # Dump minion logs too
+      minion_logs = self._run_docker("logs", config.container_name, check=False)
+      minion_out = minion_logs.stdout + minion_logs.stderr
+      if minion_out.strip():
+        logger.info(
+          "=== Minion logs (%s) ===\n%s", config.container_name, minion_out[-3000:]
+        )
       self.stop_containers(config)
