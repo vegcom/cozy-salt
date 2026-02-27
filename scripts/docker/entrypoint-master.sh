@@ -28,16 +28,18 @@ minions_dir="/etc/salt/pki/master/minions"
 if [[ -d "${preload_dir}" ]]; then
     echo "=== Pre-accepting minion keys ==="
     mkdir -p "${minions_dir}"
+    denied_dir="/etc/salt/pki/master/minions_denied"
     for key_file in "${preload_dir}"/*.pub; do
         if [[ -f "${key_file}" ]]; then
             minion_id=$(basename "${key_file}" .pub)
-            # Only copy if not already accepted (preserves any runtime key changes)
-            if [[ ! -f "${minions_dir}/${minion_id}" ]]; then
-                cp "${key_file}" "${minions_dir}/${minion_id}"
-                echo "  + Pre-accepted ${minion_id}"
-            else
-                echo "  - ${minion_id} already accepted"
+            # Remove from denied (stale denied + valid accepted = auth failure)
+            if [[ -f "${denied_dir}/${minion_id}" ]]; then
+                rm -f "${denied_dir}/${minion_id}"
+                echo "  - Cleared denied key for ${minion_id}"
             fi
+            # Always sync accepted key from preload (ensures key matches minion image)
+            cp "${key_file}" "${minions_dir}/${minion_id}"
+            echo "  + Pre-accepted ${minion_id}"
         fi
     done
 fi
