@@ -22,6 +22,9 @@ install_pip_base_{{ package | replace('-', '_') }}:
     - require:
       - cmd: miniforge_install
       - cmd: opt_acl_cozyusers
+    {% else %}
+    - require:
+      - cmd: miniforge_install
     {% endif %}
     - runas: {{ service_user }}
     - unless: {{ pip_bin }} show {{ package }}
