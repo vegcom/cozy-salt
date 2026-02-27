@@ -44,15 +44,12 @@ generate_locales:
 
 {% elif os_family == 'RedHat' %}
 
-# RHEL/Rocky: generate each locale via localedef
+# RHEL/Rocky: install glibc-langpack-XX for each locale
 {% for locale in locales %}
-{% set parts = locale.split('.') %}
-{% set lang = parts[0] %}
-{% set charset = parts[1] if parts | length > 1 else 'UTF-8' %}
-generate_locale_{{ locale | replace('.', '_') | replace('-', '_') }}:
-  cmd.run:
-    - name: localedef -c -i {{ lang }} -f {{ charset }} {{ locale }}
-    - unless: localedef --list-archive | grep -q '^{{ locale }}$'
+{% set lang_code = locale.split('_')[0] %}
+install_langpack_{{ lang_code }}:
+  pkg.installed:
+    - name: glibc-langpack-{{ lang_code }}
 {% endfor %}
 
 {% else %}
