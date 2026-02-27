@@ -66,7 +66,7 @@ gclean() {
   # Marker text to stop at; default stays your original
   local marker="${1}"
 
-  if [[ -z ${marker} ]];then
+  if [ -z "${marker}" ];then
     echo "Usage: gclean <marker>"
     return 1
   fi
@@ -91,7 +91,7 @@ return b"\n".join(cleaned)
 export gclean
 
 t(){
-  if [[ -d ${PWD}/.git ]] ; then
+  if [ -d "${PWD}/.git" ] ; then
     _name="$(basename "${PWD:-$(pwd)}")"
     tmux new -s "${_name}"
   fi

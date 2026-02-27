@@ -4,9 +4,9 @@
 (return 0 2>/dev/null) || exit 0
 
 # Gate, only run for interactive root ssh sessions
-if [[ $- != *i* ]] || [[ $EUID -ne 0 ]] || [[ -z "$SSH_CONNECTION" ]]; then
-    return
-fi
+case $- in *i*) ;; *) return ;; esac
+[ "$EUID" -ne 0 ] && return
+[ -z "$SSH_CONNECTION" ] && return
 
 
 #-----------------------------------------------
@@ -73,7 +73,7 @@ docker_cpu() {
     u1=$(awk '/usage_usec/ {print $2}' "$cg/cpu.stat" 2>/dev/null)
     sleep 0.3
     u2=$(awk '/usage_usec/ {print $2}' "$cg/cpu.stat" 2>/dev/null)
-    [[ -z "$u1" || -z "$u2" ]] && { printf "0.0"; return; }
+    { [ -z "$u1" ] || [ -z "$u2" ]; } && { printf "0.0"; return; }
     awk -v u1="$u1" -v u2="$u2" 'BEGIN {printf "%.1f", 100*(u2-u1)/300000}'
 }
 
@@ -81,10 +81,10 @@ docker_mem() {
     cg="$1"
     cur=$(cat "$cg/memory.current" 2>/dev/null)
     max=$(cat "$cg/memory.max" 2>/dev/null)
-    [[ -z "$cur" ]] && { printf "0Mi / 0Mi"; return; }
+    [ -z "$cur" ] && { printf "0Mi / 0Mi"; return; }
 
     cur_mi=$(awk -v c="$cur" 'BEGIN {printf "%.1f", c/1024/1024}')
-    if [[ "$max" == "max" || -z "$max" ]]; then
+    if [ "$max" = "max" ] || [ -z "$max" ]; then
         printf "%sMi / ∞" "$cur_mi"
     else
         max_mi=$(awk -v m="$max" 'BEGIN {printf "%.0f", m/1024/1024}')
@@ -94,7 +94,7 @@ docker_mem() {
 
 #-----------------------------------------------
 # Detect SSH
-if [[ -n "$SSH_CONNECTION" ]]; then
+if [ -n "$SSH_CONNECTION" ]; then
     host_label="$(hostname) (ssh)"
 else
     host_label="$(hostname)"
@@ -113,7 +113,7 @@ printf "\n"
 #-----------------------------------------------
 # render ssh
 printf "[ ssh ]\n"
-if [[ -z "$ssh_sessions" ]]; then
+if [ -z "$ssh_sessions" ]; then
     printf "  none\n\n"
 else
     printf "%s\n\n" "$ssh_sessions"
@@ -122,21 +122,21 @@ fi
 
 #-----------------------------------------------
 # container by name
-if [[ $have_docker -eq 1 ]]; then
+if [ "$have_docker" -eq 1 ]; then
     printf "[ containers ]\n"
 
     containers=$(docker ps --format '{{.ID}} {{.Names}}')
 
-    if [[ -z "$containers" ]]; then
+    if [ -z "$containers" ]; then
         printf "  none\n\n"
     else
         i=0
         while read -r cid name; do
-            [[ -z "$cid" ]] && continue
+            [ -z "$cid" ] && continue
 
             # cgroup v2 path (modern Docker)
             cg="/sys/fs/cgroup/$cid"
-            [[ ! -d "$cg" ]] && continue
+            [ ! -d "$cg" ] && continue
 
             cpu=$(docker_cpu "$cg")
             mem=$(docker_mem "$cg")
