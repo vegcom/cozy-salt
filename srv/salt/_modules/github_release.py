@@ -5,8 +5,11 @@ See docs/modules/github_release.md for usage.
 """
 
 import json
+import logging
 import urllib.error
 import urllib.request
+
+log = logging.getLogger(__name__)
 
 __virtualname__ = "github_release"
 
@@ -39,5 +42,5 @@ def latest(repo, fallback=None):
       data = json.loads(resp.read())
       return data["tag_name"].lstrip("v")
   except Exception as exc:  # noqa: BLE001
-    __salt__["log.warning"](f"github_release.latest({repo}) failed: {exc}")
+    log.warning("github_release.latest(%s) failed: %s", repo, exc)
     return fallback
