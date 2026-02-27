@@ -46,18 +46,6 @@ jobs:
       - name: Test Salt states (ubuntu + rhel)
         run: pytest tests/ -m "ubuntu or rhel"
 
-      - name: Collect container logs (debug)
-        if: always()
-        run: |
-          echo "=== Docker containers ==="
-          docker ps -a || true
-          echo "=== Salt master logs ==="
-          docker logs salt 2>&1 | tail -150 || true
-          echo "=== Ubuntu minion logs ==="
-          docker logs salt-minion-ubuntu-test 2>&1 | tail -80 || true
-          echo "=== RHEL minion logs ==="
-          docker logs salt-minion-rhel-test 2>&1 | tail -80 || true
-
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4

@@ -254,5 +254,9 @@ class ContainerManager:
       return combined
 
     finally:
-      # Always clean up
+      # Dump master logs before teardown (essential for CI debugging)
+      master_logs = self._run_docker("logs", "salt", check=False)
+      all_logs = master_logs.stdout + master_logs.stderr
+      if all_logs.strip():
+        logger.info("=== Salt master logs ===\n%s", all_logs[-3000:])
       self.stop_containers(config)
