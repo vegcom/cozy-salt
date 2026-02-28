@@ -29,11 +29,11 @@
 
 ## Backlog
 
-- [ ] Cull verbose inline comments from .sls files, move to proper docs
+- [x] Cull verbose inline comments from .sls files, move to proper docs
 
 ## Git Hooks
 
-- [ ] Convert `provisioning/common/dotfiles/.git_template/hooks/commit-msg` to Python for Windows compatibility
+- [x] Convert `provisioning/common/dotfiles/.git_template/hooks/commit-msg` to Python for Windows compatibility
 
 ## Feature
 
