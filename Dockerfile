@@ -153,7 +153,8 @@ RUN chmod +x /usr/local/bin/entrypoint-minion.sh
 FROM salt-base-rpm AS salt-minion-rpm
 
 # Install Salt Minion from pre-configured repos
-RUN dnf install -y salt-minion && \
+# git required for git.latest states (common.vim etc) on first highstate run
+RUN dnf install -y salt-minion git && \
     dnf clean all && rm -rf /var/cache/dnf /tmp/*
 
 # Pre-configure minion (master hostname will be set at runtime)
