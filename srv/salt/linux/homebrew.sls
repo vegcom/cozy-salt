@@ -13,6 +13,8 @@ linuxbrew_directory:
     - mode: "0775"
     - makedirs: True
     - order: 20
+    - require:
+      - user: {{ service_user }}_service_account
 
 homebrew_install:
   cmd.run:

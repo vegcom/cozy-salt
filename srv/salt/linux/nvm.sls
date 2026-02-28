@@ -22,6 +22,8 @@ nvm_directory:
     - group: cozyusers
     - makedirs: True
     - clean: False
+    - require:
+      - user: {{ service_user }}_service_account
 
 # Download and install NVM system-wide
 # NVM_DIR - custom installation path (no trailing slash!)
