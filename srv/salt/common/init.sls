@@ -6,3 +6,4 @@ include:
   - common.gitconfig
   - common.vim
   - common.hosts
+  - common.ssh

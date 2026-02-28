@@ -1,5 +1,8 @@
 # ssh configuration deployment
-# Deploys ssh dotfiles to all managed_users
+# Deploys ssh dotfiles + authorized_keys to all managed_users
+
+include:
+  - common.ssh-keys
 {% from "_macros/git-repo.sls" import git_repo %}
 {% set users = salt['pillar.get']('users', {}) %}
 {% set managed_users = salt['pillar.get']('managed_users', [], merge=True) %}
