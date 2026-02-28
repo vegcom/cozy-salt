@@ -38,7 +38,9 @@ while true; do
 
   # Check if we can ping the master (without --local flag)
   if salt-call --timeout=10 test.ping 2>&1 | grep -q 'True'; then
-    echo "=== Minion connected to master! Running state.highstate ==="
+    echo "=== Minion connected to master! Syncing modules ==="
+    salt-call saltutil.sync_modules 2>/dev/null || true
+    echo "=== Running state.highstate ==="
     salt-call state.highstate --state-output=mixed || true
     echo "=== Highstate complete! Keeping container alive ==="
     exec tail -f /var/log/salt/minion
