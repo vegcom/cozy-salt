@@ -1,9 +1,5 @@
 # cozy-salt TODO
 
-## Tests
-
-- [x] minion container tests are not automated, this needs to be put back in place
-  - [x] containers must be evaluated (ubuntu + rhel passing CI as of 87c95e9)
 
 ## Seperation of duty
 
@@ -27,13 +23,6 @@
     - [ ] rust
     - [ ] ... find more ...
 
-## Backlog
-
-- [x] Cull verbose inline comments from .sls files, move to proper docs
-
-## Git Hooks
-
-- [x] Convert `provisioning/common/dotfiles/.git_template/hooks/commit-msg` to Python for Windows compatibility
 
 ## Feature
 
