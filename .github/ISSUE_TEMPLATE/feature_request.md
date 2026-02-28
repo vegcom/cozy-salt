@@ -1,20 +1,23 @@
 ---
-name: Feature request
-about: Suggest an idea for this project
-title: ''
-labels: ''
+name: feature request
+about: you want something that doesn't exist yet
+title: '[feat] '
+labels: enhancement
 assignees: ''
-
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+## what's missing
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+what would you like cozy-salt to do that it doesn't?
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+## why
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+what problem does it solve for you?
+
+## rough idea
+
+how you'd imagine it working (pillar structure, state name, whatever)
+
+## alternatives
+
+what are you doing instead right now?

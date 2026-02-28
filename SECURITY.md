@@ -1,21 +1,20 @@
 # Security Policy
 
-## Supported Versions
+## reporting a vulnerability
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
+please use [GitHub's private vulnerability reporting](https://github.com/vegcom/cozy-salt/security/advisories/new) — don't open a public issue for security stuff
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+we'll acknowledge within a few days and keep you updated as we work on it
 
-## Reporting a Vulnerability
+## scope
 
-Use this section to tell people how to report a vulnerability.
+cozy-salt is an IaC provisioning tool. relevant security concerns include:
 
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+- credential or secret exposure in states/pillars
+- privilege escalation in provisioned configs
+- insecure defaults that could affect deployed systems
+
+## what's not in scope
+
+- vulnerabilities in salt itself (report to [saltproject.io](https://saltproject.io))
+- issues with your specific deployment/infrastructure

@@ -1,38 +1,31 @@
 ---
-name: Bug report
-about: Create a report to help us improve
-title: ''
-labels: ''
+name: bug report
+about: something's broken and you'd like it to not be
+title: '[bug] '
+labels: bug
 assignees: ''
-
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+## what broke
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+what happened vs what you expected
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+## how to reproduce
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+steps, salt commands, error output — whatever helps
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+## environment
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+- distro + version:
+- salt version (`salt-call --version`):
+- minion or master side?
 
-**Additional context**
-Add any other context about the problem here.
+## logs
+
+```text
+paste relevant salt logs here (salt-minion, salt-master, highstate output)
+```
+
+## anything else
+
+pillar structure, custom states, what you already tried
