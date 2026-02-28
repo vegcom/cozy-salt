@@ -43,9 +43,10 @@ while true; do
     echo "=== Running state.highstate ==="
     # --out=json captured to file for test assertions
     salt-call state.highstate --out=json 2>&1 | tee /tmp/highstate.json
-    # Print summary (python3 may not be in PATH on all distros)
-    python3 -c "
-import sys, json
+    # Print summary - prefer system python3, fall back to salt's bundled python
+    _py=$(command -v python3 || echo /opt/saltstack/salt/bin/python3)
+    "$_py" -c "
+import json
 try:
     d = json.load(open('/tmp/highstate.json')).get('local', {})
     s = sum(1 for v in d.values() if v.get('result') is True)
