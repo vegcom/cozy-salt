@@ -31,6 +31,7 @@ deploy_gitconfig_{{ username }}:
     - makedirs: True
 
 # Deploy .git-credentials from merged global and user-specific tokens
+{% if merged_tokens %}
 deploy_git_credentials_{{ username }}:
   file.managed:
     - name: {{ dotfiles.dotfile_path(user_home, '.git-credentials') }}
@@ -47,6 +48,7 @@ deploy_git_credentials_{{ username }}:
     - makedirs: True
     - require:
       - file: deploy_gitconfig_{{ username }}
+{% endif %}
 
 # Deploy base gitattributes (always update)
 deploy_gitattributes_{{ username }}:
