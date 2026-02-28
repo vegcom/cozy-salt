@@ -2,9 +2,8 @@
 
 ## Tests
 
-- [ ] minion container tests are not automated, this needs to be put back in place
-  - [ ] containers must be evaluated
-  - each changed state could also go through pre-commit for evaluation this way
+- [x] minion container tests are not automated, this needs to be put back in place
+  - [x] containers must be evaluated (ubuntu + rhel passing CI as of 87c95e9)
 
 ## Seperation of duty
 
