@@ -41,18 +41,19 @@ while true; do
     echo "=== Minion connected to master! Syncing modules ==="
     salt-call saltutil.sync_modules 2>/dev/null || true
     echo "=== Running state.highstate ==="
-    # --out=json captured to file for test assertions; tee for CI log visibility
-    salt-call state.highstate --out=json 2>&1 | tee /tmp/highstate.json | \
-      python3 -c "
+    # --out=json captured to file for test assertions
+    salt-call state.highstate --out=json 2>&1 | tee /tmp/highstate.json
+    # Print summary (python3 may not be in PATH on all distros)
+    python3 -c "
 import sys, json
 try:
-    d = json.load(sys.stdin).get('local', {})
+    d = json.load(open('/tmp/highstate.json')).get('local', {})
     s = sum(1 for v in d.values() if v.get('result') is True)
     f = sum(1 for v in d.values() if v.get('result') is False)
     print(f'Succeeded: {s}  Failed: {f}  Total: {len(d)}')
 except Exception as e:
     print(f'(summary failed: {e})')
-" || true
+" 2>/dev/null || true
     echo "=== Highstate complete! Keeping container alive ==="
     exec tail -f /var/log/salt/minion
   fi
