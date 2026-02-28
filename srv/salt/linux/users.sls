@@ -4,6 +4,8 @@
 
 {%- from "_macros/dotfiles.sls" import user_dotfile %}
 {% set users = salt['pillar.get']('users', {}) %}
+{% set is_container = salt['file.file_exists']('/.dockerenv') or
+                      salt['file.file_exists']('/run/.containerenv') %}
 
 # Iterate over users from pillar and create each one
 {% for username, userdata in users.items() %}
@@ -112,10 +114,13 @@ scratch_mount_{{ username }}:
     - require:
       - file: {{ username }}_home_directory
 
+{% if not is_container %}
 scratch_automount_enable_{{ username }}:
   service.enabled:
     - name: home-{{ username }}-scratch.automount
-    - file: {{ username }}_scratch_directory
+    - require:
+      - file: {{ username }}_scratch_directory
+{% endif %}
 
 # SMB mounts for {{ username }} (from pillar smb:{share_name})
 # Uses systemd .mount/.automount units for lazy mounting + network resilience

@@ -3,6 +3,8 @@
 {%- set managed_users = salt['pillar.get']('managed_users', [], merge=True) -%}
 {%- set run_user = managed_users[0] if managed_users else '' -%}
 {%- set run_user_info = salt['user.info'](run_user) if run_user else {} -%}
+{%- set is_container = salt['file.file_exists']('/.dockerenv') or
+                       salt['file.file_exists']('/run/.containerenv') -%}
 {%- set cozy_presence_path = "/opt/cozy/cozy-presence" %}
 {%- set cozy_presence_env = "/opt/miniforge3/envs/cozy-presence" %}
 {%- set cozy_presence_bin = cozy_presence_env + "/bin" %}
@@ -80,6 +82,7 @@ cozy_presence_service_file:
     - source: salt://linux/files/etc-systemd-user/cozy-presence@.service
     - mode: 644
 
+{% if not is_container %}
 cozy_presence_service:
   cmd.run:
     - name: |
@@ -93,6 +96,7 @@ cozy_presence_service:
       - file: cozy_presence_data_dir
     - watch:
       - git: cozy_presence_repo
+{% endif %}
 
 {%- else %}
 

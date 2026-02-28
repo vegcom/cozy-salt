@@ -39,6 +39,9 @@ salt_minion_conf_opt:
 
 # NOTE: restarting salt-minion during salt-call interrupts the run
 # apply via master: salt '*' state.sls common.salt_minion
+{% set is_container = salt['file.file_exists']('/.dockerenv') or
+                      salt['file.file_exists']('/run/.containerenv') %}
+{% if not is_container %}
 salt_minion_service:
   service.running:
     - name: salt-minion
@@ -46,3 +49,4 @@ salt_minion_service:
     - watch:
       - file: salt_minion_conf
       - file: salt_minion_conf_opt
+{% endif %}
