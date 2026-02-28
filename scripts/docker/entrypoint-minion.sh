@@ -41,7 +41,18 @@ while true; do
     echo "=== Minion connected to master! Syncing modules ==="
     salt-call saltutil.sync_modules 2>/dev/null || true
     echo "=== Running state.highstate ==="
-    salt-call state.highstate --state-output=mixed || true
+    # --out=json captured to file for test assertions; tee for CI log visibility
+    salt-call state.highstate --out=json 2>/dev/null | tee /tmp/highstate.json | \
+      python3 -c "
+import sys, json
+try:
+    d = json.load(sys.stdin).get('local', {})
+    s = sum(1 for v in d.values() if v.get('result') is True)
+    f = sum(1 for v in d.values() if v.get('result') is False)
+    print(f'Succeeded: {s}  Failed: {f}  Total: {len(d)}')
+except Exception as e:
+    print(f'(summary failed: {e})')
+" || true
     echo "=== Highstate complete! Keeping container alive ==="
     exec tail -f /var/log/salt/minion
   fi

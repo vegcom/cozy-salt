@@ -195,24 +195,26 @@ class ContainerManager:
     self, container_name: str, output_format: str = "json"
   ) -> subprocess.CompletedProcess:
     """
-    Execute salt-call state.highstate in container.
+    Read highstate JSON captured during first run (avoids second master auth).
+
+    The entrypoint saves --out=json output to /tmp/highstate.json during the
+    initial highstate run. Reading that file is more reliable than re-running
+    state.highstate (which requires a fresh ZMQ auth after a long first run).
 
     Args:
         container_name: Name of the container.
-        output_format: Output format (json, yaml, etc).
+        output_format: Output format (only json is supported via file).
 
     Returns:
         CompletedProcess with stdout/stderr.
     """
     logger.info(f"Executing salt-call in {container_name}")
 
-    # Don't check=True because salt-call may return non-zero on failed states
     return self._run_docker(
       "exec",
       container_name,
-      "salt-call",
-      "state.highstate",
-      f"--out={output_format}",
+      "cat",
+      "/tmp/highstate.json",
       check=False,
     )
 
