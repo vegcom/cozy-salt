@@ -14,6 +14,11 @@
 
 {% if os_family == 'Debian' %}
 
+# Ensure locales package is present (provides locale-gen)
+locales_pkg:
+  pkg.installed:
+    - name: locales
+
 # Deploy /etc/locale.gen with locales from pillar
 locale_gen_config:
   file.managed:
@@ -25,6 +30,8 @@ locale_gen_config:
         {%- for locale in locales %}
         {{ locale }}
         {%- endfor %}
+    - require:
+      - pkg: locales_pkg
 
 # Purge all locales
 purge_locales:
@@ -32,6 +39,8 @@ purge_locales:
     - name: locale-gen --purge
     - onchanges:
       - file: locale_gen_config
+    - require:
+      - pkg: locales_pkg
 
 # Generate all configured locales
 generate_locales:
