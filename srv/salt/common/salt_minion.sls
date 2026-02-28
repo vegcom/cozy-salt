@@ -14,7 +14,10 @@
 
 {%- set minion_conf_obj = "default_include: " ~ "minion.d/*.conf" ~ "\n" %}
 
+{%- set minion_confd_obj = "" %}
+{%- if salt_master %}
 {%- set minion_confd_obj = "master: " ~ salt_master ~ "\n" %}
+{%- endif %}
 {%- if k3s_enabled and k3s_role == 'server' and grains['os_family'] != 'Windows' %}
   {%- set minion_confd_obj = minion_confd_obj ~ "mine_functions:\n  k3s_kubeconfig:\n    - mine_function: file.read\n    - /etc/rancher/k3s/k3s.yaml\n" %}
 {%- endif %}
