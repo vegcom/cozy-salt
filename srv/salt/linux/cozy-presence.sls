@@ -4,11 +4,12 @@
 {%- set run_user = managed_users[0] if managed_users else '' -%}
 {%- set is_container = salt['file.file_exists']('/.dockerenv') or
                        salt['file.file_exists']('/run/.containerenv') -%}
+{%- set token = salt['pillar.get']('github:tokens', [''])[0] -%}
 {%- set cozy_presence_path = "/opt/cozy/cozy-presence" %}
 {%- set cozy_presence_env = "/opt/miniforge3/envs/cozy-presence" %}
 {%- set cozy_presence_bin = cozy_presence_env + "/bin" %}
 
-{%- if run_user %}
+{%- if run_user and not is_container and token %}
 # Create /opt/cozy/ with correct ownership (always enforced, no creates guard)
 cozy_presence_repo_dir:
   file.directory:
@@ -85,7 +86,6 @@ cozy_presence_data_dir_{{ username }}:
     - mode: 700
     - makedirs: True
 
-{% if not is_container %}
 cozy_presence_service_{{ username }}:
   cmd.run:
     - name: |
@@ -96,7 +96,6 @@ cozy_presence_service_{{ username }}:
       - file: cozy_presence_data_dir_{{ username }}
     - watch:
       - git: cozy_presence_repo
-{% endif %}
 
 {%- endif %}
 {% endfor %}
@@ -105,6 +104,6 @@ cozy_presence_service_{{ username }}:
 
 cozy_presence_noop:
   test.nop:
-    - name: Cozy Presence requires a user account to run
+    - name: Cozy Presence requires a user account and systemd (skipped in containers)
 
 {%- endif %}
