@@ -93,6 +93,7 @@ windows_profile_health_check:
       - user: {{ username }}_user
       - cmd: {{ username }}_initialize_profile
 
+{% if userdata.get('smb_password') %}
 {{ username }}_mount_git:
   cmd.run:
     - name: |
@@ -102,6 +103,7 @@ windows_profile_health_check:
           -ShareUser {{ username }}
           -SharePass {{ userdata.get('smb_password', '') }}
     - runas: {{ username }}
+{% endif %}
 
 # Add {{ username }} to Windows groups using PowerShell
 # Salt's user.present groups parameter has a bug on Windows (ValueError: list.remove)
