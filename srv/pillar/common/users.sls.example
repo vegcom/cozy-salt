@@ -2,29 +2,19 @@
 # Individual user definitions are in srv/pillar/users/*.sls
 # This file contains only managed_users list and global tokens
 
-# Global github tokens (shared by all users for git operations)
-# User-specific tokens merge with these in srv/salt/common/gitconfig.sls
-github:
-  tokens:
-    - ghp_global_shared_token_123
-
 # Managed users list - users that get provisioned and dotfiles deployed
 # Individual user configs defined in srv/pillar/users/{username}.sls
-managed_users:
-  - admin
-  - demo
+SALT_CI: True
 
-# Shared group GIDs (start at 3000 range for SMB/NFS consistency)
-# User primary groups use same GID as user UID
-groups:
-  cozyusers:
-    gid: 3000
+managed_users:
+  - demo_user
+  - demo_admin
 
 # SMB mounts for users (shared git repo, etc.)
-smb:
-  git_share:
-    device: //nas.local/git
-    mountpoint: git  # relative to user home
-    fstype: cifs
-    opts: vers=3.0,soft,rw
-    credentials_path: /etc/samba/creds
+# smb:
+#   git_share:
+#     device: //nas.local/git
+#     mountpoint: git  # relative to user home
+#     fstype: cifs
+#     opts: vers=3.0,soft,rw
+#     credentials_path: /etc/samba/creds

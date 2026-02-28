@@ -51,9 +51,10 @@ base:
 
   # Layer 5: Per-user configs (gated on common managed_users)
   {% set users_dir = '/srv/pillar/users/' %}
-  {% set skip_users = ['demo'] %}
   {% set common = salt['slsutil.renderer'](path='/srv/pillar/common/users.sls', default_renderer='jinja|yaml') %}
   {% set common_managed = common.get('managed_users', []) %}
+  {% set is_ci = common.get('SALT_CI', False) %}
+  {% set skip_users = [] if is_ci else ['demo_admin', 'demo_user'] %}
   '* and not G@id:__NEVER_MATCH__':
     - match: compound
     {% for user_file in salt['file.find'](users_dir, type='f', name='*.sls') | sort %}
