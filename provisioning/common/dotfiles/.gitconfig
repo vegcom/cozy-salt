@@ -39,6 +39,7 @@
   autocrlf = false
   eol = lf
   excludesfile = ~/.gitignore
+  fileMode = false
   sharedRepository = group
 
 [merge]
