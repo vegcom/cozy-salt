@@ -2,14 +2,13 @@
 {% from "_macros/git-repo.sls" import git_repo %}
 {%- set managed_users = salt['pillar.get']('managed_users', [], merge=True) -%}
 {%- set run_user = managed_users[0] if managed_users else '' -%}
-{%- set run_user_info = salt['user.info'](run_user) if run_user else {} -%}
 {%- set is_container = salt['file.file_exists']('/.dockerenv') or
                        salt['file.file_exists']('/run/.containerenv') -%}
 {%- set cozy_presence_path = "/opt/cozy/cozy-presence" %}
 {%- set cozy_presence_env = "/opt/miniforge3/envs/cozy-presence" %}
 {%- set cozy_presence_bin = cozy_presence_env + "/bin" %}
 
-{%- if run_user_info %}
+{%- if run_user %}
 # Create /opt/cozy/ with correct ownership (always enforced, no creates guard)
 cozy_presence_repo_dir:
   file.directory:
@@ -57,15 +56,6 @@ cozy_presence_pip:
       - git: cozy_presence_repo
       - cmd: cozy_presence_env_create
 
-# Create data directory
-cozy_presence_data_dir:
-  file.directory:
-    - name: /home/{{ run_user }}/.presence
-    - user: {{ run_user }}
-    - group: {{ run_user }}
-    - mode: 700
-    - makedirs: True
-
 # Install CLI wrapper
 cozy_presence_cli:
   file.managed:
@@ -75,28 +65,41 @@ cozy_presence_cli:
     - require:
       - git: cozy_presence_repo
 
-# Install systemd service
+# Install systemd service template
 cozy_presence_service_file:
   file.managed:
     - name: /etc/systemd/user/cozy-presence@.service
     - source: salt://linux/files/etc-systemd-user/cozy-presence@.service
     - mode: 644
 
+# Per-user: data dir + service enable
+{% for username in managed_users %}
+{%- set user_info = salt['user.info'](username) %}
+{%- if user_info %}
+
+cozy_presence_data_dir_{{ username }}:
+  file.directory:
+    - name: {{ user_info['home'] }}/.presence
+    - user: {{ username }}
+    - group: {{ username }}
+    - mode: 700
+    - makedirs: True
+
 {% if not is_container %}
-cozy_presence_service:
+cozy_presence_service_{{ username }}:
   cmd.run:
     - name: |
-        systemctl --user daemon-reload
-        systemctl --user enable --now cozy-presence@{{ run_user }}.service
-    - runas: {{ run_user }}
-    - env:
-        XDG_RUNTIME_DIR: /run/user/{{ run_user_info['uid'] }}
+        systemd-run --quiet --machine={{ username }}@.host --user --collect --pipe --wait \
+            sh -c 'systemctl --user enable --now cozy-presence@{{ username }}.service'
     - require:
       - file: cozy_presence_service_file
-      - file: cozy_presence_data_dir
+      - file: cozy_presence_data_dir_{{ username }}
     - watch:
       - git: cozy_presence_repo
 {% endif %}
+
+{%- endif %}
+{% endfor %}
 
 {%- else %}
 
