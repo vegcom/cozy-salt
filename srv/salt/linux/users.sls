@@ -59,30 +59,6 @@
 {{ user_dotfile(username, user_home, '.zshrc', 'salt://linux/files/etc-skel/.zshrc') }}
 {{ user_dotfile(username, user_home, '.profile', 'salt://linux/files/etc-skel/.profile') }}
 
-{% set ssh_keys = userdata.get('ssh_keys', []) %}
-{% if ssh_keys %}
-# Create {{ username }} .ssh directory
-{{ username }}_ssh_directory:
-  file.directory:
-    - name: {{ user_home }}/.ssh
-    - user: {{ username }}
-    - group: {{ username }}
-    - mode: "0700"
-    - makedirs: True
-    - require:
-      - file: {{ username }}_home_directory
-
-# Append {{ username }} SSH keys (does not overwrite existing keys)
-{% for key in ssh_keys %}
-{{ username }}_ssh_key_{{ loop.index }}:
-  ssh_auth.present:
-    - user: {{ username }}
-    - name: {{ key }}
-    - require:
-      - file: {{ username }}_ssh_directory
-{% endfor %}
-{% endif %}
-
 # Create {{ username }} scratch mount
 scratch_mount_{{ username }}:
   file.managed:
