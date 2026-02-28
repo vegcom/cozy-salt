@@ -42,7 +42,7 @@ while true; do
     salt-call saltutil.sync_modules 2>/dev/null || true
     echo "=== Running state.highstate ==="
     # --out=json captured to file for test assertions; tee for CI log visibility
-    salt-call state.highstate --out=json 2>/dev/null | tee /tmp/highstate.json | \
+    salt-call state.highstate --out=json 2>&1 | tee /tmp/highstate.json | \
       python3 -c "
 import sys, json
 try:

@@ -13,6 +13,7 @@
 {% set _core = ['curl', 'git', 'jq', 'rsync', 'tree', 'unzip', 'wget', 'aria2'] %}
 {% set _monitoring_base = ['htop', 'lsof', 'ltrace', 'strace', 'sysstat'] %}
 {% set _shell = ['bash-completion', 'screen', 'tmux', 'shellcheck', 'zsh'] %}
+{% set _shell_rhel = (_shell | reject('equalto', 'shellcheck') | list) + ['ShellCheck'] %}
 {% set _build_base = ['autoconf', 'automake', 'cmake'] %}
 {% set _net_base = ['nmap', 'socat', 'tcpdump', 'traceroute', 'avahi'] %}
 {% set _compress_base = ['bzip2', 'zip'] %}
@@ -113,7 +114,7 @@ ubuntu: {{ _apt | tojson }}
 rhel:
   core_utils: {{ (_core + ['vim-enhanced']) | tojson }}
   monitoring: {{ _monitoring_base | tojson }}
-  shell_enhancements: {{ _shell | tojson }}
+  shell_enhancements: {{ _shell_rhel | tojson }}
   build_tools: {{ (_build_base + ['gcc', 'gcc-c++', 'make']) | tojson }}
   networking: {{ (_net_base + ['bind-utils', 'iputils', 'net-tools', 'nmap-ncat', 'openssh-clients', 'openssh-server']) | tojson }}
   compression: {{ (_compress_base + ['p7zip', 'p7zip-plugins', 'xz']) | tojson }}
