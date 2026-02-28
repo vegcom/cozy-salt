@@ -11,7 +11,6 @@ REPORT.md
 package.json
 package-lock.json
 JOURNAL.md*
-docker-compose-net.yml
 cozy-salt/srv/pillar/users/*.sls
 CLAUDE.md
 **/node_modules

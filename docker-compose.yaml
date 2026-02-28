@@ -1,3 +1,6 @@
+# For McVlan network isolation
+# docker compose -f docker-compose.yaml  -f docker-compose-net.yml  config
+
 # YAML Anchors - Common service definitions (HIGH-002)
 x-minion-base: &minion-base
   restart: "no"
@@ -24,16 +27,13 @@ services:
     container_name: salt
     hostname: salt
     dns:
-      - ${SALT_MASTER_RESOLVER:-10.0.0.1}
       - 1.1.1.1
       - 1.0.0.1
     dns_search:
       - local
       - localdomain
     networks:
-      salt-net:
-      frontend:
-    mac_address: ${SALT_MASTER_MAC:-02:42:ac:11:00:10}
+      - salt-net
     restart: unless-stopped
     expose:
       - "4505"  # Master pub (ZeroMQ)
@@ -138,5 +138,3 @@ volumes:
 
 networks:
   salt-net:
-  frontend:
-    external: true
