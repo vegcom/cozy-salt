@@ -104,8 +104,9 @@ FROM salt-base-deb AS salt-minion-deb
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install Salt Minion from pre-configured repos
+# git required for git.latest states (common.vim etc) on first highstate run
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends salt-minion && \
+    apt-get install -y --no-install-recommends salt-minion git && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/*
 
 # Pre-configure minion (master hostname will be set at runtime)
