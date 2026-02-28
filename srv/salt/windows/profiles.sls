@@ -35,6 +35,15 @@ pwsh_config_d_symlink:
     - require:
       - git: pwsh_profile_repo
 
+# Symlink Starship file
+pwsh_starship_symlink:
+  file.symlink:
+    - name: '{{ pwsh_profile_dir }}\starship.toml'
+    - target: '{{ repo_path }}\starship.toml'
+    - force: True
+    - require:
+      - git: pwsh_profile_repo
+
 # Ensure repo is readable by all users
 pwsh_profile_acl:
   cmd.run:
