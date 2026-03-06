@@ -5,6 +5,7 @@
 {%- macro git_repo(repo, target, user, branch='main', force_clone=False, force_reset=False, org='vegcom', state_id=None, require_file=None) -%}
 {%- set token = salt['pillar.get']('github:tokens', [''])[0] -%}
 {%- set sid = state_id or repo | replace('.', '_') | replace('-', '_') ~ '_repo' -%}
+{%- if token %}
 {{ sid }}:
   git.latest:
     - name: https://{{ token }}@github.com/{{ org }}/{{ repo }}.git
@@ -22,5 +23,10 @@
 {%- if require_file %}
     - require:
       - file: {{ require_file }}
+{%- endif %}
+{%- else %}
+{{ sid }}:
+  test.nop:
+    - name: Skipping {{ repo }} clone — no github token in pillar
 {%- endif %}
 {%- endmacro -%}
