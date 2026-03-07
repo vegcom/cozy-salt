@@ -32,10 +32,9 @@ nvm_directory:
 nvm_download_and_install:
   cmd.run:
     - name: |
-        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_version }}/install.sh | \
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v{{ nvm_version }}/install.sh | \
           NVM_DIR={{ nvm_path }} PROFILE=/dev/null bash
     - runas: {{ service_user }}
-    - creates: {{ nvm_path }}/nvm.sh
     - require:
       - file: nvm_directory
 

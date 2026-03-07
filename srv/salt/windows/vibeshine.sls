@@ -21,6 +21,5 @@ vibeshine_install:
     - name: >
         pwsh -NoLogo -Command
         "& \"{{ vibeshine_tmp }}\" /qn /norestart"
-    - creates: {{ vibeshine_path }}\vibeshine.exe
     - require:
       - cmd: vibeshine_download

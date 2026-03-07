@@ -23,7 +23,6 @@ homebrew_install:
     - runas: {{ service_user }}
     - env:
       - NONINTERACTIVE: 1
-    - creates: {{ homebrew_base }}/bin/brew
     - require:
       - file: linuxbrew_directory
 

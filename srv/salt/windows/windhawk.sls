@@ -23,7 +23,6 @@ windhawk_install:
     - name: >
         pwsh -NoLogo -Command
         "& \"$env:TEMP\windhawk-install.exe\" /S /AUTO_UPDATE /PORTABLE /D={{ windhawk_path }}"
-    - creates: {{ windhawk_path }}\windhawk.exe
     - require:
       - cmd: windhawk_download
 
