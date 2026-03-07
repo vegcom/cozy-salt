@@ -23,7 +23,6 @@ nvm_install:
     - name: >
         pwsh -NoLogo -Command
         "Expand-Archive -Path {{ nvm_tmp }} -DestinationPath {{ nvm_path }} -Force"
-    - creates: {{ nvm_bin }}
     - require:
       - cmd: nvm_download
 
@@ -36,7 +35,6 @@ nvm_npm_settings:
       - 'symlink: {{ node_path }}'
     - require:
       - cmd: nvm_install
-    - creates: {{ npm_settings }}
 
 nvm_home:
   reg.present:
@@ -85,7 +83,6 @@ nvm_use_default:
     - require:
       - cmd: nvm_nodejs_dir_cleanup
       - reg: nvm_symlink
-    - creates: {{ node_path }}\node.exe
 
 # Install global npm packages via common orchestration
 # PATH updates handled by windows.paths (avoids race conditions)

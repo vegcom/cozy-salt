@@ -31,10 +31,9 @@ miniforge_install:
     - name: >
         pwsh -NoLogo -Command
         "& \"$env:TEMP\miniforge-install.exe\" /InstallationType=AllUsers /RegisterPython=1 /S /D={{ miniforge_path }}"
-    - creates: {{ miniforge_path }}\Scripts\conda.exe
     - require:
       - cmd: miniforge_download
-      - cmd: opt_acl_cozyusers
+      #- cmd: opt_acl_cozyusers
 
 
 miniforge_clean:

@@ -35,7 +35,6 @@ nvm_download_and_install:
         curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_version }}/install.sh | \
           NVM_DIR={{ nvm_path }} PROFILE=/dev/null bash
     - runas: {{ service_user }}
-    - creates: {{ nvm_path }}/nvm.sh
     - require:
       - file: nvm_directory
 

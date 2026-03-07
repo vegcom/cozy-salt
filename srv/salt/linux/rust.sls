@@ -30,7 +30,6 @@ rust_download_script:
 rust_download_and_install:
   cmd.run:
     - name: RUSTUP_HOME={{ rust_path }} CARGO_HOME={{ rust_path }} /tmp/rustup-init.sh --no-modify-path -y
-    - creates: {{ rust_path }}/bin/rustc
     - require:
       - cmd: rust_download_script
 

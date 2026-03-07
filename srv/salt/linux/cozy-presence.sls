@@ -28,8 +28,6 @@ cozy_presence_env_create:
     - name: |
         /opt/miniforge3/bin/mamba env create -f {{ cozy_presence_path }}/environment.yml
     - user: {{ run_user }}
-    - creates:
-      - {{ cozy_presence_env }}/lib/python3.12/venv/scripts/common/activate
     - require:
       - git: cozy_presence_repo
 

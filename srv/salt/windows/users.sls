@@ -4,6 +4,7 @@
 
 {% set users = salt['pillar.get']('users', {}) %}
 {% set managed_users = salt['pillar.get']('managed_users', [], merge=True) %}
+{% set smb_shares = salt['pillar.get']('smb_share', ["Git", "Media", "Home"], merge=True) %}
 
 # Profile health check - detect corrupted/temp profiles before proceeding
 # Checks for folders like admin.rocket, vegcom.DESKTOP-ABC123 where base name is a managed user
@@ -94,15 +95,17 @@ windows_profile_health_check:
       - cmd: {{ username }}_initialize_profile
 
 {% if userdata.get('smb_password') %}
-{{ username }}_mount_git:
+  {%- for share_name in smb_shares %}
+{{ username }}_mount_{{ share_name.lower() }}:
   cmd.run:
     - name: |
         pwsh -ExecutionPolicy Bypass -File C:\opt\cozy\bin\mount-share.ps1
           -ShareServer COZY-SHARE
-          -ShareName Git
+          -ShareName {{ share_name }}
           -ShareUser {{ username }}
           -SharePass {{ userdata.get('smb_password', '') }}
     - runas: {{ username }}
+  {%- endfor %}
 {% endif %}
 
 # Add {{ username }} to Windows groups using PowerShell
