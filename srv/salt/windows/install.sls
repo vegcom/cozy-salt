@@ -121,7 +121,7 @@ winget_userland_{{ user | replace('.', '_') | replace('-', '_') }}_{{ pkg | repl
     - runas: {{ user }}
     - shell: powershell
     - unless: '{{ user_winget }} list --exact --id {{ pkg }} | Select-String -Quiet -Pattern ''{{ pkg }}'''
-    - onlyif: Test-Path '{{ user_winget }}'
+    - onlyif: '& ''{{ user_winget }}'' --version 2>&1 | Select-String -Quiet "v\d"'
     - timeout: 300
     {% endfor %}
   {% endfor %}
