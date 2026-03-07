@@ -3,7 +3,9 @@
 {%- from "_macros/windows.sls" import win_cmd %}
 {% set nvm_config   = salt['pillar.get']('nvm', {}) %}
 {% set nvm_version  = nvm_config.get('default_version', 'lts') %}
-{% set npm_pkg      = "https://github.com/coreybutler/nvm-windows/releases/download/1.2.2/nvm-noinstall.zip" %}
+{% set _pinned_nvm_win = salt['pillar.get']('versions:nvm_windows:version', '') %}
+{% set nvm_win_version = _pinned_nvm_win or salt['github_release.latest']('coreybutler/nvm-windows') %}
+{% set npm_pkg      = "https://github.com/coreybutler/nvm-windows/releases/download/" ~ nvm_win_version ~ "/nvm-noinstall.zip" %}
 {% set nvm_tmp      = "$env:TEMP\\nvm-noinstall.zip" %}
 {# Path configuration from pillar with defaults #}
 {% set nvm_path     = salt['pillar.get']('install_paths:nvm:windows', 'C:\\opt\\nvm') %}
