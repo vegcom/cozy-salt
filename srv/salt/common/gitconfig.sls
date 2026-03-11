@@ -100,8 +100,8 @@ deploy_gitconfig_local_{{ username }}:
 {% if git_email and git_name %}
     - contents: |
         [user]
-            email = {{ git_email }}
-            name = {{ git_name }}
+          email = {{ git_email }}
+          name = {{ git_name }}
     - replace: True
 {% else %}
     - source: salt://common/dotfiles/.gitconfig.local

@@ -77,3 +77,6 @@
   # https://git-scm.com/docs/gitcredentials
   helper = store
   helper = cache --timeout=3600
+
+[user]
+  signingkey = ~/.ssh/keys/git.pub
