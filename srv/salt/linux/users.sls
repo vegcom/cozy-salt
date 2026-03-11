@@ -7,6 +7,9 @@
 {% set is_container = salt['file.file_exists']('/.dockerenv') or
                       salt['file.file_exists']('/run/.containerenv') %}
 
+include:
+  - linux.groups
+
 # Iterate over users from pillar and create each one
 {% for username, userdata in users.items() %}
 {% set user_groups = userdata.get('linux_groups', ['cozyusers']) %}
@@ -35,6 +38,11 @@
       - group: {{ username }}_primary_group
 {% endif %}
 
+# Enable linger for users
+{{ username }}_linger:
+  cmd.run:
+    - name: loginctl enable-linger {{ username }}
+    - unless: loginctl show-user {{ username }} | grep 'Linger=yes'
 
 # Create {{ username }} home directory
 {% set user_home = userdata.get('home_prefix', '/home') ~ '/' ~ username %}
@@ -87,8 +95,10 @@ scratch_mount_{{ username }}:
     - group: {{ username }}
     - mode: "0700"
     - makedirs: True
+{% if not salt['file.file_exists'](user_home) %}
     - require:
       - file: {{ username }}_home_directory
+{% endif %}
 
 {% if not is_container %}
 scratch_automount_enable_{{ username }}:
@@ -135,10 +145,12 @@ scratch_automount_enable_{{ username }}:
     - name: {{ mount_path }}
     - user: {{ username }}
     - group: {{ username }}
-    - mode: "0750"
+    - mode: "0755"
     - makedirs: True
+{% if not salt['file.file_exists'](user_home) %}
     - require:
       - file: {{ username }}_home_directory
+{% endif %}
 
 # Systemd mount unit for {{ share_name }}
 {{ username }}_smb_{{ share_name }}_mount_unit:
