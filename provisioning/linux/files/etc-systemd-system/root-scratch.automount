@@ -1,0 +1,18 @@
+# ────────────────────────────────────────────────────────────────
+# /etc/systemd/system/root-scratch.automount
+# ────────────────────────────────────────────────────────────────
+# Cozy‑Ops Automount Template: scratch@.automount
+# Lazily creates /root/scratch on first access.
+# Keeps boot clean and avoids unnecessary mounts.
+# https://www.freedesktop.org/software/systemd/man/latest/systemd.automount.html
+# ────────────────────────────────────────────────────────────────
+
+[Unit]
+Description=Automount trigger for vegcom's scratchpad
+Documentation=man:systemd.automount(5)
+
+[Automount]
+Where=/root/scratch
+
+[Install]
+WantedBy=multi-user.target

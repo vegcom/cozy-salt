@@ -8,10 +8,10 @@
 
 _TMPDIR=${HOME}/scratch
 if [ -d "$_TMPDIR" ]; then
-  TMPDIR=/tmp
-else
   TMPDIR=${_TMPDIR}
   USER_TMPDIR=${_TMPDIR}
+else
+  TMPDIR=/tmp
 fi
 export TMPDIR USER_TMPDIR
 
