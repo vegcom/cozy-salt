@@ -19,4 +19,4 @@ if [ -d /etc/profile.d ]; then
 fi
 
 __ETC_PROFILE_SOURCED=1
-export __ETC_BASH_SOURCED
+export __ETC_PROFILE_SOURCED
