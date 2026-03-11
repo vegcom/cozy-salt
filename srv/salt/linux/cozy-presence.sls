@@ -30,6 +30,7 @@ cozy_presence_env_create:
     - user: {{ run_user }}
     - require:
       - git: cozy_presence_repo
+    - unless: test -d /opt/miniforge3/envs/cozy-presence/
 
 # Update conda env
 cozy_presence_env_update:
@@ -39,8 +40,7 @@ cozy_presence_env_update:
     - user: {{ run_user }}
     - onchanges:
       - git: cozy_presence_repo
-    - require:
-      - cmd: cozy_presence_env_create
+
 
 # Install in conda env
 cozy_presence_pip:
@@ -49,11 +49,9 @@ cozy_presence_pip:
         {{ cozy_presence_bin }}/pip install -e {{ cozy_presence_path }}
     - user: {{ run_user }}
     - onchanges:
-      - cmd: cozy_presence_env_create
       - cmd: cozy_presence_env_update
     - require:
       - git: cozy_presence_repo
-      - cmd: cozy_presence_env_create
 
 # Install CLI wrapper
 cozy_presence_cli:
