@@ -159,10 +159,10 @@ windows:
   choco: [chocolatey-compatibility.extension, chocolatey-core.extension, chocolatey-font-helpers.extension, cheatengine, colortool, Cygwin, dive, docker-cli, docker-compose, make,  vim, winbtrfs]
   winget:
     runtimes:
-      ui_libraries: [Microsoft.UI.Xaml.2.7, Microsoft.UI.Xaml.2.8, Microsoft.VCLibs.Desktop.14]
+      ui_libraries: [Microsoft.VCLibs.Desktop.14]
       vcredist: [Microsoft.VCRedist.2008.x64, Microsoft.VCRedist.2008.x86, Microsoft.VCRedist.2010.x64, Microsoft.VCRedist.2010.x86, Microsoft.VCRedist.2012.x64, Microsoft.VCRedist.2012.x86, Microsoft.VCRedist.2013.x64, Microsoft.VCRedist.2013.x86, Microsoft.VCRedist.2015+.x64, Microsoft.VCRedist.2015+.x86]
       sdks: [Microsoft.WindowsADK, Microsoft.NuGet, Microsoft.AppInstaller]
-      dotnet: [Microsoft.DotNet.DesktopRuntime.8, Microsoft.DotNet.DesktopRuntime.9, Microsoft.DotNet.DesktopRuntime.10, Microsoft.DotNet.Framework.DeveloperPack.4.6, Microsoft.DotNet.Runtime.8, Microsoft.DotNet.Runtime.9]
+      dotnet: [Microsoft.DotNet.DesktopRuntime.8, Microsoft.DotNet.DesktopRuntime.9, Microsoft.DotNet.DesktopRuntime.10, Microsoft.DotNet.Framework.DeveloperPack.4.6, Microsoft.DotNet.Runtime.8]
     system:
       sync_backup: [Syncthing.Syncthing, Martchus.syncthingtray]
       file_management: [7zip.7zip, WinSCP.WinSCP]
@@ -175,7 +175,7 @@ windows:
       media: [ImageMagick.ImageMagick, Ruben2776.PicView, Gyan.FFmpeg, HandBrake.HandBrake, SplitmediaLabs.XSplitBroadcaster]
       communication: [Vencord.Vesktop, hoppscotch.Hoppscotch]
       browser: [Google.Chrome]
-      development: [GitHub.GitHubDesktop, GitHub.cli, Gitleaks.Gitleaks, JetBrains.IntelliJIDEA.Community, Microsoft.VisualStudio.BuildTools, Microsoft.VisualStudio.Community, Microsoft.VisualStudioCode, MSYS2.MSYS2, NASM.NASM, NSIS.NSIS, Kitware.CMake]
+      development: [GitHub.GitHubDesktop, GitHub.cli, Gitleaks.Gitleaks, JetBrains.IntelliJIDEA.Community, Microsoft.VisualStudio.BuildTools, Microsoft.VisualStudio.Community, Microsoft.VisualStudioCode, MSYS2.MSYS2, NSIS.NSIS, Kitware.CMake]
       hardware: [BitSum.ParkControl, BitSum.ProcessLasso, Guru3D.RTSS, TechPowerUp.NVCleanstall, Wagnardsoft.DisplayDriverUninstaller, REALiX.HWiNFO, TechPowerUp.GPU-Z]
       rgb_peripherals: [namazso.PawnIO, Nefarius.HidHide, Olivia.VIA, OpenRGB.OpenRGB, ViGEm.ViGEmBus]
       networking: [Apple.Bonjour, Insecure.Nmap, SSHFS-Win.SSHFS-Win, WinFsp.WinFsp, WiresharkFoundation.Wireshark]
@@ -183,7 +183,7 @@ windows:
       media_creative: [Audacity.Audacity, Cockos.REAPER, Inkscape.Inkscape, KDE.Krita, rocksdanister.LivelyWallpaper]
       ricing: [Rainmeter.Rainmeter]
     # 360 noscope - packages that choke on --scope machine flag
-    noscope: [Microsoft.PowerShell, Starship.Starship, VB-Audio.Voicemeeter, Rem0o.FanControl, Ruben2776.PicView, Olivia.VIA, Insecure.Nmap, Microsoft.UI.Xaml.2.7, Microsoft.UI.Xaml.2.8]
+    noscope: [Microsoft.PowerShell, Starship.Starship, VB-Audio.Voicemeeter, Rem0o.FanControl, Ruben2776.PicView, Olivia.VIA, Insecure.Nmap, Microsoft.UI.Xaml.2.7, Microsoft.UI.Xaml.2.8, Microsoft.DotNet.Runtime.9, NASM.NASM]
     userland:
       communication: [Telegram.TelegramDesktop]
       utilities: [Microsoft.PowerToys, Microsoft.Sysinternals.Suite, Rclone.Rclone, Rufus.Rufus]
