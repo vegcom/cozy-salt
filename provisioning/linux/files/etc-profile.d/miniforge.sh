@@ -6,12 +6,17 @@
 CONDA_ROOT_PREFIX='/opt/miniforge3'
 CONDA_EXE="${CONDA_ROOT_PREFIX}/bin/conda"
 
+export CONDA_ROOT_PREFIX CONDA_EXE
+
 if [ ! -f "$CONDA_EXE" ]; then
     return
 fi
 
 CONDA_CHANGEPS1=false
-export CONDA_CHANGEPS1
+CONDA_AUTO_ACTIVATE_BASE=true
+
+export CONDA_CHANGEPS1 CONDA_AUTO_ACTIVATE_BASE
+
 
 if [ -n "$BASH_VERSION" ]; then
     eval "$(${CONDA_EXE} shell.bash hook)" &>/dev/null

@@ -51,7 +51,6 @@ EOF
     }
     _helper|fzf --literal --no-clear
 }
-export cozy_render
 
 
 cozy_persist_shell(){
