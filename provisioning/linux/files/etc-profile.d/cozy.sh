@@ -6,9 +6,9 @@
 # User TMPDIR
 #------------------------------------------------------------------------------
 
-_TMPDIR=${HOME}/scratch/
+_TMPDIR=${HOME}/scratch
 if [ -d "$_TMPDIR" ]; then
-  TMPDIR=/tmp/
+  TMPDIR=/tmp
 else
   TMPDIR=${_TMPDIR}
   USER_TMPDIR=${_TMPDIR}
@@ -44,6 +44,11 @@ if [ -n "$BASH_VERSION" ]; then
   [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 fi
 
+#------------------------------------------------------------------------------
+# Python PIP
+#------------------------------------------------------------------------------
+
+export PIP_CACHE_DIR="${TMPDIR}/pip-cache"
 
 #------------------------------------------------------------------------------
 # Steam Big Picture overrides
@@ -59,7 +64,6 @@ export GIT_DISCOVERY_ACROSS_FILESYSTEM=1
 # Tmux
 #-----------------------------------------------------------------------------
 export TMUX_TMPDIR="${TMPDIR}/tmux"
-export PIP_CACHE_DIR="${TMPDIR}/pip-cache"
 
 #------------------------------------------------------------------------------
 # Compile
