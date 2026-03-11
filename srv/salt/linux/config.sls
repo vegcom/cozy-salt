@@ -47,7 +47,7 @@ etc_profiled_files:
 
 etc_zsh_path:
   file.directory:
-    - name: /etc/
+    - name: /etc/zsh
     - user: root
     - group: root
     - mode: "0755"
