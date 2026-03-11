@@ -30,6 +30,7 @@ pwsh_module_{{ module | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
     - shell: pwsh
     - name: >
+        Remove-Module PackageManagement,PowerShellGet -Force -ErrorAction SilentlyContinue;
         Install-Module -Name {{ module }} -Scope AllUsers -AllowClobber -SkipPublisherCheck -Force -Repository PSGallery
     - onlyif: Get-Command pwsh -ErrorAction SilentlyContinue
   {% endfor %}
