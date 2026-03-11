@@ -175,7 +175,7 @@ windows:
       media: [ImageMagick.ImageMagick, Ruben2776.PicView, Gyan.FFmpeg, HandBrake.HandBrake, SplitmediaLabs.XSplitBroadcaster]
       communication: [Vencord.Vesktop, hoppscotch.Hoppscotch]
       browser: [Google.Chrome]
-      development: [GitHub.GitHubDesktop, GitHub.cli, Gitleaks.Gitleaks, JetBrains.IntelliJIDEA.Community, Microsoft.VisualStudio.BuildTools, Microsoft.VisualStudio.Community, Microsoft.VisualStudioCode, MSYS2.MSYS2]
+      development: [GitHub.GitHubDesktop, GitHub.cli, Gitleaks.Gitleaks, JetBrains.IntelliJIDEA.Community, Microsoft.VisualStudio.BuildTools, Microsoft.VisualStudio.Community, Microsoft.VisualStudioCode, MSYS2.MSYS2, NASM.NASM, NSIS.NSIS, Kitware.CMake]
       hardware: [BitSum.ParkControl, BitSum.ProcessLasso, Guru3D.RTSS, TechPowerUp.NVCleanstall, Wagnardsoft.DisplayDriverUninstaller, REALiX.HWiNFO, TechPowerUp.GPU-Z]
       rgb_peripherals: [namazso.PawnIO, Nefarius.HidHide, Olivia.VIA, OpenRGB.OpenRGB, ViGEm.ViGEmBus]
       networking: [Apple.Bonjour, Insecure.Nmap, SSHFS-Win.SSHFS-Win, WinFsp.WinFsp, WiresharkFoundation.Wireshark]
@@ -186,7 +186,7 @@ windows:
     noscope: [Microsoft.PowerShell, Starship.Starship, VB-Audio.Voicemeeter, Rem0o.FanControl, Ruben2776.PicView, Olivia.VIA, Insecure.Nmap, Microsoft.UI.Xaml.2.7, Microsoft.UI.Xaml.2.8]
     userland:
       communication: [Telegram.TelegramDesktop]
-      utilities: [Microsoft.PowerToys, Microsoft.Sysinternals.Autoruns, Microsoft.Sysinternals.ProcessExplorer, Rclone.Rclone, Rufus.Rufus]
+      utilities: [Microsoft.PowerToys, Microsoft.Sysinternals.Suite, Rclone.Rclone, Rufus.Rufus]
       development: [DenoLand.Deno, direnv.direnv, Hashicorp.Terraform, Hashicorp.TerraformLanguageServer, nektos.act, waterlan.dos2unix, jqlang.jq]
       kubernetes: [Helm.Helm, Kubernetes.kubectl, stern.stern]
       networking: [evsar3.sshfs-win-manager]
@@ -215,4 +215,4 @@ npm_global:
   - serverless
   - cdk
 
-brew: [atuin, carapace, pandoc, weasyprint, zoxide, dive, starship]
+brew: [atuin, carapace, pandoc, weasyprint, zoxide, dive, starship, direnv]
