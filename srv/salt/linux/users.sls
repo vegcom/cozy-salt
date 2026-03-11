@@ -38,11 +38,12 @@ include:
       - group: {{ username }}_primary_group
 {% endif %}
 
-# Enable linger for users
-{{ username }}_linger:
+{% if not is_container %}
+loginctl_linger_{{ username }}:
   cmd.run:
     - name: loginctl enable-linger {{ username }}
     - unless: loginctl show-user {{ username }} | grep 'Linger=yes'
+{% endif %}
 
 # Create {{ username }} home directory
 {% set user_home = userdata.get('home_prefix', '/home') ~ '/' ~ username %}
