@@ -18,20 +18,25 @@ def __virtual__():
   return __virtualname__
 
 
-def latest(repo, fallback=None):
+def latest(repo, fallback=None, prerelease=False):
   """
   Get the latest release tag for a GitHub repo.
 
   :param repo: GitHub repo in owner/name format (e.g. 'Nonary/vibeshine')
   :param fallback: Value to return if the API call fails
+  :param prerelease: If True, include pre-release builds (default: False)
   :returns: Version string (tag_name without leading 'v'), or fallback
 
   CLI Example::
 
       salt '*' github_release.latest Nonary/vibeshine
+      salt '*' github_release.latest microsoft/winget-cli prerelease=True
   """
   token = __salt__["pillar.get"]("github:access_token", "")
-  url = f"https://api.github.com/repos/{repo}/releases/latest"
+  if prerelease:
+    url = f"https://api.github.com/repos/{repo}/releases"
+  else:
+    url = f"https://api.github.com/repos/{repo}/releases/latest"
   req = urllib.request.Request(url)
   req.add_header("Accept", "application/vnd.github+json")
   if token:
@@ -40,6 +45,8 @@ def latest(repo, fallback=None):
   try:
     with urllib.request.urlopen(req, timeout=5) as resp:
       data = json.loads(resp.read())
+      if prerelease:
+        return data[0]["tag_name"].lstrip("v")
       return data["tag_name"].lstrip("v")
   except Exception as exc:  # noqa: BLE001
     log.warning("github_release.latest(%s) failed: %s", repo, exc)
