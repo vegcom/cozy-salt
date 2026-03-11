@@ -39,19 +39,10 @@ pwsh_module_{{ module | replace('.', '_') | replace('-', '_') }}:
 chocolatey-install:
   chocolatey.bootstrapped
 
-# TODO: pillar this
-{% set enable_choco_features = [
-    "allowGlobalConfirmation",
-    "allowEmptyChecksumsSecure",
-    "useEnhancedExitCodes",
-    "failOnStandardError",
-    "failOnAutoUninstaller",
-    "removePackageInformationOnUninstall",
-] %}
-
 # Enable Chocolatey features
-# Note: choco returns exit code 2 when config is already set (not an error)
-{% for feature in enable_choco_features %}
+{% set choco_feature_list = pillar.get('choco_features', []) %}
+{% if choco_feature_list %}
+  {% for feature in choco_feature_list %}
 choco_feature_{{ feature }}_enabled:
   cmd.run:
     - name: choco feature enable -n={{ feature }}
@@ -61,7 +52,8 @@ choco_feature_{{ feature }}_enabled:
       - 2
     - require:
       - chocolatey: chocolatey-install
-{% endfor %}
+  {% endfor %}
+{% endif %}
 
 # Install Chocolatey packages
 {% if packages.windows.choco is defined %}
