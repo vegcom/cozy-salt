@@ -60,6 +60,5 @@ pip_config:
     - template: jinja
     - makedirs: True
     - mode: '0644'
-    - context:
-        cache_path: {{ pip_cache }}
-        local_mirror: {{ pip_local_mirror }}
+    - cache_path: {{ pip_cache }}
+    - local_mirror: {{ pip_local_mirror }}
