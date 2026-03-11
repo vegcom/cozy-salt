@@ -6,11 +6,16 @@
   {% set miniforge_path = salt['pillar.get']('install_paths:miniforge:windows', 'C:\\opt\\miniforge3') %}
   {% set pip_bin = miniforge_path ~ '\\Scripts\\pip.exe' %}
   {% set uv_bin = miniforge_path ~ '\\Scripts\\uv.exe' %}
+  {% set pip_config_dest = salt['pillar.get']('config_paths:pip:windows') %}
+  {% set pip_cache = salt['pillar.get']('cache_paths:pip:windows') %}
 {% else %}
   {% set miniforge_path = salt['pillar.get']('install_paths:miniforge:linux', '/opt/miniforge3') %}
   {% set pip_bin = miniforge_path ~ '/bin/pip' %}
   {% set uv_bin = miniforge_path ~ '/bin/uv' %}
+  {% set pip_config_dest = salt['pillar.get']('config_paths:pip:linux') %}
+  {% set pip_cache = salt['pillar.get']('cache_paths:pip:linux') %}
 {% endif %}
+{% set pip_local_mirror = salt['pillar.get']('pip:local_mirror', '') %}
 
 # Install pip base packages in miniforge base environment
 {% for package in packages.get('pip_base', []) %}
@@ -47,3 +52,14 @@ miniforge_permissions:
       - cmd: install_pip_base_{{ package | replace('-', '_') }}
 {% endfor %}
 {% endif %}
+
+pip_config:
+  file.managed:
+    - name: {{ pip_config_dest }}
+    - source: salt://_templates/pip.jinja
+    - template: jinja
+    - makedirs: True
+    - mode: '0644'
+    - context:
+        cache_path: {{ pip_cache }}
+        local_mirror: {{ pip_local_mirror }}
