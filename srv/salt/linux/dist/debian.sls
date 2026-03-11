@@ -5,10 +5,22 @@
 {% if grains['os_family'] == 'Debian' %}
 {% import_yaml 'packages.sls' as packages %}
 {% from "_macros/dist-packages.sls" import role_aware_packages %}
+{% set is_kali = grains.get('os', '') == 'Kali' %}
+{% set is_wsl = grains.get('kernel_release', '').find('WSL') != -1 %}
 
 include:
   - linux.docker
+  - linux.dist.ubuntu_noble
   - linux.gpu
+
+{% if not (is_kali or is_wsl) %}
+# Native Debian: update apt after docker install (get.docker.com adds correct repo)
+docker_apt_update:
+  cmd.run:
+    - name: apt-get update --allow-releaseinfo-change
+    - require:
+      - cmd: docker_install
+{% endif %}
 
 apt_allow_unauthenticated:
   file.managed:

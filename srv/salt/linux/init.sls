@@ -18,6 +18,7 @@ include:
   - linux.resolve
   - linux.sshd
   - linux.docker-proxy    # Deploy Docker socket proxy for TCP access
+  - linux.k3s
   - linux.macvlan-shim    # Macvlan shim for host→container routing (noop if pillar unset)
   - linux.users           # Create users (requires groups + shell_packages)
   - linux.nvm
