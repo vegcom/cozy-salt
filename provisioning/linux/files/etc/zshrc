@@ -6,6 +6,10 @@ if [ ! -n "$ZSH_VERSION" ]; then
 	return 0
 fi
 
+if [ -n "${__ETC_ZSHRC_SOURCED}" ]; then
+  return 0
+fi
+
 if [ -f /etc/profile ]; then
   # shellcheck disable=SC1091
   . /etc/profile
@@ -26,3 +30,6 @@ command -v carapace >/dev/null && eval "$(carapace _carapace zsh)"
 command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
 command -v starship >/dev/null && eval "$(starship init zsh)"
 command -v atuin >/dev/null && eval "$(atuin init zsh)"
+
+__ETC_ZSHRC_SOURCED=1
+export __ETC_BASH_SOURCED
