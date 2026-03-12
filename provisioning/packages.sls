@@ -10,12 +10,12 @@
 # ============================================================================
 # SHARED PACKAGE LISTS (DRY - referenced by distro sections below)
 # ============================================================================
-{% set _core = ['curl', 'git', 'jq', 'rsync', 'tree', 'unzip', 'wget', 'aria2', 'dkms', 'kpatch'] %}
+{% set _core = ['curl', 'git', 'jq', 'rsync', 'tree', 'unzip', 'wget', 'aria2', 'dkms'] %}
 {% set _monitoring_base = ['htop', 'lsof', 'ltrace', 'strace', 'sysstat'] %}
 {% set _shell = ['bash-completion', 'screen', 'tmux', 'shellcheck', 'zsh'] %}
 {% set _shell_rhel = (_shell | reject('equalto', 'shellcheck') | list) + ['ShellCheck'] %}
 {% set _build_base = ['autoconf', 'automake', 'cmake'] %}
-{% set _net_base = ['nmap', 'socat', 'tcpdump', 'traceroute', 'avahi'] %}
+{% set _net_base = ['nmap', 'socat', 'tcpdump', 'traceroute'] %}
 {% set _compress_base = ['bzip2', 'zip'] %}
 {% set _vcs_base = ['git-lfs', 'tig'] %}
 {% set _modern_cli_base = ['bat', 'fzf', 'ripgrep'] %}
@@ -28,7 +28,7 @@
     'monitoring': _monitoring_base + ['duf', 'ncdu'],
     'shell_enhancements': _shell,
     'build_tools': _build_base + ['build-essential', 'pkg-config'],
-    'networking': _net_base + ['bind9-dnsutils', 'iputils-ping', 'net-tools', 'netcat-openbsd', 'openssh-client', 'openssh-server'],
+    'networking': _net_base + ['avahi-daemon', 'bind9-dnsutils', 'etcd-client', 'iputils-ping', 'net-tools', 'netcat-openbsd', 'openssh-client', 'openssh-server'],
     'compression': _compress_base + ['7zip', 'xz-utils'],
     'vcs_extras': _vcs_base + ['gh'],
     'modern_cli': _modern_cli_base + ['fd-find'],
@@ -101,6 +101,7 @@ package_metadata:
     compression_7z: {ubuntu: 7zip, debian: 7zip, rhel: p7zip, arch: p7zip}
     github_cli: {ubuntu: gh, debian: gh, rhel: gh, arch: github-cli}
     shellcheck: {ubuntu: shellcheck, debian: shellcheck, rhel: ShellCheck, arch: shellcheck}
+    etcd_client: {ubuntu: etcd-client, debian: etcd-client, rhel: etcd-client, arch: etcd-bin}
 
 # ============================================================================
 # DEBIAN/UBUNTU PACKAGES (apt-based, identical)
@@ -116,7 +117,7 @@ rhel:
   monitoring: {{ _monitoring_base | tojson }}
   shell_enhancements: {{ _shell_rhel | tojson }}
   build_tools: {{ (_build_base + ['gcc', 'gcc-c++', 'make']) | tojson }}
-  networking: {{ (_net_base + ['bind-utils', 'iputils', 'net-tools', 'nmap-ncat', 'openssh-clients', 'openssh-server']) | tojson }}
+  networking: {{ (_net_base + ['avahi', 'bind-utils', 'etcd-client', 'iputils', 'net-tools', 'nmap-ncat', 'openssh-clients', 'openssh-server']) | tojson }}
   compression: {{ (_compress_base + ['p7zip', 'p7zip-plugins', 'xz']) | tojson }}
   vcs_extras: {{ _vcs_base | tojson }}
   modern_cli: {{ (_modern_cli_base + ['fd-find']) | tojson }}
@@ -132,7 +133,7 @@ arch:
   monitoring: {{ (_monitoring_base + ['duf', 'ncdu']) | tojson }}
   shell_enhancements: {{ (_shell + ['zsh', 'zsh-autosuggestions', 'zsh-syntax-highlighting']) | tojson }}
   build_tools: {{ (_build_base + ['base-devel']) | tojson }}
-  networking: {{ (_net_base + ['bind', 'iputils', 'net-tools', 'openbsd-netcat', 'openssh']) | tojson }}
+  networking: {{ (_net_base + ['avahi', 'bind', 'etcd-bin', 'iputils', 'net-tools', 'openbsd-netcat', 'openssh']) | tojson }}
   compression: {{ (_compress_base + ['p7zip', 'xz']) | tojson }}
   vcs_extras: {{ (_vcs_base + ['github-cli']) | tojson }}
   modern_cli: {{ (_modern_cli_base + ['fd']) | tojson }}
