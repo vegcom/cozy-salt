@@ -7,6 +7,7 @@ if [ -f /etc/zshrc ]; then
   . /etc/zshrc
 fi
 
+
 if [ -f "$HOME"/.zshrc.local ]; then
   # shellcheck disable=SC1091
   . "$HOME"/.zshrc.local

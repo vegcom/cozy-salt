@@ -3,18 +3,32 @@
 # Managed by Salt - DO NOT EDIT MANUALLY
 
 #------------------------------------------------------------------------------
+# User TMPDIR
+#------------------------------------------------------------------------------
+
+_TMPDIR=${HOME}/scratch
+if [ -d "$_TMPDIR" ]; then
+  TMPDIR=${_TMPDIR}
+  USER_TMPDIR=${_TMPDIR}
+else
+  TMPDIR=/tmp
+fi
+export TMPDIR USER_TMPDIR
+
+#------------------------------------------------------------------------------
 # Editor Configuration
 #------------------------------------------------------------------------------
 export EDITOR=vim
 export PAGER=cat
 
 #------------------------------------------------------------------------------
-# Bash History Configuration
+# Shell History Configuration
 #------------------------------------------------------------------------------
-export HISTFILE="$HOME/.bash_history"
+export HISTFILE="$HOME/.history"
 export HISTCONTROL=ignoredups:erasedups
 export HISTSIZE=500000
 export HISTFILESIZE=500000
+export SAVEHIST=500000
 
 #------------------------------------------------------------------------------
 # NVM (Node Version Manager) Configuration
@@ -30,6 +44,11 @@ if [ -n "$BASH_VERSION" ]; then
   [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 fi
 
+#------------------------------------------------------------------------------
+# Python PIP
+#------------------------------------------------------------------------------
+
+export PIP_CACHE_DIR="${TMPDIR}/pip-cache"
 
 #------------------------------------------------------------------------------
 # Steam Big Picture overrides
@@ -44,15 +63,15 @@ export GIT_DISCOVERY_ACROSS_FILESYSTEM=1
 #------------------------------------------------------------------------------
 # Tmux
 #-----------------------------------------------------------------------------
-export TMUX_TMPDIR="$HOME/scratch"
+export TMUX_TMPDIR="${TMPDIR}/tmux"
 
 #------------------------------------------------------------------------------
 # Compile
 #------------------------------------------------------------------------------
-export CCACHE_DIR="$HOME/scratch/ccache"
+export CCACHE_DIR="${TMPDIR}/ccache"
 export CCACHE_SLOPPINESS="locale,time_macros"
 export CCACHE_PATH="/usr/bin"
-export CCACHE_MAXSIZE="8G"
+export CCACHE_MAXSIZE="4G"
 export CCACHE_COMPRESS=true
 
 export CC="ccache gcc"
@@ -61,6 +80,6 @@ export LD="ccache ld"
 export FC="ccache gfortran"
 
 #------------------------------------------------------------------------------
-# Local user paths
+# Local paths
 #------------------------------------------------------------------------------
 export PATH="/usr/lib/colorgcc/bin/:/usr/lib/ccache/bin:$HOME/bin:$HOME/.local/bin:$PATH"

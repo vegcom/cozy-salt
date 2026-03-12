@@ -26,7 +26,6 @@ rust_download:
 rust_install:
   cmd.run:
     - name: pwsh -Command "& { $env:RUSTUP_HOME='{{ rust_path }}'; $env:CARGO_HOME='{{ rust_path }}'; {{ rust_path }}\rustup-init.exe -y --no-modify-path }"
-    - creates: {{ rust_path }}\bin\rustc.exe
     - require:
       - cmd: rust_download
 

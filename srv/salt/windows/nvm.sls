@@ -3,7 +3,9 @@
 {%- from "_macros/windows.sls" import win_cmd %}
 {% set nvm_config   = salt['pillar.get']('nvm', {}) %}
 {% set nvm_version  = nvm_config.get('default_version', 'lts') %}
-{% set npm_pkg      = "https://github.com/coreybutler/nvm-windows/releases/download/1.2.2/nvm-noinstall.zip" %}
+{% set _pinned_nvm_win = salt['pillar.get']('versions:nvm_windows:version', '') %}
+{% set nvm_win_version = _pinned_nvm_win or salt['github_release.latest']('coreybutler/nvm-windows') %}
+{% set npm_pkg      = "https://github.com/coreybutler/nvm-windows/releases/download/" ~ nvm_win_version ~ "/nvm-noinstall.zip" %}
 {% set nvm_tmp      = "$env:TEMP\\nvm-noinstall.zip" %}
 {# Path configuration from pillar with defaults #}
 {% set nvm_path     = salt['pillar.get']('install_paths:nvm:windows', 'C:\\opt\\nvm') %}
@@ -23,7 +25,6 @@ nvm_install:
     - name: >
         pwsh -NoLogo -Command
         "Expand-Archive -Path {{ nvm_tmp }} -DestinationPath {{ nvm_path }} -Force"
-    - creates: {{ nvm_bin }}
     - require:
       - cmd: nvm_download
 
@@ -36,7 +37,6 @@ nvm_npm_settings:
       - 'symlink: {{ node_path }}'
     - require:
       - cmd: nvm_install
-    - creates: {{ npm_settings }}
 
 nvm_home:
   reg.present:
@@ -85,7 +85,6 @@ nvm_use_default:
     - require:
       - cmd: nvm_nodejs_dir_cleanup
       - reg: nvm_symlink
-    - creates: {{ node_path }}\node.exe
 
 # Install global npm packages via common orchestration
 # PATH updates handled by windows.paths (avoids race conditions)

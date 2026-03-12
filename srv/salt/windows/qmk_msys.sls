@@ -19,7 +19,6 @@ qmk_msys_download:
         pwsh -NoLogo -Command
         "Invoke-WebRequest -Uri \"{{ qmk_uri }}\"
         -OutFile \"{{ qmk_msys_tmp }}\""
-    - creates: {{ qmk_msys_tmp }}
     - require:
       - file: qmk_msysdirectory
 
@@ -33,7 +32,6 @@ qmk_msys_install:
         /DIR={{ qmk_msys_path }}"
     - require:
       - cmd: qmk_msys_download
-    - creates: {{ qmk_shortcut }}
 
 include:
   - windows.paths

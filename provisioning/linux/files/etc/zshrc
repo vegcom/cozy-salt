@@ -2,26 +2,34 @@
 # /etc/zshrc
 # Managed by Salt - DO NOT EDIT MANUALLY
 
-autoload -Uz compinit
-compinit -u
-
-
-# Carapace
-if command -v carapace >/dev/null; then
-    eval "$(carapace _carapace zsh)"
+if [ ! -n "$ZSH_VERSION" ]; then
+	return 0
 fi
 
-# Zoxide
-if command -v zoxide >/dev/null; then
-    eval "$(zoxide init zsh)"
+if [ -n "${__ETC_ZSHRC_SOURCED}" ]; then
+  return 0
 fi
 
-# Starship
-if command -v starship >/dev/null; then
-    eval "$(starship init zsh)"
+if [ -f /etc/profile ]; then
+  # shellcheck disable=SC1091
+  . /etc/profile
 fi
 
-# Atuin (Zsh mode)
-if command -v atuin >/dev/null; then
-    eval "$(atuin init zsh)"
+if [ -f /etc/zshrc.machine ]; then
+  # shellcheck disable=SC1091
+  . /etc/zshrc.machine
 fi
+
+if [ -f /etc/zsh_command_not_found ]; then
+  # shellcheck disable=SC1091
+  . /etc/zsh_command_not_found
+fi
+
+command -v direnv >/dev/null && eval "$(direnv hook zsh)"
+command -v carapace >/dev/null && eval "$(carapace _carapace zsh)"
+command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
+command -v starship >/dev/null && eval "$(starship init zsh)"
+command -v atuin >/dev/null && eval "$(atuin init zsh)"
+
+__ETC_ZSHRC_SOURCED=1
+export __ETC_BASH_SOURCED

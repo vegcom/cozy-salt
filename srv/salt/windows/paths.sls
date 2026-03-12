@@ -12,7 +12,6 @@
   'C:\\opt\\nvm',
   'C:\\opt\\nvm\\nodejs',
   'C:\\opt\\rust\\bin',
-  'C:\\opt\\miniforge3\\Scripts',
   'C:\\opt\\miniforge3',
   'C:\\opt\\windhawk',
   'C:\\opt\\wt',

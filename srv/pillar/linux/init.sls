@@ -135,7 +135,6 @@ capability_meta:
     state_name: font_packages
   theming:
     state_name: theming_packages
-  # TODO: come back after arch deck nonsense
   gui:
     state_name: gui_packages
   debugging:

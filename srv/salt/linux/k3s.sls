@@ -5,25 +5,50 @@
 # https://documentation.suse.com/cloudnative/k3s/latest/en/cli/server.html
 # https://documentation.suse.com/cloudnative/k3s/latest/en/cli/agent.html
 
-{%- set k3s_auth = salt['pillar.get']('k3s:token') %}
-{%- set k3s_channel = salt['pillar.get']('k3s:channel', 'latest') %}
-{%- set k3s_host = salt['pillar.get']('k3s:server', 'https://k3s-server:6443') %}
-{%- set k3s_role = salt['pillar.get']('k3s:role', 'agent') %}
-{%- set k3s_args = salt['pillar.get']('k3s:args', '') %}
-{%- if k3s_role == "server" %}
-  {%- set k3s_args_extra = "--disable=servicelb --disable=traefik --disable-cloud-controller" ~ " " ~ "--advertise-port=8080" ~ " " ~ "--token=" ~ k3s_auth  %}
-  {%- set k3s_service = "k3s.service" %}
-  {%- set k3s_uninstall_script = "/usr/local/bin/k3s-uninstall.sh" %}
-{%- else %}
-  {%- set k3s_args_extra = "--disable-apiserver-lb" ~ " " ~ "--server=" ~ k3s_host ~ " " ~ "--token=" ~ k3s_auth  %}
-  {%- set k3s_service = "k3s-agent.service" %}
-  {%- set k3s_uninstall_script = "/usr/local/bin/k3s-agent-uninstall.sh" %}
-{%- endif %}
-{%- set k3s_exec = [k3s_role, k3s_args, k3s_args_extra] | join(' ') | trim %}
-# TODO: set/get from pillar
-{%- set kubeconfig_raw = salt['mine.get']('guava', 'k3s_kubeconfig').get('guava', '') %}
-{%- set kubeconfig = kubeconfig_raw | replace('https://127.0.0.1:6443', k3s_host) if kubeconfig_raw else '' %}
+{%- set k3s_enabled = salt['pillar.get']('host:capabilities:k3s', False) %}
 
+{%- if not k3s_enabled %}
+
+k3s_not_enabled:
+  test.nop:
+    - name: Skipping k3s
+
+{%- else %}
+  {%- set k3s_auth = salt['pillar.get']('k3s:token') %}
+  {%- set k3s_channel = salt['pillar.get']('k3s:channel', 'latest') %}
+  {%- set k3s_server = salt['pillar.get']('k3s:server', 'https://k3s-server:6443') %}
+  {%- set k3s_role = salt['pillar.get']('k3s:role', 'agent') %}
+  {%- set k3s_kwargs = salt['pillar.get']('k3s:kwargs', '') %}
+  {%- set k3s_host = salt['pillar.get']('k3s:host') %}
+
+  {%- if k3s_role == "server" %}
+    {%- set k3s_args = "server" %}
+    {%- set k3s_service = "k3s.service" %}
+    {%- set k3s_uninstall_script = "/usr/local/bin/k3s-uninstall.sh" %}
+  {%- elif k3s_role == "loadbalancer" %}
+    {%- set k3s_args = "server" %}
+    {%- set k3s_service = "k3s.service" %}
+    {%- set k3s_uninstall_script = "/usr/local/bin/k3s-uninstall.sh" %}
+  {%- else %}
+    {%- set k3s_args = "agent" %}
+    {%- set k3s_service = "k3s-agent.service" %}
+    {%- set k3s_uninstall_script = "/usr/local/bin/k3s-agent-uninstall.sh" %}
+  {%- endif %}
+
+  {%- set k3s_node_token = salt['mine.get'](k3s_host, 'k3s_node_token').get(k3s_host, k3s_auth) | trim %}
+  {%- set k3s_auth_resolved = k3s_node_token if k3s_node_token else k3s_auth %}
+
+  {%- if k3s_role == "server" %}
+    {%- set k3s_kwargs_extra = "--cluster-init --prefer-bundled-bin --disable=servicelb --disable=traefik --disable-cloud-controller --flannel-backend=host-gw" ~ " " ~ "--advertise-port=6443" ~ " " ~ "--token=" ~ k3s_auth_resolved %}
+  {%- elif k3s_role == "loadbalancer" %}
+    {%- set k3s_kwargs_extra = "--prefer-bundled-bin --disable=servicelb --disable=traefik --disable-cloud-controller --flannel-backend=host-gw" ~ " " ~ "--server=" ~ k3s_server ~ " " ~ "--advertise-port=6443" ~ " " ~ "--token=" ~ k3s_auth_resolved %}
+  {%- else %}
+    {%- set k3s_kwargs_extra = "--prefer-bundled-bin --disable-apiserver-lb" ~ " " ~ "--server=" ~ k3s_server ~ " " ~ "--token=" ~ k3s_auth_resolved %}
+  {%- endif %}
+
+  {%- set k3s_exec = [k3s_args, k3s_kwargs, k3s_kwargs_extra] | join(' ') | trim %}
+  {%- set kubeconfig_raw = salt['mine.get'](k3s_host, 'k3s_kubeconfig').get(k3s_host, '') %}
+  {%- set kubeconfig = kubeconfig_raw | replace('https://127.0.0.1:6443', k3s_server) if kubeconfig_raw else '' %}
 
 k3s_download_script:
   file.managed:
@@ -57,12 +82,13 @@ k3s_service_start:
   service.running:
     - name: "{{ k3s_service }}"
     - enable: True
+    - no_block: True
     - require:
       - cmd: k3s_setup_script
     - watch:
       - cmd: k3s_setup_script
 
-{%- if k3s_role != 'server' and kubeconfig %}
+  {%- if k3s_role not in ['server', 'loadbalancer'] and kubeconfig %}
 k3s_kubeconfig:
   file.managed:
     - name: /etc/rancher/k3s/k3s.yaml
@@ -71,4 +97,6 @@ k3s_kubeconfig:
     - makedirs: True
     - require:
       - service: k3s_service_start
+  {%- endif %}
+
 {%- endif %}

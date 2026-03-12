@@ -37,3 +37,13 @@ install_paths:
   # Homebrew (Linux-only)
   homebrew:
     linux: /home/linuxbrew/.linuxbrew
+
+cache_paths:
+  pip:
+    windows: C:\opt\cozy\cache
+    linux: /opt/cozy/cache
+
+config_paths:
+  pip:
+    windows: C:\ProgramData\pip\pip.ini
+    linux: /etc/pip.conf

@@ -26,6 +26,13 @@ miniforge_download:
     - name: |
         curl -fsSL -o /tmp/miniforge-init.sh https://github.com/conda-forge/miniforge/releases/download/{{ miniforge_version }}/Miniforge3-Linux-{{ cpu_arch }}.sh
 
+# Remove stale _conda symlink so -u reinstall doesn't fail on ln conflict
+miniforge_clean_conda_symlink:
+  file.absent:
+    - name: {{ miniforge_path }}/_conda
+    - require:
+      - file: miniforge_directory
+
 # Install miniforge system-wide
 # -b = batch mode (non-interactive)
 # -p = installation prefix
@@ -36,8 +43,7 @@ miniforge_install:
     - name: bash /tmp/miniforge-init.sh -b -u -s -p {{ miniforge_path }}
     - require:
       - cmd: miniforge_download
-      - file: miniforge_directory
-    - creates: {{ miniforge_path }}/bin/conda
+      - file: miniforge_clean_conda_symlink
 
 # Install base pip packages via common orchestration
 include:

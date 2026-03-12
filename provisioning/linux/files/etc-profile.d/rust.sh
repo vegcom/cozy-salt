@@ -6,6 +6,7 @@
 # Set Rust directories
 export RUSTUP_HOME="/opt/rust"
 export CARGO_HOME="/opt/rust"
+export RUSTUP_INIT_SKIP_PATH_CHECK="yes"
 
 # Add Rust binaries to PATH
 # rustup, cargo, rustc, clippy-driver, rustfmt, etc. installed in /opt/rust/bin
