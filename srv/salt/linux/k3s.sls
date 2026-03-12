@@ -70,13 +70,13 @@ k3s_setup_script:
       - INSTALL_K3S_CHANNEL: "{{ k3s_channel }}"
       - INSTALL_K3S_EXEC: "{{ k3s_exec }}"
 
-# k3s_uninstall_script:
-#   cmd.run:
-#     - name: {{ k3s_uninstall_script }}
-#     - onfail:
-#       - service: k3s_service_start
-#     - require:
-#       - cmd: k3s_setup_script
+k3s_uninstall_script:
+  cmd.run:
+    - name: {{ k3s_uninstall_script }}
+    - onfail:
+      - service: k3s_service_start
+    - require:
+      - cmd: k3s_setup_script
 
 k3s_service_start:
   service.running:
