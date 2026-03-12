@@ -25,6 +25,7 @@ homebrew_install:
       - NONINTERACTIVE: 1
     - require:
       - file: linuxbrew_directory
+    - creates: {{ homebrew_base }}/bin/brew
 
 homebrew_svc_acl:
   acl.present:
