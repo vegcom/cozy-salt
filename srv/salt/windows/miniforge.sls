@@ -35,7 +35,6 @@ miniforge_install:
       - cmd: miniforge_download
       #- cmd: opt_acl_cozyusers
 
-
 miniforge_clean:
   cmd.run:
     - name: Remove-Item -Path {{ miniforge_tmp }} -Force
@@ -54,6 +53,13 @@ miniforge_conda_home:
     - require:
       - cmd: miniforge_install
       - file: miniforge_directory
+
+# Create pip data dir
+pip_datadir:
+  file.directory:
+    - name: "C:\\ProgramData\\pip"
+    - makedirs: True
+    - clean: False
 
 # Install base pip packages via common orchestration
 include:
