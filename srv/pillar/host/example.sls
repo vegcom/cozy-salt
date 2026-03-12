@@ -17,13 +17,13 @@ k3s:
   role: server # (server,loadbalancer,agent)
   kwargs: "--disable=servicelb --disable=traefik --disable-cloud-controller --data-dir=/storage/k3s/"
 
-mine_functions:
-  k3s_kubeconfig:
-    mine_function: file.read
-    path: /etc/rancher/k3s/k3s.yaml
-  k3s_node_token:
-    mine_function: file.read
-    path: /storage/k3s/server/node-token
+# mine_functions:
+#   k3s_kubeconfig:
+#     mine_function: file.read
+#     path: /etc/rancher/k3s/k3s.yaml
+#   k3s_node_token:
+#     mine_function: file.read
+#     path: /storage/k3s/server/node-token
 
 # To enable chaotic_aur (already defined in dist/arch.sls as disabled):
 pacman:
