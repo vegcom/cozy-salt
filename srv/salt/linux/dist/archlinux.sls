@@ -22,6 +22,7 @@
 {%- if grains['os_family'] == 'Arch' %}
 include:
   - linux.gpu
+  - linux.docker
 
 # ============================================================================
 # Arch Linux Pacman Repository Configuration

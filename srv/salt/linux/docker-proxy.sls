@@ -13,6 +13,14 @@
 
 {% if not is_container %}
 {% if docker_enabled %}
+docker_path:
+  file.directory:
+    - name: {{ cozy_docker }}
+    - mode: "0774"
+    - user: root
+    - group: cozyusers
+    - mkdirs: True
+
 # Deploy docker-proxy docker-compose file
 docker_proxy_file:
   file.managed:
@@ -20,7 +28,7 @@ docker_proxy_file:
     - source: salt://common/files/opt-cozy-docker/docker-proxy.yaml
     - mode: "0644"
     - user: root
-    - group: root
+    - group: cozyusers
     - makedirs: True
 {%- if grains['os_family'] != 'Arch' %}
     - require:
