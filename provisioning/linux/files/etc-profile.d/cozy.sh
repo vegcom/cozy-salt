@@ -16,6 +16,11 @@ fi
 export TMPDIR USER_TMPDIR
 
 #------------------------------------------------------------------------------
+# k3s
+#------------------------------------------------------------------------------
+export KUBECONFIG=/etc/rancher/k3s/k3s.yaml:${HOME}/.kube/config
+
+#------------------------------------------------------------------------------
 # Editor Configuration
 #------------------------------------------------------------------------------
 export EDITOR=vim
@@ -83,3 +88,8 @@ export FC="ccache gfortran"
 # Local paths
 #------------------------------------------------------------------------------
 export PATH="/usr/lib/colorgcc/bin/:/usr/lib/ccache/bin:$HOME/bin:$HOME/.local/bin:$PATH"
+
+export COZY_PATH=/opt/cozy
+export COZY_ETC=${COZY_PATH}/etc
+export COZY_BIN=${COZY_PATH}/bin
+export COZY_DOCKER=${COZY_PATH}/docker
