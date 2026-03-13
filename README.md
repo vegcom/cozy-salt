@@ -155,3 +155,7 @@ Invoke-WebRequest -Uri https://packages.broadcom.com/artifactory/saltproject-gen
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the **3 rules** and development workflow.
+
+---
+
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/xai-org/xai-sdk-python)
