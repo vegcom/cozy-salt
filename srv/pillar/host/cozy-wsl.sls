@@ -6,7 +6,9 @@ host:
     kvm: true
 
 k3s:
-  role: server
+  role: agent
+  server: "https://cozy-wsl:6443"
+  kwargs: "--default-runtime=nvidia"
 
 docker_enabled: true
 
