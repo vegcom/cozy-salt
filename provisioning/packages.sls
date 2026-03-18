@@ -157,7 +157,7 @@ arch:
 # ============================================================================
 windows:
   pwsh_modules: [PSReadLine, PowerShellGet, Microsoft.WinGet.Client, Microsoft.WinGet.CommandNotFound, powershell-yaml, PSFzf, PSWindowsUpdate, Terminal-Icons, Microsoft.PowerShell.Utility]
-  choco: [chocolatey-compatibility.extension, chocolatey-core.extension, chocolatey-font-helpers.extension, cheatengine, colortool, Cygwin, dive, docker-cli, docker-compose, make,  vim, winbtrfs]
+  choco: [chocolatey-compatibility.extension, chocolatey-core.extension, chocolatey-font-helpers.extension, cheatengine, colortool, Cygwin, dive, docker-cli, docker-compose, make,  vim, winbtrfs, ext2fsd]
   winget:
     runtimes:
       ui_libraries: [Microsoft.VCLibs.Desktop.14]
