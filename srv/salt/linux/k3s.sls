@@ -74,8 +74,6 @@ k3s_uninstall_script:
     - name: {{ k3s_uninstall_script }}
     - onfail:
       - service: k3s_service_start
-    - require:
-      - cmd: k3s_setup_script
 
 k3s_service_start:
   service.running:
@@ -97,7 +95,6 @@ k3s_kubeconfig:
     - makedirs: True
     - require:
       - service: k3s_service_start
-      - file: k3s_kube_path
   {%- endif %}
 
 {%- endif %}
