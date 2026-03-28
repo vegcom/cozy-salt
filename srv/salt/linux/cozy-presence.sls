@@ -7,6 +7,9 @@
 {%- set token = salt['pillar.get']('github:tokens', [''])[0] -%}
 {%- set cozy_presence_path = "/opt/cozy/cozy-presence" %}
 {%- set cozy_presence_env = "/opt/miniforge3/envs/cozy-presence" %}
+{%- set embedding_url = salt['pillar.get']('services:embedding:langcache:url', '') -%}
+{%- set embedding_dim = salt['pillar.get']('services:embedding:langcache:dim', '') -%}
+{%- set cozy_presence_cfg = "/opt/cozy/etc/cozy-presence.conf" %}
 {%- set cozy_presence_bin = cozy_presence_env + "/bin" %}
 
 {%- if run_user and not is_container and token %}
@@ -69,6 +72,15 @@ cozy_presence_service_file:
     - source: salt://linux/files/etc-systemd-user/cozy-presence@.service
     - mode: 644
 
+cozy_presence_config:
+  file.managed:
+    - name: {{ cozy_presence_cfg }}
+    - contents: |
+        PRESENCE_EMBED_URL={{ embedding_url }}
+        PRESENCE_EMBED_DIM={{ embedding_dim }}
+    - require:
+      - file: cozy_presence_service_file
+
 # Per-user: data dir + service enable
 {% for username in managed_users %}
 {%- set user_info = salt['user.info'](username) %}
@@ -88,6 +100,7 @@ cozy_presence_service_{{ username }}:
         systemd-run --quiet --machine={{ username }}@.host --user --collect --pipe --wait \
             sh -c 'systemctl --user enable --now cozy-presence@{{ username }}.service'
     - require:
+      - file: cozy_presence_config
       - file: cozy_presence_service_file
       - file: cozy_presence_data_dir_{{ username }}
     - watch:

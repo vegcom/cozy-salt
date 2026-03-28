@@ -24,9 +24,13 @@ docker_install:
     - creates: /usr/bin/docker
     - require:
       - cmd: docker_repo
+
 {% else %}
 docker_install:
   cmd.run:
     - name: curl -fsSL https://get.docker.com -o /tmp/get-docker.sh && sh /tmp/get-docker.sh
     - creates: /usr/bin/docker
 {% endif %}
+
+include:
+  - linux.docker-proxy

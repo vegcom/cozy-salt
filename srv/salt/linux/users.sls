@@ -113,12 +113,8 @@ scratch_automount_enable_{{ username }}:
 # Uses systemd .mount/.automount units for lazy mounting + network resilience
 {% set smb_shares = salt['pillar.get']('smb', {}) %}
 {% if userdata.get('uid') and smb_shares %}
-{% for share_name, share_config in smb_shares.items() %}
-{% set mountpoint = share_config.get('mountpoint', share_name) %}
-{% set mount_path = user_home ~ '/' ~ mountpoint %}
-{% set creds_path = share_config.get('credentials_path', '/etc/samba/creds') %}
+{% set creds_path = '/etc/samba/creds' %}
 {% set creds_file = creds_path ~ '/' ~ username %}
-{% set unit_name = 'home-' ~ username ~ '-' ~ mountpoint %}
 
 {{ username }}_smb_creds_dir:
   file.directory:
@@ -140,6 +136,11 @@ scratch_automount_enable_{{ username }}:
     - require:
       - file: {{ username }}_smb_creds_dir
 {% endif %}
+
+{% for share_name, share_config in smb_shares.items() %}
+{% set mountpoint = share_config.get('mountpoint', share_name) %}
+{% set mount_path = user_home ~ '/' ~ mountpoint %}
+{% set unit_name = 'home-' ~ username ~ '-' ~ mountpoint %}
 
 {{ username }}_smb_{{ share_name }}_dir:
   file.directory:

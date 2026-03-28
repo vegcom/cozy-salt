@@ -1,4 +1,6 @@
 #!/bin/zsh
+# shellcheck disable=SC1071
+
 # /etc/zshrc
 # Managed by Salt - DO NOT EDIT MANUALLY
 
@@ -17,10 +19,6 @@ setopt nonomatch
 setopt notify
 setopt numericglobsort
 setopt promptsubst
-
-autoload -Uz compinit
-compinit -d ${TMPDIR}/${USER}-zcompdump
-compinit -u
 
 zstyle ':completion:*:*:*:*:*' menu select
 zstyle ':completion:*' auto-description 'specify: %d'

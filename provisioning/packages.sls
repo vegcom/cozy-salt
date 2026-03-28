@@ -157,7 +157,7 @@ arch:
 # ============================================================================
 windows:
   pwsh_modules: [PSReadLine, PowerShellGet, Microsoft.WinGet.Client, Microsoft.WinGet.CommandNotFound, powershell-yaml, PSFzf, PSWindowsUpdate, Terminal-Icons, Microsoft.PowerShell.Utility]
-  choco: [chocolatey-compatibility.extension, chocolatey-core.extension, chocolatey-font-helpers.extension, cheatengine, colortool, Cygwin, dive, docker-cli, docker-compose, make,  vim, winbtrfs]
+  choco: [chocolatey-compatibility.extension, chocolatey-core.extension, chocolatey-font-helpers.extension, cheatengine, colortool, Cygwin, dive, docker-cli, docker-compose, make,  vim, winbtrfs, ext2fsd]
   winget:
     runtimes:
       ui_libraries: [Microsoft.VCLibs.Desktop.14]
@@ -180,7 +180,7 @@ windows:
       hardware: [BitSum.ParkControl, BitSum.ProcessLasso, Guru3D.RTSS, TechPowerUp.NVCleanstall, Wagnardsoft.DisplayDriverUninstaller, REALiX.HWiNFO, TechPowerUp.GPU-Z]
       rgb_peripherals: [namazso.PawnIO, Nefarius.HidHide, Olivia.VIA, OpenRGB.OpenRGB, ViGEm.ViGEmBus]
       networking: [Apple.Bonjour, Insecure.Nmap, SSHFS-Win.SSHFS-Win, WinFsp.WinFsp, WiresharkFoundation.Wireshark]
-      kubernetes: [Kubecolor.kubecolor]
+      kubernetes: [Kubecolor.kubecolor, Freelensapp.Freelens]
       media_creative: [Audacity.Audacity, Cockos.REAPER, Inkscape.Inkscape, KDE.Krita, rocksdanister.LivelyWallpaper]
       ricing: [Rainmeter.Rainmeter]
     # 360 noscope - packages that choke on --scope machine flag

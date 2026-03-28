@@ -1,14 +1,23 @@
 # /etc/wsl.conf - WSL configuration
 # Managed by Salt - DO NOT EDIT MANUALLY
+# https://learn.microsoft.com/en-us/windows/wsl/wsl-config
 
 [boot]
 # Enable systemd in WSL2
 systemd=true
 
 [network]
+hostname = {{ host_name }}
 generateHosts = false
 generateResolvConf = false
 
 [interop]
 enabled = true
 appendWindowsPath = false
+
+[automount]
+enabled = false
+mountFsTab = true
+
+[user]
+default = wsl

@@ -6,6 +6,7 @@ Wants=network.target
 [Service]
 Type=simple
 Environment=PYTHONPATH=/opt/cozy/cozy-presence/src
+EnvironmentFile=-/opt/cozy/etc/cozy-presence.conf
 ExecStart=/opt/miniforge3/envs/cozy-presence/bin/python /opt/cozy/cozy-presence/bin/cozy-presence-daemon.py
 Restart=always
 RestartSec=10

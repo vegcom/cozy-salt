@@ -39,11 +39,11 @@ k3s_not_enabled:
   {%- set k3s_auth_resolved = k3s_node_token if k3s_node_token else k3s_auth %}
 
   {%- if k3s_role == "server" %}
-    {%- set k3s_kwargs_extra = "--cluster-init --prefer-bundled-bin --disable=servicelb --disable=traefik --disable-cloud-controller --flannel-backend=host-gw" ~ " " ~ "--advertise-port=6443" ~ " " ~ "--token=" ~ k3s_auth_resolved %}
+    {%- set k3s_kwargs_extra = "--debug --cluster-init --embedded-registry --secrets-encryption --prefer-bundled-bin --disable=servicelb --disable=traefik --disable-cloud-controller --flannel-backend=host-gw" ~ " " ~ "--advertise-port=6443" ~ " " ~ "--token=" ~ k3s_auth_resolved %}
   {%- elif k3s_role == "loadbalancer" %}
-    {%- set k3s_kwargs_extra = "--prefer-bundled-bin --disable=servicelb --disable=traefik --disable-cloud-controller --flannel-backend=host-gw" ~ " " ~ "--server=" ~ k3s_server ~ " " ~ "--advertise-port=6443" ~ " " ~ "--token=" ~ k3s_auth_resolved %}
+    {%- set k3s_kwargs_extra = "--debug --prefer-bundled-bin --disable=servicelb --disable=traefik --disable-cloud-controller --flannel-backend=host-gw" ~ " " ~ "--server=" ~ k3s_server ~ " " ~ "--advertise-port=6443" ~ " " ~ "--token=" ~ k3s_auth_resolved %}
   {%- else %}
-    {%- set k3s_kwargs_extra = "--prefer-bundled-bin --disable-apiserver-lb" ~ " " ~ "--server=" ~ k3s_server ~ " " ~ "--token=" ~ k3s_auth_resolved %}
+    {%- set k3s_kwargs_extra = "--debug --prefer-bundled-bin --disable-apiserver-lb" ~ " " ~ "--server=" ~ k3s_server ~ " " ~ "--token=" ~ k3s_auth_resolved %}
   {%- endif %}
 
   {%- set k3s_exec = [k3s_args, k3s_kwargs, k3s_kwargs_extra] | join(' ') | trim %}
@@ -64,9 +64,8 @@ k3s_setup_script:
       - file: k3s_download_script
     - timeout: 90
     - env:
-      - INSTALL_K3S_FORCE_RESTART: "true"
-      - INSTALL_K3S_SKIP_ENABLE: "true"
-      - INSTALL_K3S_SKIP_START: "true"
+      - K3S_KUBECONFIG_MODE: "664"
+      - K3S_KUBECONFIG_GROUP: "cozyusers"
       - INSTALL_K3S_CHANNEL: "{{ k3s_channel }}"
       - INSTALL_K3S_EXEC: "{{ k3s_exec }}"
 
@@ -75,8 +74,6 @@ k3s_uninstall_script:
     - name: {{ k3s_uninstall_script }}
     - onfail:
       - service: k3s_service_start
-    - require:
-      - cmd: k3s_setup_script
 
 k3s_service_start:
   service.running:
@@ -93,7 +90,8 @@ k3s_kubeconfig:
   file.managed:
     - name: /etc/rancher/k3s/k3s.yaml
     - contents: {{ kubeconfig | yaml_encode }}
-    - mode: '0600'
+    - mode: '0660'
+    - group: cozyusers
     - makedirs: True
     - require:
       - service: k3s_service_start
