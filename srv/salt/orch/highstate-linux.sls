@@ -7,5 +7,3 @@ linux_highstate:
     - tgt: 'G@os_family:Debian or G@os_family:Arch or G@os_family:RedHat'
     - tgt_type: compound
     - highstate: True
-    - batch: '25%'
-    - splay: 300

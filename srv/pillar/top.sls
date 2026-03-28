@@ -39,7 +39,7 @@ base:
     - hardware.galileo
     - users.deck
 
-  'G@biosvendor:"EDK II" and G@boardname:Jetson':
+  'G@biosvendor:EDK* and G@boardname:Jetson':
     - match: compound
     - hardware.jetson
     - users.nvidia
