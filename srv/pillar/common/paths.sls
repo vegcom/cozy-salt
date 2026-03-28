@@ -47,3 +47,6 @@ config_paths:
   pip:
     windows: C:\ProgramData\pip\pip.ini
     linux: /etc/pip.conf
+  cozy:
+    windows: C:\opt\cozy\etc
+    linux: /opt/cozy/etc

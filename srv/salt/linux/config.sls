@@ -3,6 +3,9 @@
 
 # NOTE: /etc/skel is now managed in linux/users.sls (must run before user.present)
 
+{%- set cozy_config = salt['pillar.get']('config_paths:cozy:linux') %}
+{%- set cozy_bin = salt['pillar.get']('install_paths:cozy:linux') %}
+
 etc_path:
   file.directory:
     - name: /etc/
@@ -80,8 +83,20 @@ cozy_opt_dir:
 
 cozy_opt_bin:
   file.recurse:
-    - name: /opt/cozy/bin/
+    - name: {{ cozy_bin }}
     - source: salt://linux/files/opt-cozy-bin
+    - include_empty: True
+    - clean: False
+    - dir_mode: "0775"
+    - file_mode: "0774"
+    - order: 0
+    - require:
+      - file: cozy_opt_dir
+
+cozy_opt_etc:
+  file.recurse:
+    - name: {{ cozy_config }}
+    - source: salt://linux/files/opt-cozy-etc
     - include_empty: True
     - clean: False
     - dir_mode: "0775"
