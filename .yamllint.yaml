@@ -1,4 +1,4 @@
-extends: default
+extends: relaxed
 
 rules:
   line-length:
@@ -18,8 +18,7 @@ rules:
     max: 1
     max-start: 0
     max-end: 0
+  comments-indentation: disable
 
 ignore:
-  - tests/output/
-  - tests/archive-*/
   - .git/
