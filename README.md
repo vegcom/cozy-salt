@@ -116,17 +116,10 @@ Related: <https://github.com/saltstack/salt-bootstrap/pull/2101> (Arch onedir fi
 ```shell
 # Win-Stall on GNU/LInux
 # Example master is 10.0.0.220
-salt='10.0.0.220'
-read -p "type Minion ID: " minion_id
-if [[ ! -n $host_name ]] ; then
-  curl -L https://raw.githubusercontent.com/saltstack/salt-bootstrap/develop/bootstrap-salt.sh | sh -s -- -A ${salt} -i ${minion_id} onedir
-fi
+curl -L https://raw.githubusercontent.com/saltstack/salt-bootstrap/develop/bootstrap-salt.sh | sh -s -- -A 10.0.0.220 -i linux_minion onedir
 ```
 
 ### Windows
-
-Uses `bootstrap-salt.ps1` (onedir) — consistent with Linux targets.
-Bootstrap handles version resolution + install. See `lib/windows/__init__.py`.
 
 ```powershell
 # Install salt
@@ -134,18 +127,6 @@ Bootstrap handles version resolution + install. See `lib/windows/__init__.py`.
 Invoke-WebRequest -Uri https://packages.broadcom.com/artifactory/saltproject-generic/windows/3007.9/Salt-Minion-3007.9-Py3-AMD64-Setup.exe -OutFile "$env:TEMP\salt-minion.exe"
 & "$env:TEMP\salt-minion.exe" /S /master=10.0.0.220 /minion-name=windows-minion
 ```
-
-### Pending
-
-`git submodule update --recursive --remote`
-
-[vegcom/cozy-salt-enrollment.git](https://github.com/vegcom/cozy-salt-enrollment)
-
-- **Linux**: `scripts/enrollment/install-minion.py`
-  - [install-minion.py](scripts/enrollment/install-minion.py)
-- **Windows**: `scripts/enrollment/install-minion.ps1`
-  - [install-minion.ps1](scripts/enrollment/install-minion.ps1)
-- **Windows (Dockur)**: See [scripts/enrollment/WINDOWS.md](scripts/enrollment/WINDOWS.md)
 
 ### Theme and customization
 

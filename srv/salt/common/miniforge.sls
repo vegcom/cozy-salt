@@ -17,6 +17,30 @@
 {% endif %}
 {% set pip_local_mirror = salt['pillar.get']('pip:local_mirror', '') %}
 
+pip_config_path:
+  file.directory:
+    - name: {{ salt['file.dirname'](pip_config_dest) }}
+    - makedirs: True
+    {%- if grains['os_family'] != 'Windows' %}
+    - mode: '0644'
+    {%- endif %}
+    - cache_path: {{ pip_cache }}
+    - local_mirror: {{ pip_local_mirror }}
+
+pip_config:
+  file.managed:
+    - name: {{ pip_config_dest }}
+    - source: salt://_templates/pip.jinja
+    - template: jinja
+    - makedirs: True
+    {%- if grains['os_family'] != 'Windows' %}
+    - mode: '0644'
+    {%- endif %}
+    - cache_path: {{ pip_cache }}
+    - local_mirror: {{ pip_local_mirror }}
+    - require:
+      - file: pip_config_path
+
 # Install pip base packages in miniforge base environment
 {% for package in packages.get('pip_base', []) %}
 install_pip_base_{{ package | replace('-', '_') }}:
@@ -52,13 +76,3 @@ miniforge_permissions:
       - cmd: install_pip_base_{{ package | replace('-', '_') }}
 {% endfor %}
 {% endif %}
-
-pip_config:
-  file.managed:
-    - name: {{ pip_config_dest }}
-    - source: salt://_templates/pip.jinja
-    - template: jinja
-    - makedirs: True
-    - mode: '0644'
-    - cache_path: {{ pip_cache }}
-    - local_mirror: {{ pip_local_mirror }}

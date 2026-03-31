@@ -44,6 +44,28 @@ if [[ -d "${preload_dir}" ]]; then
     done
 fi
 
+echo "[entrypoint] Initialising sqlite3 returner schema..."
+python3 -c "
+import sqlite3, os, shutil
+target = '/srv/data/salt_returns.db'
+tmp    = '/tmp/salt_returns_init.db'
+conn = sqlite3.connect(tmp)
+conn.execute('PRAGMA journal_mode=WAL')
+conn.execute('CREATE TABLE IF NOT EXISTS salt_returns (fun TEXT KEY, jid TEXT KEY, id TEXT KEY, fun_args TEXT, date TEXT NOT NULL, full_ret TEXT NOT NULL, success TEXT NOT NULL)')
+conn.execute('CREATE TABLE IF NOT EXISTS jids (jid TEXT PRIMARY KEY, load TEXT NOT NULL)')
+conn.commit()
+conn.close()
+if not os.path.exists(target):
+    shutil.move(tmp, target)
+    os.chmod(target, 0o664)
+    print('  + salt_returns.db created (WAL mode)')
+else:
+    os.unlink(tmp)
+    print('  + salt_returns.db already exists, skipping')
+
+"
+chown salt:salt /srv/data/salt_returns.db 2>/dev/null || true
+
 echo "[entrypoint] Starting wsdd..."
 wsdd --shortlog &
 

@@ -7,5 +7,3 @@ windows_highstate:
     - tgt: 'G@os_family:Windows'
     - tgt_type: compound
     - highstate: True
-    - batch: '25%'
-    - splay: 600

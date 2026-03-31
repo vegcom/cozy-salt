@@ -73,7 +73,7 @@ RUN apt-get update && \
 
 # Create mount points with correct ownership
 # Note: /srv/salt/files is for provisioning files mounted separately
-RUN mkdir -p /srv/salt/files /srv/pillar /var/cache/salt /var/log/salt && \
+RUN mkdir -p /srv/salt/files /srv/pillar /srv/data /var/cache/salt /var/log/salt && \
     chown -R salt:salt /srv /var/cache/salt /var/log/salt /etc/salt
 
 # Copy pre-generated public keys for test minions (pre-acceptance)
