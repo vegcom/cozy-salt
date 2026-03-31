@@ -79,4 +79,7 @@
   helper = cache --timeout=3600
 
 [user]
-  signingkey = ~/.ssh/keys/git.pub
+  signingkey = ~/.ssh/keys/git_ed25519.pub
+
+[ssh]
+  allowedSignersFile = ~/.ssh/allowed_signers

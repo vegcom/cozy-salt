@@ -2,6 +2,9 @@
 # /etc/zshrc
 # Managed by Salt - DO NOT EDIT MANUALLY
 
+autoload -Uz compinit
+compinit
+
 if [ ! -n "$ZSH_VERSION" ]; then
 	return 0
 fi
