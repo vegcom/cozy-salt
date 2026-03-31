@@ -19,7 +19,7 @@ cozy_presence_repo_dir:
     - name: /opt/cozy/
     - user: {{ run_user }}
     - group: cozyusers
-    - mode: 770
+    - mode: "0770"
     - makedirs: True
 
 # Clone cozy-presence repo (token from pillar)
@@ -61,7 +61,7 @@ cozy_presence_cli:
   file.managed:
     - name: /opt/cozy/bin/presence
     - source: salt://common/files/opt-cozy-bin/presence
-    - mode: 755
+    - mode: "0755"
     - require:
       - git: cozy_presence_repo
 
@@ -70,7 +70,7 @@ cozy_presence_service_file:
   file.managed:
     - name: /etc/systemd/user/cozy-presence@.service
     - source: salt://linux/files/etc-systemd-user/cozy-presence@.service
-    - mode: 644
+    - mode: "0644"
 
 cozy_presence_config:
   file.managed:
@@ -91,7 +91,7 @@ cozy_presence_data_dir_{{ username }}:
     - name: {{ user_info['home'] }}/.presence
     - user: {{ username }}
     - group: {{ username }}
-    - mode: 700
+    - mode: "0700"
     - makedirs: True
 
 cozy_presence_service_{{ username }}:

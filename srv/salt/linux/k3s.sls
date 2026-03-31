@@ -55,7 +55,7 @@ k3s_download_script:
     - name: /tmp/k3s-init.sh
     - source: https://raw.githubusercontent.com/k3s-io/k3s/main/install.sh
     - source_hash: https://raw.githubusercontent.com/k3s-io/k3s/main/install.sh.sha256sum
-    - mode: 0755
+    - mode: "0755"
 
 k3s_setup_script:
   cmd.run:

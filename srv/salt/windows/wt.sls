@@ -5,7 +5,7 @@
 {%- set cozy_path = 'C:\\opt\\cozy\\' %}
 {%- set cozy_fragments_path = cozy_path ~ 'cozy-fragments\\' %}
 {%- set cozy_fragments_script = cozy_fragments_path ~ 'install.ps1' %}
-{%- set twilite_theme_dir = 'C:\\ProgramData\\Microsoft\\Windows Terminal\\Fragments\\Twilite'%}
+{%- set twilite_theme_dir = 'C:\\ProgramData\\Microsoft\\Windows Terminal\\Fragments\\Twilite' %}
 {%- set twilite_theme_install_uri = "https://raw.githubusercontent.com/vegcom/WindowsTerminal-Twilite/main/install.ps1" %}
 
 {%- if run_user_info %}
@@ -14,7 +14,7 @@ cozy_fragments_repo_dir:
     - name: '{{ cozy_path }}'
     - user: {{ run_user }}
     - group: cozyusers
-    - mode: 770
+    - mode: "0770"
     - makedirs: True
 
 {{ git_repo('cozy-fragments', cozy_fragments_path, run_user, state_id='cozy_fragments_repo' ,require_file='cozy_fragments_repo_dir') }}
