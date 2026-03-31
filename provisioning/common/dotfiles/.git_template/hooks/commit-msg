@@ -7,28 +7,30 @@ import re
 import sys
 
 msg_file = sys.argv[1]
-with open(msg_file, encoding='utf-8') as f:
-    msg = f.read()
+with open(msg_file, encoding="utf-8") as f:
+  msg = f.read()
 
 # first line only (subject)
-subject = msg.splitlines()[0].strip() if msg.strip() else ''
+subject = msg.splitlines()[0].strip() if msg.strip() else ""
 
 # skip merge commits, fixup/squash
-skip_prefixes = ('Merge ', 'Revert ', 'fixup!', 'squash!')
+skip_prefixes = ("Merge ", "Revert ", "fixup!", "squash!")
 if any(subject.startswith(p) for p in skip_prefixes):
-    sys.exit(0)
+  sys.exit(0)
 
-valid_types = r'feat|fix|fixme|chore|docs|tidy|refactor|test|wip|security|style|perf|ci|build'
-pattern = rf'^({valid_types})(\(.+\))?: .+'
+valid_types = (
+  r"feat|fix|fixme|chore|docs|tidy|refactor|test|wip|security|style|perf|ci|build"
+)
+pattern = rf"^({valid_types})(\(.+\))?: .+"
 
 if not re.match(pattern, subject):
-    print()
-    print(f"  bad commit message: '{subject}'")
-    print()
-    print("  format:  type: description")
-    print("  example: feat: add user provisioning for june")
-    print()
-    print("  valid types: feat fix fixme chore docs tidy")
-    print("               refactor test wip security style perf ci build")
-    print()
-    sys.exit(1)
+  print()
+  print(f"  bad commit message: '{subject}'")
+  print()
+  print("  format:  type: description")
+  print("  example: feat: add user provisioning for june")
+  print()
+  print("  valid types: feat fix fixme chore docs tidy")
+  print("               refactor test wip security style perf ci build")
+  print()
+  sys.exit(1)
