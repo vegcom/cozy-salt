@@ -47,6 +47,7 @@
 
 [commit]
   template = ~/.gitmessage
+  gpgsign = true
 
 [fetch]
   prune = true
