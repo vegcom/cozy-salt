@@ -1,6 +1,7 @@
 .stfolder
 .stignore
 .stversions/
+.vscode/
 *-eggs/
 **/__pycache__/
 **/.cache
