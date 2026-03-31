@@ -1,0 +1,30 @@
+# ShellCheck configuration
+# Disable info-level and style warnings for CI scripts
+# These are suggestions/style issues, not errors
+
+# SC2001 - style: See if you can use ${variable//search/replace} instead
+disable=SC2001
+
+# SC2012 - info: Use find instead of ls
+disable=SC2012
+
+# SC2016 - info: Expressions don't expand in single quotes
+disable=SC2016
+
+# SC2034 - warning: variable appears unused (used for documentation/debugging)
+disable=SC2034
+
+# SC2035 - info: Use ./*glob* or -- *glob*
+disable=SC2035
+
+# SC2155 - warning: Declare and assign separately
+disable=SC2155
+
+# SC2269 - info: This variable is assigned to itself
+disable=SC2269
+
+# SC2000 - style: See if you can use ${#variable} instead
+disable=SC2000
+
+# SC1071 -  ShellCheck only supports sh/bash/dash/ksh/'busybox sh' scripts. we provide zsh at times as well.
+disable=SC1071
