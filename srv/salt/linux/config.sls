@@ -23,6 +23,9 @@ etc_files:
     - group: root
     - file_mode: "0644"
     - dir_mode: "0755"
+    - recurse:
+      - user
+      - group
     - require:
       - file: etc_path
 
@@ -45,6 +48,9 @@ etc_profiled_files:
     - group: root
     - file_mode: "0644"
     - dir_mode: "0755"
+    - recurse:
+      - user
+      - group
     - require:
       - file: etc_profiled_path
 
@@ -67,6 +73,9 @@ etc_zsh_files:
     - group: root
     - file_mode: "0644"
     - dir_mode: "0755"
+    - recurse:
+      - user
+      - group
     - require:
       - file: etc_zsh_path
 
@@ -89,6 +98,9 @@ cozy_opt_bin:
     - clean: False
     - dir_mode: "0775"
     - file_mode: "0774"
+    - recurse:
+      - user
+      - group
     - order: 0
     - require:
       - file: cozy_opt_dir
@@ -131,6 +143,9 @@ etc_systemd_system_unit_files:
     - group: root
     - file_mode: "0644"
     - dir_mode: "0755"
+    - recurse:
+      - user
+      - group
     - require:
       - file: etc_systemd_system_units
 
@@ -153,6 +168,9 @@ etc_systemd_user_unit_files:
     - group: root
     - file_mode: "0644"
     - dir_mode: "0755"
+    - recurse:
+      - user
+      - group
     - require:
       - file: etc_systemd_user_units
 
@@ -175,6 +193,9 @@ etc_environmentd_files:
     - group: root
     - file_mode: "0644"
     - dir_mode: "0755"
+    - recurse:
+      - user
+      - group
     - require:
       - file: etc_environmentd_path
 
