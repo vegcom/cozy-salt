@@ -94,6 +94,7 @@ deploy_gitignore_{{ username }}:
 {% set github_config = users_data.get(username, {}).get('github', {}) %}
 {% set git_email = github_config.get('email', '') %}
 {% set git_name = github_config.get('name', '') %}
+{% set git_signing_key = github_config.get('signing_key', '') %}
 deploy_gitconfig_local_{{ username }}:
   file.managed:
     - name: {{ dotfiles.dotfile_path(user_home, '.gitconfig.local') }}
@@ -139,6 +140,19 @@ git_template_hooks_executable_{{ username }}:
       - mode
     - require:
       - file: deploy_git_template_{{ username }}
+
+# Deploy allowed_signers for SSH commit verification
+# Only if user has github.email and signing_key configured
+{% if git_email and git_signing_key %}
+deploy_allowed_signers_{{ username }}:
+  file.managed:
+    - name: {{ user_home }}/.ssh/allowed_signers
+    - contents: |
+        {{ git_email }} {{ git_signing_key }}
+    - user: {{ username }}
+    - mode: "0644"
+    - makedirs: True
+{% endif %}
 {% endif %}
 
 {% endfor %}

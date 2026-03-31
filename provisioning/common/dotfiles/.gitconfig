@@ -82,5 +82,5 @@
 [user]
   signingkey = ~/.ssh/keys/git_ed25519.pub
 
-[ssh]
+[gpg "ssh"]
   allowedSignersFile = ~/.ssh/allowed_signers
