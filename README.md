@@ -131,18 +131,6 @@ Invoke-WebRequest -Uri https://packages.broadcom.com/artifactory/saltproject-gen
 & "$env:TEMP\salt-minion.exe" /S /master=10.0.0.220 /minion-name=windows-minion
 ```
 
-### Pending
-
-`git submodule update --recursive --remote`
-
-[vegcom/cozy-salt-enrollment.git](https://github.com/vegcom/cozy-salt-enrollment)
-
-- **Linux**: `scripts/enrollment/install-minion.py`
-  - [install-minion.py](scripts/enrollment/install-minion.py)
-- **Windows**: `scripts/enrollment/install-minion.ps1`
-  - [install-minion.ps1](scripts/enrollment/install-minion.ps1)
-- **Windows (Dockur)**: See [scripts/enrollment/WINDOWS.md](scripts/enrollment/WINDOWS.md)
-
 ### Theme and customization
 
 > [!NOTE]
