@@ -121,9 +121,6 @@ curl -L https://raw.githubusercontent.com/saltstack/salt-bootstrap/develop/boots
 
 ### Windows
 
-Uses `bootstrap-salt.ps1` (onedir) — consistent with Linux targets.
-Bootstrap handles version resolution + install. See `lib/windows/__init__.py`.
-
 ```powershell
 # Install salt
 # Example master is 10.0.0.220
