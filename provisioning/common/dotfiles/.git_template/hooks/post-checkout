@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+# post-checkout: update submodules after branch switch
+# args: prev_head new_head is_branch_checkout (1=branch, 0=file)
+
+import subprocess
+import sys
+
+is_branch_checkout = sys.argv[3] if len(sys.argv) > 3 else "0"
+
+# only run on branch switches, not file checkouts
+if is_branch_checkout != "1":
+  sys.exit(0)
+
+try:
+  result = subprocess.run(
+    ["git", "submodule", "update", "--init", "--recursive"],
+    capture_output=True,
+    text=True,
+  )
+  if result.returncode != 0:
+    print(f"  [post-checkout] submodule update failed: {result.stderr.strip()}")
+    sys.exit(result.returncode)
+except FileNotFoundError:
+  pass  # git not available, skip silently
