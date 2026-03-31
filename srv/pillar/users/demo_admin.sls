@@ -36,6 +36,7 @@ users:
     #   # Email and name auto-deployed to .gitconfig.local [user] section
     #   email: user+github@example.com
     #   name: Example User
+    #   signing_key: rsa-example_signing_key example
     #   # Personal access tokens for private repo cloning
     #   # These merge with global tokens from common/users.sls
     #   tokens:
