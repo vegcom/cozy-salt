@@ -10,8 +10,13 @@ msg_file = sys.argv[1]
 with open(msg_file, encoding="utf-8") as f:
   msg = f.read()
 
-# first line only (subject)
-subject = msg.splitlines()[0].strip() if msg.strip() else ""
+# find subject (first non-comment, non-empty line)
+subject = ""
+for line in msg.splitlines():
+  stripped = line.strip()
+  if stripped and not stripped.startswith("#"):
+    subject = stripped
+    break
 
 # skip merge commits, fixup/squash
 skip_prefixes = ("Merge ", "Revert ", "fixup!", "squash!")
