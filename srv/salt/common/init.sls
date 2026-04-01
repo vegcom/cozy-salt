@@ -7,3 +7,4 @@ include:
   - common.vim
   - common.hosts
   - common.ssh
+  - common.tailscale

@@ -15,7 +15,7 @@
 {% set _shell = ['bash-completion', 'screen', 'tmux', 'shellcheck', 'zsh'] %}
 {% set _shell_rhel = (_shell | reject('equalto', 'shellcheck') | list) + ['ShellCheck'] %}
 {% set _build_base = ['autoconf', 'automake', 'cmake'] %}
-{% set _net_base = ['nmap', 'socat', 'tcpdump', 'traceroute'] %}
+{% set _net_base = ['nmap', 'socat', 'tcpdump', 'traceroute', 'tailscale', ''] %}
 {% set _compress_base = ['bzip2', 'zip'] %}
 {% set _vcs_base = ['git-lfs', 'tig'] %}
 {% set _modern_cli_base = ['bat', 'fzf', 'ripgrep'] %}
@@ -179,7 +179,7 @@ windows:
       development: [GitHub.GitHubDesktop, GitHub.cli, Gitleaks.Gitleaks, JetBrains.IntelliJIDEA.Community, Microsoft.VisualStudio.BuildTools, Microsoft.VisualStudio.Community, Microsoft.VisualStudioCode, MSYS2.MSYS2, NSIS.NSIS, Kitware.CMake]
       hardware: [BitSum.ParkControl, BitSum.ProcessLasso, Guru3D.RTSS, TechPowerUp.NVCleanstall, Wagnardsoft.DisplayDriverUninstaller, REALiX.HWiNFO, TechPowerUp.GPU-Z]
       rgb_peripherals: [namazso.PawnIO, Nefarius.HidHide, Olivia.VIA, OpenRGB.OpenRGB, ViGEm.ViGEmBus]
-      networking: [Apple.Bonjour, Insecure.Nmap, SSHFS-Win.SSHFS-Win, WinFsp.WinFsp, WiresharkFoundation.Wireshark]
+      networking: [Apple.Bonjour, Insecure.Nmap, SSHFS-Win.SSHFS-Win, WinFsp.WinFsp, WiresharkFoundation.Wireshark, Tailscale.Tailscale]
       kubernetes: [Kubecolor.kubecolor, Freelensapp.Freelens]
       media_creative: [Audacity.Audacity, Cockos.REAPER, Inkscape.Inkscape, KDE.Krita, rocksdanister.LivelyWallpaper]
       ricing: [Rainmeter.Rainmeter]
