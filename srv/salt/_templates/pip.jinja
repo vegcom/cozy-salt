@@ -2,18 +2,18 @@
 timeout = 60
 
 # Tier 1 — Fastest mirror
-index-url = https://pypi.tuna.tsinghua.edu.cn/simple
+index-url = https://pypi.org/simple
 
 # Tier 2 — Fresh fallback mirrors
 extra-index-url =
-{% if local_mirror %}
+{%- if local_mirror %}
   {{ local_mirror }}
-{% endif %}
-  https://pypi.org/simple
+{%- endif %}
   https://pypi.mirrors.ustc.edu.cn/simple/
+  https://pypi.tuna.tsinghua.edu.cn/simple
 
-{% if cache_path %}
+{%- if cache_path %}
 # Tier 3 — Offline fallback
 find-links =
   {{ cache_path }}
-{% endif %}
+{%- endif %}
