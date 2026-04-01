@@ -5,6 +5,9 @@
 x-minion-base: &minion-base
   restart: "no"
   privileged: true
+  dns:
+    - 1.1.1.1
+    - 1.0.0.1
   networks:
     - salt-net
   depends_on:
