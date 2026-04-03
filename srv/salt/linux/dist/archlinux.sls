@@ -110,6 +110,14 @@ pacman_install_reflector:
     - require:
       - cmd: pacman_sync_key
 
+# TODO: add reflector.conf override via pillar for custom mirror settings
+reflector_timer:
+  service.running:
+    - name: reflector.timer
+    - enable: True
+    - require:
+      - pkg: pacman_install_reflector
+
 pacman_refresh_repo:
   cmd.run:
     - name: reflector --latest 5 --sort rate --save /etc/pacman.d/mirrorlist

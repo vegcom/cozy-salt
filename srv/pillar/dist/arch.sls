@@ -11,9 +11,6 @@ aur_user: {{ detected_user }}
 
 pacman:
   repos:
-    kde-unstable:
-      enabled: false
-      include: /etc/pacman.d/mirrorlist
     core:
       enabled: true
       include: /etc/pacman.d/mirrorlist
@@ -23,7 +20,7 @@ pacman:
     multilib:
       enabled: true
       include: /etc/pacman.d/mirrorlist
-    chaotic-aur:
-      enabled: false
+    ownstuff:
+      enabled: true
       siglevel: never
-      server: https://builds.garudalinux.org/repos/$repo/$arch
+      server: https://ftp.f3l.de/~martchus/$repo/os/$arch
