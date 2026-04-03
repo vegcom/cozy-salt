@@ -6,6 +6,17 @@
 
 # Configure DNS search domain (skip in containers - they have their own DNS)
 {% if not is_container %}
+resolved_config:
+  file.managed:
+    - name: /etc/systemd/resolved.conf.d/cozy.conf
+    - makedirs: True
+    - mode: "0644"
+    - contents: |
+        [Resolve]
+        DNSStubListener=no
+        ReadEtcHosts=yes
+
+
 dns_search_domain:
   file.managed:
     - name: /etc/resolv.conf
