@@ -17,15 +17,13 @@
 {% endif %}
 {% set pip_local_mirror = salt['pillar.get']('pip:local_mirror', '') %}
 
+
+{%- if grains['os_family'] == 'Windows' %}
 pip_config_path:
   file.directory:
     - name: {{ salt['file.dirname'](pip_config_dest) }}
     - makedirs: True
-    {%- if grains['os_family'] != 'Windows' %}
-    - mode: '0644'
-    {%- endif %}
-    - cache_path: {{ pip_cache }}
-    - local_mirror: {{ pip_local_mirror }}
+{%- endif %}
 
 pip_config:
   file.managed:
@@ -38,8 +36,10 @@ pip_config:
     {%- endif %}
     - cache_path: {{ pip_cache }}
     - local_mirror: {{ pip_local_mirror }}
+  {%- if grains['os_family'] == 'Windows' %}
     - require:
       - file: pip_config_path
+  {%- endif %}
 
 # Install pip base packages in miniforge base environment
 {% for package in packages.get('pip_base', []) %}
@@ -70,7 +70,7 @@ miniforge_permissions:
     - recurse:
       - user
       - group
-    - require:
+    - onchanges:
       - cmd: miniforge_install
 {% for package in packages.get('pip_base', []) %}
       - cmd: install_pip_base_{{ package | replace('-', '_') }}

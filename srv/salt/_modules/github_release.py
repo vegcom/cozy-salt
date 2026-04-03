@@ -32,7 +32,10 @@ def latest(repo, fallback=None, prerelease=False):
       salt '*' github_release.latest Nonary/vibeshine
       salt '*' github_release.latest microsoft/winget-cli prerelease=True
   """
-  token = __salt__["pillar.get"]("github:access_token", "")
+  tokens = __salt__["pillar.get"]("github:tokens", [])
+  token = __salt__["pillar.get"]("github:access_token", "") or (
+    tokens[0] if tokens else ""
+  )
   if prerelease:
     url = f"https://api.github.com/repos/{repo}/releases"
   else:

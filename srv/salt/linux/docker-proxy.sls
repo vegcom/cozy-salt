@@ -30,10 +30,8 @@ docker_proxy_file:
     - user: root
     - group: cozyusers
     - makedirs: True
-{%- if grains['os_family'] != 'Arch' %}
     - require:
       - cmd: docker_install
-{% endif %}
 
 # Start docker-proxy service
 docker_proxy_service:
