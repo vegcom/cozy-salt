@@ -7,9 +7,9 @@ if [ ! -n "$ZSH_VERSION" ]; then
 	return 0
 fi
 
-if [ -n "${__ETC_ZSHRC_SOURCED}" ]; then
-  return 0
-fi
+#if [ -n "${__ETC_ZSHRC_SOURCED}" ]; then
+#  return 0
+#fi
 
 autoload -Uz compinit
 compinit
@@ -35,5 +35,5 @@ command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
 command -v starship >/dev/null && eval "$(starship init zsh)"
 command -v atuin >/dev/null && eval "$(atuin init zsh)"
 
-__ETC_ZSHRC_SOURCED=1
-export __ETC_ZSHRC_SOURCED
+#__ETC_ZSHRC_SOURCED=1
+#export __ETC_ZSHRC_SOURCED

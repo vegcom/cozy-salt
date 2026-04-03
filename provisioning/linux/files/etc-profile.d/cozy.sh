@@ -29,7 +29,7 @@ export PAGER=cat
 #------------------------------------------------------------------------------
 # Shell History Configuration
 #------------------------------------------------------------------------------
-export HISTFILE="$HOME/.history"
+export HISTFILE="$HOME/.$(basename $SHELL)-history"
 export HISTCONTROL=ignoredups:erasedups
 export HISTSIZE=500000
 export HISTFILESIZE=500000
@@ -39,7 +39,6 @@ export SAVEHIST=500000
 # NVM (Node Version Manager) Configuration
 #------------------------------------------------------------------------------
 export NVM_DIR="/opt/nvm"
-export CONDA_AUTO_ACTIVATE_BASE=true
 
 # Load NVM if installed
 # shellcheck disable=SC1091
@@ -50,10 +49,10 @@ if [ -n "$BASH_VERSION" ]; then
 fi
 
 #------------------------------------------------------------------------------
-# Python PIP
+# Python PIP/Conda
 #------------------------------------------------------------------------------
-
 export PIP_CACHE_DIR="${TMPDIR}/pip-cache"
+export CONDA_AUTO_ACTIVATE_BASE=true
 
 #------------------------------------------------------------------------------
 # Steam Big Picture overrides
@@ -87,9 +86,12 @@ export FC="ccache gfortran"
 #------------------------------------------------------------------------------
 # Local paths
 #------------------------------------------------------------------------------
-export PATH="/usr/lib/colorgcc/bin/:/usr/lib/ccache/bin:$HOME/bin:$HOME/.local/bin:$PATH"
-
 export COZY_PATH=/opt/cozy
 export COZY_ETC=${COZY_PATH}/etc
 export COZY_BIN=${COZY_PATH}/bin
 export COZY_DOCKER=${COZY_PATH}/docker
+
+#------------------------------------------------------------------------------
+# PATH definition
+#------------------------------------------------------------------------------
+export PATH="/usr/lib/colorgcc/bin/:/usr/lib/ccache/bin:$HOME/bin:$HOME/.local/bin:$PATH"

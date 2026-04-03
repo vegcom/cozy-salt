@@ -15,7 +15,7 @@
 {% set _shell = ['bash-completion', 'screen', 'tmux', 'shellcheck', 'zsh'] %}
 {% set _shell_rhel = (_shell | reject('equalto', 'shellcheck') | list) + ['ShellCheck'] %}
 {% set _build_base = ['autoconf', 'automake', 'cmake'] %}
-{% set _net_base = ['nmap', 'socat', 'tcpdump', 'traceroute', 'tailscale', ''] %}
+{% set _net_base = ['nmap', 'socat', 'tcpdump', 'traceroute'] %}
 {% set _compress_base = ['bzip2', 'zip'] %}
 {% set _vcs_base = ['git-lfs', 'tig'] %}
 {% set _modern_cli_base = ['bat', 'fzf', 'ripgrep'] %}
