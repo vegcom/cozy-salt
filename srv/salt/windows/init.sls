@@ -19,3 +19,4 @@ include:
   - windows.wsl-integration
   - windows.wt
   - windows.vibeshine
+  - windows.tailscale

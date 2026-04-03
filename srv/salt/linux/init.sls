@@ -25,3 +25,4 @@ include:
   - linux.miniforge
   - linux.homebrew
   - linux.cozy-presence
+  - linux.tailscale

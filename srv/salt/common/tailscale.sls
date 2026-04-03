@@ -15,6 +15,12 @@ tailscale_up:
   cmd.run:
     - name: tailscale up --login-server {{ login_server }} --authkey {{ auth_key }}
     - unless: tailscale status
+
+tailscale_set:
+  cmd.run:
+    - name: tailscale set --accept-routes
+    - require:
+      - cmd: tailscale_up
 {% else %}
 tailscale_up_skipped:
   test.noop:
