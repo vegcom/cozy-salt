@@ -13,6 +13,7 @@ hosts_entry_localhost:
     - names:
       - localhost
       - {{ grains['host'] }}
+    - clean: True
 
 hosts_entry_localhost6:
   host.present:
@@ -22,6 +23,7 @@ hosts_entry_localhost6:
       - localhost6
       - ip6-localhost
       - ip6-loopback
+    - clean: True
 {% endif %}
 
 {% for id, entry in hosts.items() %}
