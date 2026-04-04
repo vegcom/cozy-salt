@@ -1,6 +1,7 @@
 #!jinja|yaml
 # Deck user configuration
 {% set docker_enabled = salt['pillar.get']('docker_enabled', False) %}
+{% set libvirt_enabled = salt['pillar.get']('libvirt_enabled', False) %}
 
 users:
   deck:
