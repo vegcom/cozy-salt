@@ -12,14 +12,13 @@ if [ ! -f "$CONDA_EXE" ]; then
     return
 fi
 
-CONDA_CHANGEPS1=false
-CONDA_AUTO_ACTIVATE_BASE=true
+export CONDA_CHANGEPS1=false
+export CONDA_AUTO_ACTIVATE_BASE=true
 
-export CONDA_CHANGEPS1 CONDA_AUTO_ACTIVATE_BASE
-
-
-if [ -n "$BASH_VERSION" ]; then
-    eval "$(${CONDA_EXE} shell.bash hook)" &>/dev/null
-elif [ -n "$ZSH_VERSION" ]; then
-    eval "$(${CONDA_EXE} shell.zsh hook)" &>/dev/null
+if [ -z "$CONDA_SHLVL" ]; then
+    if [ -n "$BASH_VERSION" ]; then
+        eval "$(${CONDA_EXE} shell.bash hook)" &>/dev/null
+    elif [ -n "$ZSH_VERSION" ]; then
+        eval "$(${CONDA_EXE} shell.zsh hook)" &>/dev/null
+    fi
 fi

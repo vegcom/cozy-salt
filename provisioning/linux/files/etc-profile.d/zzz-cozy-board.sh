@@ -5,7 +5,7 @@
 
 # Gate, only run for interactive root ssh sessions
 case $- in *i*) ;; *) return ;; esac
-[ "$EUID" -ne 0 ] && return
+[ "${EUID:-$(id -u)}" -ne 0 ] && return
 [ -z "$SSH_CONNECTION" ] && return
 
 
