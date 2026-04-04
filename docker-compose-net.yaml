@@ -1,6 +1,6 @@
 # Network overlay for production deployments
 # Attaches salt master to an external frontend network (macvlan/bridge)
-# Usage: docker compose -f docker-compose.yaml -f docker-compose-net.yml up
+# Usage: docker compose -f docker-compose.yaml -f docker-compose-net.yaml up
 #
 # Requires: frontend network created externally
 # See docker-compose-net.yml.example for setup
