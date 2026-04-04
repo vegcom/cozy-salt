@@ -39,7 +39,6 @@ export SAVEHIST=500000
 # NVM (Node Version Manager) Configuration
 #------------------------------------------------------------------------------
 export NVM_DIR="/opt/nvm"
-
 # Load NVM if installed
 # shellcheck disable=SC1091
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
