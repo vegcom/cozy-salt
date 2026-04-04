@@ -32,7 +32,7 @@
 
 ## Feature
 
->[!WARN]
+>[!NOTE]
 > **WorkInProgress**
 >> can't spell progress without pog
 
