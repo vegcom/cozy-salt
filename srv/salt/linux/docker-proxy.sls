@@ -25,7 +25,7 @@ docker_path:
 docker_proxy_file:
   file.managed:
     - name: {{ docker_proxy_config }}
-    - source: salt://common/files/opt-cozy-docker/docker-proxy.yaml
+    - source: salt://linux/files/opt-cozy-docker/docker-proxy.yaml
     - mode: "0644"
     - user: root
     - group: cozyusers

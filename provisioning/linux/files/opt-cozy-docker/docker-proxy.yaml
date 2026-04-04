@@ -14,7 +14,6 @@ services:
       - "5000:5000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-
   socat:
     image: alpine/socat:latest
     container_name: socat
@@ -30,7 +29,6 @@ services:
       - "traefik.tcp.routers.docker.entrypoints=docker"
       - "traefik.tcp.routers.docker.tls=false"
       - "traefik.tcp.services.docker.loadbalancer.server.port=2375"
-
   registry:
     image: registry:latest
     container_name: registry
@@ -42,6 +40,5 @@ services:
       - "traefik.http.routers.registry.entrypoints=web"
       - "traefik.http.routers.registry.rule=PathPrefix(`/`)"
       - "traefik.http.services.registry.loadbalancer.server.port=5000"
-
 volumes:
   registry:
