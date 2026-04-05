@@ -41,7 +41,7 @@ k3s_not_enabled:
   {%- if k3s_role == "server" %}
     {%- set k3s_kwargs_extra = "--debug --cluster-init --embedded-registry --secrets-encryption --prefer-bundled-bin --disable=servicelb --disable=traefik --disable-cloud-controller --flannel-backend=host-gw" ~ " " ~ "--advertise-port=6443" ~ " " ~ "--token=" ~ k3s_auth_resolved %}
   {%- elif k3s_role == "loadbalancer" %}
-    {%- set k3s_kwargs_extra = "--debug --prefer-bundled-bin --disable=servicelb --disable=traefik --disable-cloud-controller --flannel-backend=host-gw" ~ " " ~ "--server=" ~ k3s_server ~ " " ~ "--advertise-port=6443" ~ " " ~ "--token=" ~ k3s_auth_resolved %}
+    {%- set k3s_kwargs_extra = "--debug --embedded-registry --secrets-encryption --prefer-bundled-bin --disable=servicelb --disable=traefik --disable-cloud-controller --flannel-backend=host-gw" ~ " " ~ "--server=" ~ k3s_server ~ " " ~ "--advertise-port=6443" ~ " " ~ "--token=" ~ k3s_auth_resolved %}
   {%- else %}
     {%- set k3s_kwargs_extra = "--debug --prefer-bundled-bin --disable-apiserver-lb" ~ " " ~ "--server=" ~ k3s_server ~ " " ~ "--token=" ~ k3s_auth_resolved %}
   {%- endif %}
@@ -72,6 +72,8 @@ k3s_setup_script:
 k3s_uninstall_script:
   cmd.run:
     - name: {{ k3s_uninstall_script }}
+    - env:
+      - K3S_DATA_DIR: {{ salt['pillar.get']('k3s:data_dir', '/var/lib/rancher/k3s') }}
     - onfail:
       - service: k3s_service_start
 
