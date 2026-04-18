@@ -44,7 +44,16 @@ if [[ -d "${preload_dir}" ]]; then
     done
 fi
 
+# Set cozy-salt-svc password for SaltGUI PAM auth
+if [[ -n "${SALT_API_USER_PASS}" ]]; then
+    echo "cozy-salt-svc:${SALT_API_USER_PASS}" | chpasswd
+    echo "[entrypoint] cozy-salt-svc password set"
+else
+    echo "[entrypoint] WARNING: SALT_API_USER_PASS not set — SaltGUI login will fail"
+fi
+
 echo "[entrypoint] Initialising sqlite3 returner schema..."
+# TODO: place into it's own .py file
 python3 -c "
 import sqlite3, os, shutil
 target = '/srv/data/salt_returns.db'
@@ -72,5 +81,8 @@ wsdd --shortlog &
 echo "[entrypoint] Starting avahi-daemon..."
 avahi-daemon --no-drop-root --daemonize --debug &
 
+echo "[entrypoint] Starting Salt API..."
+salt-api -d --log-level=info
+
 echo "[entrypoint] Starting Salt Master..."
-exec salt-master -l debug
+exec salt-master --log-level=info

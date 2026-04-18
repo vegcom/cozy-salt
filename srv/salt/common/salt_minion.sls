@@ -1,6 +1,4 @@
 {%- set salt_master = salt['pillar.get']('salt:master', '') %}
-{%- set k3s_enabled = salt['pillar.get']('host:capabilities:k3s', False) %}
-{%- set k3s_role = salt['pillar.get']('k3s:role', 'agent') %}
 
 {%- if grains['os_family'] == 'Windows' %}
   {%- set minion_conf_dir = 'C:\\salt\\conf\\' %}
@@ -17,9 +15,6 @@
 {%- set minion_confd_obj = "" %}
 {%- if salt_master %}
 {%- set minion_confd_obj = "master: " ~ salt_master ~ "\n" %}
-{%- endif %}
-{%- if k3s_enabled and k3s_role == 'server' and grains['os_family'] != 'Windows' %}
-  {%- set minion_confd_obj = minion_confd_obj ~ "mine_functions:\n  k3s_kubeconfig:\n    - mine_function: file.read\n    - /etc/rancher/k3s/k3s.yaml\n" %}
 {%- endif %}
 
 salt_minion_conf:

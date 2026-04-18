@@ -66,8 +66,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Install Salt Master, Minion, and SSH from pre-configured repos
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-      netcat-openbsd avahi-daemon wsdd-server tini\
-      salt-master salt-minion salt-ssh && \
+      netcat-openbsd avahi-daemon wsdd-server tini \
+      salt-master salt-minion salt-api salt-ssh python3-cherrypy3 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/*
 
@@ -90,10 +90,20 @@ RUN chmod +x /usr/local/bin/entrypoint-master.sh
 # Copy avahi service files
 COPY srv/avahi/*.service /etc/avahi/services/
 
+# Setup SaltGUI
+ENV _GUI_VERSION=1.33.0
+RUN mkdir -p /saltgui && \
+    curl -fsSL https://github.com/erwindon/SaltGUI/archive/refs/tags/${_GUI_VERSION}.tar.gz | \
+    tar -xz --strip-components=2 -C /saltgui SaltGUI-${_GUI_VERSION}/saltgui
+
+# Create service account for SaltGUI PAM auth
+# Password set at runtime via SALT_API_PASSWORD env var in entrypoint
+RUN useradd -r -s /usr/sbin/nologin -M cozy-salt-svc
+
 # Note: Healthcheck is defined in docker-compose.yaml (preferred for flexibility)
 ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/entrypoint-master.sh"]
 
-EXPOSE 4505/tcp 4506/tcp 5353/udp
+EXPOSE 4505/tcp 4506/tcp 5353/udp 3333/tcp
 
 # ============================================================================
 # STAGE 3: salt-minion-deb

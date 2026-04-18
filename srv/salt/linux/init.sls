@@ -26,3 +26,4 @@ include:
   - linux.homebrew
   - linux.cozy-presence
   - linux.tailscale
+  - linux.avahi_service

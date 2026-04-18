@@ -42,6 +42,7 @@ services:
       - "4505"  # Master pub (ZeroMQ)
       - "4506"  # Minion ret (ZeroMQ)
       - "5353"  # Avahi (MDNS)
+      - "3333"  # SaltGUI (API interface)
     volumes:
       # Local service discovery
       - /var/run/dbus:/var/run/dbus
@@ -61,9 +62,12 @@ services:
       - ./srv/master.d:/etc/salt/master.d
       # Persistent job return data (sqlite3 returner)
       - ./srv/data:/srv/data
+      # Avahi
+      - ./srv/avahi:/etc/avahi/services
     environment:
       - SALT_API_ENABLED=True
       - SALT_API_USER_PASS=${SALT_API_USER_PASS:-4wesome-Pass0rd}
+      - _GUI_VERSION=1.33.0
     healthcheck:
       test: ["CMD", "nc", "-z", "127.0.0.1", "4505"]
       interval: 30s

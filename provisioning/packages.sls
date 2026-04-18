@@ -28,7 +28,7 @@
     'monitoring': _monitoring_base + ['duf', 'ncdu'],
     'shell_enhancements': _shell,
     'build_tools': _build_base + ['build-essential', 'pkg-config'],
-    'networking': _net_base + ['avahi-daemon', 'bind9-dnsutils', 'etcd-client', 'iputils-ping', 'net-tools', 'netcat-openbsd', 'openssh-client', 'openssh-server'],
+    'networking': _net_base + ['avahi-daemon', 'bind9-dnsutils', 'etcd-client', 'iputils-ping', 'net-tools', 'netcat-openbsd', 'openssh-client', 'openssh-server', 'wsdd-server'],
     'compression': _compress_base + ['7zip', 'xz-utils'],
     'vcs_extras': _vcs_base + ['gh'],
     'modern_cli': _modern_cli_base + ['fd-find'],
@@ -102,6 +102,7 @@ package_metadata:
     github_cli: {ubuntu: gh, debian: gh, rhel: gh, arch: github-cli}
     shellcheck: {ubuntu: shellcheck, debian: shellcheck, rhel: ShellCheck, arch: shellcheck}
     etcd_client: {ubuntu: etcd-client, debian: etcd-client, rhel: etcd-client, arch: etcd-bin}
+    wsdd-server: {ubuntu: wsdd-server, rhel: wsdd-server, arch: wsdd}
 
 # ============================================================================
 # DEBIAN/UBUNTU PACKAGES (apt-based, identical)
@@ -117,7 +118,7 @@ rhel:
   monitoring: {{ _monitoring_base | tojson }}
   shell_enhancements: {{ _shell_rhel | tojson }}
   build_tools: {{ (_build_base + ['gcc', 'gcc-c++', 'make']) | tojson }}
-  networking: {{ (_net_base + ['avahi', 'bind-utils', 'etcd-client', 'iputils', 'net-tools', 'nmap-ncat', 'openssh-clients', 'openssh-server']) | tojson }}
+  networking: {{ (_net_base + ['avahi', 'bind-utils', 'etcd-client', 'iputils', 'net-tools', 'nmap-ncat', 'openssh-clients', 'openssh-server', 'wsdd-server']) | tojson }}
   compression: {{ (_compress_base + ['p7zip', 'p7zip-plugins', 'xz']) | tojson }}
   vcs_extras: {{ _vcs_base | tojson }}
   modern_cli: {{ (_modern_cli_base + ['fd-find']) | tojson }}
@@ -133,7 +134,7 @@ arch:
   monitoring: {{ (_monitoring_base + ['duf', 'ncdu']) | tojson }}
   shell_enhancements: {{ (_shell + ['zsh', 'zsh-autosuggestions', 'zsh-syntax-highlighting']) | tojson }}
   build_tools: {{ (_build_base + ['base-devel']) | tojson }}
-  networking: {{ (_net_base + ['avahi', 'bind', 'etcd-bin', 'iputils', 'net-tools', 'openbsd-netcat', 'openssh']) | tojson }}
+  networking: {{ (_net_base + ['avahi', 'bind', 'etcd-bin', 'iputils', 'net-tools', 'openbsd-netcat', 'openssh', 'wsdd']) | tojson }}
   compression: {{ (_compress_base + ['p7zip', 'xz']) | tojson }}
   vcs_extras: {{ (_vcs_base + ['github-cli']) | tojson }}
   modern_cli: {{ (_modern_cli_base + ['fd']) | tojson }}
