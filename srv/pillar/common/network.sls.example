@@ -1,6 +1,7 @@
 # Network Configuration
 # DNS, hosts, and network-level settings for all platforms
 
+# Moving to srv/pillar/secrets/network.sls
 network:
   # DNS configuration (for bare metal/VMs, skipped in containers)
   dns:

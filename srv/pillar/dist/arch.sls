@@ -22,5 +22,5 @@ pacman:
       include: /etc/pacman.d/mirrorlist
     ownstuff:
       enabled: true
-      siglevel: never
+      siglevel: Never
       server: https://ftp.f3l.de/~martchus/$repo/os/$arch

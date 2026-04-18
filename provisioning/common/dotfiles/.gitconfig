@@ -41,6 +41,7 @@
   excludesfile = ~/.gitignore
   fileMode = false
   sharedRepository = group
+  sparseCheckout = true
 
 [merge]
   ff = only

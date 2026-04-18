@@ -90,7 +90,7 @@ exclude = [
     "venv",
 ]
 fix = false
-builtins = ["__salt__", "__grains__"]
+builtins = ["__salt__", "__grains__", "__pillar__"]
 line-length = 88
 indent-width = 2
 target-version = "py311"

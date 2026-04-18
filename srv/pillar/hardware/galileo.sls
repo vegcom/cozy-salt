@@ -4,7 +4,11 @@
 managed_users:
   - deck
 
-docker_enabled: True
+host:
+  capabilities:
+    kvm: true
+    k3s: true
+    docker: true
 
 display:
   rotation:

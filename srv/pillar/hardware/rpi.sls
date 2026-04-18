@@ -1,7 +1,10 @@
 #!jinja|yaml
 # RPI Hardware Class
 
-docker_enabled: True
+host:
+  capabilities:
+    k3s: true
+    docker: true
 
 rpi:
   # /boot/firmware/cmdline.txt
