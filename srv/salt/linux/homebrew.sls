@@ -28,21 +28,12 @@ homebrew_install:
     - creates: {{ homebrew_base }}/bin/brew
 
 homebrew_svc_acl:
-  acl.present:
-    - name: {{ homebrew_base }}
-    - acl_type: user
-    - acl_name: {{ service_user }}
-    - perms: rwx
-    - recurse: True
-    - require:
-      - cmd: homebrew_install
-
-homebrew_svc_acl_default:
-  acl.present:
-    - name: {{ homebrew_base }}
-    - acl_type: default:user
-    - acl_name: {{ service_user }}
-    - perms: rwx
+  cmd.run:
+    - name: |
+        setfacl -R -m u:{{ service_user }}:rwx {{ homebrew_base }}
+        setfacl -R -m d:u:{{ service_user }}:rwx {{ homebrew_base }}
+    - onlyif: test -d {{ homebrew_base }}
+    - unless: getfacl {{ homebrew_base }} 2>/dev/null | grep -q "user:{{ service_user }}:rwx"
     - require:
       - cmd: homebrew_install
 
