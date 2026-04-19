@@ -18,6 +18,7 @@ host:
   capabilities:
     kvm: {{ 'kvm-host' in salt['grains.get']('roles', []) }}
     k3s: {{ 'k3s-host' in salt['grains.get']('roles', []) }}
+    tailscale: true
   services:
     ssh_enabled: {{ not (salt['file.file_exists']('/.dockerenv') or salt['file.file_exists']('/run/.containerenv')) }}
 
@@ -125,6 +126,8 @@ capability_meta:
       - libvirt
   k3s:
     pillar_gate: host:capabilities:k3s
+  tailscale:
+    pillar_gate: host:capabilities:tailscale
   interpreters:
     state_name: interpreter_packages
   shell_history:

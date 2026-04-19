@@ -11,6 +11,7 @@
 #   capabilities:
 #     kvm: true
 #     k3s: true
+#     tailscale: false  # default true — disable only if not using tailscale
 
 k3s:
   # srv/salt/linux/k3s.sls
