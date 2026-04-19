@@ -39,6 +39,9 @@ packages_absent:
 
 packages_extra:
   arch:
+    packages_absent:
+      - packages_absent: [linux-firmware, linux-firmware-bnx2x, linux-firmware-liquidio, linux-firmware-marvell, linux-firmware-mellanox, linux-firmware-nfp, linux-firmware-qcom, linux-firmware-qlogic, linux-firmware-whence]
+      - absent_nodeps: []
     kernel: [linux-bazzite-bin]
     firmware:
       - linux-firmware-neptune
@@ -50,7 +53,7 @@ packages_extra:
       - linux-firmware-neptune-qcom
       - linux-firmware-neptune-qlogic
       - linux-firmware-neptune-whence
-    deck_tools: [alsa-ucm-conf, amd-ucode, caps, dkms, fan-control, noise-suppression-for-voice, sof-firmware, steamdeck-dkms, steamdeck-dsp, steamdeck-dsp-debug, upower, vpower, ludusavi-bin, steam-boilr-gui, hunspell, hunspell-fr, hunspell-en_gb, hunspell-en_us,hunspell-ja]
+    deck_tools: [alsa-ucm-conf, amd-ucode, caps, dkms, aur/jupiter-fan-control, noise-suppression-for-voice, sof-firmware, steamdeck-dkms, steamdeck-dsp, steamdeck-dsp-debug, upower, vpower, ludusavi-bin, hunspell, hunspell-fr, hunspell-en_gb, hunspell-en_us,hunspell-ja]
 
 pacman:
   repos:
