@@ -5,19 +5,17 @@
 
 wsdd_service:
   service.running:
-    - name: wsdd
-    - enable: True
-    - require:
-  {%- if grains['os_family'] == 'Arch' %}
-      - yay: wsdd
+  {%- if grains['os_family'] != 'Arch' %}
+    - name: wsdd-server
   {%- else %}
-      - pkg: wsdd-server
+    - name: wsdd
   {%- endif %}
+    - enable: True
 
 {%- else %}
 
 wsdd_service_:
-  test.noop:
+  test.nop:
     - name: "wsdd not enabled"
 
 {%- endif %}

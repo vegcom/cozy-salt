@@ -31,7 +31,7 @@
 
 tailscale_up:
   cmd.run:
-    - name: tailscale up --login-server {{ login_server }} --authkey {{ auth_key }}
+    - name: tailscale up --reset --login-server {{ login_server }} --authkey {{ auth_key }}
     - unless: tailscale status
 
 {% if flag_parts %}
@@ -45,7 +45,7 @@ tailscale_set:
 
 {% else %}
 tailscale_up_skipped:
-  test.noop:
+  test.nop:
     - name: >-
         tailscale skipped —
         {% if not enabled %}disabled via host:capabilities:tailscale

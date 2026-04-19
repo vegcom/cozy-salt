@@ -30,8 +30,6 @@ docker_proxy_file:
     - user: root
     - group: cozyusers
     - makedirs: True
-    - require:
-      - cmd: docker_install
 
 # Start docker-proxy service
 docker_proxy_service:

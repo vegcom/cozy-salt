@@ -22,7 +22,7 @@ include:
 
   {%- else %}
 avahi_:
-  test.noop:
+  test.nop:
     - name: "not placing.service fle"
   {%- endif %}
 avahi_enable:
