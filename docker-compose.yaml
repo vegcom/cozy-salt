@@ -75,6 +75,25 @@ services:
       retries: 3
       start_period: 10s
 
+  mongo:
+    image: mongo:7
+    container_name: mongo
+    hostname: mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: salt
+      MONGO_INITDB_ROOT_PASSWORD_FILE: /srv/data/mongo/password
+    volumes:
+      - ./srv/data:/srv/data:ro
+      - mongo-data:/data/db
+    networks:
+      - salt-net
+    depends_on:
+      salt:
+        condition: service_healthy
+    expose:
+      - "27017"
+
   # Ubuntu test minion - auto-applies highstate on startup
   salt-minion-ubuntu:
     <<: *minion-base
@@ -144,6 +163,7 @@ volumes:
   salt-cache:
   salt-logs:
   salt-pki:
+  mongo-data:
 
 networks:
   salt-net:

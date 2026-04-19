@@ -34,6 +34,11 @@ install_paths:
     linux: /opt/cozy/docker
     windows: C:\opt\cozy\docker
 
+  # Salt onedir installation
+  salt:
+    linux: /opt/saltstack/salt
+    windows: 'C:\Program Files\Salt Project\Salt'
+
   # Homebrew (Linux-only)
   homebrew:
     linux: /home/linuxbrew/.linuxbrew
@@ -47,6 +52,9 @@ config_paths:
   pip:
     windows: C:\ProgramData\pip\pip.ini
     linux: /etc/pip.conf
+  salt:
+    linux: /etc/salt
+    windows: 'C:\salt\conf'
   cozy:
     windows: C:\opt\cozy\etc
     linux: /opt/cozy/etc

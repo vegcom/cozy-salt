@@ -15,6 +15,7 @@ base:
     - common.paths
     - common.versions
     - common.scheduler
+    - common.mongo
     - mgmt
     - secrets
 
