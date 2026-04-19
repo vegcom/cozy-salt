@@ -116,7 +116,7 @@ Related: <https://github.com/saltstack/salt-bootstrap/pull/2101> (Arch onedir fi
 ```shell
 # Win-Stall on GNU/LInux
 # Example master is 10.0.0.220
-curl -L https://raw.githubusercontent.com/saltstack/salt-bootstrap/develop/bootstrap-salt.sh | sh -s -- -A 10.0.0.220 -i linux_minion onedir
+curl -L https://raw.githubusercontent.com/saltstack/salt-bootstrap/develop/bootstrap-salt.sh | sh -s -- -D -d -A salt -i linux_minion onedir latest
 ```
 
 ### Windows
@@ -124,8 +124,7 @@ curl -L https://raw.githubusercontent.com/saltstack/salt-bootstrap/develop/boots
 ```powershell
 # Install salt
 # Example master is 10.0.0.220
-Invoke-WebRequest -Uri https://packages.broadcom.com/artifactory/saltproject-generic/windows/3007.9/Salt-Minion-3007.9-Py3-AMD64-Setup.exe -OutFile "$env:TEMP\salt-minion.exe"
-& "$env:TEMP\salt-minion.exe" /S /master=10.0.0.220 /minion-name=windows-minion
+Invoke-WebRequest -Uri https://github.com/saltstack/salt-bootstrap/raw/refs/heads/develop/salt-quick-start.ps1 -OutFile "$env:TEMP\salt-quick-start.ps1" ; & "$env:TEMP\salt-quick-start.ps1"
 ```
 
 ### Theme and customization
@@ -136,6 +135,13 @@ Invoke-WebRequest -Uri https://packages.broadcom.com/artifactory/saltproject-gen
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the **3 rules** and development workflow.
+
+---
+
+## Thanks ♡
+
+- <https://github.com/saltstack/salt>
+- <https://github.com/erwindon/SaltGUI>
 
 ---
 
