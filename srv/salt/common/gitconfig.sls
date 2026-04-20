@@ -22,8 +22,8 @@ deploy_gitconfig_{{ username }}:
   file.managed:
     - name: {{ dotfiles.dotfile_path(user_home, '.gitconfig') }}
     - source: salt://common/dotfiles/.gitconfig
-    - user: {{ username }}
 {% if not is_windows %}
+    - user: {{ username }}
     - mode: "0644"
 {% else %}
     - win_perms_reset: True
@@ -39,8 +39,8 @@ deploy_git_credentials_{{ username }}:
         {%- for token in merged_tokens %}
         https://{{ username }}:{{ token }}@github.com
         {%- endfor %}
-    - user: {{ username }}
 {% if not is_windows %}
+    - user: {{ username }}
     - mode: "0600"
 {% else %}
     - win_perms_reset: True
@@ -55,8 +55,8 @@ deploy_gitattributes_{{ username }}:
   file.managed:
     - name: {{ dotfiles.dotfile_path(user_home, '.gitattributes') }}
     - source: salt://common/dotfiles/.gitattributes
-    - user: {{ username }}
 {% if not is_windows %}
+    - user: {{ username }}
     - mode: "0644"
 {% else %}
     - win_perms_reset: True
@@ -68,8 +68,8 @@ deploy_gitmessage_{{ username }}:
   file.managed:
     - name: {{ dotfiles.dotfile_path(user_home, '.gitmessage') }}
     - source: salt://common/dotfiles/.gitmessage
-    - user: {{ username }}
 {% if not is_windows %}
+    - user: {{ username }}
     - mode: "0644"
 {% else %}
     - win_perms_reset: True
@@ -82,8 +82,8 @@ deploy_gitignore_{{ username }}:
     - name: {{ dotfiles.dotfile_path(user_home, '.gitignore') }}
     - source: salt://common/dotfiles/.gitignore
     - replace: True
-    - user: {{ username }}
 {% if not is_windows %}
+    - user: {{ username }}
     - mode: "0644"
 {% else %}
     - win_perms_reset: True
@@ -109,8 +109,8 @@ deploy_gitconfig_local_{{ username }}:
     - replace: False
     - create: True
 {% endif %}
-    - user: {{ username }}
 {% if not is_windows %}
+    - user: {{ username }}
     - mode: "0644"
 {% endif %}
     - makedirs: True
@@ -120,7 +120,9 @@ deploy_git_template_{{ username }}:
   file.recurse:
     - name: {{ dotfiles.dotfile_path(user_home, '.git_template') }}
     - source: salt://common/dotfiles/.git_template
+{% if not is_windows %}
     - user: {{ username }}
+{% endif %}
 {% if not is_windows %}
     - dir_mode: "0755"
     - file_mode: "0644"
