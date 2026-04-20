@@ -22,8 +22,18 @@ cozy_presence_repo_dir:
     - mode: "0770"
     - makedirs: True
 
+# Fix .git ownership if repo was previously cloned as wrong user
+cozy_presence_fix_git_perms:
+  cmd.run:
+    - name: chown -R {{ run_user }}:cozyusers {{ cozy_presence_path }}/.git
+    - onlyif: test -d {{ cozy_presence_path }}/.git
+    - require:
+      - file: cozy_presence_repo_dir
+    - require_in:
+      - git: cozy_presence_repo
+
 # Clone cozy-presence repo (token from pillar)
-{{ git_repo('cozy-presence', cozy_presence_path, run_user, state_id='cozy_presence_repo' ,require_file='cozy_presence_repo_dir') }}
+{{ git_repo('cozy-presence', cozy_presence_path, run_user, state_id='cozy_presence_repo', require_file='cozy_presence_repo_dir') }}
 
 # Setup conda env
 cozy_presence_env_create:
