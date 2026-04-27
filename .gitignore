@@ -5,7 +5,6 @@ srv/pillar/secrets/init.sls
 srv/pillar/secrets/*.sls
 srv/pillar/host/*.sls
 srv/pillar/common/users.sls
-srv/pillar/common/network.sls
 scripts/pki/
 REPORT.md
 package.json
