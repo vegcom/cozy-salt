@@ -10,6 +10,7 @@ include:
   - windows.paths
   - windows.install
   - windows.config
+  - windows.sshd
   - windows.profiles
   - windows.nvm
   - windows.rust
