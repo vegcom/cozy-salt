@@ -2,6 +2,10 @@
 # /etc/profile.d/cozy.sh: System-wide shell environment configuration
 # Managed by Salt - DO NOT EDIT MANUALLY
 
+if ! "$(id -nG "$USER"|grep -e cozyusers &>/dev/null)" ; then
+  return 1
+fi
+
 #------------------------------------------------------------------------------
 # User TMPDIR
 #------------------------------------------------------------------------------
@@ -71,15 +75,17 @@ export TMUX_TMPDIR="${TMPDIR}/tmux"
 #------------------------------------------------------------------------------
 # Compile
 #------------------------------------------------------------------------------
-export CCACHE_DIR="${TMPDIR}/ccache"
-export CCACHE_SLOPPINESS="locale,time_macros"
-export CCACHE_PATH="/usr/bin"
-export CCACHE_MAXSIZE="8G"
-export CCACHE_COMPRESS=true
-export CC="ccache gcc"
-export CXX="ccache g++"
-export LD="ccache ld"
-export FC="ccache gfortran"
+if [ -f "$(which ccache)" ] ; then
+  export CCACHE_DIR="${TMPDIR}/ccache"
+  export CCACHE_SLOPPINESS="locale,time_macros"
+  export CCACHE_PATH="/usr/bin"
+  export CCACHE_MAXSIZE="8G"
+  export CCACHE_COMPRESS=true
+  export CC="ccache gcc"
+  export CXX="ccache g++"
+  export LD="ccache ld"
+  export FC="ccache gfortran"
+fi
 # ccache prefixes compiler calls with distcc when available
 # distcc compiles locally if DISTCC_HOSTS is unset
 [ -x /usr/bin/distcc ] && export CCACHE_PREFIX="distcc"
