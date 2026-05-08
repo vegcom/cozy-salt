@@ -137,6 +137,34 @@ pacman_update:
       - cmd: pacman_sync_repo
 
 # ============================================================================
+# MAKEPKG CONFIGURATION
+# ----------------------------------------------------------------------------
+# Manages /etc/makepkg.conf.d/cozy.conf for ccache + distcc integration
+# BUILDENV uses ccache only (distcc via CCACHE_PREFIX in cozy.sh)
+# DISTCC_HOSTS dynamically queried from headscale by tag:distcc_<arch>
+# ============================================================================
+{%- set distcc_hosts = salt['headscale.get_distcc_hosts']() %}
+
+makepkg_cozy_conf:
+  file.managed:
+    - name: /etc/makepkg.conf.d/cozy.conf
+    - mode: "0644"
+    - user: root
+    - group: root
+    - contents: |
+        #!/hint/bash
+        # Managed by cozy-salt - DO NOT EDIT MANUALLY
+
+        # ccache handles distcc via CCACHE_PREFIX (set in /etc/profile.d/cozy.sh)
+        # Do NOT enable distcc here - causes PATH conflicts with ccache
+        BUILDENV=(color ccache check !sign !distcc)
+
+        {%- if distcc_hosts %}
+        # distcc compile hosts (auto-discovered via headscale tag:distcc_x86_64)
+        DISTCC_HOSTS="{{ distcc_hosts }}"
+        {%- endif %}
+
+# ============================================================================
 # PACMAN DATABASE SYNC - Run before any package installation
 # ============================================================================
 pacman_sync:
@@ -262,19 +290,23 @@ yay_install:
 {%- set absent_normal = packages_absent.get('normal', []) %}
 
 {%- if absent_nodeps %}
-packages_absent_nodeps:
+  {%- for package in absent_normal %}
+packages_absent_nodeps_{{ package }}:
   cmd.run:
     - name: pacman -Rdd --noconfirm {{ absent_nodeps | join(' ') }} || true
     - require:
       - yay: core_utils_packages
+  {%- endfor %}
 {%- endif %}
 
 {%- if absent_normal %}
-packages_absent_normal:
+  {%- for package in absent_normal %}
+packages_absent_normal_{{ package }}:
   pkg.removed:
     - pkgs: {{ absent_normal | tojson }}
     - require:
       - yay: core_utils_packages
+  {%- endfor %}
 {%- endif %}
 
 # ============================================================================

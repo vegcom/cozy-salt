@@ -19,9 +19,13 @@ alias yay='yay_clean'
 yay_clean() {
   # Resolve the real yay binary every time with isolated environment
   env -i \
-    PATH=/usr/bin:/bin:/usr/sbin:/sbin \
+    PATH=/usr/lib/ccache/bin:/usr/bin:/bin:/usr/sbin:/sbin \
     HOME="$HOME" USER="$USER" SHELL="$SHELL" \
     LANG=en_US.UTF-8 \
+    DISTCC_HOSTS="${DISTCC_HOSTS:-}" \
+    CCACHE_PREFIX="${CCACHE_PREFIX:-distcc}" \
+    CCACHE_PATH="${CCACHE_PATH:-/usr/bin}" \
+    CCACHE_DIR="${CCACHE_DIR:-$HOME/.cache/ccache}" \
     PYTHON=/usr/bin/python PYTHONHOME= PYTHONPATH= \
     CONDA_PREFIX= CONDA_DEFAULT_ENV= CONDA_EXE= \
     NVM_DIR= NODE_PATH= npm_config_prefix= \
@@ -41,9 +45,13 @@ yay_fix() {
   # Rebuild all packages in clean environment
   # shellcheck disable=SC2046
   env -i \
-    PATH=/usr/bin:/bin:/usr/sbin:/sbin \
+    PATH=/usr/lib/ccache/bin:/usr/bin:/bin:/usr/sbin:/sbin \
     HOME="$HOME" USER="$USER" SHELL="$SHELL" \
     LANG=en_US.UTF-8 \
+    DISTCC_HOSTS="${DISTCC_HOSTS:-}" \
+    CCACHE_PREFIX="${CCACHE_PREFIX:-distcc}" \
+    CCACHE_PATH="${CCACHE_PATH:-/usr/bin}" \
+    CCACHE_DIR="${CCACHE_DIR:-$HOME/.cache/ccache}" \
     PYTHON=/usr/bin/python PYTHONHOME= PYTHONPATH= \
     CONDA_PREFIX= CONDA_DEFAULT_ENV= CONDA_EXE= \
     NVM_DIR= NODE_PATH= npm_config_prefix= \
@@ -62,9 +70,13 @@ yay_fix() {
   # Rebuild dependency packages
   # shellcheck disable=SC2046
   env -i \
-    PATH=/usr/bin:/bin:/usr/sbin:/sbin \
+    PATH=/usr/lib/ccache/bin:/usr/bin:/bin:/usr/sbin:/sbin \
     HOME="$HOME" USER="$USER" SHELL="$SHELL" \
     LANG=en_US.UTF-8 \
+    DISTCC_HOSTS="${DISTCC_HOSTS:-}" \
+    CCACHE_PREFIX="${CCACHE_PREFIX:-distcc}" \
+    CCACHE_PATH="${CCACHE_PATH:-/usr/bin}" \
+    CCACHE_DIR="${CCACHE_DIR:-$HOME/.cache/ccache}" \
     PYTHON=/usr/bin/python PYTHONHOME= PYTHONPATH= \
     CONDA_PREFIX= CONDA_DEFAULT_ENV= CONDA_EXE= \
     NVM_DIR= NODE_PATH= npm_config_prefix= \

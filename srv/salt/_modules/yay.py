@@ -19,6 +19,7 @@ Usage from states:
 """
 
 import logging
+import os
 
 log = logging.getLogger(__name__)
 
@@ -57,8 +58,10 @@ def _clean_env(runas):
     # locale
     "LANG": "en_US.UTF-8",
     "LC_ALL": "en_US.UTF-8",
-    # path — system only
-    "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+    # path — system + distcc for distributed builds
+    "PATH": "/usr/lib/distcc/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+    # distcc
+    "DISTCC_HOSTS": os.environ.get("DISTCC_HOSTS", ""),
     # xdg
     "XDG_CACHE_HOME": f"{home}/.cache",
     "XDG_CONFIG_HOME": f"{home}/.config",

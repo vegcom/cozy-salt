@@ -40,5 +40,19 @@ services:
       - "traefik.http.routers.registry.entrypoints=web"
       - "traefik.http.routers.registry.rule=PathPrefix(`/`)"
       - "traefik.http.services.registry.loadbalancer.server.port=5000"
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    command: --debug
+    environment:
+      WATCHTOWER_CLEANUP: 1
+      WATCHTOWER_INCLUDE_STOPPED: 1
+      WATCHTOWER_LIFECYCLE_HOOKS: 1
+      WATCHTOWER_POLL_INTERVAL: 300
+      WATCHTOWER_REVIVE_STOPPED: 1
+    restart: unless-stopped
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - /var/run/dbus:/var/run/dbus
 volumes:
   registry:

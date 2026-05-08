@@ -1,6 +1,6 @@
 #!jinja|yaml
 # ═══════════════════════════════════════════════════════════════
-# Pillar Load Order: common → os → dist → class → users → host
+# Pillar Load Order: common → os → dist → hw → users → class → host
 # Each layer can overwrite or append to previous layers
 # Host is LAST = final word on machine-specific overrides
 # ═══════════════════════════════════════════════════════════════
@@ -34,7 +34,7 @@ base:
     - match: compound
     - dist.arch
 
-  # Layer 4: Hardware class
+  # Layer 4: Hardware
   'G@biosvendor:Valve and G@boardname:Galileo':
     - match: compound
     - hardware.galileo
@@ -65,8 +65,13 @@ base:
     {% endif %}
     {% endfor %}
 
-  # Layer 6: Host-specific (FINAL - overrides everything)
+  # Layers 6+7: Class + Host-specific (single key, class before host)
 {% if salt['file.file_exists'](host_file) %}
+  {% set host_data = salt['slsutil.renderer'](path=host_file, default_renderer='jinja|yaml') %}
+  {% set host_classes = host_data.get('classes', []) %}
   '{{ hostname }}':
+    {% for cname in host_classes %}
+    - class.{{ cname }}
+    {% endfor %}
     - host.{{ hostname }}
 {% endif %}

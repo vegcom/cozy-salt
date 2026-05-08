@@ -5,10 +5,10 @@
 
 wsdd_service:
   service.running:
-  {%- if grains['os_family'] != 'Arch' %}
-    - name: wsdd-server
-  {%- else %}
+  {%- if grains['os_family'] == 'Arch' %}
     - name: wsdd
+  {%- else %}
+    - name: wsdd-server
   {%- endif %}
     - enable: True
 

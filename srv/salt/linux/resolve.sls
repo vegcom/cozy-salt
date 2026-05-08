@@ -21,7 +21,12 @@ dns_search_domain:
   file.managed:
     - name: /etc/resolv.conf
     - contents: |
-        search {{ dns.get('search_domain', 'local') }}
+        {%- set search_domains = dns.get('search_domains', dns.get('search_domain', ['local'])) %}
+        {%- if search_domains is string %}
+        search {{ search_domains }}
+        {%- else %}
+        search {{ search_domains | join(' ') }}
+        {%- endif %}
         {% for nameserver in dns.get('nameservers', ['10.0.0.1', '1.1.1.1', '1.0.0.1']) %}
         nameserver {{ nameserver }}
         {% endfor %}

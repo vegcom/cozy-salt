@@ -27,3 +27,4 @@ include:
   - linux.cozy-presence
   - linux.tailscale
   - linux.avahi_service
+  - linux.distcc

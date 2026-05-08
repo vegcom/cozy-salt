@@ -18,7 +18,7 @@ export TMPDIR USER_TMPDIR
 #------------------------------------------------------------------------------
 # k3s
 #------------------------------------------------------------------------------
-export KUBECONFIG=/etc/rancher/k3s/k3s.yaml:${HOME}/.kube/config
+export KUBECONFIG="${HOME}/.kube/config:/etc/rancher/k3s/k3s.yaml"
 
 #------------------------------------------------------------------------------
 # Editor Configuration
@@ -29,7 +29,7 @@ export PAGER=cat
 #------------------------------------------------------------------------------
 # Shell History Configuration
 #------------------------------------------------------------------------------
-export HISTFILE="$HOME/.$(basename $SHELL)-history"
+export HISTFILE="$HOME/.$(basename "$SHELL")-history"
 export HISTCONTROL=ignoredups:erasedups
 export HISTSIZE=500000
 export HISTFILESIZE=500000
@@ -74,13 +74,15 @@ export TMUX_TMPDIR="${TMPDIR}/tmux"
 export CCACHE_DIR="${TMPDIR}/ccache"
 export CCACHE_SLOPPINESS="locale,time_macros"
 export CCACHE_PATH="/usr/bin"
-export CCACHE_MAXSIZE="4G"
+export CCACHE_MAXSIZE="8G"
 export CCACHE_COMPRESS=true
-
 export CC="ccache gcc"
 export CXX="ccache g++"
 export LD="ccache ld"
 export FC="ccache gfortran"
+# ccache prefixes compiler calls with distcc when available
+# distcc compiles locally if DISTCC_HOSTS is unset
+[ -x /usr/bin/distcc ] && export CCACHE_PREFIX="distcc"
 
 #------------------------------------------------------------------------------
 # Local paths
@@ -93,4 +95,4 @@ export COZY_DOCKER=${COZY_PATH}/docker
 #------------------------------------------------------------------------------
 # PATH definition
 #------------------------------------------------------------------------------
-export PATH="/usr/lib/colorgcc/bin/:/usr/lib/ccache/bin:$HOME/bin:$HOME/.local/bin:$PATH"
+export PATH="/usr/lib/ccache/bin:/usr/lib/colorgcc/bin:$HOME/bin:$HOME/.local/bin:$PATH"

@@ -4,6 +4,9 @@
 # https://documentation.suse.com/cloudnative/k3s/latest/en/installation/configuration.html
 # https://documentation.suse.com/cloudnative/k3s/latest/en/cli/server.html
 # https://documentation.suse.com/cloudnative/k3s/latest/en/cli/agent.html
+#
+# https://docs.k3s.io/cli/agent
+# /etc/rancher/k3s/registries.yaml
 
 {%- set k3s_enabled = salt['pillar.get']('host:capabilities:k3s', False) %}
 
@@ -14,12 +17,25 @@ k3s_not_enabled:
     - name: Skipping k3s
 
 {%- else %}
+  {%- set k3s_data_dir = salt['pillar.get']('k3s:data_dir', '/var/lib/rancher/k3s') %}
+
+# System-wide env var so k3s CLI and etcdctl use correct data dir
+k3s_env_config:
+  file.managed:
+    - name: /etc/environment.d/cozy-k3s.conf
+    - contents: |
+        K3S_DATA_DIR={{ k3s_data_dir }}
+    - mode: '0644'
+    - makedirs: True
+
   {%- set k3s_auth = salt['pillar.get']('k3s:token') %}
   {%- set k3s_channel = salt['pillar.get']('k3s:channel', 'latest') %}
   {%- set k3s_server = salt['pillar.get']('k3s:server', 'https://k3s-server:6443') %}
   {%- set k3s_role = salt['pillar.get']('k3s:role', 'agent') %}
   {%- set k3s_kwargs = salt['pillar.get']('k3s:kwargs', '') %}
+  {%- set k3s_kwargs_opt = salt['pillar.get']('k3s:kwargs_opt', '') %}
   {%- set k3s_host = salt['pillar.get']('k3s:host') %}
+  {%- set k3s_advertise_address = salt['headscale.get_node_ip'](grains['id']) or '' %}
 
   {%- if k3s_role == "server" %}
     {%- set k3s_args = "server" %}
@@ -37,16 +53,21 @@ k3s_not_enabled:
 
   {%- set k3s_node_token = salt['mine.get'](k3s_host, 'k3s_node_token').get(k3s_host, k3s_auth) | trim %}
   {%- set k3s_auth_resolved = k3s_node_token if k3s_node_token else k3s_auth %}
+  {%- set k3s_bootstrap = salt['pillar.get']('k3s:bootstrap', False) %}
 
   {%- if k3s_role == "server" %}
-    {%- set k3s_kwargs_extra = "--debug --cluster-init --embedded-registry --secrets-encryption --prefer-bundled-bin --disable=servicelb --disable=traefik --disable-cloud-controller --flannel-backend=host-gw" ~ " " ~ "--advertise-port=6443" ~ " " ~ "--token=" ~ k3s_auth_resolved %}
+    {%- if k3s_bootstrap %}
+    {%- set k3s_kwargs_extra = "--cluster-init --embedded-registry --secrets-encryption --prefer-bundled-bin --disable=servicelb --disable=traefik --disable-cloud-controller --flannel-backend=host-gw --advertise-address=" ~ k3s_advertise_address ~ " --advertise-port=6443 --token=" ~ k3s_auth_resolved %}
+    {%- else %}
+    {%- set k3s_kwargs_extra = "--embedded-registry --secrets-encryption --prefer-bundled-bin --disable=servicelb --disable=traefik --disable-cloud-controller --flannel-backend=host-gw --server=" ~ k3s_server ~ " --advertise-address=" ~ k3s_advertise_address ~ " --advertise-port=6443 --token=" ~ k3s_auth_resolved %}
+    {%- endif %}
   {%- elif k3s_role == "loadbalancer" %}
-    {%- set k3s_kwargs_extra = "--debug --embedded-registry --secrets-encryption --prefer-bundled-bin --disable=servicelb --disable=traefik --disable-cloud-controller --flannel-backend=host-gw" ~ " " ~ "--server=" ~ k3s_server ~ " " ~ "--advertise-port=6443" ~ " " ~ "--token=" ~ k3s_auth_resolved %}
+    {%- set k3s_kwargs_extra = "--embedded-registry --secrets-encryption --prefer-bundled-bin --disable=servicelb --disable=traefik --disable-cloud-controller --flannel-backend=host-gw" ~ " " ~ "--server=" ~ k3s_server ~ " " ~ "--advertise-address=" ~ k3s_advertise_address ~ " " ~ "--advertise-port=6443" ~ " " ~ "--token=" ~ k3s_auth_resolved %}
   {%- else %}
-    {%- set k3s_kwargs_extra = "--debug --prefer-bundled-bin --disable-apiserver-lb" ~ " " ~ "--server=" ~ k3s_server ~ " " ~ "--token=" ~ k3s_auth_resolved %}
+    {%- set k3s_kwargs_extra = "--prefer-bundled-bin --disable-apiserver-lb" ~ " " ~ "--server=" ~ k3s_server ~ " " ~ "--token=" ~ k3s_auth_resolved %}
   {%- endif %}
 
-  {%- set k3s_exec = [k3s_args, k3s_kwargs, k3s_kwargs_extra] | join(' ') | trim %}
+  {%- set k3s_exec = [k3s_args, k3s_kwargs, k3s_kwargs_opt, k3s_kwargs_extra] | join(' ') | trim %}
   {%- set kubeconfig_raw = salt['mine.get'](k3s_host, 'k3s_kubeconfig').get(k3s_host, '') %}
   {%- set kubeconfig = kubeconfig_raw | replace('https://127.0.0.1:6443', k3s_server) if kubeconfig_raw else '' %}
 
@@ -73,7 +94,7 @@ k3s_uninstall_script:
   cmd.run:
     - name: {{ k3s_uninstall_script }}
     - env:
-      - K3S_DATA_DIR: {{ salt['pillar.get']('k3s:data_dir', '/var/lib/rancher/k3s') }}
+      - K3S_DATA_DIR: {{ k3s_data_dir }}
     - onfail:
       - service: k3s_service_start
 

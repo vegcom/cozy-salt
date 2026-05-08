@@ -37,7 +37,6 @@ docker_proxy_service:
     - name: docker compose -f {{ docker_proxy_config }} up -d
     - require:
       - file: docker_proxy_file
-    - unless: docker ps | grep -q docker-socket-proxy
 {% else %}
 # Docker proxy skipped (non-Debian or container)
 docker_proxy_file:

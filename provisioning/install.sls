@@ -43,7 +43,8 @@ monitoring_packages:
     - pkgs: {{ packages[os_name].monitoring | tojson }}
     - require:
       - pkg: core_utils_packages
-    - onfail_stop: True
+    - onfail_stop:
+      - True
 
 # Shell customization and enhancements
 shell_packages:
@@ -51,7 +52,8 @@ shell_packages:
     - pkgs: {{ packages[os_name].shell_enhancements | tojson }}
     - require:
       - pkg: core_utils_packages
-    - onfail_stop: True
+    - onfail_stop:
+      - True
 
 # Build tools and compilers
 build_packages:
@@ -59,7 +61,8 @@ build_packages:
     - pkgs: {{ packages[os_name].build_tools | tojson }}
     - require:
       - pkg: core_utils_packages
-    - onfail_stop: True
+    - onfail_stop:
+      - True
 
 # Networking tools
 networking_packages:
@@ -67,7 +70,8 @@ networking_packages:
     - pkgs: {{ packages[os_name].networking | tojson }}
     - require:
       - pkg: core_utils_packages
-    - onfail_stop: True
+    - onfail_stop:
+      - True
 
 # Compression and archive tools
 compression_packages:
@@ -75,7 +79,8 @@ compression_packages:
     - pkgs: {{ packages[os_name].compression | tojson }}
     - require:
       - pkg: core_utils_packages
-    - onfail_stop: True
+    - onfail_stop:
+      - True
 
 # Version control extras (git-lfs, gh, tig)
 vcs_packages:
@@ -83,7 +88,8 @@ vcs_packages:
     - pkgs: {{ packages[os_name].vcs_extras | tojson }}
     - require:
       - pkg: core_utils_packages
-    - onfail_stop: True
+    - onfail_stop:
+      - True
 
 # Modern CLI tools (ripgrep, fd, bat, fzf)
 # Note: Some not available in RHEL base repos
@@ -92,7 +98,8 @@ modern_cli_packages:
     - pkgs: {{ packages[os_name].modern_cli | tojson }}
     - require:
       - pkg: core_utils_packages
-    - onfail_stop: True
+    - onfail_stop:
+      - True
 
 # Security and certificates
 security_packages:
@@ -100,7 +107,8 @@ security_packages:
     - pkgs: {{ packages[os_name].security | tojson }}
     - require:
       - pkg: core_utils_packages
-    - onfail_stop: True
+    - onfail_stop:
+      - True
 
 # Access control lists
 acl_packages:
@@ -108,7 +116,8 @@ acl_packages:
     - pkgs: {{ packages[os_name].acl | tojson }}
     - require:
       - pkg: core_utils_packages
-    - onfail_stop: True
+    - onfail_stop:
+      - True
 
 # Install KVM/Virtualization packages (only on designated test hosts)
 # To enable, set pillar: host:capabilities:kvm: true
@@ -118,7 +127,8 @@ kvm_packages:
     - pkgs: {{ packages[os_name].kvm | tojson }}
     - require:
       - pkg: core_utils_packages
-    - onfail_stop: True
+    - onfail_stop:
+      - True
 
 # Enable and start libvirt service
 libvirtd_service:

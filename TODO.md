@@ -130,10 +130,19 @@ OPTIONS=(!strip docs libtool staticlibs emptydirs zipman !purge debug lto !autod
 
 ```shell
 # ✦ makepkg_sys: provide distcc config/usage gate similar to k3s selection
-DISTCC_HOSTS="localhost/9 10.0.0.0/16"
+DISTCC_HOSTS="localhost/9 10.0.0.0/16 100.64.0.0/10"
 ```
 
-```shell
+>[!NOTE]
+>
+> User in `srv/salt/linux/archlinux`
+
+```yaml | jinja
+# ✦ makepkg_user: builddir
+BUILDDIR={{user_home}}/scratch/ccache
+```
+
+```yaml | jinja
 # ✦ makepkg_usr: keys via salt/pillar
 GPGKEY="abc_123"
 ```

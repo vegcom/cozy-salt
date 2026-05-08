@@ -29,7 +29,10 @@ def _get(path):
   """Make a GET request to the headscale API."""
   import salt.utils.http
 
-  url = _base_url() + path
+  base = _base_url()
+  if not base:
+    return {}
+  url = base + path
   result = salt.utils.http.query(
     url,
     method="GET",
@@ -110,3 +113,41 @@ def node_map(ipv6=False):
     if name and len(ips) > idx:
       result[name] = ips[idx]
   return result
+
+
+def get_nodes_by_tag(tag, online_only=True):
+  """
+  Return nodes with a specific tag.
+
+  tag
+      Tag to filter by (e.g. "tag:distcc_x86_64")
+  online_only
+      If True, only return online nodes. Default True.
+
+  CLI example::
+
+      salt 'guava' headscale.get_nodes_by_tag tag:distcc_x86_64
+  """
+  nodes = get_online_nodes() if online_only else get_nodes()
+  # Tags may include "tag:" prefix or not
+  tag_normalized = tag if tag.startswith("tag:") else f"tag:{tag}"
+  return [n for n in nodes if tag_normalized in n.get("tags", [])]
+
+
+def get_distcc_hosts(tag="distcc", online_only=True):
+  """
+  Return space-separated hostnames for DISTCC_HOSTS.
+
+  tag
+      Tag name without 'tag:' prefix (e.g. "distcc", "distcc-arm64"). Default "distcc".
+  online_only
+      If True, only return online nodes. Default True.
+
+  CLI example::
+
+      salt 'guava' headscale.get_distcc_hosts
+      salt 'guava' headscale.get_distcc_hosts tag=distcc-arm64
+  """
+  nodes = get_nodes_by_tag(f"tag:{tag}", online_only=online_only)
+  hostnames = [n.get("givenName") or n.get("name") for n in nodes]
+  return " ".join(hostnames)

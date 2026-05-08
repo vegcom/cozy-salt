@@ -11,8 +11,9 @@
 {%- set embedding_dim = salt['pillar.get']('services:embedding:langcache:dim', '') -%}
 {%- set cozy_presence_cfg = "/opt/cozy/etc/cozy-presence.conf" %}
 {%- set cozy_presence_bin = cozy_presence_env + "/bin" %}
+{%- set cozy_presence_enabled = salt['pillar.get']('host:capabilities:cozy_presence', False) -%}
 
-{%- if run_user and not is_container and token %}
+{%- if run_user and not is_container and token and cozy_presence_enabled %}
 # Create /opt/cozy/ with correct ownership (always enforced, no creates guard)
 cozy_presence_repo_dir:
   file.directory:
