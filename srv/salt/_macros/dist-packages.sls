@@ -38,8 +38,6 @@
     - pkgs: {{ packages[os_name][cap_key] | tojson }}
     - require:
       - pkg: core_utils_packages
-    - onfail_stop:
-      - True
 
 {% if cap_meta.get('has_service') %}
 {{ cap_meta.has_service }}_service:

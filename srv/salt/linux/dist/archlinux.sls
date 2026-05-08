@@ -254,7 +254,6 @@ yay_install:
     - runas: {{ service_user }}
     - require:
       - yay: core_utils_packages
-    - onfail_stop: True
 
 {# Post-install: Enable service if specified #}
 {%- if cap_meta.get('has_service') %}
