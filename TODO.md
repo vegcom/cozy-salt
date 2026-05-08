@@ -253,3 +253,23 @@ env LD_PRELOAD="$LD_PRELOAD" GLFW_IM_MODULE="ibus"
   - <https://github.com/ValveSoftware/gamescope/issues/107>
   - <https://www.reddit.com/r/linux_gaming/comments/15s4yz0/gamescope_fails_to_start_with_vulkan_error/>
   - <https://wiki.archlinux.org/title/Steam/Troubleshooting#Steam_runtime>
+
+## Mess
+
+- [x] salt gate pillar secrets loads
+  - [x] /home/vegcom/git/cozy-salt/srv/pillar/secrets/init.sls
+- [x] gw get tcpdups
+  - [x] to
+  - [x] from
+- [ ] udev rules
+  - <https://www.irongeek.com/i.php?page=security/plug-and-prey-malicious-usb-devices#3.2_Locking_down_Linux_using_UDEV>
+- [ ] iptables rules
+- [x] docker `daemon.json`
+  - [x] pillar - config_paths:docker
+  - [ ] state - srv/salt/linux/docker.sls
+- [x] headscale
+  - [x] /home/vegcom/git/cozy-headscale/make/headscale.mk -- refactor and make warmer
+  - [x] /home/vegcom/git/cozy-salt/srv/pillar/secrets/headscale.sls --  post wipe
+- [ ] k3s/docker class pillar not merging via recurse strategy
+  - [ ] use slsutil.renderer + slsutil.merge in state instead of pillar merge
+  - [ ] same pattern as docker daemon.json jq merge approach
