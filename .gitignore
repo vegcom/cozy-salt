@@ -1,7 +1,6 @@
 srv/salt/keys/minion/
 srv/salt/keys/master/
 srv/pillar/users/*.sls
-srv/pillar/secrets/init.sls
 srv/pillar/secrets/*.sls
 srv/pillar/host/*.sls
 srv/pillar/common/users.sls
@@ -22,5 +21,5 @@ CLAUDE.md
 .claude/
 !srv/pillar/users/demo_user.sls
 !srv/pillar/users/demo_admin.sls
-!srv/pillar/secrets/init.sls.example
+!srv/pillar/secrets/init.sls
 !srv/pillar/host/example.sls
