@@ -18,7 +18,7 @@
   {%- endif %}
 {%- endfor %}
 {#- add base includes  #}
-{%- set includes_list = ["git", "mgmt", "salt", "services", "network"] %}
+{%- set includes_list = ["git", "mgmt", "salt", "services", "network", "headscale"] %}  # FIXME: 'headscale' added to overcome render bug
 {%- if includes_list %}
 include:
   {%- for include in includes_list + capabilities_list %}

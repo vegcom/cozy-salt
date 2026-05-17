@@ -8,6 +8,7 @@
 # https://docs.k3s.io/cli/agent
 # /etc/rancher/k3s/registries.yaml
 
+
 {%- set k3s_enabled = salt['pillar.get']('host:capabilities:k3s', False) %}
 
 {%- if not k3s_enabled %}
@@ -36,6 +37,8 @@ k3s_env_config:
   {%- set k3s_kwargs_opt = salt['pillar.get']('k3s:kwargs_opt', '') %}
   {%- set k3s_host = salt['pillar.get']('k3s:host') %}
   {%- set k3s_advertise_address = salt['headscale.get_node_ip'](grains['id']) or '' %}
+  {%- set _default_iface = salt['netinfo.default_gw']() %}
+  {%- set k3s_flannel_iface = salt['pillar.get']('k3s:flannel_iface', 'tailscale0') %}
 
   {%- if k3s_role == "server" %}
     {%- set k3s_args = "server" %}

@@ -34,7 +34,7 @@ docker_proxy_file:
 # Start docker-proxy service
 docker_proxy_service:
   cmd.run:
-    - name: docker compose -f {{ docker_proxy_config }} up -d
+    - name: docker --context=default compose -f {{ docker_proxy_config }} up -d
     - require:
       - file: docker_proxy_file
 {% else %}

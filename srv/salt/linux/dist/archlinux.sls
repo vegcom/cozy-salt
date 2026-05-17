@@ -147,18 +147,29 @@ pacman_update:
 
 makepkg_cozy_conf:
   file.managed:
-    - name: /etc/makepkg.conf.d/cozy.conf
+    - name:
+      - /etc/makepkg.conf.d/cozy.conf
     - mode: "0644"
     - user: root
     - group: root
     - contents: |
         #!/hint/bash
         # Managed by cozy-salt - DO NOT EDIT MANUALLY
+        BUILDENV=(color ccache check)
+        {%- if distcc_hosts %}
+        # distcc compile hosts (auto-discovered via headscale tag:distcc_x86_64)
+        DISTCC_HOSTS="{{ distcc_hosts }}"
+        {%- endif %}
 
-        # ccache handles distcc via CCACHE_PREFIX (set in /etc/profile.d/cozy.sh)
-        # Do NOT enable distcc here - causes PATH conflicts with ccache
-        BUILDENV=(color ccache check !sign !distcc)
-
+makepkg_environment.d_conf:
+  file.managed:
+    - name:
+      - /etc/environment.d/cozy-distcc.conf
+    - mode: "0644"
+    - user: root
+    - group: root
+    - contents: |
+        # Managed by cozy-salt - DO NOT EDIT MANUALLY
         {%- if distcc_hosts %}
         # distcc compile hosts (auto-discovered via headscale tag:distcc_x86_64)
         DISTCC_HOSTS="{{ distcc_hosts }}"

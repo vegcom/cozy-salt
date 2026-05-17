@@ -5,7 +5,7 @@
 
 wsdd_service:
   service.running:
-  {%- if grains['os_family'] == 'Arch' %}
+  {%- if grains['os_family'] == 'Arch' or grains['os_family'] == 'Debian' %}
     - name: wsdd
   {%- else %}
     - name: wsdd-server

@@ -16,12 +16,12 @@
 {%- if run_user and not is_container and token and cozy_presence_enabled %}
 # Create /opt/cozy/ with correct ownership (always enforced, no creates guard)
 cozy_presence_repo_dir:
-  file.directory:
-    - name: /opt/cozy/
-    - user: {{ run_user }}
-    - group: cozyusers
-    - mode: "0770"
-    - makedirs: True
+ file.directory:
+   - name: {{ cozy_presence_path }}
+   - user: {{ run_user }}
+   - group: cozyusers
+   - mode: "0770"
+   - makedirs: True
 
 # Fix .git ownership if repo was previously cloned as wrong user
 cozy_presence_fix_git_perms:

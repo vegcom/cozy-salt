@@ -65,13 +65,13 @@ base:
     {% endif %}
     {% endfor %}
 
-  # Layers 6+7: Class + Host-specific (single key, class before host)
+  # Layer 6: Class (self-gating via grains, all hosts)
+  'G@kernel:*':
+    - match: compound
+    - class
+
+  # Layer 7: Host-specific (FINAL - overrides everything)
 {% if salt['file.file_exists'](host_file) %}
-  {% set host_data = salt['slsutil.renderer'](path=host_file, default_renderer='jinja|yaml') %}
-  {% set host_classes = host_data.get('classes', []) %}
   '{{ hostname }}':
-    {% for cname in host_classes %}
-    - class.{{ cname }}
-    {% endfor %}
     - host.{{ hostname }}
 {% endif %}

@@ -6,6 +6,8 @@
 {%- set cozy_config = salt['pillar.get']('config_paths:cozy:linux') %}
 {%- set cozy_bin = salt['pillar.get']('install_paths:cozy:linux') %}
 
+# TODO: iterate over files in path rather than 1 offs
+
 etc_path:
   file.directory:
     - name: /etc/
@@ -84,7 +86,7 @@ cozy_opt_dir:
     - name: /opt/cozy
     - source: salt://linux/files/opt-cozy
     - makedirs: True
-    - mode: "0775"
+    - mode: "0755"
     - order: 1
     - recurse:
       - user
@@ -96,8 +98,8 @@ cozy_opt_bin:
     - source: salt://linux/files/opt-cozy-bin
     - include_empty: True
     - clean: False
-    - dir_mode: "0775"
-    - file_mode: "0774"
+    - dir_mode: "0755"
+    - file_mode: "0755"
     - recurse:
       - user
       - group
@@ -111,11 +113,68 @@ cozy_opt_etc:
     - source: salt://linux/files/opt-cozy-etc
     - include_empty: True
     - clean: False
-    - dir_mode: "0775"
-    - file_mode: "0774"
+    - dir_mode: "0755"
+    - file_mode: "0755"
     - order: 0
     - require:
+      - file: cozy_opt_etc_path
+
+cozy_opt_etc_path:
+  file.directory:
+    - name: {{ cozy_config }}
+    - user: root
+    - group: root
+    - mode: "0755"
+    - require:
       - file: cozy_opt_dir
+
+cozy_opt_etc_profile.d:
+  file.recurse:
+    - name: {{ cozy_config }}/profile.d
+    - source: salt://linux/files/opt-cozy-etc-profile.d
+    - include_empty: True
+    - clean: False
+    - dir_mode: "0755"
+    - file_mode: "0655"
+    - recurse:
+      - user
+      - group
+    - order: 0
+    - require:
+      - file: cozy_opt_etc_profile.d_path
+
+cozy_opt_etc_profile.d_path:
+  file.directory:
+    - name: {{ cozy_config }}/environment.d
+    - user: root
+    - group: root
+    - mode: "0755"
+    - require:
+      - file: cozy_opt_etc
+
+cozy_opt_etc_environment.d:
+  file.recurse:
+    - name: {{ cozy_config }}/environment.d
+    - source: salt://linux/files/opt-cozy-etc-environment.d
+    - include_empty: True
+    - clean: False
+    - user: root
+    - group: root
+    - dir_mode: "0755"
+    - file_mode: "0655"
+    - recurse:
+      - user
+      - group
+    - order: 0
+    - require:
+      - file: cozy_opt_etc_environment.d_path
+
+cozy_opt_etc_environment.d_path:
+  file.directory:
+    - name: {{ cozy_config }}/environment.d
+    - user: root
+    - group: root
+    - mode: "0755"
 
 etc_systemd_path:
   file.directory:

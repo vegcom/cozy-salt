@@ -11,14 +11,14 @@
 # SHARED PACKAGE LISTS (DRY - referenced by distro sections below)
 # ============================================================================
 {% set _core = ['curl', 'git', 'jq', 'rsync', 'tree', 'unzip', 'wget', 'aria2', 'dkms'] %}
-{% set _monitoring_base = ['htop', 'lsof', 'ltrace', 'strace', 'sysstat'] %}
+{% set _monitoring_base = ['htop', 'lsof', 'ltrace', 'strace', 'sysstat', 'cyme'] %}
 {% set _shell = ['bash-completion', 'screen', 'tmux', 'shellcheck', 'zsh'] %}
 {% set _shell_rhel = (_shell | reject('equalto', 'shellcheck') | list) + ['ShellCheck'] %}
 {% set _build_base = ['autoconf', 'automake', 'cmake'] %}
 {% set _net_base = ['nmap', 'socat', 'tcpdump', 'traceroute'] %}
 {% set _compress_base = ['bzip2', 'zip'] %}
 {% set _vcs_base = ['git-lfs', 'tig'] %}
-{% set _modern_cli_base = ['bat', 'fzf', 'ripgrep'] %}
+{% set _modern_cli_base = ['bat', 'ripgrep'] %}
 
 # ============================================================================
 # APT-BASED (Debian/Ubuntu) - single definition, both reference it
@@ -77,7 +77,7 @@ package_metadata:
 
   optional:
     dev_extras: [gh, git-lfs, tig, lazygit]
-    modern_cli_tools: [bat, fd, ripgrep, fzf, duf, ncdu, eza, zoxide]
+    modern_cli_tools: [bat, fd, ripgrep, duf, ncdu, eza, zoxide]
     shell_extras: [zsh-autosuggestions, zsh-syntax-highlighting, starship]
 
   required:
@@ -173,7 +173,7 @@ windows:
       editor: [Obsidian.Obsidian]
       file_management: [7zip.7zip, WinSCP.WinSCP]
       games: [Valve.Steam]
-      hardware: [BitSum.ParkControl, BitSum.ProcessLasso, Guru3D.RTSS, TechPowerUp.NVCleanstall, Wagnardsoft.DisplayDriverUninstaller, REALiX.HWiNFO, TechPowerUp.GPU-Z]
+      hardware: [BitSum.ParkControl, BitSum.ProcessLasso, Guru3D.RTSS, TechPowerUp.NVCleanstall, Wagnardsoft.DisplayDriverUninstaller, REALiX.HWiNFO, TechPowerUp.GPU-Z, tuna-f1sh.cyme]
       kubernetes: [Kubecolor.kubecolor, Freelensapp.Freelens]
       media_creative: [Audacity.Audacity, Cockos.REAPER, Inkscape.Inkscape, KDE.Krita, rocksdanister.LivelyWallpaper]
       media: [ImageMagick.ImageMagick, Ruben2776.PicView, Gyan.FFmpeg, HandBrake.HandBrake, SplitmediaLabs.XSplitBroadcaster]
@@ -216,4 +216,4 @@ npm_global:
   - tsx
   - webpack
 
-brew: [atuin, carapace, pandoc, weasyprint, zoxide, dive, starship, direnv, claude-code]
+brew: [atuin, carapace, pandoc, weasyprint, zoxide, dive, starship, direnv, claude-code, kubecolor, fzf]

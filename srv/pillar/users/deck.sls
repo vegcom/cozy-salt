@@ -6,7 +6,7 @@
 users:
   deck:
     fullname: SteamDeck - A cozy little crashcart
-    shell: /bin/bash
+    shell: /bin/zsh
     home_prefix: /home
     uid: 4001
     gid: 4001

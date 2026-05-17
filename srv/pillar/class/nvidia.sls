@@ -1,6 +1,6 @@
 {#- NVIDIA container runtime config for docker + k3s #}
-{%- if grains['kernel'] == "Linux" and grains['gpu_vendor'] == "nvidia" %}
-docker:
+{%- if grains['kernel'] == "Linux" and grains.get('gpu_vendor', '') == "nvidia" %}
+docker_class:
   default-runtime: nvidia
   experimental: true
   features:
@@ -9,6 +9,6 @@ docker:
     nvidia:
       path: nvidia-container-runtime
       args: []
-k3s:
+k3s_class:
   kwargs_opt: "--default-runtime=nvidia"
 {%- endif %}
