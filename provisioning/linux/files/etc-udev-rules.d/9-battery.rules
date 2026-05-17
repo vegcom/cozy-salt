@@ -1,0 +1,6 @@
+# Managed by Salt - DO NOT EDIT MANUALLY
+
+# https://www.man7.org/linux/man-pages/man7/udev.7.html
+# https://wiki.archlinux.org/title/Steam_Deck#Battery_limiting
+
+ACTION=="add|change", SUBSYSTEM=="hwmon", ATTR{name}=="steamdeck_hwmon", ATTR{max_battery_charge_level}="65"
