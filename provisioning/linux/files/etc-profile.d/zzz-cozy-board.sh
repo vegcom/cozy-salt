@@ -1,12 +1,18 @@
 #!/bin/bash
+# Managed by Salt - DO NOT EDIT MANUALLY
+
+
+
 #-----------------------------------------------
 # Only run when sourced
 (return 0 2>/dev/null) || exit 0
 
-# Gate, only run for interactive root ssh sessions
+# Gate, only run for interactive
 case $- in *i*) ;; *) return ;; esac
+
+# Gate, only run foor root ssh sessions
 [ "${EUID:-$(id -u)}" -ne 0 ] && return
-[ -z "$SSH_CONNECTION" ] && return
+# [ -n "$SSH_CONNECTION" ] && return
 
 
 #-----------------------------------------------
@@ -95,9 +101,9 @@ docker_mem() {
 #-----------------------------------------------
 # Detect SSH
 if [ -n "$SSH_CONNECTION" ]; then
-    host_label="$(hostname) (ssh)"
+    host_label="${HOSTNAME:-localhost} (ssh)"
 else
-    host_label="$(hostname)"
+    host_label="${HOSTNAME:-localhost}"
 fi
 
 

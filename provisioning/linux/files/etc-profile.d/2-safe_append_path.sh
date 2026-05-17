@@ -1,5 +1,5 @@
-#!/bin/bash
-# 2-path.sh
+#!/bin/sh
+# Managed by Salt - DO NOT EDIT MANUALLY
 
 # Salt onedir installs go here
 safe_append_path '/opt/saltstack/salt'

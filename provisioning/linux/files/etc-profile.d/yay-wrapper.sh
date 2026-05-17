@@ -1,7 +1,10 @@
-#!/bin/bash
+#!/bin/sh
+# Managed by Salt - DO NOT EDIT MANUALLY
+
 # /etc/profile.d/yay-wrapper.sh: YAY AUR helper environment isolation (Arch Linux only)
 # Deployed by salt to clean yay execution environment
-# Managed by Salt - DO NOT EDIT MANUALLY
+
+
 
 # Only apply on Arch Linux / derivative systems
 if [ ! -f /etc/arch-release ] ; then
@@ -35,9 +38,6 @@ yay_clean() {
     PERL5LIB= PERL_LOCAL_LIB_ROOT= PERL_MB_OPT= PERL_MM_OPT= \
     JAVA_HOME= \
     QT_PLUGIN_PATH= QT_QPA_PLATFORMTHEME= QT_STYLE_OVERRIDE= \
-    CC= CXX= LD= AR= NM= STRIP= OBJCOPY= OBJDUMP= \
-    CFLAGS= CXXFLAGS= LDFLAGS= CPPFLAGS= \
-    MAKEFLAGS="-j$(nproc)" \
     "/usr/bin/yay" "$@"
 }
 
@@ -61,9 +61,6 @@ yay_fix() {
     PERL5LIB= PERL_LOCAL_LIB_ROOT= PERL_MB_OPT= PERL_MM_OPT= \
     JAVA_HOME= \
     QT_PLUGIN_PATH= QT_QPA_PLATFORMTHEME= QT_STYLE_OVERRIDE= \
-    CC= CXX= LD= AR= NM= STRIP= OBJCOPY= OBJDUMP= \
-    CFLAGS= CXXFLAGS= LDFLAGS= CPPFLAGS= \
-    MAKEFLAGS="-j$(nproc)" \
     "/usr/bin/yay" -S --noconfirm --asexplicit --answerclean All --rebuildall \
     $(/usr/bin/yay -Qneq)
 
@@ -86,13 +83,10 @@ yay_fix() {
     PERL5LIB= PERL_LOCAL_LIB_ROOT= PERL_MB_OPT= PERL_MM_OPT= \
     JAVA_HOME= \
     QT_PLUGIN_PATH= QT_QPA_PLATFORMTHEME= QT_STYLE_OVERRIDE= \
-    CC= CXX= LD= AR= NM= STRIP= OBJCOPY= OBJDUMP= \
-    CFLAGS= CXXFLAGS= LDFLAGS= CPPFLAGS= \
-    MAKEFLAGS="-j$(nproc)" \
     "/usr/bin/yay" -S --noconfirm --asdeps --answerclean All --rebuildall \
     $(/usr/bin/yay -Qndq)
 }
 
 
-BUILDDIR=${HOME}/scratch/
+BUILDDIR=${HOME}/scratch/yay
 export BUILDDIR

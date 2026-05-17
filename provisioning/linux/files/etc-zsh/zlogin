@@ -1,12 +1,14 @@
 #!/bin/zsh
 # Managed by Salt - DO NOT EDIT MANUALLY
 
-export ZSH_DISABLE_COMPFIX="true"
+if [ -n "${__ETC_ZSH_ZLOGIN_SOURCED}" ]; then
+  return 0
+fi
 
 # shellcheck disable=SC1009
-if [ -d /opt/cozy/etc/environment.d ]; then
+if [ -d /etc/login.d ]; then
   # shellcheck  disable=SC1072 disable=SC1073
-  for i in $(find /opt/cozy/etc/environment.d/*.sh 2>/dev/null|sort) ; do
+  for i in $(find /etc/login.d/*.sh 2>/dev/null|sort) ; do
     if [ -r "$i" ]; then
       # shellcheck disable=SC1090
       . "$i"
@@ -14,3 +16,6 @@ if [ -d /opt/cozy/etc/environment.d ]; then
   done
   unset i
 fi
+
+__ETC_ZSH_ZLOGIN_SOURCED=1
+export __ETC_ZSH_ZLOGIN_SOURCED

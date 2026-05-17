@@ -8,8 +8,8 @@ repos:
     rev: v0.11.0.1
     hooks:
       - id: shellcheck
-        args: ["--severity=warning"]
-        exclude: \.zshrc$|zshrc$
+        args: ["--severity=warning", "--shell=bash"]
+        exclude: \.zshrc$|zshrc$|zshrc\.machine$
 
   # YAML linting (catches Salt state syntax issues early)
   - repo: https://github.com/adrienverge/yamllint

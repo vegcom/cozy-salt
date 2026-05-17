@@ -1,13 +1,10 @@
-#!/bin/bash
-# /etc/profile
+#!/bin/sh
 # Managed by Salt - DO NOT EDIT MANUALLY
 
-export BASH_ENV=/etc/bash.bashenv
-
 # shellcheck disable=SC1009
-if [ -d /etc/profile.d ]; then
+if [ -d /opt/cozy/etc/profile.d ]; then
   # shellcheck  disable=SC1072 disable=SC1073
-  for i in $(find /etc/profile.d/*.sh 2>/dev/null|sort) ; do
+  for i in $(find /opt/cozy/etc/profile.d/*.sh 2>/dev/null|sort) ; do
     if [ -r "$i" ]; then
       # shellcheck disable=SC1090
       . "$i"

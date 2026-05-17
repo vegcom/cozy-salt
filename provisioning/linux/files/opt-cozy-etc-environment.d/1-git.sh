@@ -1,2 +1,4 @@
 #!/bin/sh
 # Managed by Salt - DO NOT EDIT MANUALLY
+
+export GIT_DISCOVERY_ACROSS_FILESYSTEM=1

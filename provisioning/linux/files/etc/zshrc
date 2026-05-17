@@ -1,39 +1,18 @@
 #!/bin/zsh
-# shellcheck disable=SC1071
-# /etc/zshrc
 # Managed by Salt - DO NOT EDIT MANUALLY
 
 if [ ! -n "$ZSH_VERSION" ]; then
 	return 0
 fi
 
-#if [ -n "${__ETC_ZSHRC_SOURCED}" ]; then
-#  return 0
-#fi
-
 autoload -Uz compinit
-compinit
-
-if [ -f /etc/profile ]; then
-  # shellcheck disable=SC1091
-  . /etc/profile
-fi
-
-if [ -f /etc/zshrc.machine ]; then
-  # shellcheck disable=SC1091
-  . /etc/zshrc.machine
-fi
-
-if [ -f /etc/zsh_command_not_found ]; then
-  # shellcheck disable=SC1091
-  . /etc/zsh_command_not_found
-fi
+compinit -u
 
 command -v direnv >/dev/null && eval "$(direnv hook zsh)"
 command -v carapace >/dev/null && eval "$(carapace _carapace zsh)"
 command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
 command -v starship >/dev/null && eval "$(starship init zsh)"
 command -v atuin >/dev/null && eval "$(atuin init zsh)"
-
-#__ETC_ZSHRC_SOURCED=1
-#export __ETC_ZSHRC_SOURCED
+command -v fzf >/dev/null && eval "$(fzf --zsh)"
+command -v tailscale >/dev/null && eval  "$(tailscale completion zsh)"
+command -v kubecolor >/dev/null && eval  "$(kubecolor completion zsh)"
