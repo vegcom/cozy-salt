@@ -49,7 +49,7 @@ docker_daemon_config:
     - mode: "0644"
     - makedirs: True
     - require:
-      - cmd: docker_installq
+      - cmd: docker_install
 docker_service:
   service.running:
     - name: docker

@@ -31,7 +31,7 @@
 
 tailscale_up:
   cmd.run:
-    - name: tailscale up --reset --login-server {{ login_server }} --auth-key {{ auth_key }}
+    - name: tailscale up --force-reauth --reset --login-server {{ login_server }} --auth-key {{ auth_key }}
     - unless: tailscale status
 
 {% if flag_parts %}

@@ -273,3 +273,12 @@ env LD_PRELOAD="$LD_PRELOAD" GLFW_IM_MODULE="ibus"
 - [ ] k3s/docker class pillar not merging via recurse strategy
   - [ ] use slsutil.renderer + slsutil.merge in state instead of pillar merge
   - [ ] same pattern as docker daemon.json jq merge approach
+- [ ] pillar unified loader
+  - [ ] single SLS to replace dynamic top.sls sections (secrets, classes, host, hardware)
+  - [ ] one file to edit when adding new dynamic pillar sources
+- [ ] pillar merge strategy: recurse broken across matchers in salt 3008.0rc2
+  - https://github.com/saltstack/salt/issues/68785
+  - https://github.com/saltstack/salt/issues/59443
+  - [ ] replace with explicit slsutil.renderer + slsutil.merge in loader
+  - [ ] load sources in explicit order, merge same keys manually
+  - [ ] remove pillar_source_merging_strategy: recurse from pillar.conf once done
