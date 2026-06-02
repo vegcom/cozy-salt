@@ -21,7 +21,7 @@ if [ -e "${__CCACHE_PATH}" ];then
 fi
 
 if [ -e "$(which ccache)" ] ; then
-  export CCACHE_DIR="${TMPDIR}/ccache"
+  export CCACHE_DIR="${TMPDIR}/cache/ccache"
   export CCACHE_SLOPPINESS="locale,time_macros"
   export CCACHE_PATH="/usr/bin"
   export CCACHE_MAXSIZE="8G"

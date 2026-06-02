@@ -13,6 +13,7 @@
 #     k3s: true
 #     tailscale: false  # default true — disable only if not using tailscale
 #     distcc_server: true  # defaults to false — enable only if using distcc
+#     avahi: true # defaults to false — enable only if using avahi
 
 k3s:
   # srv/salt/linux/k3s.sls

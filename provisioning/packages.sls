@@ -15,7 +15,7 @@
 {% set _shell = ['bash-completion', 'screen', 'tmux', 'shellcheck', 'zsh'] %}
 {% set _shell_rhel = (_shell | reject('equalto', 'shellcheck') | list) + ['ShellCheck'] %}
 {% set _build_base = ['autoconf', 'automake', 'cmake'] %}
-{% set _net_base = ['nmap', 'socat', 'tcpdump', 'traceroute'] %}
+{% set _net_base = ['nmap', 'socat', 'tcpdump', 'traceroute', 'nss-mdns'] %}
 {% set _compress_base = ['bzip2', 'zip'] %}
 {% set _vcs_base = ['git-lfs', 'tig'] %}
 {% set _modern_cli_base = ['bat', 'ripgrep'] %}
@@ -32,7 +32,7 @@
     'compression': _compress_base + ['7zip', 'xz-utils'],
     'vcs_extras': _vcs_base + ['gh'],
     'modern_cli': _modern_cli_base + ['fd-find'],
-    'security': ['ca-certificates'],
+    'security': ['ca-certificates', 'systemd-journal-remote'],
     'acl': ['acl'],
     'kvm': ['cpu-checker', 'libvirt-clients', 'libvirt-daemon-system', 'qemu-system-x86', 'qemu-utils', 'virtinst'],
 } %}
@@ -122,7 +122,7 @@ rhel:
   modern_cli: {{ (_modern_cli_base + ['fd-find']) | tojson }}
   monitoring: {{ _monitoring_base | tojson }}
   networking: {{ (_net_base + ['avahi', 'bind-utils', 'etcd-client', 'iputils', 'net-tools', 'nmap-ncat', 'openssh-clients', 'openssh-server', 'wsdd-server']) | tojson }}
-  security: [ca-certificates, gnupg2]
+  security: [ca-certificates, gnupg2, systemd-journal-remote]
   shell_enhancements: {{ _shell_rhel | tojson }}
   vcs_extras: {{ _vcs_base | tojson }}
 
@@ -162,6 +162,7 @@ windows:
   winget:
     runtimes:
       dotnet: [Microsoft.DotNet.DesktopRuntime.8, Microsoft.DotNet.DesktopRuntime.9, Microsoft.DotNet.DesktopRuntime.10, Microsoft.DotNet.Framework.DeveloperPack.4.6, Microsoft.DotNet.Runtime.8]
+      java: [Oracle.JavaRuntimeEnvironment, Oracle.JDK.26]
       sdks: [Microsoft.WindowsADK, Microsoft.NuGet, Microsoft.AppInstaller]
       ui_libraries: [Microsoft.VCLibs.Desktop.14]
       vcredist: [Microsoft.VCRedist.2008.x64, Microsoft.VCRedist.2008.x86, Microsoft.VCRedist.2010.x64, Microsoft.VCRedist.2010.x86, Microsoft.VCRedist.2012.x64, Microsoft.VCRedist.2012.x86, Microsoft.VCRedist.2013.x64, Microsoft.VCRedist.2013.x86, Microsoft.VCRedist.2015+.x64, Microsoft.VCRedist.2015+.x86]
@@ -216,4 +217,4 @@ npm_global:
   - tsx
   - webpack
 
-brew: [atuin, carapace, pandoc, weasyprint, zoxide, dive, starship, direnv, claude-code, kubecolor, fzf]
+brew: [atuin, carapace, pandoc, weasyprint, zoxide, dive, starship, direnv, claude-code, ccstatusline, kubecolor, fzf]

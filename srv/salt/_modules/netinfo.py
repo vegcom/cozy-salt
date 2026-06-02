@@ -21,7 +21,7 @@ def wan_ips():
 
   CLI example::
 
-      salt 'guava' network.wan_ips
+      salt 'guava' netinfo.wan_ips
   """
   import salt.utils.http
 
@@ -43,7 +43,7 @@ def default_gw():
 
   CLI example::
 
-      salt 'guava' network.default_gw
+      salt 'guava' netinfo.default_gw
   """
   os_family = __grains__.get("os_family", "")
 

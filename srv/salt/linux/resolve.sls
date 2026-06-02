@@ -15,7 +15,14 @@ resolved_config:
         [Resolve]
         DNSStubListener=no
         ReadEtcHosts=yes
+        MulticastDNS=no
 
+resolved_restart:
+  service.running:
+    - enable: True
+    - reload: True
+    - onchanges:
+      - file: resolved_config
 
 dns_search_domain:
   file.managed:
@@ -31,6 +38,7 @@ dns_search_domain:
         nameserver {{ nameserver }}
         {% endfor %}
     - mode: "0644"
+
 {% else %}
 # DNS configuration skipped - running in container (Docker/Podman/Kubernetes)
 skip_dns_config:

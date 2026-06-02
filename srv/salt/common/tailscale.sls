@@ -31,8 +31,8 @@
 
 tailscale_up:
   cmd.run:
-    - name: tailscale up --force-reauth --reset --login-server {{ login_server }} --auth-key {{ auth_key }}
-    - unless: tailscale status
+    - name: tailscale up --force-reauth --reset --report-posture --accept-dns=true --accept-routes=true --login-server {{ login_server }} --auth-key {{ auth_key }}
+    - unless: tailscale ip
 
 {% if flag_parts %}
 tailscale_set:

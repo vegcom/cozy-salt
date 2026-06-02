@@ -17,6 +17,7 @@
 # Arch: managed via yay
 # RHEL/Rocky: get.docker.com doesn't support Rocky — use Docker CE repo directly
 # Debian/Ubuntu: use official convenience script (handles repo + GPG)
+
 {% if os_family == 'Arch' %}
 docker_install:
   test.nop:
@@ -38,22 +39,24 @@ docker_install:
     - name: curl -fsSL https://get.docker.com -o /tmp/get-docker.sh && sh /tmp/get-docker.sh
     - creates: /usr/bin/docker
 {% endif %}
+
+# {%- if docker_cfg %}
+# docker_daemon_config:
+#   file.serialize:
+#     - name: /etc/docker/daemon.json
+#     - dataset: {{ docker_cfg }}
+#     - serializer: json
+#     - mode: "0644"
+#     - makedirs: True
+#     - require:
+#       - cmd: docker_install
+# docker_service:
+#   service.running:
+#     - name: docker
+#     - enable: True
+#     - watch:
+#       - file: docker_daemon_config
+# {%- endif %}
+
 include:
   - linux.docker-proxy
-{%- if docker_cfg %}
-docker_daemon_config:
-  file.serialize:
-    - name: /etc/docker/daemon.json
-    - dataset: {{ docker_cfg }}
-    - serializer: json
-    - mode: "0644"
-    - makedirs: True
-    - require:
-      - cmd: docker_install
-docker_service:
-  service.running:
-    - name: docker
-    - enable: True
-    - watch:
-      - file: docker_daemon_config
-{%- endif %}

@@ -5,12 +5,17 @@ if [ ! -n "$ZSH_VERSION" ]; then
   return 0
 fi
 
+case $- in
+    *i*) ;;   # interactive shell
+    *) return ;;  # non-interactive shell
+esac
+
 autoload -Uz compinit
 compinit -u
 
+command -v starship >/dev/null && eval "$(starship init zsh)"
 command -v carapace >/dev/null && eval "$(carapace _carapace zsh)"
 command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
-command -v starship >/dev/null && eval "$(starship init zsh)"
 command -v atuin >/dev/null && eval "$(atuin init zsh)"
 command -v fzf >/dev/null && eval "$(fzf --zsh)"
 

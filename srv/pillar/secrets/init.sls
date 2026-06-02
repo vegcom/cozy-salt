@@ -15,10 +15,13 @@
 {%- for cap, enabled in capabilities_dict.items() %}
   {%- if enabled %}
     {%- do capabilities_list.append(cap) %}
+    {%- if cap in ["tailscale"] %}
+      {%- do capabilities_list.append("headscale") %}
+    {%- endif %}
   {%- endif %}
 {%- endfor %}
 {#- add base includes  #}
-{%- set includes_list = ["git", "mgmt", "salt", "services", "network", "headscale"] %}  # FIXME: 'headscale' added to overcome render bug
+{%- set includes_list = ["git", "mgmt", "salt", "services", "network"] %}
 {%- if includes_list %}
 include:
   {%- for include in includes_list + capabilities_list %}

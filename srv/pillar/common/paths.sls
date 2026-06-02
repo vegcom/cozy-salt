@@ -45,8 +45,8 @@ install_paths:
 
 cache_paths:
   pip:
-    windows: C:\opt\cozy\cache
-    linux: /opt/cozy/cache
+    windows: C:\opt\cozy\cache\miniforge
+    linux: /opt/cozy/cache/miniforge
 
 config_paths:
   pip:

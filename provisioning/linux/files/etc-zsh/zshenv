@@ -1,7 +1,11 @@
 #!/bin/zsh
 # Managed by Salt - DO NOT EDIT MANUALLY
 
-export ZSH_DISABLE_COMPFIX="true"
+# shellcheck disable=SC1009
+if [ -d /etc/environment ]; then
+  # shellcheck  disable=SC1072 disable=SC1073
+  . /etc/environment
+fi
 
 # shellcheck disable=SC1009
 if [ -d /opt/cozy/etc/environment.d ]; then

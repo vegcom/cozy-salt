@@ -1,10 +1,6 @@
 #!/bin/zsh
 # Managed by Salt - DO NOT EDIT MANUALLY
 
-if [ -n "${__ETC_ZSH_ZLOGOUT_SOURCED}" ]; then
-  return 0
-fi
-
 # shellcheck disable=SC1009
 if [ -d /etc/logout.d ]; then
   # shellcheck  disable=SC1072 disable=SC1073
@@ -16,7 +12,3 @@ if [ -d /etc/logout.d ]; then
   done
   unset i
 fi
-
-
-__ETC_ZSH_ZLOGOUT_SOURCED=1
-export __ETC_ZSH_ZLOGOUT_SOURCED
