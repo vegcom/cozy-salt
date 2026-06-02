@@ -3,6 +3,8 @@
 # format: type: description
 # valid types based on project conventions
 
+# Managed by Salt - DO NOT EDIT MANUALLY
+
 import re
 import sys
 

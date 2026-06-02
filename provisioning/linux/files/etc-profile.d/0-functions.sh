@@ -88,13 +88,6 @@ return b"\n".join(cleaned)
 '
 }
 
-t(){
-  if [ -d "${PWD}/.git" ] ; then
-    _name="$(basename "${PWD:-$(pwd)}")"
-    tmux new -s "${_name}"
-  fi
-}
-
 cozy_boot(){
 	__cozy_boot_help(){
 		echo "last-boot - time of last boot (epoch)"

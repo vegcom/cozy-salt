@@ -2,6 +2,8 @@
 # post-checkout: update submodules after branch switch
 # args: prev_head new_head is_branch_checkout (1=branch, 0=file)
 
+# Managed by Salt - DO NOT EDIT MANUALLY
+
 import subprocess
 import sys
 

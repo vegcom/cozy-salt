@@ -2,6 +2,8 @@
 # prepare-commit-msg: prepend branch name hint to commit message
 # skips merge commits, amends, and squash/fixup
 
+# Managed by Salt - DO NOT EDIT MANUALLY
+
 import subprocess
 import sys
 
