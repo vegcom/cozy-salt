@@ -1,8 +1,7 @@
 #!jinja|yaml
 # ═══════════════════════════════════════════════════════════════
-# Pillar Load Order: common → os → dist → hw → users → class → host
-# Each layer can overwrite or append to previous layers
-# Host is LAST = final word on machine-specific overrides
+# Pillar Load Order: common → os → dist → hw → users → class → host → secrets
+# secrets loads LAST so pillar_gate can read host:capabilities
 # ═══════════════════════════════════════════════════════════════
 {% set hostname = grains.get('id', '') %}
 {% set host_file = '/srv/pillar/host/' ~ hostname ~ '.sls' %}
@@ -17,7 +16,6 @@ base:
     - common.scheduler
     - common.mongo
     - mgmt
-    - secrets
 
   # Layer 2: OS-family
   'G@os_family:Windows':
@@ -70,8 +68,13 @@ base:
     - match: compound
     - class
 
-  # Layer 7: Host-specific (FINAL - overrides everything)
+  # Layer 7: Host-specific (overrides everything)
 {% if salt['file.file_exists'](host_file) %}
   '{{ hostname }}':
     - host.{{ hostname }}
 {% endif %}
+
+  # Layer 8: Secrets (LAST — needs host:capabilities to be merged first)
+  'G@id:*':
+    - match: compound
+    - secrets

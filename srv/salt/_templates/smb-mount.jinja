@@ -18,6 +18,5 @@ What={{ device }}
 Where=/home/{{ username }}/{{ mountpoint }}
 Type=cifs
 Options=credentials={{ credentials_file }},uid={{ uid }},gid={{ gid }},{{ mount_opts }}
-
-[Install]
-WantedBy=multi-user.target
+TimeoutSec=10
+RetrySec=10

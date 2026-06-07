@@ -54,5 +54,9 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - /var/run/dbus:/var/run/dbus
+    labels:
+      - "cozy.service=registry"
+      - "cozy.role=docker-registry"
+      - "cozy.project=cozy-salt"
 volumes:
   registry:
