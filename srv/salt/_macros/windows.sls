@@ -27,9 +27,11 @@
 {%- set real_profiles = _get_real_profiles().splitlines() -%}
 {%- set valid_users = [] -%}
 {%- for user in managed_users -%}
-  {%- if user in real_profiles -%}
-    {%- do valid_users.append(user) -%}
-  {%- endif -%}
+  {%- for profile in real_profiles -%}
+    {%- if profile == user or profile.startswith(user ~ '.') -%}
+      {%- do valid_users.append(profile) -%}
+    {%- endif -%}
+  {%- endfor -%}
 {%- endfor -%}
 {{ valid_users | join(',') }}
 {%- endmacro -%}
