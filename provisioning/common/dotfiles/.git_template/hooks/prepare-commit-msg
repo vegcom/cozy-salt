@@ -17,8 +17,7 @@ if commit_source in ("merge", "squash", "commit"):
 try:
   branch = (
     subprocess.check_output(
-      ["git", "symbolic-ref", "--short", "HEAD"],
-      stderr=subprocess.DEVNULL,
+      ["git", "symbolic-ref", "--short", "HEAD"], stderr=subprocess.DEVNULL
     )
     .decode()
     .strip()

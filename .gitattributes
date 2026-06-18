@@ -60,3 +60,7 @@ Dockerfile* text eol=lf
 *.zsh core.fileMode=false
 *.zshrc core.fileMode=false
 *.bashrc core.fileMode=false
+*.sls core.fileMode=false
+*.y*ml core.fileMode=false
+*.py core.fileMode=false
+*.service core.fileMode=false
