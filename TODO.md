@@ -12,15 +12,15 @@
 ## Seperation of duty
 
 - [ ] vegcom/cozy-salt
-  - [ ] refactor: config_sls
+  - [x] refactor: config_sls
     - [ ] ensure consistency and seperation of duty in config.sls
 
 ## Performance
 
-- [ ] vegcom/cozy-salt
-  - [ ] feat: orch_update
-    - [ ] provide pkg updates via salt.orch only where possible
-    - [ ] `pkg.uptodate`, `yay.*upgrade`, `pacman -Su`, `apt.*upgrade`, `dnf.*upgrade`
+- [x] vegcom/cozy-salt
+  - [x] feat: orch_update
+    - [x] provide pkg updates via salt.orch only where possible
+    - [x] `pkg.uptodate`, `yay.*upgrade`, `pacman -Su`, `apt.*upgrade`, `dnf.*upgrade`
 
 ## Infra
 
@@ -261,7 +261,7 @@ env LD_PRELOAD="$LD_PRELOAD" GLFW_IM_MODULE="ibus"
 - [x] gw get tcpdups
   - [x] to
   - [x] from
-- [ ] udev rules
+- [x] udev rules
   - <https://www.irongeek.com/i.php?page=security/plug-and-prey-malicious-usb-devices#3.2_Locking_down_Linux_using_UDEV>
 - [ ] iptables rules
 - [x] docker `daemon.json`
@@ -273,12 +273,12 @@ env LD_PRELOAD="$LD_PRELOAD" GLFW_IM_MODULE="ibus"
 - [ ] k3s/docker class pillar not merging via recurse strategy
   - [ ] use slsutil.renderer + slsutil.merge in state instead of pillar merge
   - [ ] same pattern as docker daemon.json jq merge approach
-- [ ] pillar unified loader
-  - [ ] single SLS to replace dynamic top.sls sections (secrets, classes, host, hardware)
-  - [ ] one file to edit when adding new dynamic pillar sources
-- [ ] pillar merge strategy: recurse broken across matchers in salt 3008.0rc2
+- [x] pillar unified loader
+  - [x] single SLS to replace dynamic top.sls sections (secrets, classes, host, hardware)
+  - [x] one file to edit when adding new dynamic pillar sources
+- [x] pillar merge strategy: recurse broken across matchers in salt 3008.0rc2
   - https://github.com/saltstack/salt/issues/68785
   - https://github.com/saltstack/salt/issues/59443
-  - [ ] replace with explicit slsutil.renderer + slsutil.merge in loader
-  - [ ] load sources in explicit order, merge same keys manually
+  - [ ] ~replace with explicit slsutil.renderer + slsutil.merge in loader~
+  - [ ] ~load sources in explicit order, merge same keys manually~
   - [ ] remove pillar_source_merging_strategy: recurse from pillar.conf once done

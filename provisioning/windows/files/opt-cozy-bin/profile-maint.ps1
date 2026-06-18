@@ -2,6 +2,8 @@
 # Cleans up orphaned/temp profiles (user.HOSTNAME pattern)
 # Run elevated: .\profile-maint.ps1 [-WhatIf] [-Force]
 
+exit
+
 param(
     [switch]$WhatIf,
     [switch]$Force

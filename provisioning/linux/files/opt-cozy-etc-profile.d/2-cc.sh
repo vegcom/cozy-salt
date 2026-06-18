@@ -15,12 +15,12 @@ fi
 if [ -e "${__CCACHE_PATH}" ];then
   export CCACHE_PREFIX="ccache"
   export PATH="$__CCACHE_PATH:$PATH"
-  if [ -e "$(which distcc)" ] ; then
+  if [ -e "$(which distcc 2>/dev/null)" ] ; then
     export CCACHE_PREFIX="distcc"
   fi
 fi
 
-if [ -e "$(which ccache)" ] ; then
+if [ -e "$(which ccache 2>/dev/null)" ] ; then
   export CCACHE_DIR="${TMPDIR}/cache/ccache"
   export CCACHE_SLOPPINESS="locale,time_macros"
   export CCACHE_PATH="/usr/bin"

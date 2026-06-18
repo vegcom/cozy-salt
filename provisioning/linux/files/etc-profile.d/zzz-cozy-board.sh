@@ -5,14 +5,14 @@
 
 #-----------------------------------------------
 # Only run when sourced
-(return 0 2>/dev/null) || exit 0
+(return 0 2>/dev/null) || return 2>/dev/null || exit 0
 
 # Gate, only run for interactive
-case $- in *i*) ;; *) return ;; esac
+case $- in *i*) ;; *) return 2>/dev/null || exit 0 ;; esac
 
 # Gate, only run foor root ssh sessions
-[ "${EUID:-$(id -u)}" -ne 0 ] && return
-# [ -n "$SSH_CONNECTION" ] && return
+[ "${EUID:-$(id -u)}" -ne 0 ] && return 2>/dev/null || exit
+[ -n "$SSH_CONNECTION" ] || [ -n "$SSH_CLIENT" ] && return 2>/dev/null || exit 0
 
 
 #-----------------------------------------------

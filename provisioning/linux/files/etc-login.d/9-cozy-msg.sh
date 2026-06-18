@@ -1,12 +1,25 @@
 #!/bin/sh
 # Managed by Salt - DO NOT EDIT MANUALLY
 
-# Now do the cozy thing
+# Only run in interactive shells
+case $- in
+    *i*) ;;
+    *) return 2>/dev/null ;;
+esac
 
-if [ -b "${__COZY_MSG_EXPORTED}" ];then
-  printf '\n🌸 %s: cozy_system_profile loaded. \e[35mSay hi to your wife.\e[0m\n' "${HOSTNAME:-localhost}"
-  export __COZY_MSG_EXPORTED=1
+# Only run in login shells
+case $- in
+    -*) ;;
+    *) return 2>/dev/null ;;
+esac
+
+# Cozy message only once
+if [ -z "${__COZY_MSG_EXPORTED}" ]; then
+    printf '\n🌸 %s: cozy_system_profile loaded. \033[35mSay hi to your wife.\033[0m\n' "${HOSTNAME:-localhost}"
+    export __COZY_MSG_EXPORTED=1
 fi
-printf "\t\t \e[35m z \e[34m u \e[33m t \e[40m t \e[39m o \e[38m \e[0m \n"
-printf "\t\t  \e[37m z \e[36m u \e[45m t \e[44m t \e[43m o \e[42m \e[0m \n"
-printf "\t\t    \e[41m z \e[45m u \e[44m t \e[43m t \e[42m o \e[41m 🌸 \e[0m \n"
+
+# ASCII art
+printf "\t\t \033[35m z \033[34m u \033[33m t \033[40m t \033[39m o \033[0m \n"
+printf "\t\t  \033[37m z \033[36m u \033[45m t \033[44m t \033[43m o \033[42m \033[0m \n"
+printf "\t\t    \033[41m z \033[45m u \033[44m t \033[43m t \033[42m o \033[41m 🌸 \033[0m \n"

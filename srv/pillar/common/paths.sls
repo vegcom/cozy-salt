@@ -2,7 +2,7 @@
 # Centralized tool and installation paths for all platforms
 # Uses Jinja for platform-aware defaults
 
-{% set is_windows = grains['os_family'] == 'Windows' %}
+{%- set is_windows = grains['os_family'] == 'Windows' %}
 
 # Windows-specific constants
 windows:

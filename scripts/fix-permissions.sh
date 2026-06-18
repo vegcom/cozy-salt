@@ -39,6 +39,12 @@ find ./provisioning \( -path "*/opt-cozy/*.sh" -o -path "*/opt-cozy-bin/*.ps1" \
     [[ $(stat -c '%a' "$file") != 775 ]] && chmod 775 "$file" && ((changed++))
   done
 
+echo "Fixing provisioning Systemd Unit files (0644)..."
+find ./provisioning \( -path "*/etc-systemd-user/*" -o -path "*/etc-systemd-system/*" \) -type f -print0 2>/dev/null | \
+  while IFS= read -r -d '' file; do
+    [[ $(stat -c '%a' "$file") != 0644 ]] && chmod 0644 "$file" && ((changed++))
+  done
+
 # Ensure critical directories are searchable
 echo "Paths (775)..."
 find srv/salt srv/pillar provisioning scripts tests -type d -exec chmod 775 {} \; 2>/dev/null || true

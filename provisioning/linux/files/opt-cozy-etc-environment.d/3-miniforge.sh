@@ -6,5 +6,5 @@
 export CONDA_ROOT_PREFIX='/opt/miniforge3'
 export CONDA_CHANGEPS1=false
 export CONDA_AUTO_ACTIVATE_BASE=false
-export CONDA_EXE="$CONDA_ROOT_PREFIX/bin/conda"
-export MAMBA_EXE="$CONDA_ROOT_PREFIX/bin/mamba"
+export CONDA_EXE="$CONDA_BASE_PATH/conda"
+export MAMBA_EXE="$CONDA_BASE_PATH/mamba"

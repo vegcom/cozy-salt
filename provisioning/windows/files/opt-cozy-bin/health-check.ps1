@@ -24,6 +24,7 @@ $logName = "SystemMaintenance"
 $source  = "HealthCheck"
 
 if (-not (Get-EventLog -List | Where-Object { $_.Log -eq $logName })) {
+    Write-Host "Creating: $source"
     New-EventLog -LogName $logName -Source $source
 }
 

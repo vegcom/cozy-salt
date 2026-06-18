@@ -25,6 +25,10 @@ UsePAM yes
 MaxAuthTries 10
 MaxSessions 10
 
+# Keep alive
+ClientAliveInterval 600
+ClientAliveCountMax 0
+
 # Protocol
 Protocol 2
 
@@ -35,3 +39,36 @@ Banner "C:\ProgramData\ssh\motd.txt"
 {% else %}
 Banner /etc/motd
 {% endif %}
+
+AcceptEnv LANG LC_*
+AcceptEnv LC_ALL
+AcceptEnv LC_CTYPE
+AcceptEnv LC_COLLATE
+AcceptEnv LC_MONETARY
+AcceptEnv LC_NUMERIC
+AcceptEnv LC_TIME
+AcceptEnv LC_MESSAGES
+AcceptEnv LC_PAPER
+AcceptEnv LC_NAME
+AcceptEnv LC_ADDRESS
+AcceptEnv LC_TELEPHONE
+AcceptEnv LC_MEASUREMENT
+AcceptEnv LC_IDENTIFICATION
+AcceptEnv LC_ALL
+AcceptEnv LC_CTYPE
+AcceptEnv LC_COLLATE
+AcceptEnv LC_MONETARY
+AcceptEnv LC_NUMERIC
+AcceptEnv LC_TIME
+AcceptEnv LC_MESSAGES
+AcceptEnv LC_PAPER
+AcceptEnv LC_NAME
+AcceptEnv LC_ADDRESS
+AcceptEnv LC_TELEPHONE
+AcceptEnv LC_MEASUREMENT
+AcceptEnv LC_IDENTIFICATION
+AcceptEnv COLORTERM
+AcceptEnv TERM
+AcceptEnv TERM_PROGRAM
+AcceptEnv NO_COLOR
+AcceptEnv __*_GATE

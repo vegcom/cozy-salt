@@ -1,6 +1,7 @@
 # Windows package installation
 # Packages defined in provisioning/packages.sls
 # TODO: fix per user prov on spinup -- ref https://github.com/Romanitho/Winget-Install/issues/2
+# TODO: assess installer type flags to see if we can better force handling https://github.com/microsoft/winget-cli/issues/4702
 {%- import_yaml 'packages.sls' as packages %}
 # Only install for users with real profiles (ProfileList registry check)
 {%- from '_macros/windows.sls' import get_winget_user, get_winget_path, get_users_with_profiles with context %}
@@ -12,7 +13,7 @@
 {%- set winget_user = get_winget_user() %}
 {%- set winget_path = get_winget_path(winget_user) %}
 {%- if not salt['file.file_exists'](winget_path) %}
-  {%- set winget_path = salt['cmd.run']('(Get-Item "C:\\Program Files\\WindowsApps\\Microsoft.DesktopAppInstaller*\\winget.exe").VersionInfo.FileName', shell='powershell') %}
+  {%- set winget_path = salt['cmd.run']('@((Get-Item "C:\\Program Files\\WindowsApps\\Microsoft.DesktopAppInstaller*\\winget.exe").VersionInfo.FileName)[-1]', shell='powershell') %}
 winget_path_fallback:
   test.nop:
     - name: winget path fallback to {{ winget_path }}, prior(invalid_path) {{ get_winget_path(winget_user) }}
@@ -78,15 +79,27 @@ choco_{{ pkg | replace('.', '_') | replace('-', '_') }}_update:
   {%- endfor %}
 {%- endif %}
 
+# Winget bootstrap/repair
+winget_bootstrap:
+  cmd.run:
+    - name:  Repair-WinGetPackageManager -AllUsers -IncludePrerelease -Force -Verbose
+    - shell: powershell
+
+# Winget features
+winget_features_enable:
+  cmd.run:
+    - shell: powershell
+    - name: winget configure --enable --verbose-logs
+
 # Install Winget runtime packages, machine scope (run as user with winget)
 {%- if packages.windows.winget.runtimes is defined %}
   {%- for category, pkgs in packages.windows.winget.runtimes.items() %}
     {%- for pkg in pkgs %}
 winget_runtime_{{ pkg | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
-    - runas: {{ svc_name }}
+    # - runas: {{ svc_name }}
     - shell: powershell
-    - name: '&"{{ winget_path }}" install --scope machine --accept-source-agreements --accept-package-agreements --disable-interactivity --exact --id {{ pkg }}'
+    - name: '&"{{ winget_path }}" install --scope machine --accept-source-agreements --accept-package-agreements --disable-interactivity --verbose-logs --exact --id {{ pkg }}'
     - unless: '&"{{ winget_path }}" list --exact --id {{ pkg }} | Select-String -Quiet -Pattern ''{{ pkg }}'''
     #  - onlyif: Test-Path '{{ winget_path }}'
     - timeout: 300
@@ -103,11 +116,11 @@ winget_runtime_{{ pkg | replace('.', '_') | replace('-', '_') }}:
 winget_{{ pkg | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
       {%- if pkg in noscope_pkgs %}
-    - name: '&"{{ winget_path }}" install --accept-source-agreements --accept-package-agreements --disable-interactivity --exact --id {{ pkg }}'
+    - name: '&"{{ winget_path }}" install --accept-source-agreements --accept-package-agreements --disable-interactivity --verbose-logs --exact --id {{ pkg }}'
       {%- else %}
-    - name: '&"{{ winget_path }}" install --scope machine --accept-source-agreements --accept-package-agreements --disable-interactivity --exact --id {{ pkg }}'
+    - name: '&"{{ winget_path }}" install --scope machine --accept-source-agreements --accept-package-agreements --disable-interactivity --verbose-logs --exact --id {{ pkg }}'
       {%- endif %}
-    - runas: {{ svc_name }}
+    # - runas: {{ svc_name }}
     - shell: powershell
     - unless: '&"{{ winget_path }}" list --exact --id {{ pkg }} | Select-String -Quiet -Pattern ''{{ pkg }}'''
     #  - onlyif: Test-Path '{{ winget_path }}'
@@ -119,11 +132,13 @@ winget_{{ pkg | replace('.', '_') | replace('-', '_') }}:
 winget_upgrade_machine:
   cmd.run:
     - name: '&"{{ winget_path }}" upgrade --all --accept-source-agreements --accept-package-agreements --disable-interactivity'
-    - runas: {{ svc_name }}
+    # - runas: {{ svc_name }}
     #  - onlyif: Test-Path '{{ winget_path }}'
 {%- endif %}
 
 # Installs userland packages, user scope (each user's own winget)
+# TODO: can support msi, exe, and msix with --installer-type
+# https://learn.microsoft.com/en-us/windows/package-manager/winget/#:~:text=The%20winget%20tool%20supp
 {%- if users_with_profiles is defined %}
 {%- for user in users_with_profiles %}
 {%- set user_winget = 'C:\\Users\\' ~ user ~ '\\AppData\\Local\\Microsoft\\WindowsApps\\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\\winget.exe' %}
@@ -132,7 +147,7 @@ winget_upgrade_machine:
     {%- for pkg in pkgs %}
 winget_userland_{{ user | replace('.', '_') | replace('-', '_') }}_{{ pkg | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
-    - name: '{{ user_winget }} install --accept-source-agreements --accept-package-agreements --disable-interactivity --exact --id {{ pkg }}'
+    - name: '{{ user_winget }} install --accept-source-agreements --accept-package-agreements --disable-interactivity --verbose-logs --exact --id {{ pkg }}'
     - runas: {{ user }}
     - shell: powershell
     - unless: '{{ user_winget }} list --exact --id {{ pkg }} | Select-String -Quiet -Pattern ''{{ pkg }}'''

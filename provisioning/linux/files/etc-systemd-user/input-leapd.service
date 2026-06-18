@@ -4,9 +4,10 @@ Description=Leap Input Server
 Documentation=https://github.com/input-leap/input-leap
 After=graphical-session.target
 
+
 [Service]
 Type=simple
-ExecStart=/usr/bin/input-leap --daemon
+ExecStart=/usr/bin/env input-leap --daemon
 Restart=on-failure
 RestartSec=2
 # Optional: ensure XDG paths are respected
@@ -15,4 +16,3 @@ Environment=XDG_DATA_HOME=%h/.local/share
 
 [Install]
 WantedBy=default.target
-Requires=graphical.target

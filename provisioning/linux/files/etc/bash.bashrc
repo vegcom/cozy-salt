@@ -7,19 +7,6 @@ if [ ! -n "$BASH_VERSION" ]; then
   return 0
 fi
 
-if [ -d /etc/environment ]; then
-  . /etc/environment
-fi
-
-if [ -d /opt/cozy/etc/environment.d ]; then
-  for i in $(find /opt/cozy/etc/environment.d/*.sh 2>/dev/null|sort) ; do
-    if [ -r "$i" ]; then
-      . "$i"
-    fi
-  done
-  unset i
-fi
-
 if [ -d /etc/profile ]; then
   . /etc/profile
 fi
@@ -33,23 +20,25 @@ if [ -d /opt/cozy/etc/profile.d ]; then
   unset i
 fi
 
+if [ -f /etc/bash.bashrc.machine ]; then
+  . /etc/bash.bashrc.machine
+fi
+
 case $- in
-    *i*) ;;   # interactive shell
-    *) return ;;  # non-interactive shell
+    *i*) ;;
+    *) return 2>/dev/null ;;
 esac
 
-if awk '/Ubuntu/ { found=1; exit } END { exit !found }' /etc/os-release ; then
-  if [ -d /etc/bash_completion.d/ ] ; then
-    . /etc/bash_completion.d/*.bash
-  fi
+if [ -d /etc/bash_completion.d/ ] ; then
+	. /etc/bash_completion.d/*.bash 2>/dev/null
 fi
 
 
-command -v starship >/dev/null && eval "$(starship init bash)"
-command -v carapace >/dev/null && eval "$(carapace _carapace)"
-command -v zoxide >/dev/null && eval "$(zoxide init bash)"
-command -v atuin >/dev/null && eval "$(atuin init bash)"
-command -v fzf >/dev/null && eval "$(fzf --bash)"
+if [ "$STARSHIP_DISABLE" != "true" ]; then command -v starship >/dev/null && eval "$(starship init bash)" ; fi
+if [ "$CARAPACE_DISABLE" != "true" ]; then command -v carapace >/dev/null && eval "$(carapace _carapace)" ; fi
+if [ "$OXIDE_DISABLE" != "true" ]; then command -v zoxide >/dev/null && eval "$(zoxide init bash)" ; fi
+if [ "$ATUIN_DISABLE" != "true" ]; then command -v atuin >/dev/null && eval "$(atuin init bash)" ; fi
+if [ "$FZF_DISABLE" != "true" ]; then command -v fzf >/dev/null && eval "$(fzf --bash)" ;  fi
 
 command -v tailscale >/dev/null && eval  "$(tailscale completion bash)"
 command -v kubecolor >/dev/null && eval  "$(kubecolor completion bash)"

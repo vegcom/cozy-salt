@@ -1,7 +1,7 @@
-{% set _pinned = salt['pillar.get']('versions:vibeshine:version', '') %}
-{% set vibeshine_version = _pinned or salt['github_release.latest']('Nonary/vibeshine') %}
-{% set vibeshine_path     = 'C:\\opt\\vibeshine' %}
-{% set vibeshine_tmp      = '$env:TEMP\\vibeshine-install.exe' %}
+{%- set _pinned = salt['pillar.get']('versions:vibeshine:version', '') %}
+{%- set vibeshine_version = _pinned or salt['github_release.latest']('Nonary/vibeshine',fallback='v1.16.0') %}
+{%- set vibeshine_path     = 'C:\\opt\\vibeshine' %}
+{%- set vibeshine_tmp      = '$env:TEMP\\vibeshine-install.exe' %}
 
 vibeshine_directory:
   file.directory:
@@ -12,7 +12,7 @@ vibeshine_download:
   cmd.run:
     - name: >
         pwsh -NoLogo -Command
-        "Invoke-WebRequest -Uri 'https://github.com/Nonary/vibeshine/releases/download/{{vibeshine_version}}/VibeshineSetup.exe' -OutFile {{ vibeshine_tmp }}"
+        "Invoke-WebRequest -Uri 'https://github.com/Nonary/vibeshine/releases/download/{{ vibeshine_version }}/VibeshineSetup.exe' -OutFile {{ vibeshine_tmp }}"
     - require:
       - file: vibeshine_directory
 

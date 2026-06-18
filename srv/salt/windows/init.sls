@@ -5,8 +5,8 @@ include:
   - windows.bootstrap
   - windows.scripts
   - windows.salt_minion
-  - windows.users
   - windows.service-account
+  - windows.users
   - windows.paths
   - windows.install
   - windows.config

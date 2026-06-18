@@ -70,7 +70,7 @@ RUN apt-get update && \
       salt-master salt-minion salt-api salt-ssh python3-cherrypy3 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* && \
-    /opt/saltstack/salt/bin/pip3 install pymongo
+    /opt/saltstack/salt/bin/pip3 install pymongo pyinotify
 
 # Create mount points with correct ownership
 # Note: /srv/salt/files is for provisioning files mounted separately

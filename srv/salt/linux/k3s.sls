@@ -71,7 +71,7 @@ k3s_download_script:
     - mode: "0755"
 k3s_setup_script:
   cmd.run:
-    - name: bash /tmp/k3s-init.sh
+    - name: bash -x /tmp/k3s-init.sh
     - require:
       - file: k3s_download_script
     - timeout: 90
@@ -105,25 +105,9 @@ k3s_context_name:
       - KUBECONFIG: /etc/rancher/k3s/k3s.yaml
     - require:
       - service: k3s_service_start
-PPPPPPPPPPPq    - onchanges:
+    - onchanges:
       - cmd: k3s_setup_script
       - service: k3s_service_start
-# k3s_salt_mine:
-#   file.managed:
-#     - name: {{ _salt_base }}/minion.d/k3s_mine.conf
-#     - require:
-#       - service: k3s_service_start
-#     - onchange:
-#       - cmd: k3s_setup_script
-#       - service: k3s_service_start
-#     - contents: |
-#       mine_functions:
-#         k3s_kubeconfig:
-#           mine_function: file.read
-#           path: {{ _salt_base }}/minion.d/k3s_mine.conf
-#         k3s_node_token:
-#           mine_function: file.read
-#           path: {{ _salt_base }}/minion.d/k3s_mine.conf
   {%- endif %}
   {%- if k3s_role not in ['server', 'loadbalancer'] and kubeconfig %}
 k3s_kubeconfig:

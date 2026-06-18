@@ -10,20 +10,20 @@
 # ============================================================================
 # SHARED PACKAGE LISTS (DRY - referenced by distro sections below)
 # ============================================================================
-{% set _core = ['curl', 'git', 'jq', 'rsync', 'tree', 'unzip', 'wget', 'aria2', 'dkms'] %}
-{% set _monitoring_base = ['htop', 'lsof', 'ltrace', 'strace', 'sysstat', 'cyme'] %}
-{% set _shell = ['bash-completion', 'screen', 'tmux', 'shellcheck', 'zsh'] %}
-{% set _shell_rhel = (_shell | reject('equalto', 'shellcheck') | list) + ['ShellCheck'] %}
-{% set _build_base = ['autoconf', 'automake', 'cmake'] %}
-{% set _net_base = ['nmap', 'socat', 'tcpdump', 'traceroute', 'nss-mdns'] %}
-{% set _compress_base = ['bzip2', 'zip'] %}
-{% set _vcs_base = ['git-lfs', 'tig'] %}
-{% set _modern_cli_base = ['bat', 'ripgrep'] %}
+{%- set _core = ['curl', 'git', 'jq', 'rsync', 'tree', 'unzip', 'wget', 'aria2', 'dkms'] %}
+{%- set _monitoring_base = ['htop', 'lsof', 'ltrace', 'strace', 'sysstat', 'cyme'] %}
+{%- set _shell = ['bash-completion', 'screen', 'tmux', 'shellcheck', 'zsh'] %}
+{%- set _shell_rhel = (_shell | reject('equalto', 'shellcheck') | list) + ['ShellCheck'] %}
+{%- set _build_base = ['autoconf', 'automake', 'cmake'] %}
+{%- set _net_base = ['nmap', 'socat', 'tcpdump', 'traceroute', 'nss-mdns'] %}
+{%- set _compress_base = ['bzip2', 'zip'] %}
+{%- set _vcs_base = ['git-lfs', 'tig'] %}
+{%- set _modern_cli_base = ['bat', 'ripgrep'] %}
 
 # ============================================================================
 # APT-BASED (Debian/Ubuntu) - single definition, both reference it
 # ============================================================================
-{% set _apt = {
+{%- set _apt = {
     'core_utils': _core + ['vim'],
     'monitoring': _monitoring_base + ['duf', 'ncdu'],
     'shell_enhancements': _shell,
@@ -157,50 +157,58 @@ arch:
 # WINDOWS PACKAGES
 # ============================================================================
 windows:
-  pwsh_modules: [PSReadLine, PowerShellGet, Microsoft.WinGet.Client, Microsoft.WinGet.CommandNotFound, powershell-yaml, PSFzf, PSWindowsUpdate, Terminal-Icons, Microsoft.PowerShell.Utility]
-  choco: [chocolatey-compatibility.extension, chocolatey-core.extension, chocolatey-font-helpers.extension, cheatengine, colortool, Cygwin, dive, docker-cli, docker-compose, make,  vim, winbtrfs, ext2fsd]
+
+  pwsh_modules: [PSReadLine, PowerShellGet, Microsoft.WinGet.Client, Microsoft.WinGet.CommandNotFound, powershell-yaml, PSFzf, PSWindowsUpdate, Terminal-Icons]
+
+  choco: [chocolatey-compatibility.extension, chocolatey-core.extension, chocolatey-font-helpers.extension, cheatengine, colortool, Cygwin, dive, docker-cli, docker-compose, make,  vim, winbtrfs, ext2fsd, jq]
+
   winget:
+
     runtimes:
-      dotnet: [Microsoft.DotNet.DesktopRuntime.8, Microsoft.DotNet.DesktopRuntime.9, Microsoft.DotNet.DesktopRuntime.10, Microsoft.DotNet.Framework.DeveloperPack.4.6, Microsoft.DotNet.Runtime.8]
+      dotnet: [Microsoft.DotNet.DesktopRuntime.8, Microsoft.DotNet.DesktopRuntime.9, Microsoft.DotNet.Framework.DeveloperPack.4.6, Microsoft.DotNet.Runtime.8]
       java: [Oracle.JavaRuntimeEnvironment, Oracle.JDK.26]
       sdks: [Microsoft.WindowsADK, Microsoft.NuGet, Microsoft.AppInstaller]
       ui_libraries: [Microsoft.VCLibs.Desktop.14]
       vcredist: [Microsoft.VCRedist.2008.x64, Microsoft.VCRedist.2008.x86, Microsoft.VCRedist.2010.x64, Microsoft.VCRedist.2010.x86, Microsoft.VCRedist.2012.x64, Microsoft.VCRedist.2012.x86, Microsoft.VCRedist.2013.x64, Microsoft.VCRedist.2013.x86, Microsoft.VCRedist.2015+.x64, Microsoft.VCRedist.2015+.x86]
+
     system:
       browser: [Google.Chrome]
-      communication: [Vencord.Vesktop, hoppscotch.Hoppscotch]
+      communication: [hoppscotch.Hoppscotch]
       compression: [Giorgiotani.Peazip]
-      development: [GitHub.GitHubDesktop, GitHub.cli, Gitleaks.Gitleaks, JetBrains.IntelliJIDEA.Community, Microsoft.VisualStudio.BuildTools, Microsoft.VisualStudio.Community, Microsoft.VisualStudioCode, MSYS2.MSYS2, NSIS.NSIS, Kitware.CMake, Anthropic.ClaudeCode]
+      development: [GitHub.GitHubDesktop, GitHub.cli, Gitleaks.Gitleaks, JetBrains.IntelliJIDEA.Community, Microsoft.VisualStudio.BuildTools, Microsoft.VisualStudio.Community, Microsoft.VisualStudioCode, Microsoft.VisualStudioCode.CLI, Microsoft.VisualStudioCode.Insiders, Microsoft.VisualStudioCode.Insiders.CLI, MSYS2.MSYS2, NSIS.NSIS, Kitware.CMake, Anthropic.ClaudeCode]
       editor: [Obsidian.Obsidian]
       file_management: [7zip.7zip, WinSCP.WinSCP]
       games: [Valve.Steam]
       hardware: [BitSum.ParkControl, BitSum.ProcessLasso, Guru3D.RTSS, TechPowerUp.NVCleanstall, Wagnardsoft.DisplayDriverUninstaller, REALiX.HWiNFO, TechPowerUp.GPU-Z, tuna-f1sh.cyme]
       kubernetes: [Kubecolor.kubecolor, Freelensapp.Freelens]
       media_creative: [Audacity.Audacity, Cockos.REAPER, Inkscape.Inkscape, KDE.Krita, rocksdanister.LivelyWallpaper]
-      media: [ImageMagick.ImageMagick, Ruben2776.PicView, Gyan.FFmpeg, HandBrake.HandBrake, SplitmediaLabs.XSplitBroadcaster]
-      networking: [Apple.Bonjour, Insecure.Nmap, SSHFS-Win.SSHFS-Win, WinFsp.WinFsp, WiresharkFoundation.Wireshark, Tailscale.Tailscale]
-      rgb_peripherals: [namazso.PawnIO, Nefarius.HidHide, Olivia.VIA, OpenRGB.OpenRGB, ViGEm.ViGEmBus]
+      media: [ImageMagick.ImageMagick, Ruben2776.PicView, Gyan.FFmpeg] # TODO: HandBrake.HandBrake may need a flag change, SplitmediaLabs.XSplitBroadcaster needs gated
+      networking: [Apple.Bonjour, SSHFS-Win.SSHFS-Win, WinFsp.WinFsp, WiresharkFoundation.Wireshark, Tailscale.Tailscale]
+      rgb_peripherals: [namazso.PawnIO, Nefarius.HidHide, OpenRGB.OpenRGB, ViGEm.ViGEmBus]
       ricing: [Rainmeter.Rainmeter]
-      shell: [Git.Git, Microsoft.PowerShell, Starship.Starship]
+      shell: [Git.Git]
       sync_backup: [Syncthing.Syncthing, Martchus.syncthingtray]
       terminal: [Alacritty.Alacritty, Maximus5.ConEmu, Microsoft.WindowsTerminal]
-      utilities: [VB-Audio.Voicemeeter.Potato, CodeSector.TeraCopy, AntibodySoftware.WizTree, qBittorrent.qBittorrent, WerWolv.ImHex]
+      utilities: [CodeSector.TeraCopy, AntibodySoftware.WizTree, qBittorrent.qBittorrent, WerWolv.ImHex]  # TODO: removed 'VB-Audio.Voicemeeter.Potato' pending gating windows installs, and/or moving some stream stuff to another list not for all hosts <3 finally doing what June asked, and we have a test bed for it.
+
     # 360 noscope - packages that choke on --scope machine flag
-    noscope: [Microsoft.PowerShell, Starship.Starship, VB-Audio.Voicemeeter, Rem0o.FanControl, Ruben2776.PicView, Olivia.VIA, Insecure.Nmap, Microsoft.UI.Xaml.2.7, Microsoft.UI.Xaml.2.8, Microsoft.DotNet.Runtime.9, NASM.NASM]
+    noscope: [Microsoft.PowerShell, Starship.Starship, Rem0o.FanControl, Ruben2776.PicView, Olivia.VIA, Insecure.Nmap, Microsoft.UI.Xaml.2.7, Microsoft.UI.Xaml.2.8, Microsoft.DotNet.Runtime.9, Microsoft.DotNet.DesktopRuntime.10, NASM.NASM, Vencord.Vesktop, Microsoft.Sysinternals.Suite]
+
     userland:
       communication: [Telegram.TelegramDesktop]
       desktop_customization: [AutoHotkey.AutoHotkey, File-New-Project.EarTrumpet]
-      development: [DenoLand.Deno, direnv.direnv, Hashicorp.Terraform, Hashicorp.TerraformLanguageServer, nektos.act, waterlan.dos2unix, jqlang.jq]
+      development: [DenoLand.Deno, direnv.direnv, Hashicorp.Terraform, Hashicorp.TerraformLanguageServer, nektos.act, waterlan.dos2unix]
       gaming: [HeroicGamesLauncher.HeroicGamesLauncher, mtkennerly.ludusavi, Playnite.Playnite, SpecialK.SpecialK]
       kubernetes: [Helm.Helm, Kubernetes.kubectl, stern.stern]
       media_creative: [yt-dlp.yt-dlp]
       networking: [evsar3.sshfs-win-manager]
-      utilities: [Microsoft.PowerToys, Microsoft.Sysinternals.Suite, Rclone.Rclone, Rufus.Rufus]
+      utilities: [Microsoft.PowerToys, davidegiacometti.VisualStudioForCmdPal, nickknissen.TailscaleCommandPalette,  Rclone.Rclone, Rufus.Rufus]
+      ricing: [MicaForEveryone.MicaForEveryone]
 
 # ============================================================================
 # LANGUAGE-SPECIFIC PACKAGES
 # ============================================================================
-pip_base: [pip, setuptools, wheel, pipx, uv, pre-commit, ipython, pytest, mypy, ruff]
+pip_base: [pip, setuptools, wheel, pipx, uv, pre-commit, ipython, pytest, mypy, ruff, pipenv, pixi, poetry]
 
 npm_global:
   - "@angular/cli"
@@ -217,4 +225,4 @@ npm_global:
   - tsx
   - webpack
 
-brew: [atuin, carapace, pandoc, weasyprint, zoxide, dive, starship, direnv, claude-code, ccstatusline, kubecolor, fzf]
+brew: [atuin, carapace, pandoc, weasyprint, zoxide, dive, starship, direnv, claude-code, ccstatusline, kubecolor, fzf, xdotool]

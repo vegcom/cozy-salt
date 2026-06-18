@@ -6,16 +6,15 @@
 #     login-server: "https://headscale.example.com"
 #   tailscale:
 #     flags:            # merged: common pillar sets defaults, host pillar overrides
-#       accept-routes: true
 #       advertise-exit-node: true
 #       advertise-routes: "10.0.0.0/24"
 
-{% set enabled = salt['pillar.get']('host:capabilities:tailscale', True) %}
-{% set headscale = salt['pillar.get']('headscale', {}) %}
-{% set auth_key = headscale.get('auth-key', '') %}
-{% set login_server = headscale.get('login-server', '') %}
+{%- set enabled = salt['pillar.get']('host:capabilities:tailscale', True) %}
+{%- set headscale = salt['pillar.get']('headscale', {}) %}
+{%- set auth_key = headscale.get('auth-key', '') %}
+{%- set login_server = headscale.get('login-server', '') %}
 
-{% if enabled and auth_key and login_server %}
+{%- if enabled and auth_key and login_server %}
 
 {%- set ts_flags = salt['pillar.get']('tailscale:flags', {}) %}
 {%- set flag_parts = [] %}
@@ -31,23 +30,23 @@
 
 tailscale_up:
   cmd.run:
-    - name: tailscale up --force-reauth --reset --report-posture --accept-dns=true --accept-routes=true --login-server {{ login_server }} --auth-key {{ auth_key }}
+    - name: tailscale up --force-reauth --reset --report-posture --login-server {{ login_server }} --auth-key {{ auth_key }}
     - unless: tailscale ip
 
-{% if flag_parts %}
+  {%- if flag_parts %}
 tailscale_set:
   cmd.run:
     - name: tailscale set {{ flag_parts | join(' ') }}
     - onlyif: tailscale status
     - require:
       - cmd: tailscale_up
-{% endif %}
+{%- endif %}
 
-{% else %}
+{%- else %}
 tailscale_up_skipped:
   test.nop:
     - name: >-
         tailscale skipped —
-        {% if not enabled %}disabled via host:capabilities:tailscale
-        {% else %}headscale pillar not configured{% endif %}
-{% endif %}
+        {%- if not enabled %}disabled via host:capabilities:tailscale
+        {%- else %}headscale pillar not configured{%- endif %}
+{%- endif %}

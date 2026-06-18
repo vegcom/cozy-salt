@@ -1,0 +1,76 @@
+{
+  "$schema": "",
+  "$path": "$env:LOCALAPPDATA/Packages/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe/LocalState/settings.json",
+  "$docs": [
+    "https://aka.ms/winget-settings",
+    "https://learn.microsoft.com/en-us/windows/package-manager/winget/troubleshooting",
+    "https://github.com/microsoft/winget-cli/blob/master/doc/Settings.md",
+  ],
+  "source": {"autoUpdateIntervalInMinutes": 15},
+  "visual": {
+    "progressBar": "sixel",
+    "enableSixels": true,
+    "anonymizeDisplayedPaths": true,
+  },
+  "logging": {
+    "fileNameStrategy": "timestamp",
+    "level": "verbose",
+    "channels": [
+      "fail",
+      "cli",
+      "sql",
+      "repo",
+      "yaml",
+      "core",
+      "test",
+      "config",
+      "default",
+      "all",
+    ],
+    "file": {"totalSizeLimitInMB": 512, "fileCountLimit": 10},
+  },
+  "Telemetry": true,
+  "Interactivity": false,
+  "experimentalFeatures": {
+    "experimentalCmd": true,
+    "directMSI": true,
+    "fonts": true,
+    "resume": true,
+    "dependencies": true,
+    "sourcePriority": true,
+  },
+  "Output": {
+    "sortOrder": ["relevance", "available", "id", "name", "version"],
+    "sortDirection": "descending",
+  },
+  "installBehavior": {
+    "disableInstallNotes": true,
+    "allowHashMismatch": false,
+    "portablePackageMachineRoot": "C:/opt/WinGet/Machine/",
+    "portablePackageUserRoot": "C:/opt/WinGet/User/$env:USERNAME/",
+    "defaultInstallRoot": "C:/opt/WinGet",
+    "archiveExtractionMethod": "builtin",
+    "skipDependencies": false,
+    "purgePortablePackage": true,
+    "maxResumes": 5,
+    "preferences": {
+      "scope": "machine",
+      "installerTypes": ["msi", "exe", "zip", "portable", "font", "msix"],
+      "locale": ["en-US", "fr-FR", "ja-JP", "ko-KR", "ru-RU", "zh-CN", "zh-TW"]
+    },
+    "requirements": {
+      "installerTypes": [
+        "msix",
+        "msi",
+        "nullsoft",
+        "exe",
+        "zip",
+        "portable",
+        "font",
+      ]
+    },
+  },
+  "configureBehavior": {"defaultModuleRoot": "%ProgramFiles%/PowerShell/Modules"},
+  "downloadBehavior": {"cacheRoot": "C:/opt/WinGet/Cache/", "useSharedCache": true},
+  "installPrefReq": {"scope": "machinie"},
+}

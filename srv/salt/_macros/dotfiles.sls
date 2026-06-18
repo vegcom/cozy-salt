@@ -1,7 +1,7 @@
 # Dotfile deployment macros for consistent user file management
 # Usage: from "_macros/dotfiles.sls" import user_dotfile, user_dotfiles
 
-{%- macro user_dotfile(username, home, filename, source, mode='0644', require=False) %}
+{%- macro user_dotfile(username, home, filename, source, mode='0644', require=False, skip_verify=False) %}
 {{ username }}_{{ filename | replace('/', '_') | replace('.', '') | replace('-', '_') }}:
   file.managed:
     - name: {{ home }}/{{ filename }}
@@ -14,13 +14,16 @@
     - require:
       - file: {{ username }}_home_directory
     {%- endif %}
+  {%- if skip_verify %}
+    - skip_verify: True
+  {%- endif %}
 {%- endmacro %}
 
 {# Deploy multiple dotfiles from a list #}
 {%- macro user_dotfiles(username, home, files) %}
-{% for f in files %}
+{%- for f in files %}
 {{ user_dotfile(username, home, f.name, f.source, f.get('mode', '0644')) }}
-{% endfor %}
+{%- endfor %}
 {%- endmacro %}
 
 {#- Get platform-appropriate user home directory path -#}

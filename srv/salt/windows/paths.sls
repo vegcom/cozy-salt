@@ -27,6 +27,7 @@ cozyusers_group:
 
 # Add managed users to cozyusers group
 {% for user in managed_users %}
+# TODO: move to groups.sls
 {{ user }}_cozyusers_member:
   group.present:
     - name: cozyusers
