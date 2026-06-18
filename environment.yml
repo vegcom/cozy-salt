@@ -21,3 +21,4 @@ dependencies:
       - jinja2
       - pre-commit
       - djlint
+      - gitpython

@@ -208,7 +208,7 @@ windows:
 # ============================================================================
 # LANGUAGE-SPECIFIC PACKAGES
 # ============================================================================
-pip_base: [pip, setuptools, wheel, pipx, uv, pre-commit, ipython, pytest, mypy, ruff, pipenv, pixi, poetry]
+pip_base: [pip, setuptools, wheel, pipx, uv, pre-commit, ipython, pytest, mypy, ruff, pipenv, pixi, poetry, gitpython]
 
 npm_global:
   - "@angular/cli"
