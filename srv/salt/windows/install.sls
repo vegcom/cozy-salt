@@ -25,9 +25,8 @@
 pwsh_module_{{ module | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
     - shell: powershell
-    - name: >
-        # Remove-Module PackageManagement,PowerShellGet -Force -ErrorAction SilentlyContinue|Out-Null;
-        Install-Module -Name {{ module }} -Scope AllUsers -AllowClobber -SkipPublisherCheck -Force -Repository PSGallery 2>$null
+    {#- FIXME: edge cases may require `Remove-Module PackageManagement,PowerShellGet -Force -ErrorAction SilentlyContinue|Out-Null` #}
+    - name: Install-Module -Name {{ module }} -Scope AllUsers -AllowClobber -SkipPublisherCheck -Force -Repository PSGallery 2>$null
     - onlyif: Get-Command pwsh -ErrorAction SilentlyContinue 2>$null|Out-Null
   {%- endfor %}
 {%- endif %}

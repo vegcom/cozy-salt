@@ -25,3 +25,4 @@ CLAUDE.md
 !srv/pillar/host/example.sls
 .favorites.json
 CR.md
+./*.log
