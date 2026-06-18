@@ -49,11 +49,12 @@ repos:
         files: \.(sls)$
 
   # Fix permissions (Salt needs specific file modes)
-  - repo: local
-    hooks:
-      - id: fix-permissions
-        name: Fix file permissions
-        entry: ./scripts/fix-permissions.sh
-        language: script
-        pass_filenames: false
-        always_run: true
+  # FIXME: disabled pending better evaluation of what i broke in repo otherwise regarding perms mgmt.
+  # - repo: local
+  #   hooks:
+  #     - id: fix-permissions
+  #       name: Fix file permissions
+  #       entry: ./scripts/fix-permissions.sh
+  #       language: script
+  #       pass_filenames: false
+  #       always_run: true
