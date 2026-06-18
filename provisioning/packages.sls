@@ -11,7 +11,7 @@
 # SHARED PACKAGE LISTS (DRY - referenced by distro sections below)
 # ============================================================================
 {%- set _core = ['curl', 'git', 'jq', 'rsync', 'tree', 'unzip', 'wget', 'aria2', 'dkms'] %}
-{%- set _monitoring_base = ['htop', 'lsof', 'ltrace', 'strace', 'sysstat', 'cyme'] %}
+{%- set _monitoring_base = ['htop', 'lsof', 'ltrace', 'strace', 'sysstat'] %}
 {%- set _shell = ['bash-completion', 'screen', 'tmux', 'shellcheck', 'zsh'] %}
 {%- set _shell_rhel = (_shell | reject('equalto', 'shellcheck') | list) + ['ShellCheck'] %}
 {%- set _build_base = ['autoconf', 'automake', 'cmake'] %}
@@ -225,4 +225,4 @@ npm_global:
   - tsx
   - webpack
 
-brew: [atuin, carapace, pandoc, weasyprint, zoxide, dive, starship, direnv, claude-code, ccstatusline, kubecolor, fzf, xdotool]
+brew: [atuin, carapace, pandoc, weasyprint, zoxide, dive, starship, direnv, claude-code, ccstatusline, kubecolor, fzf, xdotool, cyme]
