@@ -21,9 +21,13 @@ mongo_returner:
         mongo.password: {{ mongo_pass }}
         mongo.authdb: {{ salt['pillar.get']('mongo.authdb', 'admin') }}
         return: mongo
+{%- set is_container = salt['file.file_exists']('/.dockerenv') or
+                      salt['file.file_exists']('/run/.containerenv') %}
+{%- if not is_container %}
 salt_minion_returner_restart:
   service.running:
     - name: salt-minion
     - watch:
       - file: mongo_returner
+{%- endif %}
 {%- endif %}
