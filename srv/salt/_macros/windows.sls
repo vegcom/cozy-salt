@@ -140,6 +140,10 @@ Parameters:
   winget_path: Full path to winget.exe
   scope: Install scope ('machine' or 'user', default: 'machine')
   skip_dependencies: Skip processing dependencies (default: false)
+  prerelease: Allow pre-release packages (default: false)
+  shell: Define shell used for execution (default: 'powershell')
+  force: Force installation/reinstall (default: false)
+  upgrade: Enable package upgrades (default: false)
 
 Returns:
   YAML state block that installs all packages in one call
@@ -163,17 +167,24 @@ Output generates:
       - shell: powershell
       - timeout: 600
 -#}
-{%- macro winget_batch_install(state_name, packages, winget_user=false, winget_path=false, scope=false, skip_deps=false, prerelease=false, shell="powershell", force=false, upgrade=true) -%}
+{%- macro winget_batch_install(state_name, packages, winget_user=false, winget_path=false, scope=false, skip_deps=false, prerelease=false, shell="powershell", force=false, upgrade=false) -%}
 {%- if packages | length > 0 -%}
 {{ state_name }}:
-  cmd.run:
-    - name: '&"{{ winget_path }}" install --exact {% if scope %} --scope {{ scope }}{% endif %} {% if prerelease %}--include-prerelease{% endif %} {% if not upgrade %}--no-upgrade{% endif %} --accept-source-agreements --accept-package-agreements --disable-interactivity {% if skip_deps %}--skip-dependencies{% endif %} {% if force %}--force{% endif %} {{ packages | join(" ") }}'
-    {%- if winget_user %}
-    - runas: {{ winget_user }}
-    {%- endif %}
-    {%- if shell %}
-    - shell: {{ shell }}
-    {%- endif %}
+  cmd.script:
+    - source: salt://windows/files/opt-cozy-bin/winget-batch.ps1`
+    - args: >
+        -WingetPath "{{ winget_path }}"
+        -Packages "{{ packages | join(',') }}"
+        -Scope "{{ scope if scope else '' }}"
+        -SkipDeps {{ skip_deps | lower }}
+        -Prerelease {{ prerelease | lower }}
+        -Force {{ force | lower }}
+        -Upgrade {{ upgrade | lower }}
+    # {%- if winget_user %}
+    # - runas: {{ winget_user }}
+    # {%- endif %}
+    - shell: powershell
     - timeout: 600
+    - stateful: true
 {%- endif -%}
 {%- endmacro -%}

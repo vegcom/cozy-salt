@@ -1,4 +1,5 @@
 {
+  "$managed": "Managed by Salt - DO NOT EDIT MANUALLY",
   "$schema": "https://aka.ms/winget-settings.schema.json",
   "$path": "$env:LOCALAPPDATA/Packages/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe/LocalState/settings.json",
   "$docs": [

@@ -14,10 +14,11 @@
   {%- set _user = user.split(".")[0] %}
   {%- set UserName = salt['cmd.run']('[Environment]::("UserName")', shell="powershell", runas=_user) or false %}
   {%- set UserProfile = salt['cmd.run']('[Environment]::GetFolderPath("UserProfile").Replace("\\", "/")', shell="powershell", runas=_user) or false %}
-  {%- set LocalAppData = salt['cmd.run']('[Environment]::GetFolderPath("LocalApplicationData").Replace("\\", "/")', shell="powershell", runas=_user) or false %}
-  {%- set _winget_uri_ = salt['cmd.run']('(Join-Path ([Environment]::GetFolderPath("LocalApplicationData")) "Microsoft/WindowsApps/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe/winget.exe").Replace("\\", "/")', shell="powershell", runas=_user) or false %}
+  {%- set LocalAppData = salt['cmd.run']('(Join-Path ((Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\$((Get-LocalUser -Name ''' ~ _user ~ ''').SID)").ProfileImagePath) "AppData/Local")', shell="powershell", runas=_user) or false %}
+  {%- set _winget_uri_ = salt['cmd.run']('(Join-Path (Join-Path ((Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\$((Get-LocalUser -Name ''' ~ _user ~ ''').SID)").ProfileImagePath) "AppData/Local") "Microsoft/WindowsApps/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe/winget.exe")', shell="powershell", runas=_user) or false %}
+  {%- set _winget_settings_ = salt['cmd.run']('(Join-Path ((Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\$((Get-LocalUser -Name ''' ~ _user ~ ''').SID)").ProfileImagePath) "AppData/Local/Packages/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe/LocalState/settings.json").replace("\\", "/")', shell="powershell", runas=_user) or false %}
   {%- if salt['cmd.run']("Test-Path " ~ _winget_uri_ ~ " 2>$null", shell="powershell") %}
-    {%- set _ = user_info.update({user: {"UserName": UserName ,"UserProfile": UserProfile, "LocalAppData": LocalAppData, "_winget_uri_": _winget_uri_ }}) %}
+    {%- set _ = user_info.update({user: {"UserName": UserName ,"UserProfile": UserProfile, "LocalAppData": LocalAppData, "_winget_uri_": _winget_uri_, "_winget_settings_": _winget_settings_ }}) %}
   {%- endif %}
 {%- endfor %}
 
@@ -38,6 +39,7 @@ pwsh_module_{{ module | replace('.', '_') | replace('-', '_') }}:
     {#- FIXME: edge cases may require `Remove-Module PackageManagement,PowerShellGet -Force -ErrorAction SilentlyContinue|Out-Null` #}
     - name: Install-Module -Name {{ module }} -Scope AllUsers -AllowClobber -SkipPublisherCheck -Force -Repository PSGallery 2>$null
     - onlyif: Get-Command pwsh -ErrorAction SilentlyContinue 2>$null|Out-Null
+    - unless: Get-Module -ErrorAction SilentlyContinue -All|Select-Object 'Name'|Select-String {{ module }} 2>$null|Out-Null | Out-String
   {%- endfor %}
 {%- endif %}
 
@@ -61,6 +63,8 @@ choco_feature_{{ feature }}_enabled:
       - 2
     - require:
       - chocolatey: chocolatey-install
+    - onchanges:
+      - chocolatey: chocolatey-install
   {%- endfor %}
 {%- endif %}
 
@@ -72,12 +76,30 @@ choco_{{ pkg | replace('.', '_') | replace('-', '_') }}:
     - name: {{ pkg }}
     - require:
       - chocolatey: chocolatey-install
+    - unless:
+      - powershell -C "choco list|select-string {{ pkg }}"
   {%- endfor %}
 {%- endif %}
 
 # ============================================================================
 # WINGET INSTALLATIONS - BATCHED BY
 # ============================================================================
+
+{#- TODO: Solve similar to linux, deploy paths in full; fix/correct naming scheme  #}
+{%- if packages.windows.winget.userland is defined %}
+  {%- for user in users_with_profiles %}
+    {%- set UserName = user_info.get(user, {}).get("UserName", false) %}
+    {%- set _winget_settings_ = user_info.get(user, {}).get("_winget_settings_", false) %}
+    {%- if _winget_settings_ and UserName %}
+winget_config_{{ user }}:
+  file.managed:
+    - name: {{ _winget_settings_ }}
+    - source: salt://windows/files/LOCALAPPDATA-Packages-Microsoft.DesktopAppInstaller_8wekyb3d8bbwe-LocalState/settings.json
+    - user: {{ UserName }}
+    - makedirs: True
+    {%- endif %}
+  {%- endfor %}
+{%- endif %}
 
 # Winget bootstrap/repair
 winget_bootstrap:
@@ -116,11 +138,10 @@ winget_features_enable:
 
 # Install Winget userland packages (per user, batched by category)
 {%- if packages.windows.winget.userland is defined %}
-# {{ users_with_profiles }}
   {%- for user in users_with_profiles %}
     {%- set UserName = user_info.get(user, {}).get("UserName", false) %}
     {%- set _winget_uri_ = user_info.get(user, {}).get("_winget_uri_", false) %}
-    {%- if _winget_uri_ and UserName %}
+    {%- if _winget_uri_ and UserName and salt['file.file_exists'](_winget_uri_) %}
       {%- for category, pkgs in packages.windows.winget.userland.items() %}
 {{ winget_batch_install('winget_batch_userland_' ~ UserName ~ '_' ~ category, pkgs, winget_user=UserName, winget_path=_winget_uri_, scope='user') }}
       {%- endfor %}
