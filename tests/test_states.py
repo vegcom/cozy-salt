@@ -19,7 +19,6 @@ import pytest
 
 from tests.lib.salt_results import ParsedResults, SaltResultParser
 
-
 # =============================================================================
 # Ubuntu Tests
 # =============================================================================

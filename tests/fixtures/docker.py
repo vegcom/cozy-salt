@@ -33,9 +33,7 @@ CONTAINER_CONFIGS = {
     service_name="ubuntu",
   ),
   "rhel": ContainerConfig(
-    profile="test-rhel",
-    container_name="salt-minion-rhel-test",
-    service_name="rhel",
+    profile="test-rhel", container_name="salt-minion-rhel-test", service_name="rhel"
   ),
   "windows": ContainerConfig(
     profile="test-windows",
@@ -86,12 +84,7 @@ class ContainerManager:
     cmd = ["docker", "compose", *args]
     logger.debug(f"Running: {' '.join(cmd)}")
 
-    result = subprocess.run(
-      cmd,
-      cwd=self.project_root,
-      capture_output=True,
-      text=True,
-    )
+    result = subprocess.run(cmd, cwd=self.project_root, capture_output=True, text=True)
 
     if check and result.returncode != 0:
       raise ContainerError(f"docker-compose failed: {result.stderr or result.stdout}")
@@ -103,11 +96,7 @@ class ContainerManager:
     cmd = ["docker", *args]
     logger.debug(f"Running: {' '.join(cmd)}")
 
-    result = subprocess.run(
-      cmd,
-      capture_output=True,
-      text=True,
-    )
+    result = subprocess.run(cmd, capture_output=True, text=True)
 
     if check and result.returncode != 0:
       raise ContainerError(f"docker command failed: {result.stderr or result.stdout}")
@@ -211,11 +200,7 @@ class ContainerManager:
     logger.info(f"Executing salt-call in {container_name}")
 
     return self._run_docker(
-      "exec",
-      container_name,
-      "cat",
-      "/tmp/highstate.json",
-      check=False,
+      "exec", container_name, "cat", "/tmp/highstate.json", check=False
     )
 
   def run_test_cycle(self, distro: str, build: bool = True) -> str:

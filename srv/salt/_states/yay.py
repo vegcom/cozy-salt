@@ -110,11 +110,7 @@ def installed(name=None, pkgs=None, runas=None, refresh=False, **kwargs):
     return ret
 
   # Install packages
-  result = __salt__["yay.installed"](
-    pkgs=to_install,
-    runas=runas,
-    refresh=refresh,
-  )
+  result = __salt__["yay.installed"](pkgs=to_install, runas=runas, refresh=refresh)
 
   ret["changes"] = result.get("changes", {})
   ret["result"] = result.get("result", False)
@@ -151,12 +147,7 @@ def removed(name, runas=None, **kwargs):
           - name: some-package
           - runas: cozy-salt-svc
   """
-  ret = {
-    "name": name,
-    "result": True,
-    "changes": {},
-    "comment": "",
-  }
+  ret = {"name": name, "result": True, "changes": {}, "comment": ""}
 
   # Validate runas
   if not runas:
@@ -202,12 +193,7 @@ def uptodate(name="yay.uptodate", runas=None, refresh=True, **kwargs):
         yay.uptodate:
           - runas: cozy-salt-svc
   """
-  ret = {
-    "name": name,
-    "result": True,
-    "changes": {},
-    "comment": "",
-  }
+  ret = {"name": name, "result": True, "changes": {}, "comment": ""}
 
   # Validate runas
   if not runas:

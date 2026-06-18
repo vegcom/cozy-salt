@@ -168,10 +168,7 @@ def is_installed(name, runas=None):
   user = runas or "nobody"
 
   result = __salt__["cmd.run_all"](
-    f"yay -Q {name}",
-    runas=user,
-    python_shell=True,
-    ignore_retcode=True,
+    f"yay -Q {name}", runas=user, python_shell=True, ignore_retcode=True
   )
 
   return result["retcode"] == 0
@@ -192,11 +189,7 @@ def list_installed(runas=None):
   """
   user = runas or "nobody"
 
-  result = __salt__["cmd.run_all"](
-    "yay -Q",
-    runas=user,
-    python_shell=True,
-  )
+  result = __salt__["cmd.run_all"]("yay -Q", runas=user, python_shell=True)
 
   if result["retcode"] != 0:
     return {}
@@ -300,12 +293,7 @@ def installed(name=None, pkgs=None, runas=None, refresh=False, **kwargs):
           - name: neovim
           - runas: vegcom
   """
-  ret = {
-    "name": name or "yay.installed",
-    "result": True,
-    "changes": {},
-    "comment": "",
-  }
+  ret = {"name": name or "yay.installed", "result": True, "changes": {}, "comment": ""}
 
   # Validate runas
   if not runas:
@@ -490,11 +478,7 @@ def search(query, runas=None):
   """
   user = runas or "nobody"
 
-  result = __salt__["cmd.run_all"](
-    f"yay -Ss {query}",
-    runas=user,
-    python_shell=True,
-  )
+  result = __salt__["cmd.run_all"](f"yay -Ss {query}", runas=user, python_shell=True)
 
   if result["retcode"] != 0:
     return []
@@ -530,11 +514,7 @@ def info(name, runas=None):
   """
   user = runas or "nobody"
 
-  result = __salt__["cmd.run_all"](
-    f"yay -Si {name}",
-    runas=user,
-    python_shell=True,
-  )
+  result = __salt__["cmd.run_all"](f"yay -Si {name}", runas=user, python_shell=True)
 
   if result["retcode"] != 0:
     return {}

@@ -16,8 +16,7 @@ from tests.lib.salt_results import ParsedResults, SaltResultParser
 
 # Configure logging
 logging.basicConfig(
-  level=logging.INFO,
-  format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+  level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -63,10 +62,7 @@ def result_parser() -> type[SaltResultParser]:
 
 
 def _run_distro_test(
-  container_manager: ContainerManager,
-  output_dir: Path,
-  distro: str,
-  build: bool = True,
+  container_manager: ContainerManager, output_dir: Path, distro: str, build: bool = True
 ) -> ParsedResults:
   """
   Run state tests for a specific distro and return parsed results.
@@ -103,8 +99,7 @@ def _run_distro_test(
 
 @pytest.fixture(scope="module")
 def ubuntu_results(
-  container_manager: ContainerManager,
-  output_dir: Path,
+  container_manager: ContainerManager, output_dir: Path
 ) -> ParsedResults:
   """Run Ubuntu state tests and return results."""
   return _run_distro_test(container_manager, output_dir, "ubuntu")
@@ -112,8 +107,7 @@ def ubuntu_results(
 
 @pytest.fixture(scope="module")
 def rhel_results(
-  container_manager: ContainerManager,
-  output_dir: Path,
+  container_manager: ContainerManager, output_dir: Path
 ) -> ParsedResults:
   """Run RHEL state tests and return results."""
   return _run_distro_test(container_manager, output_dir, "rhel")
@@ -121,8 +115,7 @@ def rhel_results(
 
 @pytest.fixture(scope="module")
 def windows_results(
-  container_manager: ContainerManager,
-  output_dir: Path,
+  container_manager: ContainerManager, output_dir: Path
 ) -> ParsedResults:
   """Run Windows state tests and return results."""
   return _run_distro_test(container_manager, output_dir, "windows")

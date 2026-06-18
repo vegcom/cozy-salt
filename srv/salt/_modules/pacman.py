@@ -132,10 +132,7 @@ def _run_pacman(cmd, runas=None, **kwargs):
   Returns:
       dict: Command result with stdout, stderr, retcode
   """
-  run_kwargs = {
-    "python_shell": True,
-    "env": _clean_env(runas),
-  }
+  run_kwargs = {"python_shell": True, "env": _clean_env(runas)}
   if runas:
     run_kwargs["runas"] = runas
 

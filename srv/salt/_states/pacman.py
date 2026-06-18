@@ -47,12 +47,7 @@ def sync(name="pacman.sync", runas=None, **kwargs):
       sync_repos:
         pacman.sync
   """
-  ret = {
-    "name": name,
-    "result": True,
-    "changes": {},
-    "comment": "",
-  }
+  ret = {"name": name, "result": True, "changes": {}, "comment": ""}
 
   # Check if sync is needed (database older than 60 min)
   check_result = __salt__["cmd.run_all"](
@@ -154,11 +149,7 @@ def installed(name=None, pkgs=None, runas=None, refresh=False, **kwargs):
     return ret
 
   # Install packages
-  result = __salt__["pacman.installed"](
-    pkgs=to_install,
-    runas=runas,
-    refresh=refresh,
-  )
+  result = __salt__["pacman.installed"](pkgs=to_install, runas=runas, refresh=refresh)
 
   ret["changes"] = result.get("changes", {})
   ret["result"] = result.get("result", False)
@@ -194,12 +185,7 @@ def removed(name, runas=None, **kwargs):
         pacman.removed:
           - name: some-package
   """
-  ret = {
-    "name": name,
-    "result": True,
-    "changes": {},
-    "comment": "",
-  }
+  ret = {"name": name, "result": True, "changes": {}, "comment": ""}
 
   # Check if installed
   if not __salt__["pacman.is_installed"](name, runas=runas):
@@ -238,12 +224,7 @@ def uptodate(name="pacman.uptodate", runas=None, refresh=True, **kwargs):
       system_upgraded:
         pacman.uptodate
   """
-  ret = {
-    "name": name,
-    "result": True,
-    "changes": {},
-    "comment": "",
-  }
+  ret = {"name": name, "result": True, "changes": {}, "comment": ""}
 
   # Test mode
   if __opts__["test"]:
