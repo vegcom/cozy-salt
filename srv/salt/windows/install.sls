@@ -89,7 +89,7 @@ winget_bootstrap:
 winget_features_enable:
   cmd.run:
     - shell: powershell
-    - name: winget configure --enable --verbose-logs
+    - name: winget configure --enable --include-prerelease
 
 # Install Winget runtime packages, machine scope (run as user with winget)
 {%- if packages.windows.winget.runtimes is defined %}
@@ -99,7 +99,7 @@ winget_runtime_{{ pkg | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
     # - runas: {{ svc_name }}
     - shell: powershell
-    - name: '&"{{ winget_path }}" install --scope machine --accept-source-agreements --accept-package-agreements --disable-interactivity --verbose-logs --exact --id {{ pkg }}'
+    - name: '&"{{ winget_path }}" install --scope machine --accept-source-agreements --accept-package-agreements --disable-interactivity --include-prerelease --exact --id {{ pkg }}'
     - unless: '&"{{ winget_path }}" list --exact --id {{ pkg }} | Select-String -Quiet -Pattern ''{{ pkg }}'''
     #  - onlyif: Test-Path '{{ winget_path }}'
     - timeout: 300
@@ -116,9 +116,9 @@ winget_runtime_{{ pkg | replace('.', '_') | replace('-', '_') }}:
 winget_{{ pkg | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
       {%- if pkg in noscope_pkgs %}
-    - name: '&"{{ winget_path }}" install --accept-source-agreements --accept-package-agreements --disable-interactivity --verbose-logs --exact --id {{ pkg }}'
+    - name: '&"{{ winget_path }}" install --accept-source-agreements --accept-package-agreements --disable-interactivity --include-prerelease --exact --id {{ pkg }}'
       {%- else %}
-    - name: '&"{{ winget_path }}" install --scope machine --accept-source-agreements --accept-package-agreements --disable-interactivity --verbose-logs --exact --id {{ pkg }}'
+    - name: '&"{{ winget_path }}" install --scope machine --accept-source-agreements --accept-package-agreements --disable-interactivity --include-prerelease --exact --id {{ pkg }}'
       {%- endif %}
     # - runas: {{ svc_name }}
     - shell: powershell
@@ -147,7 +147,7 @@ winget_upgrade_machine:
     {%- for pkg in pkgs %}
 winget_userland_{{ user | replace('.', '_') | replace('-', '_') }}_{{ pkg | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
-    - name: '{{ user_winget }} install --accept-source-agreements --accept-package-agreements --disable-interactivity --verbose-logs --exact --id {{ pkg }}'
+    - name: '{{ user_winget }} install --accept-source-agreements --accept-package-agreements --disable-interactivity --include-prerelease --exact --id {{ pkg }}'
     - runas: {{ user }}
     - shell: powershell
     - unless: '{{ user_winget }} list --exact --id {{ pkg }} | Select-String -Quiet -Pattern ''{{ pkg }}'''
