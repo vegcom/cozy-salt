@@ -39,6 +39,8 @@ jobs:
           openssl rsa -in srv/salt/keys/master/master.pem -pubout -out srv/salt/keys/master/master.pub 2>/dev/null
           chmod 644 srv/salt/keys/master/master.pem
           chmod 644 srv/salt/keys/master/master.pub
+          sed -i 's|master\.pem:/etc/salt/pki/master/master\.pem:ro|master.pem:/etc/salt/pki/master/master.pem|' docker-compose.yaml
+          sed -i 's|master\.pub:/etc/salt/pki/master/master\.pub:ro|master.pub:/etc/salt/pki/master/master.pub|' docker-compose.yaml
 
       - name: Test Salt states (ubuntu + rhel)
         run: pytest tests/ -m "ubuntu or rhel"
