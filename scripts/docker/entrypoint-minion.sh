@@ -41,7 +41,8 @@ while true; do
     echo "=== Minion connected to master! Syncing modules ==="
     salt-call saltutil.sync_modules 2>/dev/null || true
     echo "=== Stopping minion daemon to prevent JID conflicts with salt-call ==="
-    pkill -f 'salt-minion' || true
+    _pid_file=/run/salt/minion/salt-minion.pid
+    [ -f "$_pid_file" ] && kill "$(cat "$_pid_file")" 2>/dev/null || true
     sleep 2
     echo "=== Running state.highstate ==="
     # --out=json captured to file for test assertions

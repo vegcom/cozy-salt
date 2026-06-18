@@ -21,8 +21,9 @@
 
 {%- if is_ci %}
 docker_install:
-  test.nop:
-    - name: Docker install skipped in CI
+  cmd.run:
+    - name: echo "Docker install skipped in CI"
+    - creates: /bin/true
 {%- elif os_family == 'Arch' %}
 docker_install:
   test.nop:
