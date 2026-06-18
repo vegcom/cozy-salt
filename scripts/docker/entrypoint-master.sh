@@ -82,6 +82,7 @@ echo "  + mongo-returner-generated.conf written"
 
 echo "[entrypoint] Initialising sqlite3 returner schema..."
 # TODO: place into it's own .py file
+mkdir -p /srv/data/sqlite || true
 python3 -c "
 import sqlite3, os, shutil
 target = '/srv/data/sqlite/salt_returns.db'
