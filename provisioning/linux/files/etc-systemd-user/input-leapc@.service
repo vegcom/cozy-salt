@@ -8,7 +8,7 @@ Requires=graphical.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/env input-leapc --restart --no-daemon -d DEBUG desktop.localk
+ExecStart=/usr/bin/env input-leapc --restart --no-daemon -d DEBUG %i
 Restart=on-failure
 RestartSec=2
 # Optional: ensure XDG paths are respected
