@@ -6,12 +6,21 @@
 {%- set users_with_profiles = get_users_with_profiles().split(',') | reject('equalto', '') | list %}
 {%- set winget_user = get_winget_user() %}
 {%- set winget_path = get_winget_path(winget_user) %}
+{%- set service_user = salt['pillar.get']('service_user', {}) %}
+{%- set svc_name = service_user.get('name', 'cozy-salt-svc') %}
+
+# Choco upgrade
+choco_upgrade:
+  cmd.run:
+    - name: choco upgrade all
+    - onlyif: Test-Path (where.exe choco)
+    - shell: powershell
 
 # Machine scope upgrade (system-wide packages)
 winget_upgrade_machine:
   cmd.run:
     - name: '{{ winget_path }} upgrade --all --accept-source-agreements --accept-package-agreements --disable-interactivity'
-    - runas: {{ winget_user }}
+    # - runas: {{ svc_name }}
     - onlyif: Test-Path '{{ winget_path }}'
     - shell: powershell
 

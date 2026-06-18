@@ -71,7 +71,7 @@
     {% set winget = get_winget_path('admin') %}
 #}
 {%- macro get_winget_path(user) -%}
-C:\Users\{{ user }}\AppData\Local\Microsoft\WindowsApps\winget.exe
+C:\Users\{{ user }}\AppData\Local\Microsoft\WindowsApps\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\winget.exe
 {%- endmacro -%}
 
 
@@ -95,7 +95,7 @@ Example usage:
   install_nvm:
     cmd.run:
       - name: {{ win_cmd('nvm install lts') }}
-      - shell: pwsh
+      - shell: powershell
 
 Example with extra environment variables:
   {%- from "macros/windows.sls" import win_cmd %}
@@ -103,7 +103,7 @@ Example with extra environment variables:
   build_project:
     cmd.run:
       - name: {{ win_cmd('build.exe', {'RUST_BACKTRACE': '1'}) }}
-      - shell: pwsh
+      - shell: powershell
 -#}
 
 {%- macro win_cmd(command, extra_env=None) -%}
@@ -127,4 +127,52 @@ Example with extra environment variables:
   {%- endfor -%}
 
 {{ env_lines | join('; ') }}; {{ command }}
+{%- endmacro -%}
+
+{#-
+Macro: winget_batch_install
+Purpose: Generate a batched winget install state for multiple packages in a category
+
+Parameters:
+  state_name: Unique state ID (e.g., 'winget_batch_runtimes_vcredist')
+  packages: List of package IDs to install
+  winget_user: User to run winget as
+  winget_path: Full path to winget.exe
+  scope: Install scope ('machine' or 'user', default: 'machine')
+  skip_dependencies: Skip processing dependencies (default: false)
+
+Returns:
+  YAML state block that installs all packages in one call
+
+Features:
+  - Batches multiple packages into single winget install call
+  - Passes --exact --accept-source-agreements --accept-package-agreements
+  - Uses --no-upgrade to skip upgrades (winget returns true if already installed)
+  - Reduces state count: ~50 individual installs → ~15 batched installs
+
+Example usage:
+  {%- from '_macros/windows.sls' import winget_batch_install %}
+  {%- set pkgs = ['Microsoft.VisualStudioCode', 'Microsoft.VisualStudioCode.CLI'] %}
+  {{ winget_batch_install('winget_batch_editor', pkgs, winget_user, winget_path) }}
+
+Output generates:
+  winget_batch_editor:
+    cmd.run:
+      - name: C:\...\winget.exe install --exact --scope machine ... pkg1 pkg2 pkg3
+      - runas: <user>
+      - shell: powershell
+      - timeout: 600
+-#}
+{%- macro winget_batch_install(state_name, packages, winget_user=false, winget_path=false, scope=false, skip_deps=false, prerelease=false, shell="powershell", force=false, upgrade=true) -%}
+{%- if packages | length > 0 -%}
+{%- if not winget_path %}
+  {%- set winget_path =  salt['cmd.run']('@((Get-Item("C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller*\winget.exe")).VersionInfo.FileName)[-1] 2>$null', shell='pwsh') %}
+{%- endif %}
+{{ state_name }}:
+  cmd.run:
+    - name: '&"{{ winget_path }}" install --exact {% if scope %} --scope {{ scope }}{% endif %} {% if prerelease %}--include-prerelease{% endif %} {% if not upgrade %}--no-upgrade{% endif %} --accept-source-agreements --accept-package-agreements --disable-interactivity {% if skip_deps %}--skip-dependencies{% endif %} {% if force %}--force{% endif %} {{ packages | join(" ") }}'
+    {% if winget_user %}- runas: {{ winget_user }}{% endif %}
+    {% if shell %}- shell: {{ shell }}{% endif %}
+    - timeout: 600
+{%- endif -%}
 {%- endmacro -%}

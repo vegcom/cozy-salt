@@ -30,13 +30,11 @@
     "file": {"totalSizeLimitInMB": 512, "fileCountLimit": 10},
     "telemetry": {"level": "basic"}
   },
-  "Telemetry": true,
-  "Interactivity": false,
   "experimentalFeatures": {
-    "experimentalCmd": true,
+    "experimentalCmd": false,
     "directMSI": true,
     "fonts": true,
-    "resume": true,
+    "resume": false,
     "dependencies": true,
     "sourcePriority": true
   },
@@ -47,23 +45,20 @@
   "installBehavior": {
     "disableInstallNotes": true,
     "allowHashMismatch": false,
-    "portablePackageMachineRoot": "C:/opt/WinGet/Machine/",
-    "portablePackageUserRoot": "C:/opt/WinGet/User/$env:USERNAME/",
-    "defaultInstallRoot": "C:/opt/WinGet",
     "archiveExtractionMethod": "shellApi",
     "skipDependencies": false,
     "purgePortablePackage": true,
     "maxResumes": 5,
     "preferences": {
       "scope": "machine",
-      "installerTypes": ["msi", "exe", "zip", "portable", "font", "msix"],
+      "installerTypes": ["msi", "inno", "portable", "exe", "zip", "nullsoft", "font", "msix", "burn", "wix", "msstore"],
       "locale": ["en-US", "fr-FR", "ja-JP", "ko-KR", "ru-RU", "zh-CN", "zh-TW"],
     },
     "requirements": {
-      "installerTypes": ["msix", "msi", "nullsoft", "exe", "zip", "portable", "font"]
+      "installerTypes": ["msi", "inno", "portable", "exe", "zip", "nullsoft", "font", "msix", "burn", "wix", "msstore"]
     }
   },
-  "configureBehavior": {"defaultModuleRoot": "%ProgramFiles%/PowerShell/Modules"},
+  "configureBehavior": {"defaultModuleRoot": "C:/Program Files/PowerShell/7/Modules"},
   "downloadBehavior": {"cacheRoot": "C:/opt/WinGet/Cache/", "useSharedCache": true},
   "installPrefReq": {"scope": "machine"}
 }

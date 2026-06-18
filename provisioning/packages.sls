@@ -158,7 +158,7 @@ arch:
 # ============================================================================
 windows:
 
-  pwsh_modules: [PSReadLine, PowerShellGet, Microsoft.WinGet.Client, Microsoft.WinGet.CommandNotFound, powershell-yaml, PSFzf, PSWindowsUpdate, Terminal-Icons]
+  pwsh_modules: [PowerShellGet, PackageManagement, PSReadLine, Microsoft.WinGet.Client, Microsoft.WinGet.CommandNotFound, powershell-yaml, PSFzf, PSWindowsUpdate, Terminal-Icons]
 
   choco: [chocolatey-compatibility.extension, chocolatey-core.extension, chocolatey-font-helpers.extension, cheatengine, colortool, Cygwin, dive, docker-cli, docker-compose, make,  vim, winbtrfs, ext2fsd, jq]
 
@@ -168,7 +168,7 @@ windows:
       dotnet: [Microsoft.DotNet.DesktopRuntime.8, Microsoft.DotNet.DesktopRuntime.9, Microsoft.DotNet.Framework.DeveloperPack.4.6, Microsoft.DotNet.Runtime.8]
       java: [Oracle.JavaRuntimeEnvironment, Oracle.JDK.26]
       sdks: [Microsoft.WindowsADK, Microsoft.NuGet, Microsoft.AppInstaller]
-      ui_libraries: [Microsoft.VCLibs.Desktop.14]
+      ui_libraries: []
       vcredist: [Microsoft.VCRedist.2008.x64, Microsoft.VCRedist.2008.x86, Microsoft.VCRedist.2010.x64, Microsoft.VCRedist.2010.x86, Microsoft.VCRedist.2012.x64, Microsoft.VCRedist.2012.x86, Microsoft.VCRedist.2013.x64, Microsoft.VCRedist.2013.x86, Microsoft.VCRedist.2015+.x64, Microsoft.VCRedist.2015+.x86]
 
     system:
@@ -192,7 +192,7 @@ windows:
       utilities: [CodeSector.TeraCopy, AntibodySoftware.WizTree, qBittorrent.qBittorrent, WerWolv.ImHex]  # TODO: removed 'VB-Audio.Voicemeeter.Potato' pending gating windows installs, and/or moving some stream stuff to another list not for all hosts <3 finally doing what June asked, and we have a test bed for it.
 
     # 360 noscope - packages that choke on --scope machine flag
-    noscope: [Microsoft.PowerShell, Starship.Starship, Rem0o.FanControl, Ruben2776.PicView, Olivia.VIA, Insecure.Nmap, Microsoft.UI.Xaml.2.7, Microsoft.UI.Xaml.2.8, Microsoft.DotNet.Runtime.9, Microsoft.DotNet.DesktopRuntime.10, NASM.NASM, Vencord.Vesktop, Microsoft.Sysinternals.Suite]
+    noscope: [Microsoft.PowerShell, Starship.Starship, Rem0o.FanControl, Ruben2776.PicView, Olivia.VIA, Insecure.Nmap, Microsoft.UI.Xaml.2.7, Microsoft.UI.Xaml.2.8, Microsoft.DotNet.Runtime.9, Microsoft.DotNet.DesktopRuntime.10, NASM.NASM, Vencord.Vesktop, Microsoft.Sysinternals.Suite, Microsoft.VCLibs.Desktop.14]
 
     userland:
       communication: [Telegram.TelegramDesktop]

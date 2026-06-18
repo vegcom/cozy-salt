@@ -24,3 +24,4 @@ CLAUDE.md
 !srv/pillar/secrets/init.sls
 !srv/pillar/host/example.sls
 .favorites.json
+CR.md
