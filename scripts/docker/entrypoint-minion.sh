@@ -40,6 +40,9 @@ while true; do
   if salt-call --timeout=10 test.ping 2>&1 | grep -q 'True'; then
     echo "=== Minion connected to master! Syncing modules ==="
     salt-call saltutil.sync_modules 2>/dev/null || true
+    echo "=== Stopping minion daemon to prevent JID conflicts with salt-call ==="
+    pkill -f 'salt-minion' || true
+    sleep 2
     echo "=== Running state.highstate ==="
     # --out=json captured to file for test assertions
     salt-call state.highstate --out=json 2>&1 | tee /tmp/highstate.json
