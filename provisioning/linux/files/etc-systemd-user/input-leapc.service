@@ -1,3 +1,5 @@
+# Managed by Salt - DO NOT EDIT MANUALLY
+
 [Unit]
 Description=Leap Input Daemon
 Documentation=https://github.com/input-leap/input-leap
@@ -6,7 +8,7 @@ Requires=graphical.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/env input-leapc --restart --no-daemon -d DEBUG desktop.local
+ExecStart=/usr/bin/env input-leapc --restart --no-daemon -d DEBUG desktop.localk
 Restart=on-failure
 RestartSec=2
 # Optional: ensure XDG paths are respected

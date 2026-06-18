@@ -1,4 +1,5 @@
-# ~/.config/systemd/user/input-leapd.service
+# Managed by Salt - DO NOT EDIT MANUALLY
+
 [Unit]
 Description=Leap Input Server
 Documentation=https://github.com/input-leap/input-leap

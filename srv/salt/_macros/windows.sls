@@ -165,14 +165,15 @@ Output generates:
 -#}
 {%- macro winget_batch_install(state_name, packages, winget_user=false, winget_path=false, scope=false, skip_deps=false, prerelease=false, shell="powershell", force=false, upgrade=true) -%}
 {%- if packages | length > 0 -%}
-{%- if not winget_path %}
-  {%- set winget_path =  salt['cmd.run']('@((Get-Item("C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller*\winget.exe")).VersionInfo.FileName)[-1] 2>$null', shell='pwsh') %}
-{%- endif %}
 {{ state_name }}:
   cmd.run:
     - name: '&"{{ winget_path }}" install --exact {% if scope %} --scope {{ scope }}{% endif %} {% if prerelease %}--include-prerelease{% endif %} {% if not upgrade %}--no-upgrade{% endif %} --accept-source-agreements --accept-package-agreements --disable-interactivity {% if skip_deps %}--skip-dependencies{% endif %} {% if force %}--force{% endif %} {{ packages | join(" ") }}'
-    {% if winget_user %}- runas: {{ winget_user }}{% endif %}
-    {% if shell %}- shell: {{ shell }}{% endif %}
+    {%- if winget_user %}
+    - runas: {{ winget_user }}
+    {%- endif %}
+    {%- if shell %}
+    - shell: {{ shell }}
+    {%- endif %}
     - timeout: 600
 {%- endif -%}
 {%- endmacro -%}

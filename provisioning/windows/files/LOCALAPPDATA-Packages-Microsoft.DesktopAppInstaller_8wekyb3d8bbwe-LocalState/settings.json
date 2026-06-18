@@ -6,7 +6,7 @@
     "https://learn.microsoft.com/en-us/windows/package-manager/winget/troubleshooting",
     "https://github.com/microsoft/winget-cli/blob/master/doc/Settings.md"
   ],
-  "source": {"autoUpdateIntervalInMinutes": 15},
+  "source": {"autoUpdateIntervalInMinutes": 90},
   "visual": {
     "progressBar": "sixel",
     "enableSixels": true,
@@ -27,7 +27,7 @@
       "default",
       "all",
     ],
-    "file": {"totalSizeLimitInMB": 512, "fileCountLimit": 10},
+    "file": {"totalSizeLimitInMB": 2048, "fileCountLimit": 128},
     "telemetry": {"level": "basic"}
   },
   "experimentalFeatures": {
@@ -51,11 +51,11 @@
     "maxResumes": 5,
     "preferences": {
       "scope": "machine",
-      "installerTypes": ["msi", "inno", "portable", "exe", "zip", "nullsoft", "font", "msix", "burn", "wix", "msstore"],
-      "locale": ["en-US", "fr-FR", "ja-JP", "ko-KR", "ru-RU", "zh-CN", "zh-TW"],
+      "installerTypes": ["msi", "inno", "portable", "exe", "zip", "nullsoft", "msix", "burn", "wix", "msstore"],
+      "locale": ["en-US", "fr-FR", "ja-JP", "ko-KR", "ru-RU", "zh-CN", "zh-TW"]
     },
     "requirements": {
-      "installerTypes": ["msi", "inno", "portable", "exe", "zip", "nullsoft", "font", "msix", "burn", "wix", "msstore"]
+      "installerTypes": ["msi", "inno", "portable", "exe", "zip", "nullsoft", "msix", "burn", "wix", "msstore"]
     }
   },
   "configureBehavior": {"defaultModuleRoot": "C:/Program Files/PowerShell/7/Modules"},

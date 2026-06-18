@@ -1,3 +1,5 @@
+# Managed by Salt - DO NOT EDIT MANUALLY
+
 [Unit]
 Description=Return to Desktop override
 

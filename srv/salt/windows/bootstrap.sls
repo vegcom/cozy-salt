@@ -109,6 +109,7 @@ disable_soft_landing:
     - vdata: 1
     - vtype: REG_DWORD
 
+
 # ============================================================================
 # Windows Update Settings (no surprise reboots)
 # ============================================================================
@@ -136,8 +137,27 @@ disable_delivery_optimization:
     - vtype: REG_DWORD
 
 # ============================================================================
+# Windows AD
+# ============================================================================
+configure_nuget:
+  cmd.run:
+    - name: Get-WindowsCapability -Online | Where-Object Name -like 'Rsat.ActiveDirectory.DS-LDS.Tools*' | Add-WindowsCapability -Online -Verbose
+    - shell: powershell
+    - runas: {{ svc_name }}
+    - timeout: 300
+
+
+# ============================================================================
 # Required Packages
 # ============================================================================
+
+configure_nuget:
+  cmd.run:
+    - name: [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+    - shell: powershell
+    - runas: {{ svc_name }}
+    - unless:
+    - timeout: 300
 
 install_powershell:
   cmd.run:

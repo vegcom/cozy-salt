@@ -270,15 +270,15 @@ env LD_PRELOAD="$LD_PRELOAD" GLFW_IM_MODULE="ibus"
 - [x] headscale
   - [x] /home/vegcom/git/cozy-headscale/make/headscale.mk -- refactor and make warmer
   - [x] /home/vegcom/git/cozy-salt/srv/pillar/secrets/headscale.sls --  post wipe
-- [ ] k3s/docker class pillar not merging via recurse strategy
-  - [ ] use slsutil.renderer + slsutil.merge in state instead of pillar merge
+- [x] k3s/docker class pillar not merging via recurse strategy
+  - [x] use slsutil.renderer + slsutil.merge in state instead of pillar merge
   - [ ] same pattern as docker daemon.json jq merge approach
 - [x] pillar unified loader
   - [x] single SLS to replace dynamic top.sls sections (secrets, classes, host, hardware)
   - [x] one file to edit when adding new dynamic pillar sources
 - [x] pillar merge strategy: recurse broken across matchers in salt 3008.0rc2
-  - https://github.com/saltstack/salt/issues/68785
-  - https://github.com/saltstack/salt/issues/59443
+  - <https://github.com/saltstack/salt/issues/68785>
+  - <https://github.com/saltstack/salt/issues/59443>
   - [ ] ~replace with explicit slsutil.renderer + slsutil.merge in loader~
   - [ ] ~load sources in explicit order, merge same keys manually~
   - [ ] remove pillar_source_merging_strategy: recurse from pillar.conf once done
