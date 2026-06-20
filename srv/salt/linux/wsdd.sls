@@ -1,7 +1,6 @@
-{% set is_container = salt['file.file_exists']('/.dockerenv') or salt['file.file_exists']('/run/.containerenv') %}
+{%- set is_container = salt['file.file_exists']('/.dockerenv') or salt['file.file_exists']('/run/.containerenv') %}
 
-
-{%-  if is_container == False %}
+{%- if is_container == False %}
 
 wsdd_service:
   service.running:

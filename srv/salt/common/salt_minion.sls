@@ -62,9 +62,9 @@ salt_minion_conf_timeout:
 
 # NOTE: restarting salt-minion during salt-call interrupts the run
 # apply via master: salt '*' state.sls common.salt_minion
-{% set is_container = salt['file.file_exists']('/.dockerenv') or
+{%- set is_container = salt['file.file_exists']('/.dockerenv') or
                       salt['file.file_exists']('/run/.containerenv') %}
-{% if not is_container %}
+{%- if not is_container %}
 salt_minion_service:
   service.running:
     - name: salt-minion
@@ -73,4 +73,4 @@ salt_minion_service:
       - file: salt_minion_conf
       - file: salt_minion_conf_opt
       - file: salt_minion_conf_timeout
-{% endif %}
+{%- endif %}

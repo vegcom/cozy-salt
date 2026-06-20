@@ -1,284 +1,71 @@
-# Linux configuration
-# User environment, shell setup, and system configuration
+{%- from '_macros/paths.sls' import managed_tree with context %}
 
-# NOTE: /etc/skel is now managed in linux/users.sls (must run before user.present)
-
-{%- set cozy_config = salt['pillar.get']('config_paths:cozy:linux') %}
+{%- set cozy_etc = salt['pillar.get']('config_paths:cozy:linux') %}
+{%- set cozy_profile = salt['pillar.get']('config_paths:cozy_profile:linux') %}
+{%- set cozy_environment = salt['pillar.get']('config_paths:cozy_environment:linux') %}
 {%- set cozy_bin = salt['pillar.get']('install_paths:cozy:linux') %}
+{#- /etc #}
+{{ managed_tree('/etc',
+                'salt://linux/files/etc/',
+                user='root', group='root',
+                dir_mode='0755', file_mode='0644',
+                recurse=True, clean=False,) }}
 
-# TODO: iterate over files in path rather than 1 offs
+{{ managed_tree('/etc/systemd/system',
+                'salt://linux/files/etc-systemd-system',
+                recurse=True, clean=False,
+                user='root', group='root') }}
 
-etc_path:
-  file.directory:
-    - name: /etc/
-    - user: root
-    - group: root
-    - mode: "0755"
+{{ managed_tree('/etc/systemd/user',
+                'salt://linux/files/etc-systemd-user',
+                recurse=True, clean=False,
+                user='root', group='root') }}
 
-etc_files:
-  file.recurse:
-    - name: /etc/
-    - source: salt://linux/files/etc/
-    - include_empty: True
-    - clean: False
-    - user: root
-    - group: root
-    - file_mode: "0644"
-    - dir_mode: "0755"
-    - recurse:
-      - user
-      - group
-    - require:
-      - file: etc_path
+{{ managed_tree('/etc/environment.d',
+                'salt://linux/files/etc-environment.d',
+                recurse=True, clean=False,
+                user='root', group='root') }}
 
-etc_profiled_path:
-  file.directory:
-    - name: /etc/profile.d
-    - user: root
-    - group: root
-    - mode: "0755"
-    - require:
-      - file: etc_path
+{{ managed_tree('/etc/profile.d',
+                'salt://linux/files/etc-profile.d/',
+                recurse=True, clean=False,
+                user='root', group='root') }}
 
-etc_profiled_files:
-  file.recurse:
-    - name: /etc/profile.d
-    - source: salt://linux/files/etc-profile.d/
-    - include_empty: True
-    - clean: False
-    - user: root
-    - group: root
-    - file_mode: "0644"
-    - dir_mode: "0755"
-    - recurse:
-      - user
-      - group
-    - require:
-      - file: etc_profiled_path
+{{ managed_tree('/etc/zsh',
+                'salt://linux/files/etc-zsh/',
+                recurse=True, clean=True,
+                user='root', group='root',) }}
 
-etc_zsh_path:
-  file.directory:
-    - name: /etc/zsh
-    - user: root
-    - group: root
-    - mode: "0755"
-    - require:
-      - file: etc_path
+{#- /opt/cozy #}
+{{ managed_tree('/opt/cozy',
+                'salt://linux/files/opt-cozy',
+                user='cozy-salt-svc', group='cozyusers',
+                recurse=False, clean=False,
+                dir_mode='0775', file_mode='0775') }}
 
-etc_zsh_files:
-  file.recurse:
-    - name: /etc/zsh
-    - source: salt://linux/files/etc-zsh/
-    - include_empty: True
-    - clean: True
-    - user: root
-    - group: root
-    - file_mode: "0644"
-    - dir_mode: "0755"
-    - recurse:
-      - user
-      - group
-    - require:
-      - file: etc_zsh_path
+{{ managed_tree(cozy_etc,
+                'salt://linux/files/opt-cozy-etc',
+                user='cozy-salt-svc', group='cozyusers',
+                recurse=False, clean=False,
+                dir_mode='0775', file_mode='0775') }}
 
-cozy_opt_dir:
-  file.directory:
-    - name: /opt/cozy
-    - source: salt://linux/files/opt-cozy
-    - makedirs: True
-    - mode: "0755"
-    - order: 1
-    - recurse:
-      - user
-      - group
+{{ managed_tree(cozy_bin,
+                'salt://linux/files/opt-cozy-bin',
+                user='cozy-salt-svc', group='cozyusers',
+                recurse=True, clean=True,
+                dir_mode='0775', file_mode='0775') }}
 
-cozy_opt_bin:
-  file.recurse:
-    - name: {{ cozy_bin }}
-    - source: salt://linux/files/opt-cozy-bin
-    - include_empty: True
-    - clean: False
-    - dir_mode: "0755"
-    - file_mode: "0755"
-    - recurse:
-      - user
-      - group
-    - order: 0
-    - require:
-      - file: cozy_opt_dir
+{{ managed_tree(cozy_profile,
+                'salt://linux/files/opt-cozy-etc-profile.d',
+                user='root', group='cozyusers',
+                recurse=True, clean=True,
+                dir_mode='0775', file_mode='0665') }}
 
-cozy_opt_etc:
-  file.recurse:
-    - name: {{ cozy_config }}
-    - source: salt://linux/files/opt-cozy-etc
-    - include_empty: True
-    - clean: False
-    - dir_mode: "0755"
-    - file_mode: "0755"
-    - order: 0
-    - require:
-      - file: cozy_opt_etc_path
+{{ managed_tree(cozy_environment,
+                'salt://linux/files/opt-cozy-etc-environment.d',
+                user='cozy-salt-svc', group='cozyusers',
+                recurse=True, clean=True,
+                dir_mode='0775', file_mode='0665') }}
 
-cozy_opt_etc_path:
-  file.directory:
-    - name: {{ cozy_config }}
-    - user: root
-    - group: root
-    - mode: "0755"
-    - require:
-      - file: cozy_opt_dir
-
-cozy_opt_etc_profile.d:
-  file.recurse:
-    - name: {{ cozy_config }}/profile.d
-    - source: salt://linux/files/opt-cozy-etc-profile.d
-    - include_empty: True
-    - clean: False
-    - dir_mode: "0755"
-    - file_mode: "0655"
-    - recurse:
-      - user
-      - group
-    - order: 0
-    - require:
-      - file: cozy_opt_etc_profile.d_path
-
-cozy_opt_etc_profile.d_path:
-  file.directory:
-    - name: {{ cozy_config }}/environment.d
-    - user: root
-    - group: root
-    - mode: "0755"
-    - require:
-      - file: cozy_opt_etc
-
-cozy_opt_etc_environment.d:
-  file.recurse:
-    - name: {{ cozy_config }}/environment.d
-    - source: salt://linux/files/opt-cozy-etc-environment.d
-    - include_empty: True
-    - clean: False
-    - user: root
-    - group: root
-    - dir_mode: "0755"
-    - file_mode: "0655"
-    - recurse:
-      - user
-      - group
-    - order: 0
-    - require:
-      - file: cozy_opt_etc_environment.d_path
-
-cozy_opt_etc_environment.d_path:
-  file.directory:
-    - name: {{ cozy_config }}/environment.d
-    - user: root
-    - group: root
-    - mode: "0755"
-
-etc_systemd_path:
-  file.directory:
-    - name: /etc/systemd/system
-    - user: root
-    - group: root
-    - mode: "0755"
-
-etc_systemd_system_units:
-  file.directory:
-    - name: /etc/systemd/system
-    - user: root
-    - group: root
-    - mode: "0755"
-    - require:
-      - file: etc_systemd_path
-
-etc_systemd_system_unit_files:
-  file.recurse:
-    - name: /etc/systemd/system
-    - source: salt://linux/files/etc-systemd-system
-    - include_empty: True
-    - clean: False
-    - user: root
-    - group: root
-    - file_mode: "0644"
-    - dir_mode: "0755"
-    - recurse:
-      - user
-      - group
-    - require:
-      - file: etc_systemd_system_units
-
-etc_systemd_user_units:
-  file.directory:
-    - name: /etc/systemd/user
-    - user: root
-    - group: root
-    - mode: "0755"
-    - require:
-      - file: etc_systemd_path
-
-etc_systemd_user_unit_files:
-  file.recurse:
-    - name: /etc/systemd/user
-    - source: salt://linux/files/etc-systemd-user
-    - include_empty: True
-    - clean: False
-    - user: root
-    - group: root
-    - file_mode: "0644"
-    - dir_mode: "0755"
-    - recurse:
-      - user
-      - group
-    - require:
-      - file: etc_systemd_user_units
-
-etc_environmentd_path:
-  file.directory:
-    - name: /etc/systemd/user
-    - user: root
-    - group: root
-    - mode: "0755"
-    - require:
-      - file: etc_systemd_path
-
-etc_environmentd_files:
-  file.recurse:
-    - name: /etc/environment.d/
-    - source: salt://linux/files/etc-environment.d/
-    - include_empty: True
-    - clean: False
-    - user: root
-    - group: root
-    - file_mode: "0644"
-    - dir_mode: "0755"
-    - recurse:
-      - user
-      - group
-    - require:
-      - file: etc_environmentd_path
-
-# Generate banners during highstate
-run_gen_motd:
-  cmd.run:
-    - name: /opt/cozy/bin/gen_motd.sh
-    - require:
-      - file: cozy_opt_bin
-    - onchanges:
-      - file: cozy_opt_bin
-
-run_gen_issue:
-  cmd.run:
-    - name: /opt/cozy/bin/gen_issue.sh
-    - require:
-      - file: cozy_opt_bin
-    - onchanges:
-      - file: cozy_opt_bin
-
-run_gen_issuenet:
-  cmd.run:
-    - name: /opt/cozy/bin/gen_issuenet.sh
-    - require:
-      - file: cozy_opt_bin
-    - onchanges:
-      - file: cozy_opt_bin
+include:
+  - .banners

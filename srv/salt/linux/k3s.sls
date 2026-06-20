@@ -58,7 +58,7 @@ k3s_env_config:
   {%- endif %}
   {#-  set _datastore = "--datastore-endpoint=https://" ~ k3s_advertise_address ~ ":2379" #}
   {#-  set _datastore = "--datastore-endpoint sqlite://" ~ k3s_data_dir ~ "/server/db/state.db" #}
-  {%- set embedded_registry = "--embedded-registry --disable-cloud-controller" if salt["pillar.get"]("k3s.embedded_registry") else " "  %}  {#- FIXME: controls etcd dispatch via embedded, needs better naming  #}
+  {%- set embedded_registry = "--embedded-registry --disable-cloud-controller" if salt["pillar.get"]("k3s.embedded_registry") else " " %}  {#- FIXME: controls etcd dispatch via embedded, needs better naming  #}
   {%- set k3s_exec = [k3s_args, k3s_kwargs, k3s_kwargs_opt, k3s_kwargs_extra, embedded_registry] | join(' ') | trim %}
   {%- set kubeconfig_raw = salt['mine.get'](k3s_host, 'k3s_kubeconfig').get(k3s_host, '') %}
   {#- TODO: name them -- they are all named default #}

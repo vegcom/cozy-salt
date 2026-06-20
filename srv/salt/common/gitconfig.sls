@@ -17,7 +17,7 @@
 {%- if not is_windows %}
 {%- set user_home = dotfiles.get_user_home(username) %}
 {%- else %}
-{%- set user_home = salt['cmd.run']('(Resolve-Path("$HOME")).Path', shell='powershell') | replace("\\", "/")  %}
+{%- set user_home = salt['cmd.run']('(Resolve-Path("$HOME")).Path', shell='powershell') | replace("\\", "/") %}
 {%- endif %}
 
 {# Merge global and user-specific github tokens #}

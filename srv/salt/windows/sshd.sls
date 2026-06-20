@@ -1,8 +1,8 @@
-{% set paths = salt['pillar.get']('paths', {}) %}
-{% set sshd_config_d = paths.get('sshd_config_d', 'C:\\ProgramData\\ssh\\sshd_config.d') %}
-{% set sshd_config = paths.get('sshd_config', 'C:\\ProgramData\\ssh\\sshd_config') %}
-{% set pwsh_7_profile = paths.get('powershell_7_profile', 'C:\\Program Files\\PowerShell\\7') %}
-{% set pwsh_exe = pwsh_7_profile + "\\pwsh.exe" %}
+{%- set paths = salt['pillar.get']('paths', {}) %}
+{%- set sshd_config_d = paths.get('sshd_config_d', 'C:/ProgramData/ssh/sshd_config.d') %}
+{%- set sshd_config = paths.get('sshd_config', 'C:/ProgramData/ssh/sshd_config') %}
+{%- set pwsh_7_profile = paths.get('powershell_7_profile', 'C:/Program Files/PowerShell/7') %}
+{%- set pwsh_exe = pwsh_7_profile + "/pwsh.exe" %}
 
 # Deploy base sshd_config (enables drop-in dir + authorized keys paths)
 sshd_base_config:

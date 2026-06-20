@@ -2,10 +2,10 @@
 # Fixes broken repos created by get.docker.com on Kali/WSL
 # Kali/WSL get wrong repos that 404 — replace with Ubuntu noble (officially supported)
 
-{% set is_kali = grains.get('os', '') == 'Kali' %}
-{% set is_wsl = grains.get('kernel_release', '').find('WSL') != -1 %}
+{%- set is_kali = grains.get('os', '') == 'Kali' %}
+{%- set is_wsl = grains.get('kernel_release', '').find('WSL') != -1 %}
 
-{% if is_kali or is_wsl %}
+{%- if is_kali or is_wsl %}
 
 # Remove broken Docker repos created by get.docker.com
 docker_repo_cleanup:
@@ -30,10 +30,10 @@ docker_apt_update:
     - require:
       - file: docker_repo_fix
 
-{% else %}
+{%- else %}
 
 ubuntu_noble_noop:
   test.nop:
     - name: Ubuntu Noble docker repo config not needed on this system
 
-{% endif %}
+{%- endif %}

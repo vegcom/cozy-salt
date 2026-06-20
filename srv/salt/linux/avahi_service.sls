@@ -1,14 +1,13 @@
 # Manage avahi services per host
 
-{% set is_container = salt['file.file_exists']('/.dockerenv') or salt['file.file_exists']('/run/.containerenv') %}
+{%- set is_container = salt['file.file_exists']('/.dockerenv') or salt['file.file_exists']('/run/.containerenv') %}
 {%- set avahi_enabled = salt['pillar.get']('host:capabilities:avahi', True) %}
 {%- set _id = salt['grains.get']('id') %}
 {%- set _desc = salt['pillar.get']('network:hosts', {}).get(_id, {}).get('comment', _id) | string %}
 {%- set gw_if = salt['netinfo.default_gw']().get('interface') %}
-{% set tailscale_enabled = salt['pillar.get']('host:capabilities:tailscale', True) %}
+{%- set tailscale_enabled = salt['pillar.get']('host:capabilities:tailscale', True) %}
 
-
-{%-  if avahi_enabled and is_container == False %}
+{%- if avahi_enabled and is_container == False %}
   {%- if _id %}
 avahi_files:
   file.managed:
@@ -54,6 +53,5 @@ avahi_:
     - name: "not placing.service file"
 
   {%- endif %}
-
 
 {%- endif %}

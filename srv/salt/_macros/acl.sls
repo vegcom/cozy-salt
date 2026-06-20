@@ -2,7 +2,7 @@
 {%- set os_family = salt['grains.get']('os_family', 'Debian') %}
 {%- set state_id = path | replace('/', '_') | replace('.', '_') | replace('\\', '_') | replace(':', '_') %}
 
-{% if os_family == 'Windows' %}
+{%- if os_family == 'Windows' %}
 {%- set icacls_perm = 'F' if perms == 'rwx' else 'RX' %}
 {{ state_id }}_acl:
   cmd.run:
@@ -10,7 +10,7 @@
     - onlyif: Test-Path "{{ path }}"
     - shell: powershell
 
-{% else %}
+{%- else %}
 {{ state_id }}_acl:
   cmd.run:
     - name: |
@@ -19,5 +19,5 @@
     - onlyif: test -d {{ path }}
     - unless: getfacl {{ path }} 2>/dev/null | grep -q "group:{{ group }}:{{ perms }}"
 
-{% endif %}
+{%- endif %}
 {%- endmacro %}

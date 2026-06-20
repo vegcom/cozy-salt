@@ -25,7 +25,7 @@ distccd_conf:
     - mode: "0644"
     - contents: |
         # Managed by Salt - DO NOT EDIT MANUALLY
-        DISTCC_ARGS="--zeroconf --allow {{ distcc_allow | join(' --allow ') }}{% if distcc_jobs %} --jobs {{ distcc_jobs }}{% endif %}"
+        DISTCC_ARGS="--zeroconf --allow {{ distcc_allow | join(' --allow ') }}{%- if distcc_jobs %} --jobs {{ distcc_jobs }}{%- endif %}"
     - require:
       - pkg: distcc_package
 

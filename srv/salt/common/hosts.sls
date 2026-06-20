@@ -1,11 +1,11 @@
 # Manage /etc/hosts entries for network services (from pillar.network.hosts)
 # Cross-platform: host.present works on both Linux and Windows
 
-{% set is_container = salt['file.file_exists']('/.dockerenv') or
+{%- set is_container = salt['file.file_exists']('/.dockerenv') or
                       salt['file.file_exists']('/run/.containerenv') %}
-{% set hosts = salt['pillar.get']('network:hosts', {}, merge=True) %}
+{%- set hosts = salt['pillar.get']('network:hosts', {}, merge=True) %}
 
-{% if not is_container %}
+{%- if not is_container %}
 hosts_entry_localhost:
   host.present:
     - ip:
@@ -24,9 +24,9 @@ hosts_entry_localhost6:
       - ip6-localhost
       - ip6-loopback
     - clean: True
-{% endif %}
+{%- endif %}
 
-{% for id, entry in hosts.items() %}
+{%- for id, entry in hosts.items() %}
 hosts_entry_{{ id | replace('-', '_') | replace('.', '_') }}:
   host.present:
     - ip:
@@ -41,4 +41,4 @@ hosts_entry_{{ id | replace('-', '_') | replace('.', '_') }}:
     - comment: {{ entry['comment'] }}
 {%- endif %}
     - clean: True
-{% endfor %}
+{%- endfor %}

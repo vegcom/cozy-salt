@@ -91,7 +91,6 @@ pacman_conf:
         {%- endfor %}
         {%- endif %}
 
-
 pacman_init_key:
   cmd.run:
     - name: pacman-key --init

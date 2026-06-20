@@ -17,10 +17,10 @@
   not just users with a home directory created.
 
   Usage:
-    {% from '_macros/windows.sls' import get_users_with_profiles with context %}
-    {% for user in get_users_with_profiles().split(',') %}
+    {%- from '_macros/windows.sls' import get_users_with_profiles with context %}
+    {%- for user in get_users_with_profiles().split(',') %}
     ...
-    {% endfor %}
+    {%- endfor %}
 #}
 {%- macro get_users_with_profiles() -%}
 {%- set managed_users = salt['pillar.get']('managed_users', [], merge=True) -%}
@@ -44,8 +44,8 @@
   not just users with a home directory created.
 
   Usage:
-    {% from '_macros/windows.sls' import get_winget_user with context %}
-    {% set winget_user = get_winget_user() %}
+    {%- from '_macros/windows.sls' import get_winget_user with context %}
+    {%- set winget_user = get_winget_user() %}
 #}
 {%- macro get_winget_user() -%}
 {%- set managed_users = salt['pillar.get']('managed_users', [], merge=True) -%}
@@ -67,13 +67,12 @@
   Returns: Full path to user's winget.exe
 
   Usage:
-    {% from '_macros/windows.sls' import get_winget_path %}
-    {% set winget = get_winget_path('admin') %}
+    {%- from '_macros/windows.sls' import get_winget_path %}
+    {%- set winget = get_winget_path('admin') %}
 #}
 {%- macro get_winget_path(user) -%}
 C:\Users\{{ user }}\AppData\Local\Microsoft\WindowsApps\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\winget.exe
 {%- endmacro -%}
-
 
 {#-
 Macro: win_cmd

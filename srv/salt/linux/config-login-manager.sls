@@ -3,9 +3,9 @@
 # Runs on all Linux systems with SDDM installed
 # Pillar-gated: linux:login_manager:sddm:enabled
 
-{% set sddm_enabled = salt['pillar.get']('linux:login_manager:sddm:enabled', false) %}
+{%- set sddm_enabled = salt['pillar.get']('linux:login_manager:sddm:enabled', false) %}
 
-{% if sddm_enabled %}
+{%- if sddm_enabled %}
 
 # =============================================================================
 # SDDM CONFIGURATION (Login Manager)
@@ -43,16 +43,16 @@ sddm_opt_configs:
 # =============================================================================
 # SDDM THEME DEPLOYMENT (Pillar-gated)
 # =============================================================================
-{% set sddm_theme = salt['pillar.get']('linux:login_manager:sddm:theme', 'astronaut') %}
-{% set deploy_fonts = salt['pillar.get']('linux:login_manager:sddm:deploy_fonts', true) %}
-{% set github_token = salt['pillar.get']('github:access_token', '') %}
-{% set theme_url_map = {
+{%- set sddm_theme = salt['pillar.get']('linux:login_manager:sddm:theme', 'astronaut') %}
+{%- set deploy_fonts = salt['pillar.get']('linux:login_manager:sddm:deploy_fonts', true) %}
+{%- set github_token = salt['pillar.get']('github:access_token', '') %}
+{%- set theme_url_map = {
   'astronaut': 'https://github.com/Keyitdev/sddm-astronaut-theme.git',
   'breeze': 'skip',
 } %}
-{% set theme_url = theme_url_map.get(sddm_theme, '') %}
+{%- set theme_url = theme_url_map.get(sddm_theme, '') %}
 
-{% if sddm_theme and theme_url and theme_url != 'skip' %}
+{%- if sddm_theme and theme_url and theme_url != 'skip' %}
 sddm_theme:
   git.latest:
     - name: {{ theme_url }}
@@ -61,7 +61,7 @@ sddm_theme:
     - branch: main
     - force_clone: True
 
-{% if deploy_fonts %}
+{%- if deploy_fonts %}
 sddm_theme_fonts:
   cmd.run:
     - name: cp -r /usr/share/sddm/themes/sddm-{{ sddm_theme }}-theme/Fonts/* /usr/share/fonts/ 2>/dev/null || true
@@ -74,21 +74,21 @@ update_font_cache:
     - name: fc-cache -f -v
     - require:
       - cmd: sddm_theme_fonts
-{% endif %}
+{%- endif %}
 
-{% else %}
+{%- else %}
 # SDDM theme deployment disabled or theme not found in map
 sddm_theme_disabled:
   test.nop:
     - name: SDDM theme deployment disabled or not found ({{ sddm_theme }})
-{% endif %}
+{%- endif %}
 
 # =============================================================================
 # AUTOLOGIN CONFIGURATION (Pillar-gated)
 # =============================================================================
-{% set autologin_user = salt['pillar.get']('linux:login_manager:autologin:user', false) %}
-{% set autologin_session = salt['pillar.get']('linux:login_manager:autologin:session', false) %}
-{% if autologin_user %}
+{%- set autologin_user = salt['pillar.get']('linux:login_manager:autologin:user', false) %}
+{%- set autologin_session = salt['pillar.get']('linux:login_manager:autologin:session', false) %}
+{%- if autologin_user %}
 
 sddm_autologin_conf:
   file.managed:
@@ -136,7 +136,7 @@ kde_pam_nopasswdlogin:
     - require:
       - file: pamd_nopasswdlogin_files
 
-{% else %}
+{%- else %}
 # Autologin disabled (set linux:login_manager:autologin:user to enable)
 
 sddm_autologin_conf:
@@ -146,28 +146,28 @@ sddm_autologin_conf:
 sddm_autologin_disabled:
   test.nop:
     - name: Autologin disabled
-{% endif %}
+{%- endif %}
 
-{% else %}
+{%- else %}
 
 # SDDM login manager disabled in pillar
 sddm_disabled:
   test.nop:
     - name: SDDM login manager disabled (set linux:login_manager:sddm:enabled to enable)
 
-{% endif %}
+{%- endif %}
 
 # =============================================================================
 # SYSTEMD SLEEP HOOK (Display rotation on wake - Steam Deck only)
 # =============================================================================
-{% set is_galileo = grains.get('dmi', {}).get('System Information', {}).get('Manufacturer', '') == 'Valve' and
+{%- set is_galileo = grains.get('dmi', {}).get('System Information', {}).get('Manufacturer', '') == 'Valve' and
                     grains.get('dmi', {}).get('System Information', {}).get('Product Name', '') == 'Galileo' %}
 
-{% if is_galileo %}
+{%- if is_galileo %}
 steamdeck_sleep_hook:
   file.managed:
     - name: /usr/lib/systemd/system-sleep/deck.sh
     - source: salt://linux/files/usr-lib-systemd-system-sleep/deck.sh
     - mode: "0755"
     - makedirs: True
-{% endif %}
+{%- endif %}

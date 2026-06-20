@@ -5,12 +5,12 @@
 
 {%- from "_macros/acl.sls" import cozy_acl %}
 
-{% set nvm_config = salt['pillar.get']('nvm', {}) %}
-{% set default_version = nvm_config.get('default_version', 'lts/*') %}
-{% set _pinned = salt['pillar.get']('versions:nvm:version', '') %}
-{% set nvm_version = _pinned or salt['github_release.latest']('nvm-sh/nvm') %}
+{%- set nvm_config = salt['pillar.get']('nvm', {}) %}
+{%- set default_version = nvm_config.get('default_version', 'lts/*') %}
+{%- set _pinned = salt['pillar.get']('versions:nvm:version', '') %}
+{%- set nvm_version = _pinned or salt['github_release.latest']('nvm-sh/nvm') %}
 {# Path configuration from pillar with defaults #}
-{% set nvm_path = salt['pillar.get']('install_paths:nvm:linux', '/opt/nvm') %}
+{%- set nvm_path = salt['pillar.get']('install_paths:nvm:linux', '/opt/nvm') %}
 {%- set service_user = salt['pillar.get']('service_user:name', 'cozy-salt-svc') %}
 
 # Create nvm directory first (NVM installer requires it to exist)

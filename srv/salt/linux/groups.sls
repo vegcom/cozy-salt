@@ -2,8 +2,8 @@
 # Runs BEFORE linux.install so install states can require cozyusers group
 # Runs BEFORE linux.users so users can require groups + shell_packages
 
-{% set users = salt['pillar.get']('users', {}) %}
-{% set pillar_groups = salt['pillar.get']('groups', {}) %}
+{%- set users = salt['pillar.get']('users', {}) %}
+{%- set pillar_groups = salt['pillar.get']('groups', {}) %}
 
 # ============================================================================
 # SKELETON: Must run BEFORE user creation (user.present copies /etc/skel)
@@ -18,36 +18,36 @@ skel_files:
 
 # Create user primary groups (must run before dynamic group loop)
 # GID pinned per-user in pillar users/{username}.gid
-{% for username, userdata in users.items() %}
-{% if userdata.get('gid') %}
+{%- for username, userdata in users.items() %}
+{%- if userdata.get('gid') %}
 {{ username }}_primary_group:
   group.present:
     - name: {{ username }}
     - gid: {{ userdata.gid }}
     - order: 0
-{% endif %}
-{% endfor %}
+{%- endif %}
+{%- endfor %}
 
 # Collect all unique groups from user definitions
 # cozyusers is always required (NVM, miniforge, ACL states depend on it)
-{% set all_groups = ['cozyusers'] %}
-{% for username, userdata in users.items() %}
-  {% for group in userdata.get('linux_groups', ['cozyusers']) %}
-    {% if group not in all_groups %}
-      {% do all_groups.append(group) %}
-    {% endif %}
-  {% endfor %}
-{% endfor %}
+{%- set all_groups = ['cozyusers'] %}
+{%- for username, userdata in users.items() %}
+  {%- for group in userdata.get('linux_groups', ['cozyusers']) %}
+    {%- if group not in all_groups %}
+      {%- do all_groups.append(group) %}
+    {%- endif %}
+  {%- endfor %}
+{%- endfor %}
 
 # Create groups dynamically (must exist before users are added)
 # GIDs from pillar groups:{name}:gid — system groups get OS-assigned GID
-{% for group in all_groups %}
+{%- for group in all_groups %}
 {{ group }}_group:
   group.present:
     - name: {{ group }}
-    {% if pillar_groups.get(group, {}).get('gid') %}- gid: {{ pillar_groups[group].gid }}{% endif %}
+    {%- if pillar_groups.get(group, {}).get('gid') %}- gid: {{ pillar_groups[group].gid }}{%- endif %}
     - order: 1
-{% endfor %}
+{%- endfor %}
 
 # sudoers for cozyusers group (NOPASSWD)
 cozyusers_sudoers:
@@ -63,7 +63,7 @@ cozyusers_sudoers:
     - require:
       - group: cozyusers_group
 
-{% if "nopasswdlogin" in all_groups %}
+{%- if "nopasswdlogin" in all_groups %}
 # sudoers for nopasswdlogin group
 nopasswdlogin_sudoers:
   file.managed:
@@ -77,4 +77,4 @@ nopasswdlogin_sudoers:
     - makedirs: True
     - require:
       - group: nopasswdlogin_group
-{% endif %}
+{%- endif %}

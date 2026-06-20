@@ -1,5 +1,5 @@
 # cozy-presence: Local identity persistence service
-{% from "_macros/git-repo.sls" import git_repo %}
+{%- from "_macros/git-repo.sls" import git_repo %}
 {%- set managed_users = salt['pillar.get']('managed_users', [], merge=True) -%}
 {%- set run_user = managed_users[0] if managed_users else '' -%}
 {%- set is_container = salt['file.file_exists']('/.dockerenv') or
@@ -55,7 +55,6 @@ cozy_presence_env_update:
     - onchanges:
       - git: cozy_presence_repo
 
-
 # Install in conda env
 cozy_presence_pip:
   cmd.run:
@@ -93,7 +92,7 @@ cozy_presence_config:
       - file: cozy_presence_service_file
 
 # Per-user: data dir + service enable
-{% for username in managed_users %}
+{%- for username in managed_users %}
 {%- set user_info = salt['user.info'](username) %}
 {%- if user_info %}
 
@@ -118,7 +117,7 @@ cozy_presence_service_{{ username }}:
       - git: cozy_presence_repo
 
 {%- endif %}
-{% endfor %}
+{%- endfor %}
 
 {%- else %}
 

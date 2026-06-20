@@ -7,7 +7,7 @@
 {%- from "_macros/acl.sls" import cozy_acl %}
 
 {# Path configuration from pillar with defaults #}
-{% set rust_path = salt['pillar.get']('install_paths:rust:linux', '/opt/rust') %}
+{%- set rust_path = salt['pillar.get']('install_paths:rust:linux', '/opt/rust') %}
 
 # Create rust directory first (rustup installer requires it to exist)
 rust_directory:

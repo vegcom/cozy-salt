@@ -1,8 +1,8 @@
 # Linux Homebrew installation
 {# Path configuration from pillar with defaults #}
-{% set homebrew_base = salt['pillar.get']('install_paths:homebrew:linux', '/home/linuxbrew/.linuxbrew') %}
+{%- set homebrew_base = salt['pillar.get']('install_paths:homebrew:linux', '/home/linuxbrew/.linuxbrew') %}
 {# Extract parent directory for initial creation #}
-{% set homebrew_parent = homebrew_base.rsplit('/', 1)[0] if '/' in homebrew_base else '/home/linuxbrew' %}
+{%- set homebrew_parent = homebrew_base.rsplit('/', 1)[0] if '/' in homebrew_base else '/home/linuxbrew' %}
 {%- set service_user = salt['pillar.get']('service_user:name', 'cozy-salt-svc') %}
 
 linuxbrew_directory:
@@ -51,9 +51,9 @@ homebrew_update:
       - cmd: homebrew_install
     - unless: test -f {{ homebrew_base }}/var/homebrew/.last_update_timestamp
 
-{% import_yaml "packages.sls" as packages %}
-{% set brew_packages = packages.get('brew', []) %}
-{% if brew_packages %}
+{%- import_yaml "packages.sls" as packages %}
+{%- set brew_packages = packages.get('brew', []) %}
+{%- if brew_packages %}
 install_brew_packages:
   cmd.run:
     - name: {{ homebrew_base }}/bin/brew install {{ brew_packages | join(' ') }}
@@ -61,4 +61,4 @@ install_brew_packages:
     - unless: test ! -x {{ homebrew_base }}/bin/brew
     - require:
       - cmd: homebrew_update
-{% endif %}
+{%- endif %}

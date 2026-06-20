@@ -3,11 +3,11 @@
 
 {%- from "_macros/acl.sls" import cozy_acl %}
 
-{% set _pinned = salt['pillar.get']('versions:miniforge:version', '') %}
-{% set miniforge_version = _pinned or salt['github_release.latest']('conda-forge/miniforge') %}
+{%- set _pinned = salt['pillar.get']('versions:miniforge:version', '') %}
+{%- set miniforge_version = _pinned or salt['github_release.latest']('conda-forge/miniforge') %}
 {%- set cpu_arch = salt['grains.get']('cpuarch', 'x86_64') %}
 {# Path configuration from pillar with defaults #}
-{% set miniforge_path = salt['pillar.get']('install_paths:miniforge:linux', '/opt/miniforge3') %}
+{%- set miniforge_path = salt['pillar.get']('install_paths:miniforge:linux', '/opt/miniforge3') %}
 {%- set service_user = salt['pillar.get']('service_user:name', 'cozy-salt-svc') %}
 
 # Create nvm directory first (NVM installer requires it to exist)
@@ -41,13 +41,14 @@ miniforge_clean_conda_symlink:
 miniforge_install:
   cmd.run:
     - name: bash /tmp/miniforge-init.sh -b -u -s -p {{ miniforge_path }}
+    - runas: root
     - require:
       - cmd: miniforge_download
       - file: miniforge_clean_conda_symlink
 
+# Set ACLs for cozyusers group access
+{{ cozy_acl(miniforge_path) }}
+
 # Install base pip packages via common orchestration
 include:
   - common.miniforge
-
-# Set ACLs for cozyusers group access
-{{ cozy_acl(miniforge_path) }}

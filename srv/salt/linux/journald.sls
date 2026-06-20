@@ -22,7 +22,6 @@ etc-systemd-journald.conf.d:
     - require:
       - file: etc-systemd-journald.conf.d_path
 
-
 etc-systemd-journal-remote.conf.d_path:
   file.directory:
     - name: /etc/systemd/journald.conf.d

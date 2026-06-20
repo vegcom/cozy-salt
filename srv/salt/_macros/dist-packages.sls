@@ -3,17 +3,17 @@
 # Usage: role_aware_packages('ubuntu', docker_apt_require=True)
 
 {%- macro role_aware_packages(os_name, docker_apt_require=False) %}
-{% import_yaml 'packages.sls' as packages %}
-{% set workstation_role = salt['pillar.get']('workstation_role', 'workstation-full') %}
-{% set capability_meta = salt['pillar.get']('capability_meta', {}) %}
-{% set role_capabilities = salt['pillar.get']('linux', {}) %}
-{% set capabilities = role_capabilities.get(workstation_role, role_capabilities.get('workstation-full', [])) %}
+{%- import_yaml 'packages.sls' as packages %}
+{%- set workstation_role = salt['pillar.get']('workstation_role', 'workstation-full') %}
+{%- set capability_meta = salt['pillar.get']('capability_meta', {}) %}
+{%- set role_capabilities = salt['pillar.get']('linux', {}) %}
+{%- set capabilities = role_capabilities.get(workstation_role, role_capabilities.get('workstation-full', [])) %}
 
 # ============================================================================
 # FOUNDATION: core_utils (runs first, others depend on this)
 # ============================================================================
-{% if 'core_utils' in capabilities and 'core_utils' in packages.get(os_name, {}) %}
-{% set core_meta = capability_meta.get('core_utils', {'state_name': 'core_utils_packages'}) %}
+{%- if 'core_utils' in capabilities and 'core_utils' in packages.get(os_name, {}) %}
+{%- set core_meta = capability_meta.get('core_utils', {'state_name': 'core_utils_packages'}) %}
 {{ core_meta.state_name }}:
   pkg.installed:
     - pkgs: {{ packages[os_name].core_utils | tojson }}
@@ -21,16 +21,16 @@
     - require:
       - cmd: docker_apt_update
 {%- endif %}
-{% endif %}
+{%- endif %}
 
 # ============================================================================
 # CAPABILITIES: Loop through all non-foundation capabilities
 # ============================================================================
-{% for cap_key, cap_meta in capability_meta.items() %}
-{% if not cap_meta.get('is_foundation', false) and cap_key in capabilities %}
-{% if cap_key in packages.get(os_name, {}) %}
-{% set pillar_gate = cap_meta.get('pillar_gate') %}
-{% if not pillar_gate or salt['pillar.get'](pillar_gate, False) %}
+{%- for cap_key, cap_meta in capability_meta.items() %}
+{%- if not cap_meta.get('is_foundation', false) and cap_key in capabilities %}
+{%- if cap_key in packages.get(os_name, {}) %}
+{%- set pillar_gate = cap_meta.get('pillar_gate') %}
+{%- if not pillar_gate or salt['pillar.get'](pillar_gate, False) %}
 
 # --- {{ cap_key }} ---
 {{ cap_meta.state_name }}:
@@ -39,16 +39,16 @@
     - require:
       - pkg: core_utils_packages
 
-{% if cap_meta.get('has_service') %}
+{%- if cap_meta.get('has_service') %}
 {{ cap_meta.has_service }}_service:
   service.running:
     - name: {{ cap_meta.has_service }}
     - enable: True
     - require:
       - pkg: {{ cap_meta.state_name }}
-{% endif %}
+{%- endif %}
 
-{% if cap_meta.get('has_user_groups') %}
+{%- if cap_meta.get('has_user_groups') %}
 {%- set user = salt['pillar.get']('service_user:name', 'cozy-salt-svc') %}
 {{ cap_key }}_user_groups:
   user.present:
@@ -57,10 +57,10 @@
     - remove_groups: False
     - require:
       - pkg: {{ cap_meta.state_name }}
-{% endif %}
+{%- endif %}
 
-{% endif %}
-{% endif %}
-{% endif %}
-{% endfor %}
+{%- endif %}
+{%- endif %}
+{%- endif %}
+{%- endfor %}
 {%- endmacro %}

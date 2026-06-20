@@ -1,7 +1,7 @@
 {%- set docker_enabled = salt['pillar.get']('host:capabilities:docker', False) %}
 # docker_enabled: {{ docker_enabled }}
 {%- if docker_enabled %}
-  {%- set config = salt['pillar.get']('docker_compose', {})  %}
+  {%- set config = salt['pillar.get']('docker_compose', {}) %}
   {%- set _id = salt['grains.get']('id') %}
 # config: {{ config }}
   {%- for name, entry in config.items() %}

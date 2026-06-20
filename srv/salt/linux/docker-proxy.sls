@@ -2,17 +2,17 @@
 # Exposes Docker daemon on TCP 2375 for Windows/WSL access
 # Only deployed on Debian systems with Docker installed
 
-{% set is_container = salt['file.file_exists']('/.dockerenv') or
+{%- set is_container = salt['file.file_exists']('/.dockerenv') or
                       salt['file.file_exists']('/run/.containerenv') %}
 {# Path configuration from pillar with defaults #}
-{% set cozy_path = salt['pillar.get']('install_paths:cozy:linux', '/opt/cozy/bin') %}
-{% set cozy_docker = salt['pillar.get']('install_paths:docker:linux', '/opt/cozy/docker') %}
+{%- set cozy_path = salt['pillar.get']('install_paths:cozy:linux', '/opt/cozy/bin') %}
+{%- set cozy_docker = salt['pillar.get']('install_paths:docker:linux', '/opt/cozy/docker') %}
 
 {%- set docker_enabled = salt['pillar.get']('host:capabilities:docker', False) %}
-{% set docker_proxy_config = cozy_docker ~ '/docker-proxy.yaml' %}
+{%- set docker_proxy_config = cozy_docker ~ '/docker-proxy.yaml' %}
 
-{% if not is_container %}
-{% if docker_enabled %}
+{%- if not is_container %}
+{%- if docker_enabled %}
 docker_path:
   file.directory:
     - name: {{ cozy_docker }}
@@ -37,7 +37,7 @@ docker_proxy_service:
     - name: docker --context=default compose -f {{ docker_proxy_config }} up -d
     - require:
       - file: docker_proxy_file
-{% else %}
+{%- else %}
 # Docker proxy skipped (non-Debian or container)
 docker_proxy_file:
   test.nop:
@@ -46,5 +46,5 @@ docker_proxy_file:
 docker_proxy_service:
   test.nop:
     - name: Skipping Docker proxy service
-{% endif %}
-{% endif %}
+{%- endif %}
+{%- endif %}
