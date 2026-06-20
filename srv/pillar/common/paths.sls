@@ -58,6 +58,10 @@ config_paths:
   cozy:
     windows: C:\opt\cozy\etc
     linux: /opt/cozy/etc
+  cozy_profile:
+    linux: /opt/cozy/etc/profile.d
+  cozy_environment:
+    linux: /opt/cozy/etc/environment.d
   docker:
     linux: /etc/docker/daemon.json
     windows: '$HOME\.docker\daemon.json'
