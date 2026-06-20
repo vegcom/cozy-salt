@@ -40,8 +40,10 @@ Banner "C:\ProgramData\ssh\motd.txt"
 Banner /etc/motd
 {% endif %}
 
-AcceptEnv __*_GATE__
-AcceptEnv __PROXYJUMP_GATE__
+PermitUserEnvironment yes
+
+AcceptEnv __*GATE__
+AcceptEnv __PROXYJUMP_HOST__
 AcceptEnv *INTERACTIVE*
 AcceptEnv COLORTERM
 AcceptEnv LANG LC_*
