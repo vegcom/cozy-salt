@@ -1,6 +1,8 @@
+#!jinja|yaml
 # Common Miniforge/Conda package orchestration
+{%- from '_macros/packages.sls' import get get_packages with context %}
 
-{%- import_yaml "packages.sls" as packages %}
+{%- set packages = get_packages() %}
 {%- set service_user = salt['pillar.get']('service_user:name', 'cozy-salt-svc') %}
 {%- if grains['os_family'] == 'Windows' %}
   {%- set miniforge_path = salt['pillar.get']('install_paths:miniforge:windows', 'C:\\opt\\miniforge3') %}
@@ -12,6 +14,8 @@
   {%- set miniforge_path = salt['pillar.get']('install_paths:miniforge:linux', '/opt/miniforge3') %}
   {%- set pip_bin = miniforge_path ~ '/bin/pip' %}
   {%- set uv_bin = miniforge_path ~ '/bin/uv' %}
+  {%- set conda_bin = miniforge_path ~ '/bin/conda' %}
+  {%- set mamba_bin = miniforge_path ~ '/bin/mamba' %}
   {%- set pip_config_dest = salt['pillar.get']('config_paths:pip:linux') %}
   {%- set pip_cache = salt['pillar.get']('cache_paths:pip:linux') %}
 {%- endif %}
@@ -38,7 +42,19 @@ pip_config:
   {%- if grains['os_family'] == 'Windows' %}
     - require:
       - file: pip_config_path
-  {%- endif %}
+  {%- endif %}wit
+
+# Set default conda version
+conda_base_version:
+  cmd.run:
+    - name: {{ mamba_bin }} --use-uv update && {{ mamba_bin }} --use-uv install python=3.12
+    - runas: {{ service_user }}
+    - require:
+      - cmd: miniforge_install
+      - cmd: opt_acl_cozyusers
+    - onchanges:
+      - cmd: miniforge_install
+      - cmd: opt_acl_cozyusers
 
 # Install pip base packages in miniforge base environment
 {%- for package in packages.get('pip_base', []) %}
