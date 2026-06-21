@@ -138,11 +138,9 @@ disable_delivery_optimization:
 # ============================================================================
 # Windows AD
 # ============================================================================
-configure_nuget:
+install_ad_tools:
   cmd.run:
-    - name: Get-WindowsCapability -Online | Where-Object Name -like 'Rsat.ActiveDirectory.DS-LDS.Tools*' | Add-WindowsCapability -Online -Verbose
-    - shell: powershell
-    - runas: {{ svc_name }}
+    - name: powershell -NoProfile -Command 'Get-WindowsCapability -Online | Where-Object Name -like 'Rsat.ActiveDirectory.DS-LDS.Tools*' | Add-WindowsCapability -Online -Verbose'
     - timeout: 300
 
 # ============================================================================
@@ -151,9 +149,8 @@ configure_nuget:
 
 configure_nuget:
   cmd.run:
-    - name: [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+    - name: '[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12'
     - shell: powershell
-    - runas: {{ svc_name }}
     - unless:
     - timeout: 300
 
@@ -203,6 +200,8 @@ opt_acl_cozyusers:
     - shell: cmd
     - require:
       - file: opt_directory
+    - unless:
+      - icacls "C:\opt\cozy" /t /c | Select-String -Quiet -Pattern 'cozyusers.*(\((I|O)\))' | Get-Member
 
 # ============================================================================
 # Update Paths
