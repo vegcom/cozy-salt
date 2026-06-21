@@ -7,6 +7,7 @@
 {{ state_id }}_acl:
   cmd.run:
     - name: icacls "{{ path }}" /grant "{{ group }}:(OI)(CI){{ icacls_perm }}" /t /c /q
+    - hide_output: True
     - onlyif: Test-Path "{{ path }}"
     - shell: powershell
   {%- if requires %}
@@ -27,6 +28,7 @@
     - name: |
         setfacl -R -m g:{{ group }}:{{ perms }} {{ path }}
         setfacl -R -m d:g:{{ group }}:{{ perms }} {{ path }}
+    - hide_output: True
     - onlyif: test -d {{ path }}
     - unless: getfacl {{ path }} 2>/dev/null | grep -q "group:{{ group }}:{{ perms }}"
   {%- if requires %}
