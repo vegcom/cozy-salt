@@ -19,13 +19,31 @@ schedule_{{ job_name }}:
   schedule.present:
     - name: {{ job_name }}
     - function: {{ job_config.get('function') }}
-    {%- if 'seconds' in job_config %}- seconds: {{ job_config['seconds'] }}{%- endif %}
-    {%- if 'minutes' in job_config %}- minutes: {{ job_config['minutes'] }}{%- endif %}
-    {%- if 'hours' in job_config %}- hours: {{ job_config['hours'] }}{%- endif %}
-    {%- if 'days' in job_config %}- days: {{ job_config['days'] }}{%- endif %}
-    {%- if 'cron' in job_config %}- cron: {{ job_config['cron'] }}{%- endif %}
-    {%- if 'when' in job_config %}- when: {{ job_config['when'] }}{%- endif %}
-    {%- if 'args' in job_config %}- args: {{ job_config['args'] | tojson }}{%- endif %}
-    {%- if 'kwargs' in job_config %}- kwargs: {{ job_config['kwargs'] | tojson }}{%- endif %}
-    {%- if 'enabled' in job_config %}- enabled: {{ job_config['enabled'] | lower }}{%- endif %}
+    {%- if 'seconds' in job_config %}
+    - seconds: {{ job_config['seconds'] }}
+    {%- endif %}
+    {%- if 'minutes' in job_config %}
+    - minutes: {{ job_config['minutes'] }}
+    {%- endif %}
+    {%- if 'hours' in job_config %}
+    - hours: {{ job_config['hours'] }}
+    {%- endif %}
+    {%- if 'days' in job_config %}
+    - days: {{ job_config['days'] }}
+    {%- endif %}
+    {%- if 'cron' in job_config %}
+    - cron: {{ job_config['cron'] }}
+    {%- endif %}
+    {%- if 'when' in job_config %}
+    - when: {{ job_config['when'] }}
+    {%- endif %}
+    {%- if 'args' in job_config %}
+    - args: {{ job_config['args'] | tojson }}
+    {%- endif %}
+    {%- if 'kwargs' in job_config %}
+    - kwargs: {{ job_config['kwargs'] | tojson }}
+    {%- endif %}
+    {%- if 'enabled' in job_config %}
+    - enabled: {{ job_config['enabled'] | lower }}
+    {%- endif %}
 {%- endfor %}
