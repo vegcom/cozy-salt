@@ -15,13 +15,14 @@
     "editor.defaultFormatter": "Jota0222.multi-formatter",
     "multiFormatter.formatterList": ["vscode.html-language-features"]
   },
-  "[jinja-yaml][jinja-json][*.sls]": {
+  "[jinja-yaml][jinja-json][jinja][*.sls]": {
     "editor.defaultFormatter": "Jota0222.multi-formatter",
     "editor.formatOnSave": true,
     "multiFormatter.formatterList": [
       "samuelcolvin.jinjahtml",
       "noamzaks.jinja-ls",
-      "akrikun.saltstack-toolkit"
+      "akrikun.saltstack-toolkit",
+      "BachiMjavanadze.jinja-py"
     ]
   },
   "[json]": {
@@ -30,7 +31,7 @@
     "editor.formatOnSave": true,
     "djlint.enableLinting": false,
     "djlint.profile": "django",
-    "multiFormatter.formatterList": ["monosans.djlint", "charliermarsh.ruff"]
+    "multiFormatter.formatterList": ["monosans.djlint", "esbenp.prettier-vscode"] // FIXME: needs to be a custom call to ruff not charliermarsh.ruff
   },
   "[jsonc]": {
     "editor.defaultFormatter": "charliermarsh.ruff",
