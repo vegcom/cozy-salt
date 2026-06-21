@@ -64,14 +64,56 @@
 
 {#
   get_winget_path(user) - Get winget path for a specific user
+  If user is not provided, resolves via get_winget_user() automatically.
   Returns: Full path to user's winget.exe
 
   Usage:
     {%- from '_macros/windows.sls' import get_winget_path %}
+    {%- set winget = get_winget_path() %}
     {%- set winget = get_winget_path('admin') %}
 #}
-{%- macro get_winget_path(user) -%}
-C:\Users\{{ user }}\AppData\Local\Microsoft\WindowsApps\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\winget.exe
+{%- macro get_winget_path(user=none) -%}
+{%- if user is none -%}
+  {%- set user = get_winget_user() -%}
+{%- endif -%}
+C:\Users\{{ user | trim }}\AppData\Local\Microsoft\WindowsApps\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\winget.exe
+{%- endmacro -%}
+
+{#
+  get_winget_system_path() - Get system-wide winget path from WindowsApps
+  Resolves the highest installed version dynamically.
+  Returns: Full path to system winget.exe, or empty string if not found.
+
+  Usage:
+    {%- from '_macros/windows.sls' import get_winget_system_path %}
+    {%- set winget = get_winget_system_path() %}
+#}
+{%- macro get_winget_system_path() -%}
+{{ salt['cmd.run']('@((Get-Item("C:/Program Files/WindowsApps/Microsoft.DesktopAppInstaller*/winget.exe")).VersionInfo.FileName)[-1].Replace("\\", "/") 2>$null', shell='powershell') }}
+{%- endmacro -%}
+
+{#
+  get_user_winget_info(user) - Resolve per-user winget paths via ProfileList registry
+  Returns: dict with UserName, UserProfile, LocalAppData, winget_uri, winget_settings
+           or empty dict if user has no valid profile/winget install.
+
+  Usage:
+    {%- from '_macros/windows.sls' import get_user_winget_info with context %}
+    {%- set info = get_user_winget_info('vegcom') %}
+    {%- if info.winget_uri %}...{%- endif %}
+#}
+{%- macro get_user_winget_info(user) -%}
+{%- set _user = user.split(".")[0] -%}
+{%- set UserName = salt['cmd.run']('[Environment]::("UserName")', shell="powershell", runas=_user) or false -%}
+{%- set UserProfile = salt['cmd.run']('[Environment]::GetFolderPath("UserProfile").Replace("\\", "/")', shell="powershell", runas=_user) or false -%}
+{%- set LocalAppData = salt['cmd.run']('(Join-Path ((Get-ItemProperty "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\ProfileList\\$((Get-LocalUser -Name ''' ~ _user ~ ''').SID)").ProfileImagePath) "AppData/Local")', shell="powershell", runas=_user) or false -%}
+{%- set winget_uri = salt['cmd.run']('(Join-Path (Join-Path ((Get-ItemProperty "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\ProfileList\\$((Get-LocalUser -Name ''' ~ _user ~ ''').SID)").ProfileImagePath) "AppData/Local") "Microsoft/WindowsApps/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe/winget.exe")', shell="powershell", runas=_user) or false -%}
+{%- set winget_settings = salt['cmd.run']('(Join-Path ((Get-ItemProperty "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\ProfileList\\$((Get-LocalUser -Name ''' ~ _user ~ ''').SID)").ProfileImagePath) "AppData/Local/Packages/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe/LocalState/settings.json").replace("\\", "/")', shell="powershell", runas=_user) or false -%}
+{%- if winget_uri and salt['cmd.run']("Test-Path " ~ winget_uri ~ " 2>$null", shell="powershell") -%}
+{{ {"UserName": UserName, "UserProfile": UserProfile, "LocalAppData": LocalAppData, "winget_uri": winget_uri, "winget_settings": winget_settings} | tojson }}
+{%- else -%}
+{}
+{%- endif -%}
 {%- endmacro -%}
 
 {#-

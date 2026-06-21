@@ -2,12 +2,9 @@
 # Machine scope + per-user winget upgrades
 # Called by orch.update-minion-windows
 
-{%- from '_macros/windows.sls' import get_winget_user, get_winget_path, get_users_with_profiles with context %}
+{%- from '_macros/windows.sls' import get_winget_path, get_winget_system_path, get_users_with_profiles with context %}
 {%- set users_with_profiles = get_users_with_profiles().split(',') | reject('equalto', '') | list %}
-{%- set winget_user = get_winget_user() %}
-{%- set winget_path = get_winget_path(winget_user) %}
-{%- set service_user = salt['pillar.get']('service_user', {}) %}
-{%- set svc_name = service_user.get('name', 'cozy-salt-svc') %}
+{%- set winget_path = get_winget_system_path() | trim %}
 
 # Choco upgrade
 choco_upgrade:
@@ -26,7 +23,7 @@ winget_upgrade_machine:
 
 # Per-user upgrades (userland packages)
 {%- for user in users_with_profiles %}
-{%- set user_winget = 'C:\\Users\\' ~ user ~ '\\AppData\\Local\\Microsoft\\WindowsApps\\winget.exe' %}
+{%- set user_winget = get_winget_path(user) | trim %}
 winget_upgrade_{{ user | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
     - name: '{{ user_winget }} upgrade --all --accept-source-agreements --accept-package-agreements --disable-interactivity'
