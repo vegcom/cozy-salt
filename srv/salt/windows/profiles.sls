@@ -2,19 +2,23 @@
 # Clones cozy-pwsh.git to C:\opt\cozy\cozy-pwsh, symlinks profile into PowerShell 7 dir
 # See docs/modules/windows-profiles.md for configuration
 
-{% from '_macros/windows.sls' import get_winget_user with context %}
+{%- from '_macros/windows.sls' import get_winget_user with context %}
 
-{% set pwsh_profile_dir = salt['pillar.get']('paths:powershell_7_profile', 'C:\\Program Files\\PowerShell\\7') %}
-{% set repo_path = 'C:\\opt\\cozy\\cozy-pwsh' %}
-{% set winget_user = get_winget_user() %}
+{%- set pwsh_profile_dir = salt['pillar.get']('paths:powershell_7_profile', 'C:/Program Files/PowerShell/7') %}
+{%- set repo_path = 'C:/opt/cozy/cozy-pwsh' %}
+{%- set winget_user = get_winget_user() %}
 
-# Clone cozy-pwsh repo to C:\opt\cozy\cozy-pwsh
+# Clone cozy-pwsh
 pwsh_profile_repo:
   git.latest:
     - name: https://github.com/vegcom/cozy-pwsh.git
     - target: {{ repo_path }}
     - branch: main
     - force_reset: True
+    - force_clone: True
+    - force_fetch: True
+    - force_reset: True
+    - force_checkout: True
     - runas: {{ winget_user }}
 
 # Symlink profile file

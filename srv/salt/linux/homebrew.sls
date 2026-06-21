@@ -51,7 +51,8 @@ homebrew_update:
       - cmd: homebrew_install
     - unless: test -f {{ homebrew_base }}/var/homebrew/.last_update_timestamp
 
-{%- import_yaml "packages.sls" as packages %}
+{%- from '_macros/packages.sls' import get_packages %}
+{%- set packages = get_packages() | load_json %}
 {%- set brew_packages = packages.get('brew', []) %}
 {%- if brew_packages %}
 install_brew_packages:

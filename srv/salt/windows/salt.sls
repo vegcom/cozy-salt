@@ -7,13 +7,13 @@ salt_update_download:
     - name: >-
         powershell -NonInteractive -ExecutionPolicy Bypass -Command
         "Invoke-WebRequest -Uri https://github.com/saltstack/salt-bootstrap/raw/refs/heads/develop/salt-quick-start.ps1
-        -OutFile $env:TEMP\salt-quick-start.ps1"
+        -OutFile C:/opt/cozy/cache/salt-quick-start.ps1"
 
 salt_update:
   cmd.run:
     - name: >-
         powershell -NonInteractive -ExecutionPolicy Bypass -Command
-        "& $env:TEMP\salt-quick-start.ps1 -master {{ master }} -minion-name {{ minion_id }}"
+        "& C:/opt/cozy/cache/salt-quick-start.ps1 -master {{ master }} -minion-name {{ minion_id }}"
     - require:
       - cmd: salt_update_download
 {%- endif %}

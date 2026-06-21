@@ -1,3 +1,4 @@
+{# djlint:off #}
 # Secrets configuration (rename to init.sls locally and fill with actual values)
 # This file is gitignored and should never be committed
 # See CONTRIBUTING.md for details

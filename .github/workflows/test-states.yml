@@ -2,12 +2,11 @@ name: Test Salt States
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
 
 jobs:
-
   test-states:
     name: Test Salt States
     runs-on: ubuntu-latest
@@ -18,7 +17,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: '3.12'
 
       - name: Install dependencies
         run: pip install pytest
@@ -28,9 +27,9 @@ jobs:
 
       - name: Set up CI pillar stubs (gitignored files)
         run: |
-          cp srv/pillar/common/users.sls.example srv/pillar/common/users.sls
+          cp srv/pillar/common/README.md srv/pillar/common/users.sls
           cp srv/pillar/common/network.sls.example srv/pillar/common/network.sls
-          cp srv/pillar/secrets/init.sls.example srv/pillar/secrets/init.sls
+          cp srv/pillar/secrets/README.md srv/pillar/secrets/init.sls
 
       - name: Generate master keys (gitignored, required for bind mount)
         run: |
@@ -66,7 +65,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: '3.12'
 
       - name: Download test results
         id: download

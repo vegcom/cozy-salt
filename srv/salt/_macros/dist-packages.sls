@@ -3,7 +3,8 @@
 # Usage: role_aware_packages('ubuntu', docker_apt_require=True)
 
 {%- macro role_aware_packages(os_name, docker_apt_require=False) %}
-{%- import_yaml 'packages.sls' as packages %}
+{%- from '_macros/packages.sls' import get_packages %}
+{%- set packages = get_packages() | load_json %}
 {%- set workstation_role = salt['pillar.get']('workstation_role', 'workstation-full') %}
 {%- set capability_meta = salt['pillar.get']('capability_meta', {}) %}
 {%- set role_capabilities = salt['pillar.get']('linux', {}) %}

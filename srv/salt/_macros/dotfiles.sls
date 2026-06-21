@@ -29,7 +29,8 @@
 {#- Get platform-appropriate user home directory path -#}
 {%- macro get_user_home(username) -%}
   {%- if grains['os_family'] == 'Windows' -%}
-    C:\Users\{{ username }}
+  {%- set user_home = salt['cmd.run']('(Resolve-Path("$HOME")).Path', shell='powershell') | replace("\\", "/") %}
+    {{ user_home }}
   {%- else -%}
     /home/{{ username }}
   {%- endif -%}
@@ -37,11 +38,7 @@
 
 {#- Get platform-appropriate path to a dotfile/directory -#}
 {%- macro dotfile_path(user_home, dotfile_name) -%}
-  {%- if grains['os_family'] == 'Windows' -%}
-    {{ user_home }}\{{ dotfile_name }}
-  {%- else -%}
     {{ user_home }}/{{ dotfile_name }}
-  {%- endif -%}
 {%- endmacro -%}
 
 {#- Deploy a file to user home (handles platform path separators) -#}

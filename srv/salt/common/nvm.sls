@@ -3,7 +3,8 @@
 # Platform-specific NVM installation delegated to linux.nvm or windows.nvm
 
 {%- from "_macros/windows.sls" import win_cmd %}
-{%- import_yaml "packages.sls" as packages %}
+{%- from '_macros/packages.sls' import get_packages %}
+{%- set packages = get_packages() | load_json %}
 {%- set nvm_config = salt['pillar.get']('nvm', {}) %}
 
 # nvm on windows does not accept wildcards

@@ -114,7 +114,7 @@ Example with extra environment variables:
     'NVM_HOME': nvm_path,
     'NVM_SYMLINK': node_path,
     'CONDA_HOME': miniforge_path
-  } -%}
+  } %}
 
   {%- if extra_env -%}
     {%- do env_vars.update(extra_env) -%}

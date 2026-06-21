@@ -1,0 +1,146 @@
+{
+  "[css]": {
+    "editor.defaultFormatter": "Jota0222.multi-formatter",
+    "multiFormatter.formatterList": ["vscode.css-language-features"]
+  },
+  "[dockercompose]": {
+    "editor.defaultFormatter": "Jota0222.multi-formatter",
+    "multiFormatter.formatterList": ["SashaBusinaro.yaml-compose-sorter"]
+  },
+  "[dockerfile]": {
+    "editor.defaultFormatter": "Jota0222.multi-formatter",
+    "multiFormatter.formatterList": ["jeff-hykin.better-dockerfile-syntax"]
+  },
+  "[html]": {
+    "editor.defaultFormatter": "Jota0222.multi-formatter",
+    "multiFormatter.formatterList": ["vscode.html-language-features"]
+  },
+  "[jinja-yaml][jinja-json][*.sls]": {
+    "editor.defaultFormatter": "Jota0222.multi-formatter",
+    "editor.formatOnSave": true,
+    "multiFormatter.formatterList": [
+      "samuelcolvin.jinjahtml",
+      "noamzaks.jinja-ls",
+      "akrikun.saltstack-toolkit"
+    ]
+  },
+  "[json]": {
+    "editor.defaultFormatter": "Jota0222.multi-formatter",
+    "editor.formatOnPaste": false,
+    "editor.formatOnSave": true,
+    "djlint.enableLinting": false,
+    "djlint.profile": "django",
+    "multiFormatter.formatterList": ["monosans.djlint", "charliermarsh.ruff"]
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true
+  },
+  "[jsonl]": {},
+  "[less]": {
+    "editor.defaultFormatter": "Jota0222.multi-formatter",
+    "djlint.enableLinting": true,
+    "multiFormatter.formatterList": ["monosans.djlint"]
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "Jota0222.multi-formatter",
+    "djlint.enableLinting": true,
+    "multiFormatter.formatterList": [
+      "monosans.djlint",
+      "esbenp.prettier-vscode"
+    ]
+  },
+  "[plaintext]": {
+    "editor.formatOnPaste": false,
+    "editor.formatOnSave": false
+  },
+  "[python]": {
+    "editor.defaultFormatter": "Jota0222.multi-formatter",
+    "multiFormatter.formatterList": ["charliermarsh.ruff"]
+  },
+  "[scss]": {
+    "editor.defaultFormatter": "Jota0222.multi-formatter",
+    "multiFormatter.formatterList": ["vscode.css-language-features"]
+  },
+  "[shellscript]": {
+    "editor.defaultFormatter": "Jota0222.multi-formatter",
+    "multiFormatter.formatterList": ["foxundermoon.shell-format"]
+  },
+  "[sql]": {
+    "editor.defaultFormatter": "Jota0222.multi-formatter",
+    "multiFormatter.formatterList": ["adpyke.vscode-sql-formatter"]
+  },
+  "[toml]": {
+    "editor.defaultFormatter": "Jota0222.multi-formatter",
+    "multiFormatter.formatterList": ["tamasfe.even-better-toml"]
+  },
+  "[xml]": {
+    "editor.defaultFormatter": "Jota0222.multi-formatter",
+    "multiFormatter.formatterList": ["redhat.vscode-xml"]
+  },
+  "[yaml]": {
+    "editor.defaultFormatter": "Jota0222.multi-formatter",
+    "multiFormatter.formatterList": ["esbenp.prettier-vscode"]
+  },
+  "[srv/pillar/common/README.md]": {
+    "editor.formatOnSave": false
+  },
+  "[srv/pillar/secrets/README.md]": {
+    "editor.formatOnSave": false
+  },
+  "direnv.restart.automatic": true,
+  "djlint.enableLinting": false,
+  "djlint.executablePath": "/opt/miniforge3/bin/djlint",
+  "djlint.useVenv": false,
+  "files.associations": {
+    ".gitattributes*": "gitconfig",
+    ".gitconfig*": "gitconfig",
+    ".gitmessage*": "git-commit",
+    ".vscode/settings.json": "json",
+    "*.json": "json",
+    "*.sls": "jinja",
+    "*.sls.example": "jinja",
+    ".env.example": "env",
+    ".salt-lint": "yaml",
+    ".shellcheckrc": "shellscript",
+    "LICENSE": "raw",
+    "./srv/pillar/secrets/README.md": "plaintext",
+    "./srv/pillar/common/README.md": "plaintext"
+  },
+  "jinjaLS.extraFileExtensions": ["jinja", "sls"],
+  "jinjaLS.importPaths": ["srv/salt", "srv/pillar", "provisioning"],
+  "json.schemaDownload.enable": true,
+  "json.validate.enable": true,
+  "python-envs.defaultEnvManager": "ms-python.python:conda",
+  "python-envs.defaultPackageManager": "ms-python.python:conda",
+  "python-envs.workspaceSearchPaths": ["/opt/miniforge3/envs/"],
+  "python.terminal.useEnvFile": true,
+  "python.testing.pytestArgs": ["tests"],
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": true,
+  "saltstack.format.enforceDashTags": true,
+  "saltstack.lint.duplicateStateIds": true,
+  "saltstack.lint.enabled": true,
+  "saltstack.lint.jinjaBlocks": true,
+  "saltstack.lint.tabs": true,
+  "saltstack.lint.trailingWhitespace": true,
+  "saltstack.pillarRoots": ["srv/pillar"],
+  "saltstack.stateRoots": ["srv/salt", "provisioning"],
+  "yaml-compose-sorter.addBlankLinesBetweenServices": false,
+  "yaml-compose-sorter.addBlankLinesBetweenTopLevelKeys": false,
+  "yaml-compose-sorter.transformKeyValueLists": true,
+  "yaml.schemas": {
+    "https://github.com/continuedev/continue/raw/main/extensions/vscode/config_schema.json": [
+      ".continue/**/*.yaml",
+      "vscode-local:/c%3A/Users/vegcom.leek/.continue/config.yaml"
+    ],
+    "https://github.com/docker/vscode-extension/raw/main/misc/empty.json": [
+      "compose*y*ml",
+      "docker-compose*y*ml"
+    ],
+    "file:///c%3A/Users/vegcom.leek/.vscode-insiders/extensions/continue.continue-2.1.0-win32-x64/config-yaml-schema.json": [
+      ".continue/**/*.yaml"
+    ]
+  }
+}

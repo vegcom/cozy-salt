@@ -4,7 +4,7 @@
 
 # User configuration
 # Auto-detected from current user (falls back to Administrator if not detected)
-{% set detected_user = salt['environ.get']('USERNAME') or 'Administrator' %}
+{%- set detected_user = salt['environ.get']('USERNAME') or 'Administrator' %}
 user:
   name: {{ detected_user }}
 
@@ -29,6 +29,13 @@ scheduled_tasks:
   wsl:
     - name: wsl_autostart
       file: windows/tasks/wsl/wsl_autostart.xml
+      enabled: True
+  backup:
+    - name: restore_point
+      file: windows/tasks/backup/restore_point.xml
+      enabled: True
+    - name: syncthing
+      file: windows/tasks/backup/syncthing.xml
       enabled: True
   kubernetes:
     - name: docker_registry_port_forward

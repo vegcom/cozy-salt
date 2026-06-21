@@ -3,8 +3,8 @@
 # Pillar Load Order: common → os → dist → hw → users → class → host → secrets
 # secrets loads LAST so pillar_gate can read host:capabilities
 # ═══════════════════════════════════════════════════════════════
-{% set hostname = grains.get('id', '') %}
-{% set host_file = '/srv/pillar/host/' ~ hostname ~ '.sls' %}
+{%- set hostname = grains.get('id', '') %}
+{%- set host_file = '/srv/pillar/host/' ~ hostname ~ '.sls' %}
 
 base:
   # Layer 1: Common defaults
@@ -15,7 +15,7 @@ base:
     - common.versions
     - common.scheduler
     - common.mongo
-    - mgmt
+    - common.pip
 
   # Layer 2: OS-family
   'G@os_family:Windows':
@@ -47,21 +47,20 @@ base:
     - match: compound
     - hardware.rpi
 
-
   # Layer 5: Per-user configs (gated on common managed_users)
-  {% set users_dir = '/srv/pillar/users/' %}
-  {% set common = salt['slsutil.renderer'](path='/srv/pillar/common/users.sls', default_renderer='jinja|yaml') %}
-  {% set common_managed = common.get('managed_users', []) %}
-  {% set is_ci = common.get('SALT_CI', False) %}
-  {% set skip_users = [] if is_ci else ['demo_admin', 'demo_user'] %}
+  {%- set users_dir = '/srv/pillar/users/' %}
+  {%- set common = salt['slsutil.renderer'](path='/srv/pillar/common/users.sls', default_renderer='jinja|yaml') %}
+  {%- set common_managed = common.get('managed_users', []) %}
+  {%- set is_ci = common.get('SALT_CI', False) %}
+  {%- set skip_users = [] if is_ci else ['demo_admin', 'demo_user'] %}
   '* and not G@id:__NEVER_MATCH__':
     - match: compound
-    {% for user_file in salt['file.find'](users_dir, type='f', name='*.sls') | sort %}
-    {% set uname = user_file | replace(users_dir, '') | replace('.sls', '') %}
-    {% if uname not in skip_users and uname in common_managed %}
+    {%- for user_file in salt['file.find'](users_dir, type='f', name='*.sls') | sort %}
+    {%- set uname = user_file | replace(users_dir, '') | replace('.sls', '') %}
+    {%- if uname not in skip_users and uname in common_managed %}
     - users.{{ uname }}
-    {% endif %}
-    {% endfor %}
+    {%- endif %}
+    {%- endfor %}
 
   # Layer 6: Class (self-gating via grains, all hosts)
   'G@kernel:*':
@@ -69,10 +68,10 @@ base:
     - class
 
   # Layer 7: Host-specific (overrides everything)
-{% if salt['file.file_exists'](host_file) %}
+{%- if salt['file.file_exists'](host_file) %}
   '{{ hostname }}':
     - host.{{ hostname }}
-{% endif %}
+{%- endif %}
 
   # Layer 8: Secrets (LAST — needs host:capabilities to be merged first)
   'G@id:*':

@@ -5,6 +5,7 @@
 {%- set _caps = _host.get('host', {}).get('capabilities', {}) %}
 
 include:
+  - secrets.smb
   - secrets.git
   - secrets.mgmt
   - secrets.salt

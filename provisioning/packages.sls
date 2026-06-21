@@ -189,7 +189,8 @@ windows:
       shell: [Git.Git]
       sync_backup: [Syncthing.Syncthing, Martchus.syncthingtray]
       terminal: [Alacritty.Alacritty, Maximus5.ConEmu, Microsoft.WindowsTerminal]
-      utilities: [CodeSector.TeraCopy, AntibodySoftware.WizTree, qBittorrent.qBittorrent, WerWolv.ImHex]  # TODO: removed 'VB-Audio.Voicemeeter.Potato' pending gating windows installs, and/or moving some stream stuff to another list not for all hosts <3 finally doing what June asked, and we have a test bed for it.
+      # TODO: removed 'VB-Audio.Voicemeeter.Potato' pending gating windows installs, and/or moving some stream stuff to another list not for all hosts, finally doing what June asked, and we have a test bed for it.
+      utilities: [CodeSector.TeraCopy, AntibodySoftware.WizTree, qBittorrent.qBittorrent, WerWolv.ImHex]
 
     # 360 noscope - packages that choke on --scope machine flag
     noscope: [Microsoft.PowerShell, Starship.Starship, Rem0o.FanControl, Ruben2776.PicView, Olivia.VIA, Insecure.Nmap, Microsoft.UI.Xaml.2.7, Microsoft.UI.Xaml.2.8, Microsoft.DotNet.Runtime.9, Microsoft.DotNet.DesktopRuntime.10, NASM.NASM, Vencord.Vesktop, Microsoft.Sysinternals.Suite, Microsoft.VCLibs.Desktop.14]
@@ -208,7 +209,7 @@ windows:
 # ============================================================================
 # LANGUAGE-SPECIFIC PACKAGES
 # ============================================================================
-pip_base: [pip, setuptools, wheel, pipx, uv, pre-commit, ipython, pytest, mypy, ruff, pipenv, pixi, poetry, gitpython]
+pip_base: [pip, setuptools, wheel, pipx, uv, pre-commit, ipython, pytest, mypy, ruff, pipenv, pixi, poetry, gitpython, djlint]
 
 npm_global:
   - "@angular/cli"

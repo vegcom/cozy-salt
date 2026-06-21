@@ -3,7 +3,8 @@
 # See provisioning/packages.sls for full package definitions
 
 {%- if grains['os_family'] == 'Debian' %}
-{%- import_yaml 'packages.sls' as packages %}
+{%- from '_macros/packages.sls' import get_packages %}
+{%- set packages = get_packages() | load_json %}
 {%- from "_macros/dist-packages.sls" import role_aware_packages %}
 {%- set is_kali = grains.get('os', '') == 'Kali' %}
 {%- set is_wsl = grains.get('kernel_release', '').find('WSL') != -1 %}

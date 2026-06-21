@@ -1,6 +1,6 @@
 # tailscale configuration
 # Connects tailscale to headscale login server using pillar-provided auth key
-# Pillar structure: srv/pillar/secrets/init.sls.example
+# Pillar structure: srv/pillar/secrets/README.md
 #   headscale:
 #     auth-key: "hskey-auth-..."
 #     login-server: "https://headscale.example.com"

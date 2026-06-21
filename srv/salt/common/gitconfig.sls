@@ -1,3 +1,4 @@
+#!jinja|yaml
 # Git configuration deployment
 # Deploys git dotfiles to all managed_users
 # See docs/modules/common-gitconfig.md for usage

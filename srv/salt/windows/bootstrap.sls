@@ -109,7 +109,6 @@ disable_soft_landing:
     - vdata: 1
     - vtype: REG_DWORD
 
-
 # ============================================================================
 # Windows Update Settings (no surprise reboots)
 # ============================================================================
@@ -145,7 +144,6 @@ configure_nuget:
     - shell: powershell
     - runas: {{ svc_name }}
     - timeout: 300
-
 
 # ============================================================================
 # Required Packages

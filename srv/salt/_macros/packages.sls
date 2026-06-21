@@ -1,7 +1,8 @@
+#!jinja|yaml
 {%- macro get_packages() -%}
-{%- if salt['cp.get_file_str']('salt://packages.sls') %}
-  {%- set packages = salt['slsutil.renderer']('salt://packages.sls', default_renderer=jinja) %}
-{%- else %}
-  {%- set packages = {} %}
-{%- endif %}
+  {%- if salt['cp.get_file_str']('salt://packages.sls') %}
+    {{ salt['slsutil.renderer']('salt://packages.sls', default_renderer='jinja') | tojson }}
+  {%- else %}
+    {{ {} | tojson }}
+  {%- endif %}
 {%- endmacro %}

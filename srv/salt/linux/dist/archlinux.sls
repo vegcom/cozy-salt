@@ -8,7 +8,8 @@
 # See provisioning/packages.sls for full package definitions
 # See srv/pillar/arch/init.sls for capability_meta and aur_user
 
-{%- import_yaml 'packages.sls' as packages %}
+{%- from '_macros/packages.sls' import get_packages %}
+{%- set packages = get_packages() | load_json %}
 {%- set os_name = 'arch' %}
 {%- set workstation_role = salt['pillar.get']('workstation_role', 'workstation-full') %}
 {%- set capability_meta = salt['pillar.get']('capability_meta', {}) %}

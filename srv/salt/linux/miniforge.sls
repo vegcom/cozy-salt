@@ -1,7 +1,6 @@
+#!jinja|yaml
 # Linux Miniforge system-wide installation
 # Installs miniforge to /opt/miniforge3 for all users
-
-{%- from "_macros/acl.sls" import cozy_acl %}
 
 {%- set _pinned = salt['pillar.get']('versions:miniforge:version', '') %}
 {%- set miniforge_version = _pinned or salt['github_release.latest']('conda-forge/miniforge') %}
@@ -45,9 +44,6 @@ miniforge_install:
     - require:
       - cmd: miniforge_download
       - file: miniforge_clean_conda_symlink
-
-# Set ACLs for cozyusers group access
-{{ cozy_acl(miniforge_path) }}
 
 # Install base pip packages via common orchestration
 include:

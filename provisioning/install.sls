@@ -2,9 +2,10 @@
 # Packages organized by capability/purpose with per-distro mappings
 # See provisioning/packages.sls for full package definitions
 
-{% import_yaml 'packages.sls' as packages %}
-{% set os_family = grains['os_family'] %}
-{% set os_name = 'ubuntu' if os_family == 'Debian' else 'rhel' %}
+{%- from '_macros/packages.sls' import get_packages %}
+{%- set packages = get_packages() | load_json %}
+{%- set os_family = grains['os_family'] %}
+{%- set os_name = 'ubuntu' if os_family == 'Debian' else 'rhel' %}
 
 # Install Docker using official installer script (handles repo setup and GPG keys automatically)
 # Works on Debian, Ubuntu, CentOS, RHEL, Fedora via get.docker.com
@@ -16,13 +17,13 @@ docker_install:
       - pkg: core_utils_packages
 
 # Force apt update after Docker repo is added (Debian/Ubuntu only)
-{% if os_family == 'Debian' %}
+{%- if os_family == 'Debian' %}
 apt_update_with_override:
   cmd.run:
     - name: apt-get update --allow-releaseinfo-change
     - require:
       - cmd: docker_install
-{% endif %}
+{%- endif %}
 
 # ============================================================================
 # Install packages by capability (grouped and distro-aware)
@@ -32,10 +33,10 @@ apt_update_with_override:
 core_utils_packages:
   pkg.installed:
     - pkgs: {{ packages[os_name].core_utils | tojson }}
-{% if os_family == 'Debian' %}
+{%- if os_family == 'Debian' %}
     - require:
       - cmd: apt_update_with_override
-{% endif %}
+{%- endif %}
 
 # System monitoring and diagnostics tools
 monitoring_packages:
@@ -121,7 +122,7 @@ acl_packages:
 
 # Install KVM/Virtualization packages (only on designated test hosts)
 # To enable, set pillar: host:capabilities:kvm: true
-{% if salt['pillar.get']('host:capabilities:kvm', False) %}
+{%- if salt['pillar.get']('host:capabilities:kvm', False) %}
 kvm_packages:
   pkg.installed:
     - pkgs: {{ packages[os_name].kvm | tojson }}
@@ -139,7 +140,7 @@ libvirtd_service:
       - pkg: kvm_packages
 
 # Add user to kvm and libvirt groups
-{% set user = salt['pillar.get']('user:name', 'admin') %}
+{%- set user = salt['pillar.get']('user:name', 'admin') %}
 kvm_user_groups:
   user.present:
     - name: {{ user }}
@@ -149,4 +150,4 @@ kvm_user_groups:
     - remove_groups: False
     - require:
       - pkg: kvm_packages
-{% endif %}
+{%- endif %}

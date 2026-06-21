@@ -4,7 +4,9 @@
 .stfolder
 .stignore
 .stversions/
-.vscode/
+.vscode/*
+!.vscode/*.json
+.ruff_cache
 *-eggs/
 **/__pycache__/
 **/.cache
@@ -50,3 +52,7 @@ pip-log.txt
 var/
 venv/
 venv/
+node_modules
+.continueignore
+.continuerc
+.continue
