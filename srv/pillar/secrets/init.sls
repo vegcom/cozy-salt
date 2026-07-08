@@ -11,6 +11,7 @@ include:
   - secrets.salt
   - secrets.services
   - secrets.network
+  - secrets.tor
   {%- if _caps.get('tailscale') %}
   - secrets.tailscale
   {%- endif %}

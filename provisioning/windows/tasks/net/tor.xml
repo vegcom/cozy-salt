@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-16"?>
 <Task version="1.4" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
   <RegistrationInfo>
-    <Description>Kubectl Port Forward Docker Registry</Description>
-    <URI>\Kubernetes\Kubectl Port Forward Docker Registry</URI>
+    <Description>The Onion Router</Description>
+    <URI>\net\tor</URI>
   </RegistrationInfo>
   <Triggers>
     <BootTrigger>
-      <Enabled>true</Enabled>
+      <Enabled>false</Enabled>
     </BootTrigger>
     <LogonTrigger>
       <Enabled>true</Enabled>
@@ -45,8 +45,8 @@
   </Settings>
   <Actions Context="Author">
     <Exec>
-      <Command>kubectl</Command>
-      <Arguments>port-forward --context lab -n core deployment.apps/registry</Arguments>
+      <Command>tor</Command>
+      <Arguments>-f c:/opt/cozy/etc/torrc</Arguments>
     </Exec>
   </Actions>
 </Task>

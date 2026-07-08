@@ -26,13 +26,14 @@
 
 - [ ] vegcom/cozy-salt
   - [ ] refactor: modernize_formula
-    - [ ]  `cmd.run.*(wget|curl)` and migrate to `file.managed` + `cmd.run` pattern `srv/salt/linux/k3s.sls` pattern as reference
+    - [ ] `cmd.run.*(wget|curl)` and migrate to `file.managed` + `cmd.run` pattern `srv/salt/linux/k3s.sls` pattern as reference
 
 ## Feature
 
->[!NOTE]
+> [!NOTE]
 > **WorkInProgress**
->> can't spell progress without pog
+>
+> > can't spell progress without pog
 
 ### scoping
 
@@ -44,11 +45,11 @@ graph
   archinstall-.->|json|pacstrap
 ```
 
->[!NOTE]
+> [!NOTE]
 > UKI `vegcom/cozy-archiso`
 
 - [ ] vegcom/cozy-archiso
-  - [ ] feat: cozy_prov_managed  <!-- low priority: worth mulling over -->
+  - [ ] feat: cozy_prov_managed <!-- low priority: worth mulling over -->
     - [ ] `{"name":"cozy-prov",,"uid":False,"gid":False,"home":"/var/lib/cozy-prov","shell":"/bin/false"}`
   - [ ] feat: tiny_base
     - [ ] container should copy minimal template base
@@ -71,7 +72,7 @@ graph
   - [ ] feat: track_cozy_archiso
     - [ ] gate behind presence`__MANAGE_COZY_PROV_MARKER`
     - [ ] gate behind value `__MANAGE_COZY_PROV_MARKER=(0|1|2)`
-  - [ ] refactor: bootstrap_structure.  <!-- med priority: rel to kernel_macro -->
+  - [ ] refactor: bootstrap_structure. <!-- med priority: rel to kernel_macro -->
     - [ ] source root at `srv/salt/common/`
     - [ ] futureproof tree `srv/salt/{windows,linux,common}/bootstrap.sls`
     - [ ] gate by kernel (e.g. linux nt) on `srv/salt/{windows,linux}/`
@@ -92,7 +93,7 @@ graph
   - [ ] pref: gamescope <!-- low priority rel to amd_gpu -->
   - [ ] feat: makepkg_sys: `/etc/makepkg.conf`
     - [ ] `s/(-(mtune|march)=[^- ]+){2})/-march=native/`
-  - [ ] feat: makepkg_usr  <!-- low priority rel to makepkg_sys -->
+  - [ ] feat: makepkg_usr <!-- low priority rel to makepkg_sys -->
     - [ ] `$XDG_CONFIG_HOME/pacman/makepkg.conf` or `~/.makepkg.conf`
     - [ ] `users:{{ user }}:gpg_sign` and `users:{{ user }}:gpg_priv` for cozy-salt-svc
     - [ ] signing: can we use same key as? provisioning/common/dotfiles/.gitconfig
@@ -112,7 +113,7 @@ yay -S --noconfirm distcc ccache sccache base-devel
 # ✦ makepkg_sys: unified builder
 PACMAN_AUTH=('sudo' '-u' 'cozy-salt-svc' 'bash' '-li' '-c' '"sudo %c"')
 ```
-  
+
 ```shell
 # ✦ makepkg_sys: distribute builds
 BUILDENV=(distcc color ccache check !sign)
@@ -124,7 +125,7 @@ CFLAGS="-march=native"
 ```
 
 ```shell
-# ✦ makepkg_sys: staticlibs zipman debug 
+# ✦ makepkg_sys: staticlibs zipman debug
 OPTIONS=(!strip docs libtool staticlibs emptydirs zipman !purge debug lto !autodeps)
 ```
 
@@ -133,7 +134,7 @@ OPTIONS=(!strip docs libtool staticlibs emptydirs zipman !purge debug lto !autod
 DISTCC_HOSTS="localhost/9 10.0.0.0/16 100.64.0.0/10"
 ```
 
->[!NOTE]
+> [!NOTE]
 >
 > User in `srv/salt/linux/archlinux`
 
@@ -162,17 +163,17 @@ default_options="--splash /usr/share/systemd/bootctl/splash-arch.bmp"
 ### steamdeck - kernel
 
 - [ ] preperation
-  
+
 ```shell
 # ✦ amd_gpu: blood for the blood god
-yay -Qq|grep -Ei 'amdvlk|amdgpu'|xargs yay -R --noconfirm 
+yay -Qq|grep -Ei 'amdvlk|amdgpu'|xargs yay -R --noconfirm
 ```
 
 - [ ] replication
 
 ```shell
 # ✦ amd_gpu: water for the new king
-yay -S --noconfirm lib32-vulkan-radeon vulkan-radeon 
+yay -S --noconfirm lib32-vulkan-radeon vulkan-radeon
 ```
 
 ### steamdeck - gamescope
@@ -216,7 +217,7 @@ sudo cozy-salt-svc bash -lic 'brew $@'
 # ✦ wip steam_launch_options: new features
 env STEAM_RUNTIME=0
  /usr/bin/steam
- -tenfoot 
+ -tenfoot
  -fulldesktopres
  -gamepadui
  -dev
@@ -256,6 +257,8 @@ env LD_PRELOAD="$LD_PRELOAD" GLFW_IM_MODULE="ibus"
 
 ## Mess
 
+- ref: https://docs.saltproject.io/en/latest/topics/slots/index.html
+
 - [x] salt gate pillar secrets loads
   - [x] /home/vegcom/git/cozy-salt/srv/pillar/secrets/init.sls
 - [x] gw get tcpdups
@@ -269,7 +272,7 @@ env LD_PRELOAD="$LD_PRELOAD" GLFW_IM_MODULE="ibus"
   - [ ] state - srv/salt/linux/docker.sls
 - [x] headscale
   - [x] /home/vegcom/git/cozy-headscale/make/headscale.mk -- refactor and make warmer
-  - [x] /home/vegcom/git/cozy-salt/srv/pillar/secrets/headscale.sls --  post wipe
+  - [x] /home/vegcom/git/cozy-salt/srv/pillar/secrets/headscale.sls -- post wipe
 - [x] k3s/docker class pillar not merging via recurse strategy
   - [x] use slsutil.renderer + slsutil.merge in state instead of pillar merge
   - [ ] same pattern as docker daemon.json jq merge approach

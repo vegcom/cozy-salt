@@ -45,8 +45,8 @@
   </Settings>
   <Actions Context="Author">
     <Exec>
-      <Command>%LOCALAPPDATA%\Microsoft\WinGet\Links\kubectl.exe</Command>
-      <Arguments>port-forward --context lab -n inference statefulsets/ollama 11434:11434</Arguments>
+      <Command>kubectl</Command>
+      <Arguments>port-forward --context lab -n inference statefulsets/ollama 11434:11434'</Arguments>
     </Exec>
   </Actions>
 </Task>

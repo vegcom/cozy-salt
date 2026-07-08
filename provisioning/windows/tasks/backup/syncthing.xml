@@ -45,9 +45,8 @@
   </Settings>
   <Actions Context="Author">
     <Exec>
-      <Command>powershell.exe</Command>
-      <!-- TODO: add arg for config=PATH -->
-      <Arguments>syncthing serve --no-browser --gui-address=0.0.0.0:8384</Arguments>
+      <Command>syncthing</Command>
+      <Arguments>serve --no-browser --gui-address=0.0.0.0:8384</Arguments>
     </Exec>
   </Actions>
 </Task>

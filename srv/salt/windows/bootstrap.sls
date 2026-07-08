@@ -197,11 +197,11 @@ opt_acl_cozyusers:
   cmd.run:
     - name: |
         icacls "C:\opt" /grant "cozyusers:(OI)(CI)F" /t /c
-    - shell: cmd
+    - shell: powershell
     - require:
       - file: opt_directory
     - unless:
-      - icacls "C:\opt\cozy" /t /c | Select-String -Quiet -Pattern 'cozyusers.*(\((I|O)\))' | Get-Member
+      - powershell -NoProfile -Command "icacls 'C:\opt\cozy' /t /c | Select-String -Quiet -Pattern 'cozyusers.*(\((I|O)\))' | Get-Member"
 
 # ============================================================================
 # Update Paths

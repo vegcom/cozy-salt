@@ -37,10 +37,17 @@ scheduled_tasks:
     - name: syncthing
       file: windows/tasks/backup/syncthing.xml
       enabled: True
+  net:
+    - name: tor
+      file: windows/tasks/net/tor.xml
+      enabled: True
+    - name: shadowsocks
+      file: windows/tasks/net/shadowsocks.xml
+      enabled: True
   kubernetes:
     - name: docker_registry_port_forward
       file: windows/tasks/kubernetes/docker_registry_port_forward.xml
-      enabled: False  # Disabled by default; enable in host/class pillar if needed
+      enabled: False
     - name: ollama_port_forward
       file: windows/tasks/kubernetes/ollama_port_forward.xml
       enabled: False

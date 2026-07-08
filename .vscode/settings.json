@@ -12,40 +12,54 @@
     "multiFormatter.formatterList": ["jeff-hykin.better-dockerfile-syntax"]
   },
   "[html]": {
-    "editor.defaultFormatter": "Jota0222.multi-formatter",
-    "multiFormatter.formatterList": ["vscode.html-language-features"]
-  },
-  "[jinja-yaml][jinja-json][jinja][*.sls]": {
-    "editor.defaultFormatter": "Jota0222.multi-formatter",
-    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "samuelcolvin.jinjahtml",
     "multiFormatter.formatterList": [
-      "samuelcolvin.jinjahtml",
-      "noamzaks.jinja-ls",
-      "akrikun.saltstack-toolkit",
-      "BachiMjavanadze.jinja-py"
+      "vscode.html-language-features",
+      "samuelcolvin.jinjahtml"
     ]
   },
-  "[json]": {
-    "editor.defaultFormatter": "Jota0222.multi-formatter",
-    "editor.formatOnPaste": false,
+  "[jinja-yaml]": {
+    "editor.defaultFormatter": "akrikun.saltstack-toolkit",
     "editor.formatOnSave": true,
-    "djlint.enableLinting": false,
-    "djlint.profile": "django",
-    "multiFormatter.formatterList": ["monosans.djlint", "esbenp.prettier-vscode"] // FIXME: needs to be a custom call to ruff not charliermarsh.ruff
+    "multiFormatter.formatterList": ["akrikun.saltstack-toolkit"]
+  },
+  "[jinja-json]": {
+    "editor.defaultFormatter": "samuelcolvin.jinjahtml",
+    "editor.formatOnSave": true,
+    "multiFormatter.formatterList": ["akrikun.saltstack-toolkit"]
+  },
+  "[jinja]": {
+    "editor.defaultFormatter": "akrikun.saltstack-toolkit",
+    "editor.formatOnSave": true,
+    "multiFormatter.formatterList": ["akrikun.saltstack-toolkit"]
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true,
+    "djlint.enableLinting": true,
+    "editor.formatOnSaveMode": "file",
+    "multiFormatter.formatterList": [
+      "charliermarsh.ruff",
+      "esbenp.prettier-vscode"
+    ]
   },
   "[jsonc]": {
     "editor.defaultFormatter": "charliermarsh.ruff",
     "editor.formatOnPaste": true,
     "editor.formatOnSave": true
   },
-  "[jsonl]": {},
+  "[jsonl]": {
+    "editor.formatOnPaste": false,
+    "editor.formatOnSave": false
+  },
   "[less]": {
-    "editor.defaultFormatter": "Jota0222.multi-formatter",
+    "editor.defaultFormatter": "monosans.djlint",
     "djlint.enableLinting": true,
     "multiFormatter.formatterList": ["monosans.djlint"]
   },
   "[markdown]": {
-    "editor.defaultFormatter": "Jota0222.multi-formatter",
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
     "djlint.enableLinting": true,
     "multiFormatter.formatterList": [
       "monosans.djlint",
@@ -58,7 +72,10 @@
   },
   "[python]": {
     "editor.defaultFormatter": "Jota0222.multi-formatter",
-    "multiFormatter.formatterList": ["charliermarsh.ruff"]
+    "multiFormatter.formatterList": [
+      "charliermarsh.ruff",
+      "esbenp.prettier-vscode"
+    ]
   },
   "[scss]": {
     "editor.defaultFormatter": "Jota0222.multi-formatter",
@@ -107,7 +124,8 @@
     ".shellcheckrc": "shellscript",
     "LICENSE": "raw",
     "./srv/pillar/secrets/README.md": "plaintext",
-    "./srv/pillar/common/README.md": "plaintext"
+    "./srv/pillar/common/README.md": "plaintext",
+    "torrc": "properties"
   },
   "jinjaLS.extraFileExtensions": ["jinja", "sls"],
   "jinjaLS.importPaths": ["srv/salt", "srv/pillar", "provisioning"],
@@ -131,17 +149,5 @@
   "yaml-compose-sorter.addBlankLinesBetweenServices": false,
   "yaml-compose-sorter.addBlankLinesBetweenTopLevelKeys": false,
   "yaml-compose-sorter.transformKeyValueLists": true,
-  "yaml.schemas": {
-    "https://github.com/continuedev/continue/raw/main/extensions/vscode/config_schema.json": [
-      ".continue/**/*.yaml",
-      "vscode-local:/c%3A/Users/vegcom.leek/.continue/config.yaml"
-    ],
-    "https://github.com/docker/vscode-extension/raw/main/misc/empty.json": [
-      "compose*y*ml",
-      "docker-compose*y*ml"
-    ],
-    "file:///c%3A/Users/vegcom.leek/.vscode-insiders/extensions/continue.continue-2.1.0-win32-x64/config-yaml-schema.json": [
-      ".continue/**/*.yaml"
-    ]
-  }
+  "editor.formatOnSaveMode": "modificationsIfAvailable"
 }

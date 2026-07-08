@@ -1,0 +1,27 @@
+%include c:/opt/cozy/etc/torrc.d
+
+# NOTE: chocolatey defaults to the below install paths
+DataDirectory c:/ProgramData/chocolatey/lib/tor
+GeoIPFile c:/ProgramData/chocolatey/lib/tor/tools/data/geoip
+GeoIPv6File c:/ProgramData/chocolatey/lib/tor/tools/data/geoip6
+
+Log [guard]notice file c:/opt/cozy/logs/tor.log
+Log [general]err file c:/opt/cozy/logs/tor.log
+Log [process]warn file c:/opt/cozy/logs/tor.log
+Log [config]err file c:/opt/cozy/logs/tor.log
+Log [control]debug file c:/opt/cozy/logs/tor.log
+Log [handshake]debug file c:/opt/cozy/logs/tor.log
+Log [heartbeat]debug file c:/opt/cozy/logs/tor.log
+Log [~net,~mm]info file c:/opt/cozy/logs/tor.log
+Log warn-info file c:/opt/cozy/logs/tor.log # TODO: Path must be created
+Log warn-info stdout
+
+LogMessageDomains 1
+ControlPort 9051
+
+# Auth maintained in c:/opt/cozy/etc/torrc.d/auth : HashedControlPassword
+CookieAuthentication 0
+
+SocksPolicy accept 10.0.0.0/16
+SocksPolicy accept 100.64.0.0/10
+SocksPolicy reject *

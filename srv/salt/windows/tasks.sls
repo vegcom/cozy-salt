@@ -1,4 +1,3 @@
-#!jinja|yaml
 # Windows scheduled tasks
 # Deploy tasks defined in pillar via schtasks XML import
 # See docs/modules/windows-tasks.md for configuration
@@ -15,20 +14,15 @@
 
 {{ task_name }}_xml:
   file.managed:
-    {#- (Get-ScheduledTask -TaskPath '\Cozy\backup\' -TaskName 'Syncthing').State #}
-    - name: C:\Windows\Temp\{{ category }}\{{ task_name }}.xml
+    - name: c:/opt/cozy/tasks/{{ category }}/{{ task_name }}.xml
     - source: salt://{{ task_file }}
     - makedirs: True
 
 {{ task_name }}_task:
   cmd.run:
-    - name: schtasks /create /tn "\Cozy\{{ category }}\{{ task_display_name }}" /xml "C:\Windows\Temp\{{ category }}\{{ task_name }}.xml" /f
-
-{{ task_name }}_run:
-  cmd.run:
-    - name: schtasks /run /tn "\Cozy\{{ category }}\{{ task_display_name }}"
-    - unless:
-      - schtasks /query /hresult /fo "LIST" /tn "\Cozy\{{ category }}\{{ task_display_name }}"
+    - name: schtasks /create /tn "\Cozy\{{ category }}\{{ task_display_name }}" /xml "c:/opt/cozy/tasks/{{ category }}\{{ task_name }}.xml" /f
+    - onchanges:
+      - file: {{ task_name }}_xml
 
     {%- endif %}
   {%- endfor %}

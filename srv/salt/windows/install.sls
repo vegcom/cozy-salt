@@ -1,4 +1,3 @@
-#!jinja|yaml
 {%- from '_macros/windows.sls' import get_users_with_profiles, get_winget_system_path, get_user_winget_info, winget_batch_install with context %}
 {%- from '_macros/packages.sls' import get_packages %}
 {%- set packages = get_packages() | load_json %}
@@ -125,6 +124,7 @@ winget_features_enable:
 {%- endif %}
 
 # Install Winget userland packages (per user, batched by category)
+# {{ packages.windows.winget.userland }}
 {%- if packages.windows.winget.userland is defined %}
   {%- for user in users_with_profiles %}
     {%- set UserName = user_info.get(user, {}).get("UserName", false) %}

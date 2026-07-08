@@ -72,7 +72,6 @@ conda_base_version:
     - onchanges:
       - cmd: miniforge_install
       - cmd: conda_base_update
-    - bg: True
 
 # Install pip base packages in miniforge base environment
 {%- for package in packages.get('pip_base', []) %}
@@ -80,8 +79,8 @@ conda_base_version:
 # Cache base environment
 cache_pip_base_{{ package | replace('-', '_') }}:
   cmd.run:
+    # TODO: platform pillar presently disabled as we find most viable args
     - name: {{ mamba_bin }} --use-uv run pip download {%- if pip_architectures|length > 1 %} {%- for arch in pip_architectures %} --platform {{ arch }} {%- endfor %} {%- endif %} --dest {{ pip_cache }} --pre --index-url https://pypi.org/simple {{ package }}
-    - bg: True
     - hide_output: True
     - order: 0
     {%- if grains['os_family'] == 'Windows' %}

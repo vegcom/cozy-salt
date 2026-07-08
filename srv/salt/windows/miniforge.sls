@@ -1,4 +1,3 @@
-#!jinja|yaml
 # Windows Miniforge system-wide installation
 # See docs/modules/windows-miniforge.md for configuration
 # PATH updates handled by windows.paths (avoids race conditions)

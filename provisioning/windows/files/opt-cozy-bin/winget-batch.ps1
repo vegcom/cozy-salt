@@ -2,19 +2,27 @@
 
 param(
     [string]$WingetPath,
-    [string[]]$Packages,
+    [string]$Packages,
     [string]$Scope,
     [string]$RunAsUser,
-    [bool]$SkipDeps,
-    [bool]$Prerelease,
-    [bool]$Force,
-    [bool]$Upgrade
+    [string]$SkipDeps = "false",
+    [string]$Prerelease = "false",
+    [string]$Force = "false",
+    [string]$Upgrade = "false"
 )
 
-$success = @(0, -1978335212, -1978334963, -1978334973)
+$PackageList = $Packages -split ','
+
+$_SkipDeps   = $SkipDeps   -in @("true", "1")
+$_Prerelease = $Prerelease -in @("true", "1")
+$_Force      = $Force      -in @("true", "1")
+$_Upgrade    = $Upgrade    -in @("true", "1")
+
+# Removed -1978335212 from list
+$success = @(0, -1978334963, -1978334973, -1978335226)
 $results = @{}
 
-foreach ($pkg in $Packages) {
+foreach ($pkg in $PackageList) {
 
     # Skip if already installed
     $installed = Get-WinGetPackage | Where-Object { $_.Id -eq $pkg }
@@ -33,10 +41,10 @@ foreach ($pkg in $Packages) {
               "--accept-source-agreements", "--accept-package-agreements",
               "--ignore-warnings", "--disable-interactivity")
 
-    if (-not $Upgrade) { $args += "--no-upgrade" }
-    if ($Prerelease)   { $args += "--include-prerelease" }
-    if ($SkipDeps)     { $args += "--skip-dependencies" }
-    if ($Force)        { $args += "--force" }
+    if (-not $_Upgrade)    { $args += "--no-upgrade" }
+    if ($_Prerelease)      { $args += "--include-prerelease" }
+    if ($_SkipDeps)        { $args += "--skip-dependencies" }
+    if ($_Force)           { $args += "--force" }
 
     if ($Scope -ne "") {
         $args += @("--scope", $Scope)

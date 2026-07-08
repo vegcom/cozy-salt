@@ -160,7 +160,7 @@ windows:
 
   pwsh_modules: [PowerShellGet, Microsoft.PowerShell.PSResourceGet, PackageManagement, PSReadLine, Microsoft.WinGet.Client, Microsoft.WinGet.CommandNotFound, powershell-yaml, PSFzf, PSWindowsUpdate, Terminal-Icons]
 
-  choco: [chocolatey-compatibility.extension, chocolatey-core.extension, chocolatey-font-helpers.extension, cheatengine, colortool, Cygwin, dive, docker-cli, docker-compose, make,  vim, winbtrfs, ext2fsd, jq]
+  choco: [chocolatey-compatibility.extension, chocolatey-core.extension, chocolatey-font-helpers.extension, cheatengine, colortool, Cygwin, dive, docker-cli, docker-compose, make,  vim, winbtrfs, ext2fsd, jq, tor]
 
   winget:
 
@@ -175,14 +175,15 @@ windows:
       browser: [Google.Chrome]
       communication: [hoppscotch.Hoppscotch]
       compression: [Giorgiotani.Peazip]
-      development: [GitHub.GitHubDesktop, GitHub.cli, Gitleaks.Gitleaks, JetBrains.IntelliJIDEA.Community, Microsoft.VisualStudio.BuildTools, Microsoft.VisualStudio.Community, Microsoft.VisualStudioCode, Microsoft.VisualStudioCode.CLI, Microsoft.VisualStudioCode.Insiders, Microsoft.VisualStudioCode.Insiders.CLI, MSYS2.MSYS2, NSIS.NSIS, Kitware.CMake, Anthropic.ClaudeCode]
+      development: [GitHub.GitHubDesktop, GitHub.cli, Gitleaks.Gitleaks, JetBrains.IntelliJIDEA.Community, Microsoft.VisualStudio.BuildTools, Microsoft.VisualStudio.Community, Microsoft.VisualStudioCode, Microsoft.VisualStudioCode.CLI, Microsoft.VisualStudioCode.Insiders, Microsoft.VisualStudioCode.Insiders.CLI, MSYS2.MSYS2, NSIS.NSIS, Kitware.CMake, Anthropic.ClaudeCode, BurntSushi.ripgrep.MSVC]
       editor: [Obsidian.Obsidian]
       file_management: [7zip.7zip, WinSCP.WinSCP]
       games: [Valve.Steam]
       hardware: [BitSum.ParkControl, BitSum.ProcessLasso, Guru3D.RTSS, TechPowerUp.NVCleanstall, Wagnardsoft.DisplayDriverUninstaller, REALiX.HWiNFO, TechPowerUp.GPU-Z, tuna-f1sh.cyme]
       kubernetes: [Kubecolor.kubecolor, Freelensapp.Freelens]
       media_creative: [Audacity.Audacity, Cockos.REAPER, Inkscape.Inkscape, KDE.Krita, rocksdanister.LivelyWallpaper]
-      media: [ImageMagick.ImageMagick, Ruben2776.PicView, Gyan.FFmpeg] # TODO: HandBrake.HandBrake may need a flag change, SplitmediaLabs.XSplitBroadcaster needs gated
+      # TODO(media): HandBrake.HandBrake may need a flag change, SplitmediaLabs.XSplitBroadcaster needs gated
+      media: [ImageMagick.ImageMagick, Ruben2776.PicView, Gyan.FFmpeg, yang991178.fluent-reader]
       networking: [Apple.Bonjour, SSHFS-Win.SSHFS-Win, WinFsp.WinFsp, WiresharkFoundation.Wireshark, Tailscale.Tailscale]
       rgb_peripherals: [namazso.PawnIO, Nefarius.HidHide, OpenRGB.OpenRGB, ViGEm.ViGEmBus]
       ricing: [Rainmeter.Rainmeter]
@@ -193,7 +194,7 @@ windows:
       utilities: [CodeSector.TeraCopy, AntibodySoftware.WizTree, qBittorrent.qBittorrent, WerWolv.ImHex]
 
     # 360 noscope - packages that choke on --scope machine flag
-    noscope: [Microsoft.PowerShell, Starship.Starship, Rem0o.FanControl, Ruben2776.PicView, Olivia.VIA, Insecure.Nmap, Microsoft.UI.Xaml.2.7, Microsoft.UI.Xaml.2.8, Microsoft.DotNet.Runtime.9, Microsoft.DotNet.DesktopRuntime.10, NASM.NASM, Vencord.Vesktop, Microsoft.Sysinternals.Suite, Microsoft.VCLibs.Desktop.14]
+    noscope: [Microsoft.PowerShell, Starship.Starship, Rem0o.FanControl, Ruben2776.PicView, Olivia.VIA, Insecure.Nmap, Microsoft.UI.Xaml.2.7, Microsoft.UI.Xaml.2.8, Microsoft.DotNet.Runtime.9, Microsoft.DotNet.DesktopRuntime.10, NASM.NASM, Vencord.Vesktop, Microsoft.Sysinternals.Suite, Microsoft.VCLibs.Desktop.14, TRGamer-tech.FluentTaskScheduler]
 
     userland:
       communication: [Telegram.TelegramDesktop]
@@ -226,4 +227,4 @@ npm_global:
   - tsx
   - webpack
 
-brew: [atuin, carapace, pandoc, weasyprint, zoxide, dive, starship, direnv, claude-code, ccstatusline, kubecolor, fzf, xdotool, cyme]
+brew: [atuin, carapace, pandoc, weasyprint, zoxide, dive, starship, direnv, claude-code, ccstatusline, kubecolor, fzf, xdotool, cyme, ripgrep]

@@ -29,7 +29,7 @@
 {#- Get platform-appropriate user home directory path -#}
 {%- macro get_user_home(username) -%}
   {%- if grains['os_family'] == 'Windows' -%}
-  {%- set user_home = salt['cmd.run']('(Resolve-Path("$HOME")).Path', shell='powershell') | replace("\\", "/") %}
+  {%- set user_home = salt['cmd.run']('(Resolve-Path("$HOME")).Path', shell='powershell') | replace("\\", "/") -%}
     {{ user_home }}
   {%- else -%}
     /home/{{ username }}
