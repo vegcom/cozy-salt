@@ -198,7 +198,7 @@ opt_acl_cozyusers:
     - name: |
         icacls "C:\opt" /grant "cozyusers:(OI)(CI)F" /t /c
     - shell: powershell
-    - bg: true
+    - bg: True
     - require:
       - file: opt_directory
     - unless:

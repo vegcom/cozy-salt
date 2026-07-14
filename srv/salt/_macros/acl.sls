@@ -10,7 +10,7 @@
     - hide_output: True
     - onlyif: Test-Path "{{ path }}"
     - shell: powershell
-    - bg: true
+    - bg: True
   {%- if requires %}
     - require:
     {%- for require in requires %}
