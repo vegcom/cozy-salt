@@ -192,7 +192,7 @@ Output generates:
       - runas: <user>
       - shell: powershell
       - timeout: 600 -#}
-{%- macro winget_batch_install(state_name, packages, winget_user=False, winget_path=False, scope=False, skip_deps=False, prerelease=false, shell="powershell", force=False, upgrade=False) -%}
+{%- macro winget_batch_install(state_name, packages, winget_user=False, winget_path=False, scope=False, skip_deps=False, prerelease=false, shell="powershell", force=False, upgrade=False, bg=False) -%}
   {%- if packages | length > 0 -%}
     {{ state_name }}:
     cmd.script:
@@ -206,6 +206,7 @@ Output generates:
         -Force {{ force | lower }}
         -Upgrade {{ upgrade | lower }}
     - shell: powershell
+    - bg: {{ bg | string | lower }}
     - timeout: 600
     - stateful: true
   {%- endif -%}
