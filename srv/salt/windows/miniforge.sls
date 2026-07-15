@@ -4,7 +4,7 @@
 
 {%- from "_macros/acl.sls" import cozy_acl %}
 {%- set _pinned = salt['pillar.get']('versions:miniforge:version', '') %}
-{%- set miniforge_version = _pinned or salt['github_release.latest']('conda-forge/miniforge') %}
+{%- set miniforge_version = _pinned or salt['github_release.latest']('conda-forge/miniforge') or '26.3.2-3' %}
 {# Path configuration from pillar with defaults #}
 {%- set miniforge_path = salt['pillar.get']('install_paths:miniforge:windows', 'C:/opt/miniforge3') %}
 {%- set miniforge_tmp = 'C:/opt/cozy/cache/miniforge-install.exe' %}
