@@ -138,10 +138,10 @@ disable_delivery_optimization:
 # ============================================================================
 # Windows AD
 # ============================================================================
-install_ad_tools:
-  cmd.run:
-    - name: powershell -NoProfile -Command 'Get-WindowsCapability -Online | Where-Object Name -like 'Rsat.ActiveDirectory.DS-LDS.Tools*' | Add-WindowsCapability -Online -Verbose'
-    - timeout: 300
+# install_ad_tools:
+#   cmd.run:
+#     - name: powershell -NoProfile -Command 'Get-WindowsCapability -Online | Where-Object Name -like 'Rsat.ActiveDirectory.DS-LDS.Tools*' | Add-WindowsCapability -Online -Verbose'
+#     - timeout: 300
 
 # ============================================================================
 # Required Packages

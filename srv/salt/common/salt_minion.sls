@@ -41,7 +41,9 @@ salt_minion_conf_timeout:
   file.managed:
     - name: {{ minion_conf_timeout }}
     - makedirs: True
+     {%- if grains['os_family'] != 'Windows' %}
     - mode: '0644'
+    {%- endif %}
     - contents: |
         # Fast-fail timeout profile — tuned for cozy-salt multi-OS cluster
         # See: https://docs.saltproject.io/en/latest/ref/configuration/minion.html
