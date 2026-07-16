@@ -55,18 +55,14 @@ docker_daemon_config:
     - mode: "0644"
     - makedirs: True
     - merge_if_exists: True
-    - require:
   {%- if os_family != 'Arch' %}
+    - require:
       - cmd: docker_install
   {%- endif %}
 docker_service:
   service.running:
     - name: docker
     - enable: True
-  {%- if docker_cfg %}
-    - watch:
-      - file: docker_daemon_config
-  {%- endif %}
 {%- endif %}
 
 include:
