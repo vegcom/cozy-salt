@@ -56,7 +56,7 @@ opt_path_acl_{{ loop.index }}:
           Write-Host "Path not found: $path (not installed yet)"
         }
     - shell: pwsh
-    - bg: true
+    - bg: True
     - require:
       - group: cozyusers_group
 {%- endfor %}

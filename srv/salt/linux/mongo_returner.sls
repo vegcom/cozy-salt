@@ -12,7 +12,7 @@ mongo_returner:
   file.managed:
     - name: {{ conf_dir }}/minion.d/mongo-returner.conf
     - mode: '0600'
-    - makedirs: true
+    - makedirs: True
     - contents: |
         mongo.host: {{ mongo_host }}
         mongo.port: {{ salt['pillar.get']('mongo.port', 27017) }}

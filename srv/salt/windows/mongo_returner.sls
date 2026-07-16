@@ -11,7 +11,7 @@ pymongo_for_returner:
 mongo_returner:
   file.managed:
     - name: '{{ conf_dir }}\minion.d\mongo-returner.conf'
-    - makedirs: true
+    - makedirs: True
     - contents: |
         mongo.host: {{ mongo_host }}
         mongo.port: {{ salt['pillar.get']('mongo.port', 27017) }}
