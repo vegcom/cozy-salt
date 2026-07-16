@@ -147,8 +147,7 @@ pacman_update:
 
 makepkg_cozy_conf:
   file.managed:
-    - name:
-      - /etc/makepkg.conf.d/cozy.conf
+    - name: /etc/makepkg.conf.d/cozy.conf
     - mode: "0644"
     - user: root
     - group: root
@@ -163,8 +162,7 @@ makepkg_cozy_conf:
 
 makepkg_environment.d_conf:
   file.managed:
-    - name:
-      - /etc/environment.d/cozy-distcc.conf
+    - name: /etc/environment.d/cozy-distcc.conf
     - mode: "0644"
     - user: root
     - group: root
