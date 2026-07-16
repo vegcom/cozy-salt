@@ -104,6 +104,28 @@ else:
 "
 chown salt:salt /srv/data/sqlite/salt_returns.db 2>/dev/null || true
 
+echo "[entrypoint] Configuring master as local minion..."
+mkdir -p /etc/salt/minion.d
+echo "master: localhost" > /etc/salt/minion.d/master.conf
+echo "id: salt" > /etc/salt/minion.d/id.conf
+
+# Load pre-shared key so master's pre-accepted pub matches what minion presents
+preload_dir="/etc/salt/pki/minion-preload"
+pki_dir="/etc/salt/pki/minion"
+if [ -f "${preload_dir}/salt.pem" ] && [ ! -f "${pki_dir}/minion.pem" ]; then
+    echo "  + Loading pre-shared keys for salt minion"
+    mkdir -p "${pki_dir}"
+    cp "${preload_dir}/salt.pem" "${pki_dir}/minion.pem"
+    cp "${preload_dir}/salt.pub" "${pki_dir}/minion.pub"
+    chmod 400 "${pki_dir}/minion.pem"
+    chmod 644 "${pki_dir}/minion.pub"
+    chown -R salt:salt "${pki_dir}"
+fi
+rm -f "${pki_dir}/minion_master.pub"
+
+salt-minion -d
+echo "  + salt-minion started (id: salt -> localhost)"
+
 echo "[entrypoint] Starting wsdd..."
 wsdd --shortlog &
 
