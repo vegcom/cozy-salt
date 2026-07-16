@@ -7,8 +7,8 @@
 {%- set managed_users = salt['pillar.get']('managed_users', [], merge=True) %}
 
 {%- if grains['os_family'] != 'Windows' %}
-{%- for username in managed_users %}
-{%- set user_home = dotfiles.get_user_home(username) %}
+  {%- for username in managed_users %}
+    {%- set user_home = dotfiles.get_user_home(username) %}
 
 starship_config_{{ username }}:
   cmd.run:
@@ -18,6 +18,8 @@ starship_config_{{ username }}:
         -o {{ user_home }}/.config/starship.toml
     - creates: {{ user_home }}/.config/starship.toml
     - runas: {{ username }}
-
-{%- endfor %}
+    {%- if grains['os_family'] != 'Windows' %}
+    - onlyif: ls {{ user_home }}/.config/
+    {%- endif %}
+  {%- endfor %}
 {%- endif %}
