@@ -25,6 +25,7 @@ etc_udev_rules.d_path:
     - user: root
     - group: root
     - mode: "0755"
+    - mkdirs: True
 
 udev_reload:
   cmd.run:
