@@ -59,7 +59,7 @@ packages_extra:
       - linux-firmware-neptune-qcom
       - linux-firmware-neptune-qlogic
       - linux-firmware-neptune-whence
-    deck_tools: [alsa-ucm-conf, amd-ucode, caps, dkms, noise-suppression-for-voice, sof-firmware, steamdeck-dkms, steamdeck-dsp, steamdeck-dsp-debug, upower, vpower, ludusavi-bin, hunspell, hunspell-fr, hunspell-en_gb, hunspell-en_us,hunspell-ja, cyme ]
+    deck_tools: [alsa-ucm-conf, amd-ucode, caps, dkms, noise-suppression-for-voice, sof-firmware, steamdeck-dkms, steamdeck-dsp, steamdeck-dsp-debug, upower, vpower, ludusavi-bin, hunspell, hunspell-fr, hunspell-en_gb, hunspell-en_us,hunspell-ja, cyme,xorg-xwininfo, xdotool, yad]
 
 pacman:
   repos:
