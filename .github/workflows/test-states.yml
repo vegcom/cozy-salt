@@ -27,7 +27,7 @@ jobs:
 
       - name: Set up CI pillar stubs (gitignored files)
         run: |
-          cp srv/pillar/common/README.md srv/pillar/common/users.sls
+          cp srv/pillar/common/users.sls.example srv/pillar/common/users.sls
           cp srv/pillar/common/network.sls.example srv/pillar/common/network.sls
           cp srv/pillar/secrets/README.md srv/pillar/secrets/init.sls
 
