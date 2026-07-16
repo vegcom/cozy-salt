@@ -298,13 +298,11 @@ yay_install:
 {%- set absent_normal = packages_absent.get('normal', []) %}
 
 {%- if absent_nodeps %}
-  {%- for package in absent_normal %}
-packages_absent_nodeps_{{ package }}:
+packages_absent_nodeps:
   cmd.run:
     - name: pacman -Rdd --noconfirm {{ absent_nodeps | join(' ') }} || true
     - require:
       - yay: core_utils_packages
-  {%- endfor %}
 {%- endif %}
 
 {%- if absent_normal %}
@@ -331,7 +329,7 @@ packages_extra_{{ cap_key }}:
     - runas: {{ service_user }}
     - require:
       - yay: core_utils_packages
-{%- if absent_nodeps %}
+{%- if absent_nodeps | tojson %}
       - cmd: packages_absent_nodeps
 {%- endif %}
 {%- endif %}
