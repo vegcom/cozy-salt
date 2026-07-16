@@ -55,11 +55,25 @@ homebrew_update:
 {%- set packages = get_packages() | load_json %}
 {%- set brew_packages = packages.get('brew', []) %}
 {%- if brew_packages %}
-install_brew_packages:
+  {%- set brew_cask = brew_packages.get('cask', []) %}
+  {%- set brew_formula = brew_packages.get('formula', []) %}
+  {%- if brew_formula %}
+install_brew_formulas:
   cmd.run:
-    - name: {{ homebrew_base }}/bin/brew install {{ brew_packages | join(' ') }}
+    - name: {{ homebrew_base }}/bin/brew install {{ brew_formula | join(' ') }}
     - runas: {{ service_user }}
     - unless: test ! -x {{ homebrew_base }}/bin/brew
     - require:
       - cmd: homebrew_update
+  {%- endif %}
+
+  {%- if brew_cask %}
+install_brew_casks:
+  cmd.run:
+    - name: {{ homebrew_base }}/bin/brew install --cask {{ brew_cask | join(' ') }}
+    - runas: {{ service_user }}
+    - unless: test ! -x {{ homebrew_base }}/bin/brew
+    - require:
+      - cmd: homebrew_update
+  {%- endif %}
 {%- endif %}

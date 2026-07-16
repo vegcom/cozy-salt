@@ -227,4 +227,6 @@ npm_global:
   - tsx
   - webpack
 
-brew: [atuin, carapace, pandoc, weasyprint, zoxide, dive, starship, direnv, claude-code, ccstatusline, kubecolor, fzf, xdotool, cyme, ripgrep]
+brew:
+  formula: [atuin, carapace, pandoc, weasyprint, zoxide, dive, starship, direnv, claude-code, kubecolor, fzf, xdotool, cyme, ripgrep]
+  cask: []
