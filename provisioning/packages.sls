@@ -15,7 +15,7 @@
 {%- set _shell = ['bash-completion', 'screen', 'tmux', 'shellcheck', 'zsh'] %}
 {%- set _shell_rhel = (_shell | reject('equalto', 'shellcheck') | list) + ['ShellCheck'] %}
 {%- set _build_base = ['autoconf', 'automake', 'cmake'] %}
-{%- set _net_base = ['nmap', 'socat', 'tcpdump', 'traceroute', 'nss-mdns'] %}
+{%- set _net_base = ['nmap', 'socat', 'tcpdump', 'traceroute'] %}
 {%- set _compress_base = ['bzip2', 'zip'] %}
 {%- set _vcs_base = ['git-lfs', 'tig'] %}
 {%- set _modern_cli_base = ['bat', 'ripgrep'] %}
@@ -28,7 +28,7 @@
     'monitoring': _monitoring_base + ['duf', 'ncdu'],
     'shell_enhancements': _shell,
     'build_tools': _build_base + ['build-essential', 'pkg-config'],
-    'networking': _net_base + ['avahi-daemon', 'bind9-dnsutils', 'etcd-client', 'iputils-ping', 'net-tools', 'netcat-openbsd', 'openssh-client', 'openssh-server', 'wsdd-server'],
+    'networking': _net_base + ['avahi-daemon', 'bind9-dnsutils', 'etcd-client', 'iputils-ping', 'net-tools', 'netcat-openbsd', 'openssh-client', 'openssh-server', 'wsdd-server', 'libnss-mdns'],
     'compression': _compress_base + ['7zip', 'xz-utils'],
     'vcs_extras': _vcs_base + ['gh'],
     'modern_cli': _modern_cli_base + ['fd-find'],
@@ -121,7 +121,7 @@ rhel:
   kvm: [libvirt, libvirt-client, libvirt-daemon, qemu-img, qemu-kvm, virt-install]
   modern_cli: {{ (_modern_cli_base + ['fd-find']) | tojson }}
   monitoring: {{ _monitoring_base | tojson }}
-  networking: {{ (_net_base + ['avahi', 'bind-utils', 'etcd-client', 'iputils', 'net-tools', 'nmap-ncat', 'openssh-clients', 'openssh-server', 'wsdd-server']) | tojson }}
+  networking: {{ (_net_base + ['avahi', 'bind-utils', 'etcd-client', 'iputils', 'net-tools', 'nmap-ncat', 'openssh-clients', 'openssh-server', 'wsdd-server', 'nss-mdns']) | tojson }}
   security: [ca-certificates, gnupg2, systemd-journal-remote]
   shell_enhancements: {{ _shell_rhel | tojson }}
   vcs_extras: {{ _vcs_base | tojson }}
@@ -135,7 +135,7 @@ arch:
   core_utils: {{ (_core + ['vim', 'sed', 'glibc', 'glibc-locales', 'man-db']) | tojson }}
   modern_cli: {{ (_modern_cli_base + ['fd']) | tojson }}
   monitoring: {{ (_monitoring_base + ['duf', 'ncdu']) | tojson }}
-  networking: {{ (_net_base + ['avahi', 'bind', 'etcd-bin', 'iputils', 'net-tools', 'openbsd-netcat', 'openssh', 'wsdd']) | tojson }}
+  networking: {{ (_net_base + ['avahi', 'bind', 'etcd-bin', 'iputils', 'net-tools', 'openbsd-netcat', 'openssh', 'wsdd', 'nss-mdns']) | tojson }}
   shell_enhancements: {{ (_shell + ['zsh', 'zsh-autosuggestions', 'zsh-syntax-highlighting']) | tojson }}
   vcs_extras: {{ (_vcs_base + ['github-cli']) | tojson }}
   acl: [acl]
