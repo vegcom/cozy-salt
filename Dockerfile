@@ -49,7 +49,8 @@ RUN rm -f /etc/apt/sources.list.d/* && \
       https://packages.broadcom.com/artifactory/saltproject-deb/ stable main" > \
       /etc/apt/sources.list.d/salt.list && \
     apt-get update && \
-    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/*
+    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* && \
+    /opt/saltstack/salt/bin/pip3 install pymongo pyinotify gitpython
 
 # Copy entrypoint script (shared for all minion variants)
 COPY scripts/docker/entrypoint-minion.sh /usr/local/bin/
@@ -69,8 +70,7 @@ RUN apt-get update && \
       netcat-openbsd avahi-daemon wsdd-server tini \
       salt-master salt-minion salt-api salt-ssh python3-cherrypy3 && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* && \
-    /opt/saltstack/salt/bin/pip3 install pymongo pyinotify gitpython
+    rm -rf /var/lib/apt/lists/* /tmp/*
 
 # Create mount points with correct ownership
 # Note: /srv/salt/files is for provisioning files mounted separately
