@@ -24,9 +24,10 @@ resolved_restart:
     - onchanges:
       - file: resolved_config
 
-dns_search_domain:
+{%- for file in ["/etc/resolv.conf", "/etc/resolvconf/resolv.conf.d/tail"] %}
+dns_search_domain{{ file.replace("/", "_").replace(".", "_") }}:
   file.managed:
-    - name: /etc/resolv.conf
+    - name: {{ file }}
     - contents: |
         {%- set search_domains = dns.get('search_domains', dns.get('search_domain', ['local'])) %}
         {%- if search_domains is string %}
@@ -38,6 +39,8 @@ dns_search_domain:
         nameserver {{ nameserver }}
         {%- endfor %}
     - mode: "0644"
+    - unless: grep -q 'tailscale' {{ file }}
+{%- endfor %}
 
 {%- else %}
 # DNS configuration skipped - running in container (Docker/Podman/Kubernetes)
