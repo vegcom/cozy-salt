@@ -46,23 +46,25 @@ docker_install:
     - creates: /usr/bin/docker
 {%- endif %}
 
-# {%- if docker_cfg %}
-# docker_daemon_config:
-#   file.serialize:
-#     - name: /etc/docker/daemon.json
-#     - dataset: {{ docker_cfg }}
-#     - serializer: json
-#     - mode: "0644"
-#     - makedirs: True
-#     - require:
-#       - cmd: docker_install
-# docker_service:
-#   service.running:
-#     - name: docker
-#     - enable: True
-#     - watch:
-#       - file: docker_daemon_config
-# {%- endif %}
+{%- if docker_cfg %}
+docker_daemon_config:
+  file.serialize:
+    - name: /etc/docker/daemon.json
+    - dataset: {{ docker_cfg }}
+    - serializer: json
+    - mode: "0644"
+    - makedirs: True
+    - merge_if_exists: True
+    - require:
+      - cmd: docker_install
+docker_service:
+  service.running:
+    - name: docker
+    - enable: True
+    - watch:
+      - file: docker_daemon_config
+{%- endif %}
 
 include:
   - linux.docker-proxy
+  - linux.docker_compose

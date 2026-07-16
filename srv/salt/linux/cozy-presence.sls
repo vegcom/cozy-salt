@@ -4,7 +4,7 @@
 {%- set run_user = managed_users[0] if managed_users else '' -%}
 {%- set is_container = salt['file.file_exists']('/.dockerenv') or
                        salt['file.file_exists']('/run/.containerenv') -%}
-{%- set token = salt['pillar.get']('github:tokens', [''])[0] -%}
+{%- set token = salt['github_release.find_valid_token']() -%}
 {%- set cozy_presence_path = "/opt/cozy/cozy-presence" %}
 {%- set cozy_presence_env = "/opt/miniforge3/envs/cozy-presence" %}
 {%- set embedding_url = salt['pillar.get']('services:embedding:langcache:url', '') -%}

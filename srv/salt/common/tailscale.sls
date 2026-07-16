@@ -6,7 +6,7 @@
 #     login-server: "https://headscale.example.com"
 #   tailscale:
 #     flags:            # merged: common pillar sets defaults, host pillar overrides
-#       advertise-exit-node: true
+#       advertise-exit-node: True
 #       advertise-routes: "10.0.0.0/24"
 
 {%- set enabled = salt['pillar.get']('host:capabilities:tailscale', True) %}

@@ -27,12 +27,12 @@
 install_npm_global_packages:
   cmd.run:
     {%- if grains['os_family'] == 'Windows' %}
-    - name: {{ win_cmd(npm_bin ~ ' install -g ' ~ npm_packages | join(' ')) }}
+    - name: {{ win_cmd(npm_bin ~ ' install --quiet -g ' ~ npm_packages | join(' ')) }}
     - shell: pwsh
     - require:
       - cmd: nvm_use_default
     {%- else %}
-    - name: NPM_CONFIG_PREFIX={{ nvm_path }} npm install --prefer-dedupe --foreground-scripts --no-audit --no-fund -g {{ npm_packages | join(' ') }}
+    - name: NPM_CONFIG_PREFIX={{ nvm_path }} npm install --quiet --prefer-dedupe --foreground-scripts --no-audit --no-fund -g {{ npm_packages | join(' ') }}
     - shell: /bin/bash
     - env:
       - BASH_ENV: /etc/profile.d/nvm.sh
@@ -41,4 +41,6 @@ install_npm_global_packages:
     - require:
       - cmd: nvm_install_default_version
     {%- endif %}
+    - bg: True
+    - hide_output: True
 {%- endif %}

@@ -8,15 +8,15 @@ include:
   - windows.service-account
   - windows.users
   - windows.paths
-  - windows.install
   - windows.config
-  - windows.sshd
+  - windows.install
   - windows.profiles
+  - windows.tasks
+  - windows.sshd
   - windows.nvm
   - windows.rust
   - windows.miniforge
   - windows.windhawk
-  - windows.tasks
   - windows.wsl-integration
   - windows.wt
   - windows.vibeshine

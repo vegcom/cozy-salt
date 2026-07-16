@@ -3,6 +3,7 @@
 {%- set packages = get_packages() | load_json %}
 {%- set service_user = salt['pillar.get']('service_user', {}) %}
 {%- set svc_name = service_user.get('name', 'cozy-salt-svc') %}
+# TODO: move to grains to reduce render time
 {%- set users_with_profiles = get_users_with_profiles().split(',') | reject('equalto', '') | list %}
 {%- set winget_path = get_winget_system_path() | trim %}
 {%- set user_info = {} %}

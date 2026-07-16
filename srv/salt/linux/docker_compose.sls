@@ -12,14 +12,13 @@
     {%- set files_args = files | map('regex_replace', '^(.*)$', '-f \\1') | join(' ') %}
     {%- set compose_cmd = 'docker compose ' ~ files_args ~ ' up -d --remove-orphans' %}
 
-# TODO: replace debug with actual states, e.g.:
-# {{ name }}_compose_up:
-#   cmd.run:
-#     - name: {{ compose_cmd }}
-#     - cwd: {{ path }}
-#     - onchanges:
-#       - file: {{ name }}_compose_file  {#- if managing the file via salt #}
-#     - unless: docker compose {{ files_args }} ps -q | grep -q .
+{{ name }}_compose_up:
+  cmd.run:
+    - name: {{ compose_cmd }}
+    - cwd: {{ path }}
+    - unless: docker compose {{ files_args }} ps -q | grep -q .
+    # - onchanges:
+    #   - file: {{ name }}_compose_file  {#- if managing the file via salt #}
 
   {%- endfor %}
 {%- else %}
