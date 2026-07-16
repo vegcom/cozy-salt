@@ -23,6 +23,8 @@ miniforge_download:
     - name: >
         pwsh -NoLogo -Command
         "Invoke-WebRequest -Uri 'https://github.com/conda-forge/miniforge/releases/download/{{ miniforge_version }}/Miniforge3-Windows-x86_64.exe' -OutFile {{ miniforge_tmp }}"
+    - hide_output: True
+    - output_loglevel: quiet
     - shell: pwsh
     - require:
       - file: miniforge_directory
@@ -32,6 +34,8 @@ miniforge_install:
     - name: >
         pwsh -NoLogo -Command
         '& "{{ miniforge_tmp }}" /InstallationType=AllUsers /RegisterPython=1 /S /D={{ miniforge_path }}'
+    - hide_output: True
+    - output_loglevel: quiet
     - shell: pwsh
     - require:
       - cmd: miniforge_download
@@ -41,6 +45,8 @@ miniforge_clean:
     - name: >
         pwsh -NoLogo -Command
         "Remove-Item -Path {{ miniforge_tmp }} -Force"
+    - hide_output: True
+    - output_loglevel: quiet
     - shell: pwsh
     - require:
       - cmd: miniforge_install

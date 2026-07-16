@@ -43,4 +43,5 @@ install_npm_global_packages:
     {%- endif %}
     - bg: True
     - hide_output: True
+    - output_loglevel: quiet
 {%- endif %}

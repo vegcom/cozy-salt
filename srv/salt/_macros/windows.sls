@@ -208,6 +208,8 @@ Output generates:
         -Force {{ force | lower }}
         -Upgrade {{ upgrade | lower }}
     - shell: powershell
+    - hide_output: True
+    - output_loglevel: quiet
     - bg: {{ bg | string | lower }}
     - timeout: 600
     - stateful: True

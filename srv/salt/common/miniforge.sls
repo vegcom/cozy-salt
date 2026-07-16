@@ -53,8 +53,10 @@ conda_base_update:
   cmd.run:
     - name: >
         {{ mamba_bin }} --use-uv update
+    - hide_output: True
+    - output_loglevel: quiet
     {%- if grains['os_family'] == 'Windows' %}
-    - shell: pwsh
+    - shell: powershell
     {%- endif %}
     - require:
       - cmd: miniforge_install
@@ -65,8 +67,10 @@ conda_base_version:
   cmd.run:
     - name: {{ mamba_bin }} --use-uv install python=3.12
     {%- if grains['os_family'] == 'Windows' %}
-    - shell: pwsh
+    - shell: powershell
     {%- endif %}
+    - hide_output: True
+    - output_loglevel: quiet
     - require:
       - cmd: miniforge_install
     - onchanges:
@@ -82,9 +86,11 @@ cache_pip_base_{{ package | replace('-', '_') }}:
     # TODO: platform pillar presently disabled as we find most viable args
     - name: {{ mamba_bin }} --use-uv run pip download {%- if pip_architectures|length > 1 %} {%- for arch in pip_architectures %} --platform {{ arch }} {%- endfor %} {%- endif %} --dest {{ pip_cache }} --pre --index-url https://pypi.org/simple {{ package }}
     - hide_output: True
+    - output_loglevel: quiet
+    - bg: True
     - order: 0
     {%- if grains['os_family'] == 'Windows' %}
-    - shell: pwsh
+    - shell: powershell
     {%- endif %}
     - require:
       - cmd: miniforge_install
@@ -94,10 +100,11 @@ install_pip_base_{{ package | replace('-', '_') }}:
   cmd.run:
     - name: {{ mamba_bin }} --use-uv install {{ package }}
     - hide_output: True
+    - output_loglevel: quiet
     - order: 1
     - unless: {{ pip_bin }} show {{ package }}
     {%- if grains['os_family'] == 'Windows' %}
-    - shell: pwsh
+    - shell: powershell
     {%- endif %}
     - onchanges:
       - cmd: miniforge_install
