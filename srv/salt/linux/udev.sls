@@ -1,8 +1,12 @@
+{%- set is_container = salt['file.file_exists']('/.dockerenv') or
+                      salt['file.file_exists']('/run/.containerenv') %}
+{%- if not is_container %}
 etc_udev_rules.d:
   file.recurse:
     - name: /etc/udev/rules.d
     - source: salt://linux/files/etc-udev-rules.d
     - include_empty: True
+    - mkdirs: True
     - clean: False
     - user: root
     - group: root
@@ -38,3 +42,4 @@ udev_trigger:
     - onchanges:
       - file: etc_udev_rules.d
       - cmd: udev_reload
+{%- endif %}
