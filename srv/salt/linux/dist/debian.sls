@@ -32,7 +32,7 @@ apt_allow_unauthenticated:
         APT::Get::AllowUnauthenticated "true";
     - mode: "0644"
 
-{{ role_aware_packages('ubuntu', docker_apt_require=True) }}
+{{ role_aware_packages('ubuntu', docker_apt_require=(not is_container)) }}
 
 {%- else %}
 apt_allow_unauthenticated:
