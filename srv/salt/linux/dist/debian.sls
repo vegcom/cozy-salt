@@ -14,7 +14,9 @@ include:
   - linux.dist.ubuntu_noble
   - linux.gpu
 
-{%- if not (is_kali or is_wsl) %}
+{%- set is_container = salt['file.file_exists']('/.dockerenv') or
+                      salt['file.file_exists']('/run/.containerenv') %}
+{%- if not (is_kali or is_wsl or is_container) %}
 # Native Debian: update apt after docker install (get.docker.com adds correct repo)
 docker_apt_update:
   cmd.run:

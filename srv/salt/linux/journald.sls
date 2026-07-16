@@ -27,7 +27,7 @@ etc-systemd-journald.conf.d:
 
 etc-systemd-journal-remote.conf.d_path:
   file.directory:
-    - name: /etc/systemd/journald.conf.d
+    - name: /etc/systemd/remote.conf.d
     - user: root
     - group: root
     - mode: "0755"
