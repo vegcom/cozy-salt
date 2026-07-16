@@ -1,3 +1,6 @@
+{%- set is_container = salt['file.file_exists']('/.dockerenv') or
+                      salt['file.file_exists']('/run/.containerenv') %}
+{%- if not is_container %}
 etc-systemd-journald.conf.d_path:
   file.directory:
     - name: /etc/systemd/journald.conf.d
@@ -57,3 +60,4 @@ journald_remote_reload:
     - name: systemd-journald-remote
     - onchanges:
       - file: etc-systemd-journal-remote.conf.d
+{%- endif %}
