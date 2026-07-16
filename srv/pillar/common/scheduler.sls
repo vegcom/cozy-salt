@@ -1,6 +1,8 @@
 #!jinja|yaml
 # Salt Scheduler Pillar Configuration
+{%- set is_ci = salt['pillar.get']('SALT_CI', False) %}
 
+{%- if not is_ci %}
 schedule:
 
   mongo_returner_sync:
@@ -16,3 +18,4 @@ schedule:
       - common.salt
     hours: 48
     enabled: true
+{%- endif %}
