@@ -1,80 +1,110 @@
 {# Windows utility macros #}
 
-{#
-  _get_real_profiles() - Internal helper to get users with ProfileList entries
-  Returns: newline-separated list of usernames with real Windows profiles
-#}
+{# _get_real_profiles() - Internal helper to get users with ProfileList entries
+  Returns: newline-separated list of usernames with real Windows profiles #}
 {%- macro _get_real_profiles() -%}
-{%- set profile_cmd = 'powershell -Command "Get-ChildItem \'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\ProfileList\' | % { (Get-ItemProperty $_.PSPath).ProfileImagePath } | ? { $_ -like \'C:\\Users\\*\' } | % { Split-Path $_ -Leaf }"' -%}
-{{ salt['cmd.run'](profile_cmd, shell='cmd') }}
+  {%- set profile_cmd = 'powershell -Command "Get-ChildItem \'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\ProfileList\' | % { (Get-ItemProperty $_.PSPath).ProfileImagePath } | ? { $_ -like \'C:\\Users\\*\' } | % { Split-Path $_ -Leaf }"' -%}
+  {{ salt['cmd.run'](profile_cmd, shell='cmd') }}
 {%- endmacro -%}
 
-{#
-  get_users_with_profiles() - Get managed_users that have real Windows profiles
+{# get_users_with_profiles() - Get managed_users that have real Windows profiles
   Returns: comma-separated string of usernames (use .split(',') to iterate)
 
   Uses ProfileList registry to detect users who have actually logged in,
   not just users with a home directory created.
 
   Usage:
-    {% from '_macros/windows.sls' import get_users_with_profiles with context %}
-    {% for user in get_users_with_profiles().split(',') %}
+    {%- from '_macros/windows.sls' import get_users_with_profiles with context %}
+    {%- for user in get_users_with_profiles().split(',') %}
     ...
-    {% endfor %}
-#}
+    {%- endfor %} #}
 {%- macro get_users_with_profiles() -%}
-{%- set managed_users = salt['pillar.get']('managed_users', [], merge=True) -%}
-{%- set real_profiles = _get_real_profiles().splitlines() -%}
-{%- set valid_users = [] -%}
-{%- for user in managed_users -%}
-  {%- if user in real_profiles -%}
-    {%- do valid_users.append(user) -%}
-  {%- endif -%}
-{%- endfor -%}
-{{ valid_users | join(',') }}
+  {%- set managed_users = salt['pillar.get']('managed_users', [], merge=True) -%}
+  {%- set real_profiles = _get_real_profiles().splitlines() -%}
+  {%- set valid_users = [] -%}
+  {%- for user in managed_users -%}
+    {%- for profile in real_profiles -%}
+      {%- if profile == user or profile.startswith(user ~ '.') -%}
+        {%- do valid_users.append(profile) -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endfor -%}
+  {{ valid_users | join(',') }}
 {%- endmacro -%}
 
-{#
-  get_winget_user() - Find a managed user who has a real Windows profile
+{# get_winget_user() - Find a managed user who has a real Windows profile
   Returns: username string (first managed user with real profile, or fallback)
 
   Uses ProfileList registry to detect users who have actually logged in,
   not just users with a home directory created.
 
   Usage:
-    {% from '_macros/windows.sls' import get_winget_user with context %}
-    {% set winget_user = get_winget_user() %}
-#}
+    {%- from '_macros/windows.sls' import get_winget_user with context %}
+    {%- set winget_user = get_winget_user() %} #}
 {%- macro get_winget_user() -%}
-{%- set managed_users = salt['pillar.get']('managed_users', [], merge=True) -%}
-{%- set service_user = salt['pillar.get']('service_user:name', 'cozy-salt-svc') -%}
-{%- set real_profiles = _get_real_profiles().splitlines() -%}
-{#- Prefer managed_users with real profiles over service account -#}
-{%- set candidates = managed_users + [service_user] -%}
-{%- set found_user = none -%}
-{%- for user in candidates -%}
-  {%- if found_user is none and user in real_profiles -%}
-    {%- set found_user = user -%}
-  {%- endif -%}
-{%- endfor -%}
-{{ found_user if found_user else managed_users[0] if managed_users else 'admin' }}
+  {%- set managed_users = salt['pillar.get']('managed_users', [], merge=True) -%}
+  {%- set service_user = salt['pillar.get']('service_user:name', 'cozy-salt-svc') -%}
+  {%- set real_profiles = _get_real_profiles().splitlines() -%}
+  {#- Prefer managed_users with real profiles over service account -#}
+  {%- set candidates = managed_users + [service_user] -%}
+  {%- set found_user = none -%}
+  {%- for user in candidates -%}
+    {%- if found_user is none and user in real_profiles -%}
+      {%- set found_user = user -%}
+    {%- endif -%}
+  {%- endfor -%}
+  {{ found_user if found_user else managed_users[0] if managed_users else 'admin' }}
 {%- endmacro -%}
 
-{#
-  get_winget_path(user) - Get winget path for a specific user
+{# get_winget_path(user) - Get winget path for a specific user
+  If user is not provided, resolves via get_winget_user() automatically.
   Returns: Full path to user's winget.exe
 
   Usage:
-    {% from '_macros/windows.sls' import get_winget_path %}
-    {% set winget = get_winget_path('admin') %}
-#}
-{%- macro get_winget_path(user) -%}
-C:\Users\{{ user }}\AppData\Local\Microsoft\WindowsApps\winget.exe
+    {%- from '_macros/windows.sls' import get_winget_path %}
+    {%- set winget = get_winget_path() %}
+    {%- set winget = get_winget_path('admin') %} #}
+{%- macro get_winget_path(user=none) -%}
+  {%- if user is none -%}
+    {%- set user = get_winget_user() -%}
+  {%- endif -%}
+  C:\Users\{{ user | trim }}\AppData\Local\Microsoft\WindowsApps\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\winget.exe
 {%- endmacro -%}
 
+{# get_winget_system_path() - Get system-wide winget path from WindowsApps
+  Resolves the highest installed version dynamically.
+  Returns: Full path to system winget.exe, or empty string if not found.
 
-{#-
-Macro: win_cmd
+  Usage:
+    {%- from '_macros/windows.sls' import get_winget_system_path %}
+    {%- set winget = get_winget_system_path() %} #}
+{%- macro get_winget_system_path() -%}
+  {{ salt['cmd.run']('@((Get-Item("C:/Program Files/WindowsApps/Microsoft.DesktopAppInstaller*/winget.exe")).VersionInfo.FileName)[-1].Replace("\\", "/") 2>$null', shell='powershell') }}
+{%- endmacro -%}
+
+{# get_user_winget_info(user) - Resolve per-user winget paths via ProfileList registry
+  Returns: dict with UserName, UserProfile, LocalAppData, winget_uri, winget_settings
+           or empty dict if user has no valid profile/winget install.
+
+  Usage:
+    {%- from '_macros/windows.sls' import get_user_winget_info with context %}
+    {%- set info = get_user_winget_info('vegcom') %}
+    {%- if info.winget_uri %}...{%- endif %} #}
+{%- macro get_user_winget_info(user) -%}
+  {%- set _user = user.split(".")[0] -%}
+  {%- set UserName = salt['cmd.run']('[Environment]::("UserName")', shell="powershell", runas=_user) or false -%}
+  {%- set UserProfile = salt['cmd.run']('[Environment]::GetFolderPath("UserProfile").Replace("\\", "/")', shell="powershell", runas=_user) or false -%}
+  {%- set LocalAppData = salt['cmd.run']('(Join-Path ((Get-ItemProperty "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\ProfileList\\$((Get-LocalUser -Name ''' ~ _user ~ ''').SID)").ProfileImagePath) "AppData/Local")', shell="powershell", runas=_user) or false -%}
+  {%- set winget_uri = salt['cmd.run']('(Join-Path (Join-Path ((Get-ItemProperty "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\ProfileList\\$((Get-LocalUser -Name ''' ~ _user ~ ''').SID)").ProfileImagePath) "AppData/Local") "Microsoft/WindowsApps/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe/winget.exe")', shell="powershell", runas=_user) or false -%}
+  {%- set winget_settings = salt['cmd.run']('(Join-Path ((Get-ItemProperty "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\ProfileList\\$((Get-LocalUser -Name ''' ~ _user ~ ''').SID)").ProfileImagePath) "AppData/Local/Packages/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe/LocalState/settings.json").replace("\\", "/")', shell="powershell", runas=_user) or false -%}
+  {%- if winget_uri and salt['cmd.run']("Test-Path " ~ winget_uri ~ " 2>$null", shell="powershell") -%}
+    {{ {"UserName": UserName, "UserProfile": UserProfile, "LocalAppData": LocalAppData, "winget_uri": winget_uri, "winget_settings": winget_settings} | tojson }}
+  {%- else -%}
+    {}
+  {%- endif -%}
+{%- endmacro -%}
+
+{#- Macro: win_cmd
 Purpose: Wrap Windows cmd.run with standard environment variables
 This ensures consistent tool paths (NVM_HOME, NVM_SYMLINK, CONDA_HOME) across all Windows states
 
@@ -93,7 +123,7 @@ Example usage:
   install_nvm:
     cmd.run:
       - name: {{ win_cmd('nvm install lts') }}
-      - shell: pwsh
+      - shell: powershell
 
 Example with extra environment variables:
   {%- from "macros/windows.sls" import win_cmd %}
@@ -101,8 +131,7 @@ Example with extra environment variables:
   build_project:
     cmd.run:
       - name: {{ win_cmd('build.exe', {'RUST_BACKTRACE': '1'}) }}
-      - shell: pwsh
--#}
+      - shell: powershell -#}
 
 {%- macro win_cmd(command, extra_env=None) -%}
   {%- set nvm_path = salt['pillar.get']('install_paths:nvm:windows', 'C:\\opt\\nvm') -%}
@@ -110,10 +139,10 @@ Example with extra environment variables:
   {%- set miniforge_path = salt['pillar.get']('install_paths:miniforge:windows', 'C:\\opt\\miniforge3') -%}
 
   {%- set env_vars = {
-    'NVM_HOME': nvm_path,
-    'NVM_SYMLINK': node_path,
-    'CONDA_HOME': miniforge_path
-  } -%}
+      'NVM_HOME': nvm_path,
+      'NVM_SYMLINK': node_path,
+      'CONDA_HOME': miniforge_path
+    } %}
 
   {%- if extra_env -%}
     {%- do env_vars.update(extra_env) -%}
@@ -124,5 +153,65 @@ Example with extra environment variables:
     {%- do env_lines.append('$env:' ~ key ~ ' = "' ~ value ~ '"') -%}
   {%- endfor -%}
 
-{{ env_lines | join('; ') }}; {{ command }}
+  {{ env_lines | join('; ') }}; {{ command }}
+{%- endmacro -%}
+
+{#- Macro: winget_batch_install
+Purpose: Generate a batched winget install state for multiple packages in a category
+
+Parameters:
+  state_name: Unique state ID (e.g., 'winget_batch_runtimes_vcredist')
+  packages: List of package IDs to install
+  winget_user: User to run winget as
+  winget_path: Full path to winget.exe
+  scope: Install scope ('machine' or 'user', default: 'machine')
+  skip_dependencies: Skip processing dependencies (default: false)
+  prerelease: Allow pre-release packages (default: false)
+  shell: Define shell used for execution (default: 'powershell')
+  force: Force installation/reinstall (default: false)
+  upgrade: Enable package upgrades (default: false)
+
+Returns:
+  YAML state block that installs all packages in one call
+
+Features:
+  - Batches multiple packages into single winget install call
+  - Passes --exact --accept-source-agreements --accept-package-agreements
+  - Uses --no-upgrade to skip upgrades (winget returns true if already installed)
+  - Reduces state count: ~50 individual installs → ~15 batched installs
+
+Example usage:
+  {%- from '_macros/windows.sls' import winget_batch_install %}
+  {%- set pkgs = ['Microsoft.VisualStudioCode', 'Microsoft.VisualStudioCode.CLI'] %}
+  {{ winget_batch_install('winget_batch_editor', pkgs, winget_user, winget_path) }}
+
+Output generates:
+  winget_batch_editor:
+    cmd.run:
+      - name: C:\...\winget.exe install --exact --scope machine ... pkg1 pkg2 pkg3
+      - runas: <user>
+      - shell: powershell
+      - timeout: 600 -#}
+
+# TODO: prevent duplicate run ( each user when ran for a particuarl user )
+{%- macro winget_batch_install(state_name, packages, winget_user=False, winget_path=False, scope=False, skip_deps=False, prerelease=false, shell="powershell", force=False, upgrade=False, bg=False) -%}
+  {%- if packages | length > 0 -%}
+    {{ state_name }}:
+    cmd.script:
+    - source: salt://windows/files/opt-cozy-bin/winget-batch.ps1
+    - args: >
+        -WingetPath "{{ winget_path }}"
+        -Packages "{{ packages | join(',') }}"
+        -Scope "{{ scope if scope else '' }}"
+        -SkipDeps {{ skip_deps | lower }}
+        -Prerelease {{ prerelease | lower }}
+        -Force {{ force | lower }}
+        -Upgrade {{ upgrade | lower }}
+    - shell: powershell
+    - hide_output: True
+    - output_loglevel: quiet
+    - bg: {{ bg | string | lower }}
+    - timeout: 600
+    - stateful: True
+  {%- endif -%}
 {%- endmacro -%}

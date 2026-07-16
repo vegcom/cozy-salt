@@ -2,9 +2,9 @@
 # Cross-platform configuration applied to all systems
 
 include:
+  - common.ssh
+  - common.hosts
   - common.scheduler
   - common.gitconfig
   - common.vim
-  - common.hosts
-  - common.ssh
-  - common.tailscale
+  - common.starship

@@ -1,7 +1,7 @@
-{% from "_macros/git-repo.sls" import git_repo %}
-{%- set managed_users = salt['pillar.get']('managed_users', [], merge=True) -%}
+{%- from "_macros/git-repo.sls" import git_repo %}
+{%- set managed_users = salt['pillar.get']('managed_users', [], merge=True) %}
 {%- set run_user = managed_users[0] if managed_users else '' -%}
-{%- set run_user_info = salt['user.info'](run_user) if run_user else {} -%}
+{%- set run_user_info = salt['user.info'](run_user) if run_user else {} %}
 {%- set cozy_path = 'C:\\opt\\cozy\\' %}
 {%- set cozy_fragments_path = cozy_path ~ 'cozy-fragments\\' %}
 {%- set cozy_fragments_script = cozy_fragments_path ~ 'install.ps1' %}
@@ -29,11 +29,6 @@ cozy_fragments_install:
     - require:
       - file: cozy_fragments_repo_dir
       - git: cozy_fragments_repo
-{%- else %}
-cozy_fragments_noop:
-  test.nop:
-    - name: Cozy fragments requires a user account to run
-{%- endif %}
 
 twilite_theme_install:
   cmd.run:
@@ -44,5 +39,10 @@ twilite_theme_install:
     - onchanges:
       - git: cozy_fragments_repo
     - require:
-      - file: cozy_fragments_repo_dir
       - git: cozy_fragments_repo
+
+{%- else %}
+cozy_fragments_noop:
+  test.nop:
+    - name: Cozy fragments requires a user account to run
+{%- endif %}

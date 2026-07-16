@@ -1,7 +1,12 @@
+# Managed by Salt - DO NOT EDIT MANUALLY
+
+.__smb*
 .stfolder
 .stignore
 .stversions/
-.vscode/
+.vscode/*
+!.vscode/*.json
+.ruff_cache
 *-eggs/
 **/__pycache__/
 **/.cache
@@ -41,8 +46,13 @@ cython_debug/
 htmlcov/
 instance/
 JOURNAL.md
+nul
 pip-delete-this-directory.txt
 pip-log.txt
 var/
 venv/
 venv/
+node_modules
+.continueignore
+.continuerc
+.continue

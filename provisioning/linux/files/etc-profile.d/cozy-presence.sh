@@ -1,4 +1,5 @@
-#!/bin/bash
-QDRANT_REMOTE_URL=http://guava:6333
-PRESENCE_REMOTE_URL=
-export PRESENCE_REMOTE_URL QDRANT_REMOTE_URL
+#!/bin/sh
+# Managed by Salt - DO NOT EDIT MANUALLY
+
+export QDRANT_REMOTE_URL=http://qdrant:6333
+export PRESENCE_REMOTE_URL=

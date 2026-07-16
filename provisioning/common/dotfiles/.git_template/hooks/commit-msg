@@ -1,41 +1,43 @@
-#!/usr/bin/env python3
+#!/opt/miniforge3/python
 # commit-msg: enforce conventional commit style
 # format: type: description
 # valid types based on project conventions
+
+# Managed by Salt - DO NOT EDIT MANUALLY
 
 import re
 import sys
 
 msg_file = sys.argv[1]
 with open(msg_file, encoding="utf-8") as f:
-  msg = f.read()
+    msg = f.read()
 
 # find subject (first non-comment, non-empty line)
 subject = ""
 for line in msg.splitlines():
-  stripped = line.strip()
-  if stripped and not stripped.startswith("#"):
-    subject = stripped
-    break
+    stripped = line.strip()
+    if stripped and not stripped.startswith("#"):
+        subject = stripped
+        break
 
 # skip merge commits, fixup/squash
 skip_prefixes = ("Merge ", "Revert ", "fixup!", "squash!")
 if any(subject.startswith(p) for p in skip_prefixes):
-  sys.exit(0)
+    sys.exit(0)
 
 valid_types = (
-  r"feat|fix|fixme|chore|docs|tidy|refactor|test|wip|security|style|perf|ci|build"
+    r"feat|fix|fixme|chore|docs|tidy|refactor|test|wip|security|style|perf|ci|build"
 )
 pattern = rf"^({valid_types})(\(.+\))?: .+"
 
 if not re.match(pattern, subject):
-  print()
-  print(f"  bad commit message: '{subject}'")
-  print()
-  print("  format:  type: description")
-  print("  example: feat: add user provisioning for june")
-  print()
-  print("  valid types: feat fix fixme chore docs tidy")
-  print("               refactor test wip security style perf ci build")
-  print()
-  sys.exit(1)
+    print()
+    print(f"  bad commit message: '{subject}'")
+    print()
+    print("  format:  type: description")
+    print("  example: feat: add user provisioning for june")
+    print()
+    print("  valid types: feat fix fixme chore docs tidy")
+    print("               refactor test wip security style perf ci build")
+    print()
+    sys.exit(1)

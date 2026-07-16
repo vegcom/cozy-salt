@@ -1,8 +1,10 @@
+# Managed by Salt - DO NOT EDIT MANUALLY
+
 [Unit]
 Description=Kubectl Port Forward Docker Registry
 
 [Service]
-ExecStart=/usr/bin/kubectl port-forward --context lab -n core deployment.apps/registry 5000:5000
+ExecStart=/usr/bin/env kubectl port-forward --context lab -n core deployment.apps/registry 5000:5000
 Restart=always
 RestartSec=5
 KillMode=process

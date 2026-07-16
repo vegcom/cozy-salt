@@ -2,17 +2,17 @@
 # Debian/Ubuntu: locale-gen via /etc/locale.gen
 # RHEL/Rocky: localedef per locale
 
-{% set locales = salt['pillar.get']('locales', ['en_US.UTF-8']) %}
-{% set os_family = grains['os_family'] %}
-{% set is_linux = os_family in ['Debian', 'RedHat', 'Arch', 'Suse'] %}
+{%- set locales = salt['pillar.get']('locales', ['en_US.UTF-8']) %}
+{%- set os_family = grains['os_family'] %}
+{%- set is_linux = os_family in ['Debian', 'RedHat', 'Arch', 'Suse'] %}
 
-{% if is_linux %}
+{%- if is_linux %}
 
 # =============================================================================
 # LOCALE GENERATION
 # =============================================================================
 
-{% if os_family == 'Debian' %}
+{%- if os_family == 'Debian' %}
 
 # Ensure locales package is present (provides locale-gen)
 locales_pkg:
@@ -51,33 +51,33 @@ generate_locales:
     - require:
       - cmd: purge_locales
 
-{% elif os_family == 'RedHat' %}
+{%- elif os_family == 'RedHat' %}
 
 # RHEL/Rocky: install glibc-langpack-XX per unique language code
-{% set lang_codes = [] %}
-{% for locale in locales %}
-{% set lang_code = locale.split('_')[0] %}
-{% if lang_code not in lang_codes %}
-{% do lang_codes.append(lang_code) %}
+{%- set lang_codes = [] %}
+{%- for locale in locales %}
+{%- set lang_code = locale.split('_')[0] %}
+{%- if lang_code not in lang_codes %}
+{%- do lang_codes.append(lang_code) %}
 install_langpack_{{ lang_code }}:
   pkg.installed:
     - name: glibc-langpack-{{ lang_code }}
-{% endif %}
-{% endfor %}
+{%- endif %}
+{%- endfor %}
 
-{% else %}
+{%- else %}
 
 locale_config_skipped:
   test.nop:
     - name: Locale generation not configured for os_family={{ os_family }}
 
-{% endif %}
+{%- endif %}
 
-{% else %}
+{%- else %}
 
 # Not a Linux system, skipping locale configuration
 locale_config_skipped:
   test.nop:
     - name: Not a supported Linux system - skipping locale config
 
-{% endif %}
+{%- endif %}

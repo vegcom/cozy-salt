@@ -1,0 +1,5 @@
+#!/bin/sh
+# Managed by Salt - DO NOT EDIT MANUALLY
+
+export PYTHONNOUSERSITE=1
+export PYTHONDONTWRITEBYTECODE=1

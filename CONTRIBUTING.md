@@ -29,6 +29,12 @@ make test-windows      # Windows (requires KVM)
 | Minion hanging  | Master needs 15s after restart                                  |
 | Permissions     | Run `./scripts/fix-permissions.sh`                              |
 
+```sls
+{#- Better way -#}
+{%- from '_macros/packages.sls' import get_packages %}
+{%- set packages = get_packages() | load_json %}
+```
+
 ## Windows `win_cmd` Macro
 
 For `cmd.run` states needing NVM/Conda paths:
@@ -53,10 +59,11 @@ Pillar template files (committed) show structure and defaults. Copy templates to
 | `srv/pillar/host/example.sls` | Per-host config template | `srv/pillar/host/{hostname}.sls` | Loaded if exists, never tracked |
 | `srv/pillar/class/example.sls` | Hardware class template | `srv/pillar/class/{classname}.sls` | Reference for structure |
 | `srv/pillar/users/demo.sls` | User config template | `srv/pillar/users/{username}.sls` | Local files only, demo.sls tracked |
-| `srv/pillar/common/users.sls.example` | User metadata template | `srv/pillar/common/users.sls` | Shows structure (tracked) |
-| `srv/pillar/secrets/init.sls.example` | Secrets template | `srv/pillar/secrets/init.sls` | Gitignored, create locally |
+| `srv/pillar/common/README.md` | User metadata template | `srv/pillar/common/users.sls` | Shows structure (tracked) |
+| `srv/pillar/secrets/README.md` | Secrets template | `srv/pillar/secrets/init.sls` | reference for includes, create locally |
 
 **Creating a new host configuration**:
+
 ```bash
 cp srv/pillar/host/example.sls srv/pillar/host/myhost.sls
 # Edit myhost.sls, set any host-specific pillar values
@@ -64,6 +71,7 @@ cp srv/pillar/host/example.sls srv/pillar/host/myhost.sls
 ```
 
 **Adding a new managed user**:
+
 ```bash
 cp srv/pillar/users/demo.sls srv/pillar/users/newuser.sls
 # Edit newuser.sls:
@@ -74,6 +82,7 @@ cp srv/pillar/users/demo.sls srv/pillar/users/newuser.sls
 ```
 
 **Git credentials and user config**:
+
 - Credentials stored in `.git-credentials`: `https://username:token@github.com`
 - User email/name auto-deploy to `.gitconfig.local [user]` section
 - Tokens merge: global (common/users.sls) + per-user (users/{username}.sls)
@@ -84,11 +93,13 @@ cp srv/pillar/users/demo.sls srv/pillar/users/newuser.sls
 Module documentation lives in `docs/modules/` (not as inline comments in `.sls` files).
 
 Examples:
+
 - [Salt Scheduler](./docs/modules/scheduler.md) - Pillar configuration and usage for `schedule` module
 - [State files](./srv/salt/) - Minimal header comment pointing to `docs/modules/`
 
 When adding a new module:
-1. Create `docs/modules/<name>.md` with configuration, options, and examples
+
+1. Create `docs/modules/<name>.md` with configuration, opions, and examples
 2. Reference it from the state file: `# See docs/modules/<name>.md for usage`
 3. Minimal pillar template with just a reference to the docs
 

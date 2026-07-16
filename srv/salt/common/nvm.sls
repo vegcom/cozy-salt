@@ -3,35 +3,36 @@
 # Platform-specific NVM installation delegated to linux.nvm or windows.nvm
 
 {%- from "_macros/windows.sls" import win_cmd %}
-{% import_yaml "packages.sls" as packages %}
-{% set nvm_config = salt['pillar.get']('nvm', {}) %}
+{%- from '_macros/packages.sls' import get_packages %}
+{%- set packages = get_packages() | load_json %}
+{%- set nvm_config = salt['pillar.get']('nvm', {}) %}
 
 # nvm on windows does not accept wildcards
-{% set default_version = nvm_config.get('default_version', 'lts') %}
+{%- set default_version = nvm_config.get('default_version', 'lts') %}
 
 # Install global npm packages (if defined)
 # All packages installed in single command for efficiency
-{% set npm_packages = packages.get('npm_global', []) %}
+{%- set npm_packages = packages.get('npm_global', []) %}
 
 {# Path configuration from pillar with defaults - platform-specific #}
-{% if grains['os_family'] == 'Windows' %}
-{% set nvm_path = salt['pillar.get']('install_paths:nvm:windows', 'C:\\opt\\nvm') %}
-{% set node_path = nvm_path ~ '\\nodejs' %}
-{% set npm_bin = node_path ~ '\\npm.cmd' %}
-{% else %}
-{% set nvm_path = salt['pillar.get']('install_paths:nvm:linux', '/opt/nvm') %}
-{% endif %}
+{%- if grains['os_family'] == 'Windows' %}
+{%- set nvm_path = salt['pillar.get']('install_paths:nvm:windows', 'C:\\opt\\nvm') %}
+{%- set node_path = nvm_path ~ '\\nodejs' %}
+{%- set npm_bin = node_path ~ '\\npm.cmd' %}
+{%- else %}
+{%- set nvm_path = salt['pillar.get']('install_paths:nvm:linux', '/opt/nvm') %}
+{%- endif %}
 
-{% if npm_packages %}
+{%- if npm_packages %}
 install_npm_global_packages:
   cmd.run:
-    {% if grains['os_family'] == 'Windows' %}
-    - name: {{ win_cmd(npm_bin ~ ' install -g ' ~ npm_packages | join(' ')) }}
+    {%- if grains['os_family'] == 'Windows' %}
+    - name: {{ win_cmd(npm_bin ~ ' install --quiet -g ' ~ npm_packages | join(' ')) }}
     - shell: pwsh
     - require:
       - cmd: nvm_use_default
-    {% else %}
-    - name: NPM_CONFIG_PREFIX={{ nvm_path }} npm install --prefer-dedupe --foreground-scripts --no-audit --no-fund -g {{ npm_packages | join(' ') }}
+    {%- else %}
+    - name: NPM_CONFIG_PREFIX={{ nvm_path }} npm install --quiet --prefer-dedupe --foreground-scripts --no-audit --no-fund -g {{ npm_packages | join(' ') }}
     - shell: /bin/bash
     - env:
       - BASH_ENV: /etc/profile.d/nvm.sh
@@ -39,5 +40,8 @@ install_npm_global_packages:
     - unless: test -d {{ nvm_path }}/lib/node_modules/@anthropic-ai
     - require:
       - cmd: nvm_install_default_version
-    {% endif %}
-{% endif %}
+    {%- endif %}
+    - bg: True
+    - hide_output: True
+    - output_loglevel: quiet
+{%- endif %}

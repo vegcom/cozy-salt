@@ -10,6 +10,6 @@ groups:
     gid: 2001
   docker:
     gid: 2002
-  # SMB required 1000 for cozy-share
+  # SMB required 1000 for https://github.com/vegcom/cozy-share
   smb:
     gid: 1000

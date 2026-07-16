@@ -8,7 +8,8 @@
 # See provisioning/packages.sls for full package definitions
 # See srv/pillar/arch/init.sls for capability_meta and aur_user
 
-{%- import_yaml 'packages.sls' as packages %}
+{%- from '_macros/packages.sls' import get_packages %}
+{%- set packages = get_packages() | load_json %}
 {%- set os_name = 'arch' %}
 {%- set workstation_role = salt['pillar.get']('workstation_role', 'workstation-full') %}
 {%- set capability_meta = salt['pillar.get']('capability_meta', {}) %}
@@ -91,7 +92,6 @@ pacman_conf:
         {%- endfor %}
         {%- endif %}
 
-
 pacman_init_key:
   cmd.run:
     - name: pacman-key --init
@@ -110,6 +110,14 @@ pacman_install_reflector:
     - require:
       - cmd: pacman_sync_key
 
+# TODO: add reflector.conf override via pillar for custom mirror settings
+reflector_timer:
+  service.running:
+    - name: reflector.timer
+    - enable: True
+    - require:
+      - pkg: pacman_install_reflector
+
 pacman_refresh_repo:
   cmd.run:
     - name: reflector --latest 5 --sort rate --save /etc/pacman.d/mirrorlist
@@ -127,6 +135,43 @@ pacman_update:
     - name: pacman -Su --noconfirm && pacman -Scc --noconfirm
     - require:
       - cmd: pacman_sync_repo
+
+# ============================================================================
+# MAKEPKG CONFIGURATION
+# ----------------------------------------------------------------------------
+# Manages /etc/makepkg.conf.d/cozy.conf for ccache + distcc integration
+# BUILDENV uses ccache only (distcc via CCACHE_PREFIX in cozy.sh)
+# DISTCC_HOSTS dynamically queried from headscale by tag:distcc_<arch>
+# ============================================================================
+{%- set distcc_hosts = salt['headscale.get_distcc_hosts']() %}
+
+makepkg_cozy_conf:
+  file.managed:
+    - name: /etc/makepkg.conf.d/cozy.conf
+    - mode: "0644"
+    - user: root
+    - group: root
+    - contents: |
+        #!/hint/bash
+        # Managed by cozy-salt - DO NOT EDIT MANUALLY
+        BUILDENV=(color ccache check)
+        {%- if distcc_hosts %}
+        # distcc compile hosts (auto-discovered via headscale tag:distcc_x86_64)
+        DISTCC_HOSTS="{{ distcc_hosts }}"
+        {%- endif %}
+
+makepkg_environment.d_conf:
+  file.managed:
+    - name: /etc/environment.d/cozy-distcc.conf
+    - mode: "0644"
+    - user: root
+    - group: root
+    - contents: |
+        # Managed by cozy-salt - DO NOT EDIT MANUALLY
+        {%- if distcc_hosts %}
+        # distcc compile hosts (auto-discovered via headscale tag:distcc_x86_64)
+        DISTCC_HOSTS="{{ distcc_hosts }}"
+        {%- endif %}
 
 # ============================================================================
 # PACMAN DATABASE SYNC - Run before any package installation
@@ -218,7 +263,6 @@ yay_install:
     - runas: {{ service_user }}
     - require:
       - yay: core_utils_packages
-    - onfail_stop: True
 
 {# Post-install: Enable service if specified #}
 {%- if cap_meta.get('has_service') %}
@@ -262,11 +306,13 @@ packages_absent_nodeps:
 {%- endif %}
 
 {%- if absent_normal %}
-packages_absent_normal:
+  {%- for package in absent_normal %}
+packages_absent_normal_{{ package }}:
   pkg.removed:
     - pkgs: {{ absent_normal | tojson }}
     - require:
       - yay: core_utils_packages
+  {%- endfor %}
 {%- endif %}
 
 # ============================================================================
@@ -283,7 +329,7 @@ packages_extra_{{ cap_key }}:
     - runas: {{ service_user }}
     - require:
       - yay: core_utils_packages
-{%- if absent_nodeps %}
+{%- if absent_nodeps | tojson %}
       - cmd: packages_absent_nodeps
 {%- endif %}
 {%- endif %}

@@ -1,29 +1,40 @@
 # cozy-presence: Local identity persistence service
-{% from "_macros/git-repo.sls" import git_repo %}
+{%- from "_macros/git-repo.sls" import git_repo %}
 {%- set managed_users = salt['pillar.get']('managed_users', [], merge=True) -%}
 {%- set run_user = managed_users[0] if managed_users else '' -%}
 {%- set is_container = salt['file.file_exists']('/.dockerenv') or
                        salt['file.file_exists']('/run/.containerenv') -%}
-{%- set token = salt['pillar.get']('github:tokens', [''])[0] -%}
+{%- set token = salt['github_release.find_valid_token']() -%}
 {%- set cozy_presence_path = "/opt/cozy/cozy-presence" %}
 {%- set cozy_presence_env = "/opt/miniforge3/envs/cozy-presence" %}
 {%- set embedding_url = salt['pillar.get']('services:embedding:langcache:url', '') -%}
 {%- set embedding_dim = salt['pillar.get']('services:embedding:langcache:dim', '') -%}
 {%- set cozy_presence_cfg = "/opt/cozy/etc/cozy-presence.conf" %}
 {%- set cozy_presence_bin = cozy_presence_env + "/bin" %}
+{%- set cozy_presence_enabled = salt['pillar.get']('host:capabilities:cozy_presence', False) -%}
 
-{%- if run_user and not is_container and token %}
+{%- if run_user and not is_container and token and cozy_presence_enabled %}
 # Create /opt/cozy/ with correct ownership (always enforced, no creates guard)
 cozy_presence_repo_dir:
-  file.directory:
-    - name: /opt/cozy/
-    - user: {{ run_user }}
-    - group: cozyusers
-    - mode: "0770"
-    - makedirs: True
+ file.directory:
+   - name: {{ cozy_presence_path }}
+   - user: {{ run_user }}
+   - group: cozyusers
+   - mode: "0770"
+   - makedirs: True
+
+# Fix .git ownership if repo was previously cloned as wrong user
+cozy_presence_fix_git_perms:
+  cmd.run:
+    - name: chown -R {{ run_user }}:cozyusers {{ cozy_presence_path }}/.git
+    - onlyif: test -d {{ cozy_presence_path }}/.git
+    - require:
+      - file: cozy_presence_repo_dir
+    - require_in:
+      - git: cozy_presence_repo
 
 # Clone cozy-presence repo (token from pillar)
-{{ git_repo('cozy-presence', cozy_presence_path, run_user, state_id='cozy_presence_repo' ,require_file='cozy_presence_repo_dir') }}
+{{ git_repo('cozy-presence', cozy_presence_path, run_user, state_id='cozy_presence_repo', require_file='cozy_presence_repo_dir') }}
 
 # Setup conda env
 cozy_presence_env_create:
@@ -43,7 +54,6 @@ cozy_presence_env_update:
     - user: {{ run_user }}
     - onchanges:
       - git: cozy_presence_repo
-
 
 # Install in conda env
 cozy_presence_pip:
@@ -82,7 +92,7 @@ cozy_presence_config:
       - file: cozy_presence_service_file
 
 # Per-user: data dir + service enable
-{% for username in managed_users %}
+{%- for username in managed_users %}
 {%- set user_info = salt['user.info'](username) %}
 {%- if user_info %}
 
@@ -107,7 +117,7 @@ cozy_presence_service_{{ username }}:
       - git: cozy_presence_repo
 
 {%- endif %}
-{% endfor %}
+{%- endfor %}
 
 {%- else %}
 

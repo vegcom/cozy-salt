@@ -1,31 +1,45 @@
 #!/bin/bash
 # Managed by Salt - DO NOT EDIT MANUALLY
 
-if [ ! -n "$BASH_VERSION" ]; then
-	return 0
-fi
+# shellcheck  disable=SC1072 disable=SC1073 disable=SC1009 disable=SC1090 disable=SC1091
 
-if [ -n "${__ETC_BASHRC_SOURCED}" ]; then
+if [ ! -n "$BASH_VERSION" ]; then
   return 0
 fi
 
-if [ -f /etc/profile ]; then
-  # shellcheck disable=SC1091
+if [ -d /etc/profile ]; then
   . /etc/profile
 fi
 
-if awk '/Ubuntu/ { found=1; exit } END { exit !found }' /etc/os-release ; then
-  if [ -d /etc/bash_completion.d/ ] ; then
-    # shellcheck disable=SC1091 disable=SC1090
-    . /etc/bash_completion.d/*.bash
-  fi
+if [ -d /opt/cozy/etc/profile.d ]; then
+  for i in $(find /opt/cozy/etc/profile.d/*.sh 2>/dev/null|sort) ; do
+    if [ -s "$i" ]; then
+      . "$i"
+    fi
+  done
+  unset i
 fi
 
-command -v direnv >/dev/null && eval "$(direnv hook bash)"
-command -v carapace >/dev/null && eval "$(carapace _carapace)"
-command -v zoxide >/dev/null && eval "$(zoxide init bash)"
-command -v starship >/dev/null && eval "$(starship init bash)"
-command -v atuin >/dev/null && eval "$(atuin init bash)"
+if [ -f /etc/bash.bashrc.machine ]; then
+  . /etc/bash.bashrc.machine
+fi
 
-__ETC_BASHRC_SOURCED=1
-export __ETC_BASHRC_SOURCED
+case $- in
+    *i*) ;;
+    *) return 2>/dev/null ;;
+esac
+
+if [ -d /etc/bash_completion.d/ ] ; then
+	. /etc/bash_completion.d/*.bash 2>/dev/null
+fi
+
+
+if [ "$STARSHIP_DISABLE" != "true" ]; then command -v starship >/dev/null && eval "$(starship init bash)" ; fi
+if [ "$CARAPACE_DISABLE" != "true" ]; then command -v carapace >/dev/null && eval "$(carapace _carapace)" ; fi
+if [ "$OXIDE_DISABLE" != "true" ]; then command -v zoxide >/dev/null && eval "$(zoxide init bash)" ; fi
+if [ "$ATUIN_DISABLE" != "true" ]; then command -v atuin >/dev/null && eval "$(atuin init bash)" ; fi
+if [ "$FZF_DISABLE" != "true" ]; then command -v fzf >/dev/null && eval "$(fzf --bash)" ;  fi
+
+command -v tailscale >/dev/null && eval  "$(tailscale completion bash)"
+command -v kubecolor >/dev/null && eval  "$(kubecolor completion bash)"
+command -v direnv >/dev/null && eval "$(direnv hook bash)"

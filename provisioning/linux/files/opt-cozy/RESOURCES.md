@@ -1,5 +1,8 @@
 # RESOURCES.md
 
+> [!NOTE]
+> Managed by Salt - DO NOT EDIT MANUALLY
+
 References to external deps documentaiton
 
 ## Systemd

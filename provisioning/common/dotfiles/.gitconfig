@@ -1,3 +1,4 @@
+# Managed by Salt - DO NOT EDIT MANUALLY
 [init]
   defaultBranch = main
   templateDir = ~/.git_template
@@ -41,6 +42,7 @@
   excludesfile = ~/.gitignore
   fileMode = false
   sharedRepository = group
+  sparseCheckout = true
 
 [merge]
   ff = only

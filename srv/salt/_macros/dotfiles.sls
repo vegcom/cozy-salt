@@ -1,7 +1,7 @@
 # Dotfile deployment macros for consistent user file management
 # Usage: from "_macros/dotfiles.sls" import user_dotfile, user_dotfiles
 
-{%- macro user_dotfile(username, home, filename, source, mode='0644', require=False) %}
+{%- macro user_dotfile(username, home, filename, source, mode='0644', require=False, skip_verify=False) %}
 {{ username }}_{{ filename | replace('/', '_') | replace('.', '') | replace('-', '_') }}:
   file.managed:
     - name: {{ home }}/{{ filename }}
@@ -14,19 +14,23 @@
     - require:
       - file: {{ username }}_home_directory
     {%- endif %}
+  {%- if skip_verify %}
+    - skip_verify: True
+  {%- endif %}
 {%- endmacro %}
 
 {# Deploy multiple dotfiles from a list #}
 {%- macro user_dotfiles(username, home, files) %}
-{% for f in files %}
+{%- for f in files %}
 {{ user_dotfile(username, home, f.name, f.source, f.get('mode', '0644')) }}
-{% endfor %}
+{%- endfor %}
 {%- endmacro %}
 
 {#- Get platform-appropriate user home directory path -#}
 {%- macro get_user_home(username) -%}
   {%- if grains['os_family'] == 'Windows' -%}
-    C:\Users\{{ username }}
+  {%- set user_home = salt['cmd.run']('(Resolve-Path("$HOME")).Path', shell='powershell') | replace("\\", "/") -%}
+    {{ user_home }}
   {%- else -%}
     /home/{{ username }}
   {%- endif -%}
@@ -34,11 +38,7 @@
 
 {#- Get platform-appropriate path to a dotfile/directory -#}
 {%- macro dotfile_path(user_home, dotfile_name) -%}
-  {%- if grains['os_family'] == 'Windows' -%}
-    {{ user_home }}\{{ dotfile_name }}
-  {%- else -%}
     {{ user_home }}/{{ dotfile_name }}
-  {%- endif -%}
 {%- endmacro -%}
 
 {#- Deploy a file to user home (handles platform path separators) -#}

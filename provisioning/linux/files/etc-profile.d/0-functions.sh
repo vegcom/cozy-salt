@@ -1,5 +1,5 @@
-#!/bin/bash
-# 0-functions.sh
+#!/bin/sh
+# Managed by Salt - DO NOT EDIT MANUALLY
 
 # Keep Arch's append_path, but rename it
 # so we don't pollute global space later
@@ -54,23 +54,24 @@ EOF
 
 
 cozy_persist_shell(){
+	# Persist a shell a in a very lazy way
   if [ -n "$1" ];then
     _host=${1}
     _port=${2:-22}
-    while ! ssh "${_host}" ; do sleep 15 ; nc -vzw 5 "${_host}" 22 ; done
+    while ! ssh "${_host}" ; do sleep 15 ; nc -vzw 5 "${_host}" "${_port}" ; done
   fi
 }
 
 gclean() {
   # Marker text to stop at; default stays your original
-  local marker="${1}"
+  __marker="${1}"
 
-  if [ -z "${marker}" ];then
+  if [ -z "${__marker}" ];then
     echo "Usage: gclean <marker>"
     return 1
   fi
 
-  _MARK="$marker" git filter-repo --force --message-callback '
+  _MARK="$__marker" git filter-repo --force --message-callback '
 import os
 
 marker = os.environ.get("_MARK", "").encode()
@@ -87,13 +88,16 @@ return b"\n".join(cleaned)
 '
 }
 
-export gclean
-
-t(){
-  if [ -d "${PWD}/.git" ] ; then
-    _name="$(basename "${PWD:-$(pwd)}")"
-    tmux new -s "${_name}"
-  fi
+cozy_boot(){
+	__cozy_boot_help(){
+		echo "last-boot - time of last boot (epoch)"
+	}
+  __cozy_boot_last_boot(){
+    # uptime - epoch == last boot time
+    awk '{print int(systime() - $1)}' /proc/uptime || return 1
+  }
+  case $1 in
+    last-boot) __cozy_boot_last_boot;;
+		*) __cozy_boot_help;;
+  esac
 }
-
-export t

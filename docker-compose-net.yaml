@@ -1,0 +1,29 @@
+# Network overlay for production deployments
+# Attaches salt master to an external frontend network (macvlan/bridge)
+# Usage: docker compose -f docker-compose.yaml -f docker-compose-net.yaml up
+#
+# Requires: frontend network created externally
+# See docker-compose-net.yml.example for setup
+
+services:
+  salt:
+    mac_address: ${SALT_MASTER_MAC:-02:42:ac:11:00:10}
+    dns:
+      - ${SALT_MASTER_RESOLVER:-10.0.0.1}
+    environment:
+      MONGO_HOST: ${MONGO_IP:-10.0.0.221}
+    networks:
+      salt-net:
+      frontend:
+        ipv4_address: ${SALT_MASTER_IP:-10.0.0.220}
+
+  mongo:
+    mac_address: ${MONGO_MAC:-02:42:ac:11:00:11}
+    networks:
+      salt-net:
+      frontend:
+        ipv4_address: ${MONGO_IP:-10.0.0.221}
+
+networks:
+  frontend:
+    external: true

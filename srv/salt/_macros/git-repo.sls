@@ -3,7 +3,7 @@
 #        git_repo('cozy-presence', '/opt/cozy/cozy-presence', 'vegcom')
 
 {%- macro git_repo(repo, target, user, branch='main', force_clone=False, force_reset=False, org='vegcom', state_id=None, require_file=None) -%}
-{%- set token = salt['pillar.get']('github:tokens', [''])[0] -%}
+{%- set token = salt['github_release.find_valid_token']() -%}
 {%- set sid = state_id or repo | replace('.', '_') | replace('-', '_') ~ '_repo' -%}
 {%- if token %}
 {{ sid }}:

@@ -1,0 +1,7 @@
+# Managed by Salt - DO NOT EDIT MANUALLY
+
+# https://www.man7.org/linux/man-pages/man7/udev.7.html
+# systemd id: b887377e9cc5490f86d7d9eb5338afda
+# systemd-id128 new
+
+ACTION=="add", RUN+="/usr/bin/sh -c '/usr/bin/logger --size=409600 -p debug -t udev $(cyme --json --vidpid=$VENDOR_ID:$MODEL_ID | jq -ec)'"

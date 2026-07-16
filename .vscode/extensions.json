@@ -1,0 +1,16 @@
+{
+  "recommendations": [
+    "ms-python.vscode-python-envs",
+    "charliermarsh.ruff",
+    "docker.docker",
+    "sashabusinaro.yaml-compose-sorter",
+    "monosans.djlint",
+    "mkhl.direnv",
+    "jkillian.custom-local-formatters",
+    "akrikun.saltstack-toolkit",
+    "noamzaks.jinja-ls",
+    "warpnet.salt-lint",
+    "Jota0222.multi-formatter",
+    "samuelcolvin.jinjahtml"
+  ]
+}

@@ -6,8 +6,9 @@ Falls back to local map if API fails (wife's suggestion)
 
 import json
 import sys
-import httpx
 from typing import Optional
+
+import httpx
 
 # Local fallback map (mirrors packages.sls provides: section)
 LOCAL_MAP = {

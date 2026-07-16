@@ -1,6 +1,8 @@
 # Multi-stage Salt infrastructure - consolidates salt-master, salt-minion-deb, salt-minion-rpm
 # Build targets: salt-master, salt-minion-deb, salt-minion-rpm
 
+# TODO: switch minion salt to onedir install `curl -L https://raw.githubusercontent.com/saltstack/salt-bootstrap/develop/bootstrap-salt.sh | sh -s -- -A salt -i linux_minion onedir`.
+
 # ============================================================================
 # STAGE 0: keygen
 # Generate pre-shared keys for test minions at build time
@@ -17,7 +19,7 @@ RUN apt-get update && \
 
 # Generate RSA keys for test minions (Salt-compatible format)
 WORKDIR /keys
-RUN for minion in ubuntu-test rhel-test windows-test; do \
+RUN for minion in salt ubuntu-test rhel-test windows-test; do \
       openssl genrsa -out ${minion}.pem 4096 2>/dev/null && \
       openssl rsa -in ${minion}.pem -pubout -out ${minion}.pub 2>/dev/null; \
     done && \
@@ -44,7 +46,7 @@ RUN rm -f /etc/apt/sources.list.d/* && \
     echo "deb http://${APT_MIRROR}/ubuntu/ ${DEBIAN_CODENAME}-updates main restricted universe multiverse" >> /etc/apt/sources.list && \
     echo "deb http://${APT_SECURITY_MIRROR}/ubuntu/ ${DEBIAN_CODENAME}-security main restricted universe multiverse" >> /etc/apt/sources.list && \
     apt-get update && \
-    apt-get install -y --no-install-recommends curl ca-certificates && \
+    apt-get install -y --no-install-recommends curl ca-certificates git && \
     echo "deb [arch=amd64 trusted=yes] \
       https://packages.broadcom.com/artifactory/saltproject-deb/ stable main" > \
       /etc/apt/sources.list.d/salt.list && \
@@ -66,10 +68,11 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Install Salt Master, Minion, and SSH from pre-configured repos
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-      netcat-openbsd avahi-daemon wsdd-server tini\
-      salt-master salt-minion salt-ssh && \
+      netcat-openbsd avahi-daemon wsdd-server tini \
+      salt-master salt-minion salt-api salt-ssh python3-cherrypy3 && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/*
+    rm -rf /var/lib/apt/lists/* /tmp/* && \
+    /opt/saltstack/salt/bin/pip3 install --root-user-action ignore pymongo pyinotify gitpython
 
 # Create mount points with correct ownership
 # Note: /srv/salt/files is for provisioning files mounted separately
@@ -79,6 +82,9 @@ RUN mkdir -p /srv/salt/files /srv/pillar /srv/data /var/cache/salt /var/log/salt
 # Copy pre-generated public keys for test minions (pre-acceptance)
 # Entrypoint copies these to /etc/salt/pki/master/minions/ on startup
 COPY --from=keygen /keys/*.pub /etc/salt/pki/master/minions-preload/
+
+# Copy full keypair for master-as-minion (salt minion needs its own .pem)
+COPY --from=keygen /keys/salt.pem /keys/salt.pub /etc/salt/pki/minion-preload/
 
 # Enable master.d config drop-in directory
 RUN sed -i 's/^#default_include: master.d\/\*.conf$/default_include: master.d\/*.conf/' /etc/salt/master
@@ -90,10 +96,20 @@ RUN chmod +x /usr/local/bin/entrypoint-master.sh
 # Copy avahi service files
 COPY srv/avahi/*.service /etc/avahi/services/
 
+# Setup SaltGUI
+ENV _GUI_VERSION=1.33.0
+RUN mkdir -p /saltgui && \
+    curl -fsSL https://github.com/erwindon/SaltGUI/archive/refs/tags/${_GUI_VERSION}.tar.gz | \
+    tar -xz --strip-components=2 -C /saltgui SaltGUI-${_GUI_VERSION}/saltgui
+
+# Create service account for SaltGUI PAM auth
+# Password set at runtime via SALT_API_PASSWORD env var in entrypoint
+RUN useradd -r -s /usr/sbin/nologin -M cozy-salt-svc
+
 # Note: Healthcheck is defined in docker-compose.yaml (preferred for flexibility)
 ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/entrypoint-master.sh"]
 
-EXPOSE 4505/tcp 4506/tcp 5353/udp
+EXPOSE 4505/tcp 4506/tcp 5353/udp 3333/tcp
 
 # ============================================================================
 # STAGE 3: salt-minion-deb
@@ -106,8 +122,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Install Salt Minion from pre-configured repos
 # git required for git.latest states (common.vim etc) on first highstate run
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends salt-minion git && \
-    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/*
+    apt-get install -y --no-install-recommends salt-minion git iproute2 procps && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* && \
+    /opt/saltstack/salt/bin/pip3 install --root-user-action ignore pymongo pyinotify gitpython
 
 # Pre-configure minion (master hostname will be set at runtime)
 RUN mkdir -p /etc/salt/minion.d && \
@@ -154,7 +171,7 @@ FROM salt-base-rpm AS salt-minion-rpm
 
 # Install Salt Minion from pre-configured repos
 # git required for git.latest states (common.vim etc) on first highstate run
-RUN dnf install -y salt-minion git && \
+RUN dnf install -y salt-minion git iproute procps-ng && \
     dnf clean all && rm -rf /var/cache/dnf /tmp/*
 
 # Pre-configure minion (master hostname will be set at runtime)

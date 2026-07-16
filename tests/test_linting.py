@@ -5,12 +5,11 @@ Runs shellcheck, yamllint, and salt-lint on project files.
 Tests skip gracefully if tools are not installed.
 """
 
-import subprocess
 import shutil
+import subprocess
 from pathlib import Path
 
 import pytest
-
 
 # Project root detection
 PROJECT_ROOT = Path(__file__).parent.parent.resolve()
@@ -30,10 +29,7 @@ HAS_SALTLINT = tool_available("salt-lint")
 def collect_shell_scripts() -> list[Path]:
   """Collect all .sh files from scripts/ and provisioning/ directories."""
   scripts = []
-  search_dirs = [
-    PROJECT_ROOT / "scripts",
-    PROJECT_ROOT / "provisioning",
-  ]
+  search_dirs = [PROJECT_ROOT / "scripts", PROJECT_ROOT / "provisioning"]
 
   for search_dir in search_dirs:
     if search_dir.exists():
@@ -78,16 +74,12 @@ YAML_FILES = collect_yaml_files()
 @pytest.mark.skipif(not HAS_SHELLCHECK, reason="shellcheck not installed")
 @pytest.mark.skipif(not SHELL_SCRIPTS, reason="no shell scripts found")
 @pytest.mark.parametrize(
-  "script_path",
-  SHELL_SCRIPTS,
-  ids=lambda p: str(p.relative_to(PROJECT_ROOT)),
+  "script_path", SHELL_SCRIPTS, ids=lambda p: str(p.relative_to(PROJECT_ROOT))
 )
 def test_shellcheck(script_path: Path):
   """Run shellcheck on a shell script."""
   result = subprocess.run(
-    ["shellcheck", "-f", "gcc", str(script_path)],
-    capture_output=True,
-    text=True,
+    ["shellcheck", "-f", "gcc", str(script_path)], capture_output=True, text=True
   )
 
   if result.returncode != 0:
@@ -102,9 +94,7 @@ def test_shellcheck(script_path: Path):
 @pytest.mark.skipif(not HAS_YAMLLINT, reason="yamllint not installed")
 @pytest.mark.skipif(not YAML_FILES, reason="no YAML files found")
 @pytest.mark.parametrize(
-  "yaml_path",
-  YAML_FILES,
-  ids=lambda p: str(p.relative_to(PROJECT_ROOT)),
+  "yaml_path", YAML_FILES, ids=lambda p: str(p.relative_to(PROJECT_ROOT))
 )
 def test_yamllint(yaml_path: Path):
   """Run yamllint on a YAML file."""
@@ -129,9 +119,7 @@ def test_yamllint(yaml_path: Path):
 @pytest.mark.skipif(not HAS_SALTLINT, reason="salt-lint not installed")
 @pytest.mark.skipif(not SLS_FILES, reason="no SLS files found")
 @pytest.mark.parametrize(
-  "sls_path",
-  SLS_FILES,
-  ids=lambda p: str(p.relative_to(PROJECT_ROOT)),
+  "sls_path", SLS_FILES, ids=lambda p: str(p.relative_to(PROJECT_ROOT))
 )
 def test_saltlint(sls_path: Path):
   """Run salt-lint on a Salt state file."""
@@ -156,31 +144,19 @@ def test_saltlint(sls_path: Path):
 @pytest.mark.skipif(not HAS_SHELLCHECK, reason="shellcheck not installed")
 def test_shellcheck_installed():
   """Verify shellcheck is available and report version."""
-  result = subprocess.run(
-    ["shellcheck", "--version"],
-    capture_output=True,
-    text=True,
-  )
+  result = subprocess.run(["shellcheck", "--version"], capture_output=True, text=True)
   assert result.returncode == 0, "shellcheck not working properly"
 
 
 @pytest.mark.skipif(not HAS_YAMLLINT, reason="yamllint not installed")
 def test_yamllint_installed():
   """Verify yamllint is available and report version."""
-  result = subprocess.run(
-    ["yamllint", "--version"],
-    capture_output=True,
-    text=True,
-  )
+  result = subprocess.run(["yamllint", "--version"], capture_output=True, text=True)
   assert result.returncode == 0, "yamllint not working properly"
 
 
 @pytest.mark.skipif(not HAS_SALTLINT, reason="salt-lint not installed")
 def test_saltlint_installed():
   """Verify salt-lint is available and report version."""
-  result = subprocess.run(
-    ["salt-lint", "--version"],
-    capture_output=True,
-    text=True,
-  )
+  result = subprocess.run(["salt-lint", "--version"], capture_output=True, text=True)
   assert result.returncode == 0, "salt-lint not working properly"

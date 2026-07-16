@@ -44,10 +44,48 @@ if [[ -d "${preload_dir}" ]]; then
     done
 fi
 
+# Set cozy-salt-svc password for SaltGUI PAM auth
+if [[ -n "${SALT_API_USER_PASS}" ]]; then
+    echo "cozy-salt-svc:${SALT_API_USER_PASS}" | chpasswd
+    echo "[entrypoint] cozy-salt-svc password set"
+else
+    echo "[entrypoint] WARNING: SALT_API_USER_PASS not set — SaltGUI login will fail"
+fi
+
+echo "[entrypoint] Initialising mongo credentials..."
+mongo_dir="/srv/data/mongo"
+mkdir -p "${mongo_dir}"
+mongo_pass_file="${mongo_dir}/password"
+if [[ ! -f "${mongo_pass_file}" ]]; then
+    openssl rand -base64 48 | tr -d '/+=' | head -c 32 > "${mongo_pass_file}"
+    chmod 664 "${mongo_pass_file}"
+    echo "  + mongo password generated"
+else
+    echo "  + mongo password exists"
+fi
+echo "${MONGO_HOST:-mongo}" > "${mongo_dir}/host"
+
+echo "[entrypoint] Writing master mongo returner config..."
+mongo_pass=$(cat "${mongo_pass_file}")
+cat > /etc/salt/master.d/mongo-returner-generated.conf <<EOF
+# Generated at container startup — do not edit, do not commit (see .gitignore)
+# master_job_cache handled minion-side via return: mongo_future_return in minion.d/
+
+mongo.host: ${MONGO_HOST:-mongo}
+mongo.port: 27017
+mongo.db: salt
+mongo.user: salt
+mongo.password: ${mongo_pass}
+mongo.authdb: admin
+EOF
+echo "  + mongo-returner-generated.conf written"
+
 echo "[entrypoint] Initialising sqlite3 returner schema..."
+# TODO: place into it's own .py file
+mkdir -p /srv/data/sqlite || true
 python3 -c "
 import sqlite3, os, shutil
-target = '/srv/data/salt_returns.db'
+target = '/srv/data/sqlite/salt_returns.db'
 tmp    = '/tmp/salt_returns_init.db'
 conn = sqlite3.connect(tmp)
 conn.execute('PRAGMA journal_mode=WAL')
@@ -64,7 +102,29 @@ else:
     print('  + salt_returns.db already exists, skipping')
 
 "
-chown salt:salt /srv/data/salt_returns.db 2>/dev/null || true
+chown salt:salt /srv/data/sqlite/salt_returns.db 2>/dev/null || true
+
+echo "[entrypoint] Configuring master as local minion..."
+mkdir -p /etc/salt/minion.d
+echo "master: localhost" > /etc/salt/minion.d/master.conf
+echo "id: salt" > /etc/salt/minion.d/id.conf
+
+# Load pre-shared key so master's pre-accepted pub matches what minion presents
+preload_dir="/etc/salt/pki/minion-preload"
+pki_dir="/etc/salt/pki/minion"
+if [ -f "${preload_dir}/salt.pem" ] && [ ! -f "${pki_dir}/minion.pem" ]; then
+    echo "  + Loading pre-shared keys for salt minion"
+    mkdir -p "${pki_dir}"
+    cp "${preload_dir}/salt.pem" "${pki_dir}/minion.pem"
+    cp "${preload_dir}/salt.pub" "${pki_dir}/minion.pub"
+    chmod 400 "${pki_dir}/minion.pem"
+    chmod 644 "${pki_dir}/minion.pub"
+    chown -R salt:salt "${pki_dir}"
+fi
+rm -f "${pki_dir}/minion_master.pub"
+
+salt-minion -d
+echo "  + salt-minion started (id: salt -> localhost)"
 
 echo "[entrypoint] Starting wsdd..."
 wsdd --shortlog &
@@ -72,5 +132,8 @@ wsdd --shortlog &
 echo "[entrypoint] Starting avahi-daemon..."
 avahi-daemon --no-drop-root --daemonize --debug &
 
+echo "[entrypoint] Starting Salt API..."
+salt-api -d --log-level=info
+
 echo "[entrypoint] Starting Salt Master..."
-exec salt-master -l debug
+exec salt-master --log-level=info

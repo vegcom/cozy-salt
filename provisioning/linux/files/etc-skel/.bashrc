@@ -1,10 +1,10 @@
 #!/bin/bash
-# ~/.bashrc
+# ~/.bashrc || /etec/skel/.bashrc
 # Managed by Salt - DO NOT EDIT MANUALLY
 
-if [ -f /etc/bashrc ]; then
+if [ -f /etc/bash.bashrc ]; then
   # shellcheck disable=SC1091
-  . /etc/bashrc
+  . /etc/bash.bashrc
 fi
 
 if [ -f "$HOME"/.bashrc.local ]; then

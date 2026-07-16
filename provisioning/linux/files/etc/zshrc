@@ -1,39 +1,25 @@
 #!/bin/zsh
-# shellcheck disable=SC1071
-# /etc/zshrc
 # Managed by Salt - DO NOT EDIT MANUALLY
 
 if [ ! -n "$ZSH_VERSION" ]; then
-	return 0
+  return 2>/dev/null
 fi
 
-if [ -n "${__ETC_ZSHRC_SOURCED}" ]; then
-  return 0
-fi
+case $- in
+    *i*) ;;
+    *) return 2>/dev/null ;;
+esac
 
 autoload -Uz compinit
-compinit
+compinit -u
 
-if [ -f /etc/profile ]; then
-  # shellcheck disable=SC1091
-  . /etc/profile
-fi
+if [ "$STARSHIP_DISABLE" != "true" ]; then command -v starship >/dev/null && eval "$(starship init zsh)" ; fi
+if [ "$CARAPACE_DISABLE" != "true" ]; then command -v carapace >/dev/null && eval "$(carapace _carapace zsh)" ; fi
+if [ "$ZOXIDE_DISABLE" != "true" ]; then command -v zoxide >/dev/null && eval "$(zoxide init zsh)" ; fi
+if [ "$ATUIN_DISABLE" != "true" ]; then command -v atuin >/dev/null && eval "$(atuin init zsh)" ; fi
+if [ "$FZF_DISABLE" != "true" ]; then command -v fzf >/dev/null && eval "$(fzf --zsh)" ; fi
 
-if [ -f /etc/zshrc.machine ]; then
-  # shellcheck disable=SC1091
-  . /etc/zshrc.machine
-fi
-
-if [ -f /etc/zsh_command_not_found ]; then
-  # shellcheck disable=SC1091
-  . /etc/zsh_command_not_found
-fi
-
+command -v tailscale >/dev/null && eval  "$(tailscale completion zsh)"
+command -v kubectl >/dev/null && eval  "$(kubectl completion zsh)"
+command -v kubecolor >/dev/null && eval  "$(kubecolor completion zsh)"
 command -v direnv >/dev/null && eval "$(direnv hook zsh)"
-command -v carapace >/dev/null && eval "$(carapace _carapace zsh)"
-command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
-command -v starship >/dev/null && eval "$(starship init zsh)"
-command -v atuin >/dev/null && eval "$(atuin init zsh)"
-
-__ETC_ZSHRC_SOURCED=1
-export __ETC_ZSHRC_SOURCED

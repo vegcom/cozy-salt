@@ -1,11 +1,11 @@
 #!jinja|yaml
 # Linux Pillar Data
 
-{% if salt['grains.get']('virtual', '') in ['docker', 'container', 'lxc'] %}
-  {% set detected_user = 'root' %}
-{% else %}
-  {% set detected_user = salt['environ.get']('SUDO_USER') or salt['environ.get']('LOGNAME') or 'root' %}
-{% endif %}
+{%- if salt['grains.get']('virtual', '') in ['docker', 'container', 'lxc'] %}
+  {%- set detected_user = 'root' %}
+{%- else %}
+  {%- set detected_user = salt['environ.get']('SUDO_USER') or salt['environ.get']('LOGNAME') or 'root' %}
+{%- endif %}
 user:
   name: {{ detected_user }}
 
@@ -18,8 +18,10 @@ host:
   capabilities:
     kvm: {{ 'kvm-host' in salt['grains.get']('roles', []) }}
     k3s: {{ 'k3s-host' in salt['grains.get']('roles', []) }}
+    tailscale: true
+    avahi: true
   services:
-    ssh_enabled: {{ not (salt['file.file_exists']('/.dockerenv') or salt['file.file_exists']('/run/.containerenv')) }}
+    ssh_enabled: {{ True if not  (salt['file.file_exists']('/.dockerenv') or salt['file.file_exists']('/run/.containerenv')) }}
 
 locales:
   - en_US.UTF-8 UTF-8
@@ -125,6 +127,8 @@ capability_meta:
       - libvirt
   k3s:
     pillar_gate: host:capabilities:k3s
+  tailscale:
+    pillar_gate: host:capabilities:tailscale
   interpreters:
     state_name: interpreter_packages
   shell_history:

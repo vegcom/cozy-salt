@@ -60,10 +60,7 @@ def _get_logged_in_users():
   except Exception as e:
     log.error(f"Error detecting Windows profiles: {e}")
 
-  return {
-    "logged_in_users": sorted(users),
-    "temp_profiles": sorted(temp_profiles),
-  }
+  return {"logged_in_users": sorted(users), "temp_profiles": sorted(temp_profiles)}
 
 
 def windows_profiles():

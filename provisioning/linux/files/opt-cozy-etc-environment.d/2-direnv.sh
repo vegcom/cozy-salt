@@ -1,0 +1,6 @@
+#!/bin/sh
+# Managed by Salt - DO NOT EDIT MANUALLY
+
+export DIRENV_WARN_TIMEOUT=0
+export DIRENV_NOSEARCH=1
+export DIRENV_ALLOW_ALL=1

@@ -4,7 +4,11 @@
 managed_users:
   - deck
 
-docker_enabled: True
+host:
+  capabilities:
+    kvm: true
+    k3s: true
+    docker: true
 
 display:
   rotation:
@@ -30,7 +34,16 @@ linux:
 
 packages_absent:
   arch:
-    nodeps: [linux-firmware]
+    nodeps:
+      - linux-firmware
+      - linux-firmware-bnx2x
+      - linux-firmware-liquidio
+      - linux-firmware-marvell
+      - linux-firmware-mellanox
+      - linux-firmware-nfp
+      - linux-firmware-qcom
+      - linux-firmware-qlogic
+      - linux-firmware-whence
     normal: []
 
 packages_extra:
@@ -46,7 +59,7 @@ packages_extra:
       - linux-firmware-neptune-qcom
       - linux-firmware-neptune-qlogic
       - linux-firmware-neptune-whence
-    deck_tools: [alsa-ucm-conf, amd-ucode, caps, dkms, fan-control, noise-suppression-for-voice, sof-firmware, steamdeck-dkms, steamdeck-dsp, steamdeck-dsp-debug, upower, vpower, ludusavi-bin, steam-boilr-gui, hunspell, hunspell-fr, hunspell-en_gb, hunspell-en_us,hunspell-ja]
+    deck_tools: [alsa-ucm-conf, amd-ucode, caps, dkms, noise-suppression-for-voice, sof-firmware, steamdeck-dkms, steamdeck-dsp, steamdeck-dsp-debug, upower, vpower, ludusavi-bin, hunspell, hunspell-fr, hunspell-en_gb, hunspell-en_us,hunspell-ja, cyme,xorg-xwininfo, xdotool, yad]
 
 pacman:
   repos:

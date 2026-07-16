@@ -4,7 +4,7 @@
 import re
 import sys
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any, Dict, List
 
 import yaml
 

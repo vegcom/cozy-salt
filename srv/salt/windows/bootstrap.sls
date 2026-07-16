@@ -1,10 +1,17 @@
 # Windows Bootstrap State
 # "Make you behave like a predictable Windows target"
 
-{% from '_macros/windows.sls' import get_winget_user, get_winget_path with context %}
+{%- from '_macros/windows.sls' import get_winget_user, get_winget_path with context %}
 
-{% set winget_user = get_winget_user() %}
-{% set winget_path = get_winget_path(winget_user) %}
+{%- set winget_user = get_winget_user() %}
+{%- set winget_path = get_winget_path(winget_user) %}
+{%- if not salt['file.file_exists'](winget_path) %}
+  {%- set winget_path = salt['cmd.run']('@((Get-Item "C:\\Program Files\\WindowsApps\\Microsoft.DesktopAppInstaller*\\winget.exe").VersionInfo.FileName)[-1]', shell='powershell') %}
+{%- endif %}
+
+{#- Service user performs scope=machine always #}
+{%- set service_user = salt['pillar.get']('service_user', {}) %}
+{%- set svc_name = service_user.get('name', 'cozy-salt-svc') %}
 
 # ============================================================================
 # WinRM Configuration (Salt communication foundation)
@@ -129,14 +136,29 @@ disable_delivery_optimization:
     - vtype: REG_DWORD
 
 # ============================================================================
+# Windows AD
+# ============================================================================
+# install_ad_tools:
+#   cmd.run:
+#     - name: powershell -NoProfile -Command 'Get-WindowsCapability -Online | Where-Object Name -like 'Rsat.ActiveDirectory.DS-LDS.Tools*' | Add-WindowsCapability -Online -Verbose'
+#     - timeout: 300
+
+# ============================================================================
 # Required Packages
 # ============================================================================
 
+configure_nuget:
+  cmd.run:
+    - name: '[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12'
+    - shell: powershell
+    - unless:
+    - timeout: 300
+
 install_powershell:
   cmd.run:
-    - name: {{ winget_path }} install Microsoft.PowerShell --source winget --accept-source-agreements --accept-package-agreements --disable-interactivity
+    - name: {{ winget_path }} install Microsoft.PowerShell --source winget --force --accept-source-agreements --accept-package-agreements --disable-interactivity --installer-type wix
     - shell: powershell
-    - runas: {{ winget_user }}
+    - runas: {{ svc_name }}
     - env:
         WINGET_DISABLE_INTERACTIVE: "1"
     - unless: Get-Command pwsh -ErrorAction SilentlyContinue
@@ -145,9 +167,9 @@ install_powershell:
 
 install_git:
   cmd.run:
-    - name: {{ winget_path }} install Git.Git --source winget --accept-source-agreements --accept-package-agreements --disable-interactivity
+    - name: {{ winget_path }} install Git.Git --source winget --force --accept-source-agreements --accept-package-agreements --disable-interactivity
     - shell: powershell
-    - runas: {{ winget_user }}
+    - runas: {{ svc_name }}
     - env:
         WINGET_DISABLE_INTERACTIVE: "1"
     - unless: Get-Command git -ErrorAction SilentlyContinue
@@ -175,9 +197,12 @@ opt_acl_cozyusers:
   cmd.run:
     - name: |
         icacls "C:\opt" /grant "cozyusers:(OI)(CI)F" /t /c
-    - shell: cmd
+    - shell: powershell
+    - bg: True
     - require:
       - file: opt_directory
+    - unless:
+      - powershell -NoProfile -Command "icacls 'C:\opt\cozy' /t /c | Select-String -Quiet -Pattern 'cozyusers.*(\((I|O)\))' | Get-Member"
 
 # ============================================================================
 # Update Paths

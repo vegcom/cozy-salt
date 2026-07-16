@@ -5,17 +5,19 @@ include:
   - windows.bootstrap
   - windows.scripts
   - windows.salt_minion
-  - windows.users
   - windows.service-account
+  - windows.users
   - windows.paths
-  - windows.install
   - windows.config
+  - windows.install
   - windows.profiles
+  - windows.tasks
+  - windows.sshd
   - windows.nvm
   - windows.rust
   - windows.miniforge
   - windows.windhawk
-  - windows.tasks
   - windows.wsl-integration
   - windows.wt
   - windows.vibeshine
+  - windows.tailscale

@@ -12,6 +12,7 @@
 Description=Automount trigger for {{ username }}'s {{ share_name }} share
 Documentation=man:systemd.automount(5)
 After=network-online.target
+Wants=network-online.target
 
 [Automount]
 Where=/home/{{ username }}/{{ mountpoint }}

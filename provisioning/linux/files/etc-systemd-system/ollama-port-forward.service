@@ -1,8 +1,10 @@
+# Managed by Salt - DO NOT EDIT MANUALLY
+
 [Unit]
 Description=Kubectl Port Forward Ollama
 
 [Service]
-ExecStart=/usr/bin/kubectl port-forward --context lab -n inference statefulsets/ollama 11434:11434
+ExecStart=/usr/bin/env kubectl port-forward --context lab -n inference statefulsets/ollama 11434:11434
 Restart=always
 RestartSec=5
 KillMode=process

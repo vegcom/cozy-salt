@@ -14,6 +14,8 @@ include:
   - linux.config-bluetooth    # Bluetooth service and configuration
   - linux.wsl-config      # WSL-specific config (must run before linux.config)
   - linux.config          # Includes service management (merged from services.sls)
+  - linux.udev
+  - linux.journald
   - linux.pam
   - linux.resolve
   - linux.sshd
@@ -25,3 +27,6 @@ include:
   - linux.miniforge
   - linux.homebrew
   - linux.cozy-presence
+  - linux.tailscale
+  - linux.avahi_service
+  - linux.distcc

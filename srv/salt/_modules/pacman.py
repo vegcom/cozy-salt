@@ -58,15 +58,65 @@ def _clean_env(runas=None):
     home = "/root"
 
   return {
+    # identity
     "HOME": home,
-    "USER": runas or "root",
-    "LOGNAME": runas or "root",
-    "LANG": "C.UTF-8",
-    "LC_ALL": "C.UTF-8",
+    "USER": runas,
+    "LOGNAME": runas,
+    "SHELL": "/bin/bash",
+    # locale
+    "LANG": "en_US.UTF-8",
+    "LC_ALL": "en_US.UTF-8",
+    # path — system only
     "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+    # xdg
     "XDG_CACHE_HOME": f"{home}/.cache",
     "XDG_CONFIG_HOME": f"{home}/.config",
     "XDG_DATA_HOME": f"{home}/.local/share",
+    "GNUPGHOME": f"{home}/.gnupg",
+    # python — prevent conda/venv bleed
+    "PYTHON": "/usr/bin/python",
+    "PYTHONHOME": "",
+    "PYTHONPATH": "",
+    "CONDA_PREFIX": "",
+    "CONDA_DEFAULT_ENV": "",
+    "CONDA_EXE": "",
+    # node
+    "NVM_DIR": "",
+    "NODE_PATH": "",
+    "npm_config_prefix": "",
+    # rust — prevent /opt/rust fallback
+    "CARGO_HOME": "",
+    "RUSTUP_HOME": "",
+    # go
+    "GOPATH": "",
+    "GOROOT": "",
+    # ruby
+    "GEM_HOME": "",
+    "GEM_PATH": "",
+    # perl
+    "PERL5LIB": "",
+    "PERL_LOCAL_LIB_ROOT": "",
+    "PERL_MB_OPT": "",
+    "PERL_MM_OPT": "",
+    # java
+    "JAVA_HOME": "",
+    # qt
+    "QT_PLUGIN_PATH": "",
+    "QT_QPA_PLATFORMTHEME": "",
+    "QT_STYLE_OVERRIDE": "",
+    # compiler overrides — let makepkg use its own defaults
+    "CC": "",
+    "CXX": "",
+    "LD": "",
+    "AR": "",
+    "NM": "",
+    "STRIP": "",
+    "OBJCOPY": "",
+    "OBJDUMP": "",
+    "CFLAGS": "",
+    "CXXFLAGS": "",
+    "LDFLAGS": "",
+    "CPPFLAGS": "",
   }
 
 
@@ -82,10 +132,7 @@ def _run_pacman(cmd, runas=None, **kwargs):
   Returns:
       dict: Command result with stdout, stderr, retcode
   """
-  run_kwargs = {
-    "python_shell": True,
-    "env": _clean_env(runas),
-  }
+  run_kwargs = {"python_shell": True, "env": _clean_env(runas)}
   if runas:
     run_kwargs["runas"] = runas
 

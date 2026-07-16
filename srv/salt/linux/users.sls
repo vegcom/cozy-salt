@@ -3,17 +3,17 @@
 # Requires: linux.groups (groups + skel), linux.install (shell_packages)
 
 {%- from "_macros/dotfiles.sls" import user_dotfile %}
-{% set users = salt['pillar.get']('users', {}) %}
-{% set is_container = salt['file.file_exists']('/.dockerenv') or
+{%- set users = salt['pillar.get']('users', {}) %}
+{%- set is_container = salt['file.file_exists']('/.dockerenv') or
                       salt['file.file_exists']('/run/.containerenv') %}
 
 include:
   - linux.groups
 
 # Iterate over users from pillar and create each one
-{% for username, userdata in users.items() %}
-{% set user_groups = userdata.get('linux_groups', ['cozyusers']) %}
-{% set user_shell = userdata.get('shell', '/bin/bash') %}
+{%- for username, userdata in users.items() %}
+{%- set user_groups = userdata.get('linux_groups', ['cozyusers']) %}
+{%- set user_shell = userdata.get('shell', '/bin/bash') %}
 
 # Create {{ username }} user
 {{ username }}_user:
@@ -24,29 +24,33 @@ include:
     - shell: {{ user_shell }}
     - groups: {{ user_groups | tojson }}
     - remove_groups: False
-    {% if userdata.get('uid') %}- uid: {{ userdata.uid }}
-    - allow_uid_change: True{% endif %}
-    {% if userdata.get('gid') %}- gid: {{ userdata.gid }}
-    - allow_gid_change: True{% endif %}
+    {%- if userdata.get('uid') %}
+    - uid: {{ userdata.uid }}
+    - allow_uid_change: True
+    {%- endif %}
+    {%- if userdata.get('gid') %}
+    - gid: {{ userdata.gid }}
+    - allow_gid_change: True
+    {%- endif %}
     - order: 10
     - require:
       - file: skel_files
-{% for group in user_groups %}
+{%- for group in user_groups %}
       - group: {{ group }}_group
-{% endfor %}
-{% if userdata.get('gid') %}
+{%- endfor %}
+{%- if userdata.get('gid') %}
       - group: {{ username }}_primary_group
-{% endif %}
+{%- endif %}
 
-{% if not is_container %}
+{%- if not is_container %}
 loginctl_linger_{{ username }}:
   cmd.run:
     - name: loginctl enable-linger {{ username }}
     - unless: loginctl show-user {{ username }} | grep 'Linger=yes'
-{% endif %}
+{%- endif %}
 
 # Create {{ username }} home directory
-{% set user_home = userdata.get('home_prefix', '/home') ~ '/' ~ username %}
+{%- set user_home = userdata.get('home_prefix', '/home') ~ '/' ~ username %}
 {{ username }}_home_directory:
   file.directory:
     - name: {{ user_home }}
@@ -67,6 +71,7 @@ loginctl_linger_{{ username }}:
 {{ user_dotfile(username, user_home, '.bashrc', 'salt://linux/files/etc-skel/.bashrc') }}
 {{ user_dotfile(username, user_home, '.zshrc', 'salt://linux/files/etc-skel/.zshrc') }}
 {{ user_dotfile(username, user_home, '.profile', 'salt://linux/files/etc-skel/.profile') }}
+{{ user_dotfile(username, user_home, '.config/starship.toml', 'https://raw.githubusercontent.com/vegcom/Starship-Twilite/main/starship.toml', skip_verify=true) }}
 
 # Create {{ username }} scratch mount
 scratch_mount_{{ username }}:
@@ -96,25 +101,25 @@ scratch_mount_{{ username }}:
     - group: {{ username }}
     - mode: "0700"
     - makedirs: True
-{% if not salt['file.file_exists'](user_home) %}
+{%- if not salt['file.file_exists'](user_home) %}
     - require:
       - file: {{ username }}_home_directory
-{% endif %}
+{%- endif %}
 
-{% if not is_container %}
+{%- if not is_container %}
 scratch_automount_enable_{{ username }}:
   service.enabled:
     - name: home-{{ username }}-scratch.automount
     - require:
       - file: {{ username }}_scratch_directory
-{% endif %}
+{%- endif %}
 
 # SMB mounts for {{ username }} (from pillar smb:{share_name})
 # Uses systemd .mount/.automount units for lazy mounting + network resilience
-{% set smb_shares = salt['pillar.get']('smb', {}) %}
-{% if userdata.get('uid') and smb_shares %}
-{% set creds_path = '/etc/samba/creds' %}
-{% set creds_file = creds_path ~ '/' ~ username %}
+{%- set smb_shares = salt['pillar.get']('smb', {}) %}
+{%- if userdata.get('uid') and smb_shares %}
+{%- set creds_path = '/etc/samba/creds' %}
+{%- set creds_file = creds_path ~ '/' ~ username %}
 
 {{ username }}_smb_creds_dir:
   file.directory:
@@ -122,25 +127,27 @@ scratch_automount_enable_{{ username }}:
     - mode: "0700"
     - makedirs: True
 
-{% if userdata.get('smb_password') %}
+{%- if userdata.get('smb_password') %}
 {{ username }}_smb_creds_file:
   file.managed:
     - name: {{ creds_file }}
     - contents: |
         username={{ userdata.get('smb_username', username) }}
         password={{ userdata.smb_password }}
-        {% if userdata.get('smb_domain') %}domain={{ userdata.smb_domain }}{% endif %}
+        {%- if userdata.get('smb_domain') %}
+        domain={{ userdata.smb_domain }}
+        {%- endif %}
     - mode: "0600"
     - user: root
     - group: root
     - require:
       - file: {{ username }}_smb_creds_dir
-{% endif %}
+{%- endif %}
 
-{% for share_name, share_config in smb_shares.items() %}
-{% set mountpoint = share_config.get('mountpoint', share_name) %}
-{% set mount_path = user_home ~ '/' ~ mountpoint %}
-{% set unit_name = 'home-' ~ username ~ '-' ~ mountpoint %}
+{%- for share_name, share_config in smb_shares.items() %}
+{%- set mountpoint = share_config.get('mountpoint', share_name) %}
+{%- set mount_path = user_home ~ '/' ~ mountpoint %}
+{%- set unit_name = 'home-' ~ username ~ '-' ~ mountpoint %}
 
 {{ username }}_smb_{{ share_name }}_dir:
   file.directory:
@@ -149,10 +156,10 @@ scratch_automount_enable_{{ username }}:
     - group: {{ username }}
     - mode: "0755"
     - makedirs: True
-{% if not salt['file.file_exists'](user_home) %}
+{%- if not salt['file.file_exists'](user_home) %}
     - require:
       - file: {{ username }}_home_directory
-{% endif %}
+{%- endif %}
 
 # Systemd mount unit for {{ share_name }}
 {{ username }}_smb_{{ share_name }}_mount_unit:
@@ -193,9 +200,9 @@ scratch_automount_enable_{{ username }}:
     - name: {{ unit_name }}.automount
     - require:
       - file: {{ username }}_smb_{{ share_name }}_automount_unit
-{% if userdata.get('smb_password') %}
+{%- if userdata.get('smb_password') %}
       - file: {{ username }}_smb_creds_file
-{% endif %}
-{% endfor %}
-{% endif %}
-{% endfor %}
+{%- endif %}
+{%- endfor %}
+{%- endif %}
+{%- endfor %}

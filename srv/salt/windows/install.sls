@@ -1,31 +1,39 @@
-# Windows package installation
-# Packages defined in provisioning/packages.sls
-{%- import_yaml 'packages.sls' as packages %}
-# Only install for users with real profiles (ProfileList registry check)
-{%- from '_macros/windows.sls' import get_winget_user, get_winget_path, get_users_with_profiles with context %}
-{%- set users_with_profiles = get_users_with_profiles().split(',') | reject('equalto', '') | list %}
-{#- Find user with winget installed via macro #}
-{%- set winget_user = get_winget_user() %}
-{%- set winget_path = get_winget_path(winget_user) %}
-{#- pwsh - from pillar #}
-{%- set _pwsh_ver = salt['pillar.get']('_pinned_pwsh', salt['github_release.latest']('PowerShell/PowerShell', fallback='7.5.4')) %}
-{%- set pwsh_url = 'https://github.com/PowerShell/PowerShell/releases/download/v' ~ _pwsh_ver ~ '/PowerShell-' ~ _pwsh_ver ~ '.msixbundle' %}
+{%- from '_macros/windows.sls' import get_users_with_profiles, get_winget_system_path, get_user_winget_info, winget_batch_install with context %}
+{%- from '_macros/packages.sls' import get_packages %}
+{%- set packages = get_packages() | load_json %}
 {%- set service_user = salt['pillar.get']('service_user', {}) %}
 {%- set svc_name = service_user.get('name', 'cozy-salt-svc') %}
+# TODO: move to grains to reduce render time
+{%- set users_with_profiles = get_users_with_profiles().split(',') | reject('equalto', '') | list %}
+{%- set winget_path = get_winget_system_path() | trim %}
+{%- set user_info = {} %}
+{%- for user in users_with_profiles %}
+  {%- set info = get_user_winget_info(user) | load_json %}
+  {%- if info %}
+    {%- do user_info.update({user: info}) %}
+  {%- endif %}
+{%- endfor %}
 
+# ============================================================================
 # PowerShell Modules (from powershell_gallery) - requires pwsh installed
+# ============================================================================
+
 {%- set all_pwsh_modules = packages.windows.get('pwsh_modules', []) %}
 {%- if all_pwsh_modules %}
   {%- for module in all_pwsh_modules %}
 pwsh_module_{{ module | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
-    - shell: pwsh
-    - name: >
-        Remove-Module PackageManagement,PowerShellGet -Force -ErrorAction SilentlyContinue;
-        Install-Module -Name {{ module }} -Scope AllUsers -AllowClobber -SkipPublisherCheck -Force -Repository PSGallery
-    - onlyif: Get-Command pwsh -ErrorAction SilentlyContinue
+    - shell: powershell
+    {#- FIXME: edge cases may require `Remove-Module PackageManagement,PowerShellGet -Force -ErrorAction SilentlyContinue|Out-Null` #}
+    - name: Install-Module -Name {{ module }} -Scope AllUsers -AllowClobber -SkipPublisherCheck -Force -Repository PSGallery 2>$null
+    - onlyif: Get-Command pwsh -ErrorAction SilentlyContinue 2>$null|Out-Null
+    - unless: Get-Module -ErrorAction SilentlyContinue -All|Select-Object 'Name'|Select-String {{ module }} 2>$null|Out-Null | Out-String
   {%- endfor %}
 {%- endif %}
+
+# ============================================================================
+# CHOCO INSTALLATIONS
+# ============================================================================
 
 chocolatey-install:
   chocolatey.bootstrapped
@@ -43,6 +51,8 @@ choco_feature_{{ feature }}_enabled:
       - 2
     - require:
       - chocolatey: chocolatey-install
+    - onchanges:
+      - chocolatey: chocolatey-install
   {%- endfor %}
 {%- endif %}
 
@@ -54,73 +64,76 @@ choco_{{ pkg | replace('.', '_') | replace('-', '_') }}:
     - name: {{ pkg }}
     - require:
       - chocolatey: chocolatey-install
+    - unless:
+      - powershell -C "choco list|select-string {{ pkg }}"
   {%- endfor %}
 {%- endif %}
 
-# Install Winget runtime packages, machine scope (run as user with winget)
+# ============================================================================
+# WINGET INSTALLATIONS - BATCHED BY
+# ============================================================================
+
+{#- TODO: Solve similar to linux, deploy paths in full; fix/correct naming scheme  #}
+{%- if packages.windows.winget.userland is defined %}
+  {%- for user in users_with_profiles %}
+    {%- set UserName = user_info.get(user, {}).get("UserName", false) %}
+    {%- set winget_settings = user_info.get(user, {}).get("winget_settings", false) %}
+    {%- if winget_settings and UserName %}
+winget_config_{{ user }}:
+  file.managed:
+    - name: {{ winget_settings }}
+    - source: salt://windows/files/LOCALAPPDATA-Packages-Microsoft.DesktopAppInstaller_8wekyb3d8bbwe-LocalState/settings.json
+    - user: {{ UserName }}
+    - makedirs: True
+    {%- endif %}
+  {%- endfor %}
+{%- endif %}
+
+# Winget bootstrap/repair
+winget_bootstrap:
+  cmd.run:
+    - name: Repair-WinGetPackageManager -AllUsers -IncludePrerelease -Force -Verbose
+    - shell: powershell
+    - onlyif: winget settings export --disable-interactivity | Out-Null
+
+# Winget features
+winget_features_enable:
+  cmd.run:
+    - shell: powershell
+    - name: winget configure --enable
+
+# Install Winget runtime packages, machine scope (batched by sub-category)
 {%- if packages.windows.winget.runtimes is defined %}
   {%- for category, pkgs in packages.windows.winget.runtimes.items() %}
-    {%- for pkg in pkgs %}
-winget_runtime_{{ pkg | replace('.', '_') | replace('-', '_') }}:
-  cmd.run:
-    - runas: {{ winget_user }}
-    - shell: powershell
-    - name: '{{ winget_path }} install --scope machine --accept-source-agreements --accept-package-agreements --disable-interactivity --exact --id {{ pkg }}'
-    - unless: '{{ winget_path }} list --exact --id {{ pkg }} | Select-String -Quiet -Pattern ''{{ pkg }}'''
-    - onlyif: Test-Path '{{ winget_path }}'
-    - timeout: 300
-    {%- endfor %}
+{{ winget_batch_install('winget_batch_runtimes_' ~ category, pkgs, winget_path=winget_path, scope='machine') }}
   {%- endfor %}
 {%- endif %}
 
-# Install Winget packages by category, machine scope (run as user with winget)
-# noscope list = packages that choke on --scope machine flag (360 noscope lol)
+# Install Winget system packages, machine scope (batched by category)
 {%- set noscope_pkgs = packages.windows.winget.get('noscope', []) %}
 {%- if packages.windows.winget.system is defined %}
   {%- for category, pkgs in packages.windows.winget.system.items() %}
-    {%- for pkg in pkgs %}
-winget_{{ pkg | replace('.', '_') | replace('-', '_') }}:
-  cmd.run:
-      {%- if pkg in noscope_pkgs %}
-    - name: '{{ winget_path }} install --accept-source-agreements --accept-package-agreements --disable-interactivity --exact --id {{ pkg }}'
-      {%- else %}
-    - name: '{{ winget_path }} install --scope machine --accept-source-agreements --accept-package-agreements --disable-interactivity --exact --id {{ pkg }}'
-      {%- endif %}
-    - runas: {{ winget_user }}
-    - shell: powershell
-    - unless: '{{ winget_path }} list --exact --id {{ pkg }} | Select-String -Quiet -Pattern ''{{ pkg }}'''
-    - onlyif: Test-Path '{{ winget_path }}'
-    - timeout: 300
-    {%- endfor %}
+    {%- set filtered_pkgs = pkgs | reject('in', noscope_pkgs) | list %}
+    {%- if filtered_pkgs %}
+{{ winget_batch_install('winget_batch_system_' ~ category, filtered_pkgs, winget_path=winget_path, scope='machine', bg=true) }}
+    {%- endif %}
+    {%- set noscope_category_pkgs = pkgs | select('in', noscope_pkgs) | list %}
+    {%- if noscope_category_pkgs %}
+{{ winget_batch_install('winget_batch_system_' ~ category ~ '_noscope', noscope_category_pkgs, winget_path=winget_path, bg=true, scope=false) }}
+    {%- endif %}
   {%- endfor %}
-# machine scope upgrade
-winget_upgrade_machine:
-  cmd.run:
-    - name: '{{ winget_path }} upgrade --all --accept-source-agreements --accept-package-agreements --disable-interactivity'
-    - runas: {{ winget_user }}
-    - onlyif: Test-Path '{{ winget_path }}'
 {%- endif %}
 
-# Installs userland packages, user scope (each user's own winget)
-{%- for user in users_with_profiles %}
-{%- set user_winget = 'C:\\Users\\' ~ user ~ '\\AppData\\Local\\Microsoft\\WindowsApps\\winget.exe' %}
-  {%- for category, pkgs in packages.windows.winget.userland.items() %}
-    {%- for pkg in pkgs %}
-winget_userland_{{ user | replace('.', '_') | replace('-', '_') }}_{{ pkg | replace('.', '_') | replace('-', '_') }}:
-  cmd.run:
-    - name: '{{ user_winget }} install --accept-source-agreements --accept-package-agreements --disable-interactivity --exact --id {{ pkg }}'
-    - runas: {{ user }}
-    - shell: powershell
-    - unless: '{{ user_winget }} list --exact --id {{ pkg }} | Select-String -Quiet -Pattern ''{{ pkg }}'''
-    - onlyif: '& ''{{ user_winget }}'' --version 2>&1 | Select-String -Quiet "v\d"'
-    - timeout: 300
-    {%- endfor %}
+# Install Winget userland packages (per user, batched by category)
+# {{ packages.windows.winget.userland }}
+{%- if packages.windows.winget.userland is defined %}
+  {%- for user in users_with_profiles %}
+    {%- set UserName = user_info.get(user, {}).get("UserName", false) %}
+    {%- set winget_uri = user_info.get(user, {}).get("winget_uri", false) %}
+    {%- if winget_uri and UserName and salt['file.file_exists'](winget_uri) %}
+      {%- for category, pkgs in packages.windows.winget.userland.items() %}
+{{ winget_batch_install('winget_batch_userland_' ~ UserName ~ '_' ~ category, pkgs, winget_user=UserName, winget_path=winget_uri, bg=true, scope='user') }}
+      {%- endfor %}
+    {%- endif %}
   {%- endfor %}
-
-# Per user winget upgrades, use cmd to upgrade pwsh
-winget_upgrade_{{ user }}:
-  cmd.run:
-    - name: '{{ user_winget }} upgrade --all --accept-source-agreements --accept-package-agreements --disable-interactivity'
-    - runas: {{ user }}
-    - onlyif: '& ''{{ user_winget }}'' --version 2>&1 | Select-String -Quiet "v\d"'
-{%- endfor %}
+{%- endif %}

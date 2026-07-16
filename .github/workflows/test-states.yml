@@ -2,12 +2,11 @@ name: Test Salt States
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
 
 jobs:
-
   test-states:
     name: Test Salt States
     runs-on: ubuntu-latest
@@ -18,7 +17,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: '3.12'
 
       - name: Install dependencies
         run: pip install pytest
@@ -30,15 +29,14 @@ jobs:
         run: |
           cp srv/pillar/common/users.sls.example srv/pillar/common/users.sls
           cp srv/pillar/common/network.sls.example srv/pillar/common/network.sls
-          cp srv/pillar/secrets/init.sls.example srv/pillar/secrets/init.sls
+          cp srv/pillar/secrets/README.md srv/pillar/secrets/init.sls
 
-      - name: Generate master keys (gitignored, required for bind mount)
+      - name: Remove master key bind mounts for CI
         run: |
-          mkdir -p srv/salt/keys/master
-          openssl genrsa -out srv/salt/keys/master/master.pem 4096 2>/dev/null
-          openssl rsa -in srv/salt/keys/master/master.pem -pubout -out srv/salt/keys/master/master.pub 2>/dev/null
-          chmod 644 srv/salt/keys/master/master.pem
-          chmod 644 srv/salt/keys/master/master.pub
+          # Entrypoint generates fresh keys when none exist — no bind mount needed in CI
+          # Bind-mounted files can't be unlinked (EBUSY) even rw, which breaks salt key init
+          sed -i '/master\.pem.*salt\/pki\/master\/master\.pem/d' docker-compose.yaml
+          sed -i '/master\.pub.*salt\/pki\/master\/master\.pub/d' docker-compose.yaml
 
       - name: Test Salt states (ubuntu + rhel)
         run: pytest tests/ -m "ubuntu or rhel"
@@ -64,7 +62,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: '3.12'
 
       - name: Download test results
         id: download

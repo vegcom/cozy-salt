@@ -1,3 +1,4 @@
+---
 # For McVlan network isolation
 # docker compose -f docker-compose.yaml  -f docker-compose-net.yml  config
 
@@ -13,35 +14,25 @@ x-minion-base: &minion-base
   depends_on:
     salt:
       condition: service_healthy
-
 x-minion-healthcheck: &minion-healthcheck
-  test: ["CMD-SHELL", "test -f /var/log/salt/minion && tail -1 /var/log/salt/minion | grep -q . || exit 1"]
+  test: [ "CMD-SHELL", "test -f /var/log/salt/minion && tail -1 /var/log/salt/minion | grep -q . || exit 1" ]
   interval: 30s
   timeout: 10s
   retries: 3
   start_period: 90s
-
 services:
   salt:
+    container_name: salt
     build:
       context: .
       dockerfile: Dockerfile
       target: salt-master
-    container_name: salt
-    hostname: salt
-    dns:
-      - 1.1.1.1
-      - 1.0.0.1
-    dns_search:
-      - local
-      - localdomain
-    networks:
-      - salt-net
     restart: unless-stopped
     expose:
-      - "4505"  # Master pub (ZeroMQ)
-      - "4506"  # Minion ret (ZeroMQ)
-      - "5353"  # Avahi (MDNS)
+      - "4505" # Master pub (ZeroMQ)
+      - "4506" # Minion ret (ZeroMQ)
+      - "5353" # Avahi (MDNS)
+      - "3333" # SaltGUI (API interface)
     volumes:
       # Local service discovery
       - /var/run/dbus:/var/run/dbus
@@ -61,45 +52,95 @@ services:
       - ./srv/master.d:/etc/salt/master.d
       # Persistent job return data (sqlite3 returner)
       - ./srv/data:/srv/data
+      # Avahi
+      - ./srv/avahi:/etc/avahi/services
     environment:
-      - SALT_API_ENABLED=True
-      - SALT_API_USER_PASS=${SALT_API_USER_PASS:-4wesome-Pass0rd}
+      SALT_API_ENABLED: "True"
+      SALT_API_USER_PASS: ${SALT_API_USER_PASS:-4wesome-Pass0rd}
+      _GUI_VERSION: 1.33.0
+    networks:
+      - salt-net
+    labels:
+      cozy.service: salt
+      cozy.role: salt-master
     healthcheck:
-      test: ["CMD", "nc", "-z", "127.0.0.1", "4505"]
+      test: [ "CMD", "nc", "-z", "127.0.0.1", "4505" ]
       interval: 30s
       timeout: 5s
       retries: 3
       start_period: 10s
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+    dns_search:
+      - local
+      - localdomain
+    hostname: salt
+
+  mongo:
+    container_name: mongo
+    image: mongo:7
+    restart: unless-stopped
+    depends_on:
+      salt:
+        condition: service_healthy
+    expose:
+      - "27017"
+    volumes:
+      - ./srv/data:/srv/data:ro
+      - mongo-data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: salt
+      MONGO_INITDB_ROOT_PASSWORD_FILE: /srv/data/mongo/password
+    networks:
+      - salt-net
+    labels:
+      cozy.service: mongo
+      cozy.role: salt-mongo
+      cozy.project: cozy-salt
+    hostname: mongo
 
   # Ubuntu test minion - auto-applies highstate on startup
   salt-minion-ubuntu:
-    <<: *minion-base
+    container_name: salt-minion-ubuntu-test
     build:
       context: .
       dockerfile: Dockerfile
       target: salt-minion-deb
-    container_name: salt-minion-ubuntu-test
     environment:
-      - SALT_MASTER=salt
-      - MINION_ID=ubuntu-test
+      SALT_MASTER: salt
+      MINION_ID: ubuntu-test
+    labels:
+      cozy.service: salt-minion
+      cozy.dist: ubuntu
+      cozy.env: dev
+      cozy.role: salt-minion
+      cozy.project: cozy-salt
     # Keys are baked into image at build time - no bind mounts needed
     healthcheck: *minion-healthcheck
+    <<: *minion-base
     profiles:
       - test-ubuntu
 
   # RHEL test minion - auto-applies highstate on startup
   salt-minion-rhel:
-    <<: *minion-base
+    container_name: salt-minion-rhel-test
     build:
       context: .
       dockerfile: Dockerfile
       target: salt-minion-rpm
-    container_name: salt-minion-rhel-test
     environment:
-      - SALT_MASTER=salt
-      - MINION_ID=rhel-test
+      SALT_MASTER: salt
+      MINION_ID: rhel-test
+    labels:
+      cozy.service: salt-minion
+      cozy.dist: rhel
+      cozy.env: dev
+      cozy.role: salt-minion
+      cozy.project: cozy-salt
     # Keys are baked into image at build time - no bind mounts needed
     healthcheck: *minion-healthcheck
+    <<: *minion-base
     profiles:
       - test-rhel
 
@@ -108,38 +149,44 @@ services:
   # Auto-enrolls in Salt via Autounattend.xml + FirstLogonCommands
   # Access via web interface at http://localhost:8006 (login: admin/admin123!)
   salt-minion-windows:
-    image: dockurr/windows
     container_name: salt-minion-windows-test
+    image: dockurr/windows
     restart: "no"
-    environment:
-      VERSION: "11"           # Windows 11 Pro
-      RAM_SIZE: "4G"          # 4GB RAM
-      CPU_CORES: "2"          # 2 vCPUs
-      DISK_SIZE: "64G"        # 64GB virtual disk
-      MANUAL: "N"             # Unattended install with Autounattend.xml
-    devices:
-      - /dev/kvm              # Requires KVM support (Linux only)
-      - /dev/net/tun          # Required for networking
-    cap_add:
-      - NET_ADMIN             # Required for network management
-    ports:
-      - 8006:8006             # Web VNC interface
-      - 3389:3389             # RDP (optional, for direct access)
-    volumes:
-      - ./scripts:/mnt/scripts:ro  # Mount scripts for Salt enrollment
-      - ./provisioning/windows/Autounattend.xml:/Autounattend.xml:ro  # Unattended install config
-    networks:
-      - salt-net
     depends_on:
       salt:
         condition: service_healthy
+    ports:
+      - 8006:8006 # Web VNC interface
+      - 3389:3389 # RDP (optional, for direct access)
+    volumes:
+      - ./scripts:/mnt/scripts:ro # Mount scripts for Salt enrollment
+      - ./provisioning/windows/Autounattend.xml:/Autounattend.xml:ro # Unattended install config
+    environment:
+      VERSION: "11" # Windows 11 Pro
+      RAM_SIZE: "4G" # 4GB RAM
+      CPU_CORES: "2" # 2 vCPUs
+      DISK_SIZE: "64G" # 64GB virtual disk
+      MANUAL: "N" # Unattended install with Autounattend.xml
+    networks:
+      - salt-net
+    labels:
+      cozy.service: salt-minion
+      cozy.dist: nt
+      cozy.env: dev
+      cozy.role: salt-minion
+      cozy.project: cozy-salt
+    cap_add:
+      - NET_ADMIN # Required for network management
+    devices:
+      - /dev/kvm # Requires KVM support (Linux only)
+      - /dev/net/tun # Required for networking
     profiles:
       - test-windows
-
 volumes:
   salt-cache:
   salt-logs:
   salt-pki:
+  mongo-data:
 
 networks:
   salt-net:

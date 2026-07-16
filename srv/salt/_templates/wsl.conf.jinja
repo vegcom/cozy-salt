@@ -10,6 +10,7 @@ systemd=true
 hostname = {{ host_name }}
 generateHosts = false
 generateResolvConf = false
+networkingMode = NAT
 
 [interop]
 enabled = true
@@ -21,3 +22,6 @@ mountFsTab = true
 
 [user]
 default = wsl
+
+[gpu]
+enabled = true

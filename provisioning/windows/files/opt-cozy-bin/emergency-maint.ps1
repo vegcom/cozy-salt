@@ -22,7 +22,7 @@ if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
 # Logging Setup
 # -------------------------------
 $timestamp = Get-Date -Format 'yyyyMMdd-HHmmss'
-$logDir    = "C:\Logs"
+$logDir    = "C:\opt\cozy\logs"
 $logPath   = "$logDir\HealthRepair-$timestamp.log"
 
 if (-not (Test-Path $logDir)) {
@@ -85,8 +85,8 @@ Measure-Step -Name "Reset Windows Update Stack" -Action {
     Stop-Service -Name bits -Force
     Stop-Service -Name cryptsvc -Force
 
-    Rename-Item -Path "C:\Windows\SoftwareDistribution" -NewName "SoftwareDistribution.old" -Force
-    Rename-Item -Path "C:\Windows\System32\catroot2" -NewName "catroot2.old" -Force
+    Rename-Item -Path "C:\Windows\SoftwareDistribution" -NewName "SoftwareDistribution.old" -Force > nul 2>&1 | Out-Null
+    Rename-Item -Path "C:\Windows\System32\catroot2" -NewName "catroot2.old" -Force > nul 2>&1 | Out-Null
 
     Start-Service -Name wuauserv
     Start-Service -Name bits
@@ -94,15 +94,19 @@ Measure-Step -Name "Reset Windows Update Stack" -Action {
 }
 
 Measure-Step -Name "DISM Component Cleanup" -Action {
-    Dism /Online /Cleanup-Image /StartComponentCleanup /ResetBase
+    Dism /Online /Cleanup-Image /StartComponentCleanup /ResetBase /LogLevel:4 /LogPath=c:\opt\cozy\logs\dism_clean-$timestamp.log
 }
 
 Measure-Step -Name "DISM RestoreHealth" -Action {
-    Dism /Online /Cleanup-Image /RestoreHealth
+    Dism /Online /Cleanup-Image /RestoreHealth /LogLevel:4 /LogPath=c:\opt\cozy\logs\dism_restore-$timestamp.log
 }
 
 Measure-Step -Name "SFC Scan" -Action {
-    sfc /scannow
+    sfc /ScanNow
+}
+
+Measure-Step -Name "Winget Repair" -Action {
+    Repair-WinGetPackageManager -AllUsers -IncludePrerelease -Force -Verbose
 }
 
 # -------------------------------

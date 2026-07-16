@@ -1,0 +1,10 @@
+# sshd_config — managed by Salt (cozy-salt)
+# Minimal base; hardening settings in sshd_config.d/99-hardening.conf
+
+Include sshd_config.d/*.conf
+
+PubkeyAuthentication yes
+AuthorizedKeysFile .ssh/authorized_keys
+
+Match Group administrators
+    AuthorizedKeysFile __PROGRAMDATA__/ssh/administrators_authorized_keys

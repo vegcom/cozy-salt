@@ -45,7 +45,7 @@
   </Settings>
   <Actions Context="Author">
     <Exec>
-      <Command>%LOCALAPPDATA%\Microsoft\WinGet\Links\kubectl.exe</Command>
+      <Command>kubectl</Command>
       <Arguments>port-forward --context lab -n core deployment.apps/registry</Arguments>
     </Exec>
   </Actions>

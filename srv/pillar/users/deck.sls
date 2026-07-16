@@ -1,11 +1,12 @@
 #!jinja|yaml
 # Deck user configuration
 {% set docker_enabled = salt['pillar.get']('docker_enabled', False) %}
+{% set libvirt_enabled = salt['pillar.get']('libvirt_enabled', False) %}
 
 users:
   deck:
     fullname: SteamDeck - A cozy little crashcart
-    shell: /bin/bash
+    shell: /bin/zsh
     home_prefix: /home
     uid: 4001
     gid: 4001

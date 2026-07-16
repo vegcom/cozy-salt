@@ -2,15 +2,12 @@
 # /etc/profile
 # Managed by Salt - DO NOT EDIT MANUALLY
 
-
-if [ -n "${__ETC_PROFILE_SOURCED}" ]; then
-  return 0
-fi
+export BASH_ENV="/etc/bash.bashenv"
 
 # shellcheck disable=SC1009
 if [ -d /etc/profile.d ]; then
   # shellcheck  disable=SC1072 disable=SC1073
-  for i in $(find /etc/profile.d/*.sh|sort) ; do
+  for i in $(find /etc/profile.d/*.sh 2>/dev/null|sort) ; do
     if [ -r "$i" ]; then
       # shellcheck disable=SC1090
       . "$i"
@@ -18,6 +15,3 @@ if [ -d /etc/profile.d ]; then
   done
   unset i
 fi
-
-__ETC_PROFILE_SOURCED=1
-export __ETC_PROFILE_SOURCED

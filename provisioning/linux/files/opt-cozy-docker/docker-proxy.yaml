@@ -14,7 +14,6 @@ services:
       - "5000:5000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-
   socat:
     image: alpine/socat:latest
     container_name: socat
@@ -30,7 +29,6 @@ services:
       - "traefik.tcp.routers.docker.entrypoints=docker"
       - "traefik.tcp.routers.docker.tls=false"
       - "traefik.tcp.services.docker.loadbalancer.server.port=2375"
-
   registry:
     image: registry:latest
     container_name: registry
@@ -42,6 +40,23 @@ services:
       - "traefik.http.routers.registry.entrypoints=web"
       - "traefik.http.routers.registry.rule=PathPrefix(`/`)"
       - "traefik.http.services.registry.loadbalancer.server.port=5000"
-
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    command: --debug
+    environment:
+      WATCHTOWER_CLEANUP: 1
+      WATCHTOWER_INCLUDE_STOPPED: 1
+      WATCHTOWER_LIFECYCLE_HOOKS: 1
+      WATCHTOWER_POLL_INTERVAL: 300
+      WATCHTOWER_REVIVE_STOPPED: 1
+    restart: unless-stopped
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - /var/run/dbus:/var/run/dbus
+    labels:
+      - "cozy.service=registry"
+      - "cozy.role=docker-registry"
+      - "cozy.project=cozy-salt"
 volumes:
   registry:

@@ -3,9 +3,9 @@
 # Runs on all Linux systems with bluetooth support
 # Pillar-gated: linux:bluetooth:enabled
 
-{% set bluetooth_enabled = salt['pillar.get']('linux:bluetooth:enabled', false) %}
+{%- set bluetooth_enabled = salt['pillar.get']('linux:bluetooth:enabled', false) %}
 
-{% if bluetooth_enabled %}
+{%- if bluetooth_enabled %}
 
 # =============================================================================
 # BLUETOOTH SERVICE
@@ -37,11 +37,11 @@ bluetooth_main_config:
     - require:
       - service: bluetooth_service
 
-{% else %}
+{%- else %}
 
 # Bluetooth disabled in pillar
 bluetooth_disabled:
   test.nop:
     - name: Bluetooth disabled (set linux:bluetooth:enabled to enable)
 
-{% endif %}
+{%- endif %}

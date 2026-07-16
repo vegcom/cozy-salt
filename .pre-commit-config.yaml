@@ -8,8 +8,8 @@ repos:
     rev: v0.11.0.1
     hooks:
       - id: shellcheck
-        args: ["--severity=warning"]
-        exclude: \.zshrc$|zshrc$
+        args: ["--severity=warning", "--shell=bash"]
+        exclude: \.zshrc$|zshrc$|zshrc\.machine$
 
   # YAML linting (catches Salt state syntax issues early)
   - repo: https://github.com/adrienverge/yamllint
@@ -41,6 +41,7 @@ repos:
         args: ["--maxkb=500"]
       - id: check-merge-conflict
 
+  # Validate SaltStack states
   - repo: https://github.com/warpnet/salt-lint
     rev: v0.9.2
     hooks:
@@ -48,11 +49,12 @@ repos:
         files: \.(sls)$
 
   # Fix permissions (Salt needs specific file modes)
-  - repo: local
-    hooks:
-      - id: fix-permissions
-        name: Fix file permissions
-        entry: ./scripts/fix-permissions.sh
-        language: script
-        pass_filenames: false
-        always_run: true
+  # FIXME: disabled pending better evaluation of what i broke in repo otherwise regarding perms mgmt.
+  # - repo: local
+  #   hooks:
+  #     - id: fix-permissions
+  #       name: Fix file permissions
+  #       entry: ./scripts/fix-permissions.sh
+  #       language: script
+  #       pass_filenames: false
+  #       always_run: true

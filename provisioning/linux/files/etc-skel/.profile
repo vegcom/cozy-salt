@@ -1,5 +1,5 @@
 #!/bin/bash
-# ~/.profile
+# ~/.profile || /etec/skel/.profile
 # Managed by Salt - DO NOT EDIT MANUALLY
 
 if [ -f /etc/profile ]; then

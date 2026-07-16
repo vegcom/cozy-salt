@@ -1,8 +1,6 @@
 #!/bin/zsh
-# shellcheck disable=SC1071
-
-# /etc/zshrc
 # Managed by Salt - DO NOT EDIT MANUALLY
+# shellcheck disable=SC1071
 
 setopt hist_expire_dups_first
 setopt hist_ignore_dups

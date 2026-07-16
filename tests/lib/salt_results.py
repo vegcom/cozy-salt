@@ -98,17 +98,35 @@ class SaltResultParser:
   @staticmethod
   def extract_json(raw_output: str) -> str:
     """
-    Extract JSON from raw output that may contain non-JSON prefix.
+    Extract highstate JSON from raw output that may contain mixed content.
 
-    Salt output sometimes includes log messages before the JSON.
-    This finds the first '{' and extracts from there.
+    Salt --out=json with 2>&1 can produce multiple JSON objects (e.g. a JID
+    conflict list response before the real highstate dict). Scan all candidates
+    and prefer the last valid object where 'local' is a dict.
     """
-    # Find first JSON object start
-    json_start = raw_output.find("{")
-    if json_start == -1:
-      raise ValueError("No JSON object found in output")
+    candidates = []
+    pos = 0
+    while True:
+      pos = raw_output.find("{", pos)
+      if pos == -1:
+        break
+      try:
+        data = json.loads(raw_output[pos:])
+        if isinstance(data, dict):
+          candidates.append((pos, data))
+      except json.JSONDecodeError:
+        pass
+      pos += 1
 
-    return raw_output[json_start:]
+    # Prefer last candidate where local is a dict (real highstate output)
+    for _, data in reversed(candidates):
+      if isinstance(data.get("local"), dict):
+        return json.dumps(data)
+
+    if candidates:
+      return json.dumps(candidates[-1][1])
+
+    raise ValueError("No JSON object found in output")
 
   @classmethod
   def parse(cls, raw_output: str) -> ParsedResults:

@@ -19,6 +19,7 @@ Usage from states:
 """
 
 import logging
+import os
 
 log = logging.getLogger(__name__)
 
@@ -44,31 +45,76 @@ def _clean_env(runas):
   """
   Build a sanitized environment for package operations.
 
-  Strips user shell pollution (custom PATH, env vars) that can
-  interfere with AUR builds and package compilation.
-
-  Args:
-      runas: Username for home directory paths
-
-  Returns:
-      dict: Clean environment variables
+  Explicitly zeroes tool-specific vars so PKGBUILD scripts can't fall back
+  to paths like /opt/rust. Empty string != unset for many build systems.
   """
+  home = f"/home/{runas}"
   return {
-    "HOME": f"/home/{runas}",
+    # identity
+    "HOME": home,
     "USER": runas,
     "LOGNAME": runas,
-    "LANG": "C.UTF-8",
-    "LC_ALL": "C.UTF-8",
-    "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
-    "XDG_CACHE_HOME": f"/home/{runas}/.cache",
-    "XDG_CONFIG_HOME": f"/home/{runas}/.config",
-    "XDG_DATA_HOME": f"/home/{runas}/.local/share",
-    # Prevent gpg issues in builds
-    "GNUPGHOME": f"/home/{runas}/.gnupg",
+    "SHELL": "/bin/bash",
+    # locale
+    "LANG": "en_US.UTF-8",
+    "LC_ALL": "en_US.UTF-8",
+    # path — system + distcc for distributed builds
+    "PATH": "/usr/lib/distcc/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+    # distcc
+    "DISTCC_HOSTS": os.environ.get("DISTCC_HOSTS", ""),
+    # xdg
+    "XDG_CACHE_HOME": f"{home}/.cache",
+    "XDG_CONFIG_HOME": f"{home}/.config",
+    "XDG_DATA_HOME": f"{home}/.local/share",
+    "GNUPGHOME": f"{home}/.gnupg",
+    # python — prevent conda/venv bleed
+    "PYTHON": "/usr/bin/python",
+    "PYTHONHOME": "",
+    "PYTHONPATH": "",
+    "CONDA_PREFIX": "",
+    "CONDA_DEFAULT_ENV": "",
+    "CONDA_EXE": "",
+    # node
+    "NVM_DIR": "",
+    "NODE_PATH": "",
+    "npm_config_prefix": "",
+    # rust — prevent /opt/rust fallback
+    "CARGO_HOME": "",
+    "RUSTUP_HOME": "",
+    # go
+    "GOPATH": "",
+    "GOROOT": "",
+    # ruby
+    "GEM_HOME": "",
+    "GEM_PATH": "",
+    # perl
+    "PERL5LIB": "",
+    "PERL_LOCAL_LIB_ROOT": "",
+    "PERL_MB_OPT": "",
+    "PERL_MM_OPT": "",
+    # java
+    "JAVA_HOME": "",
+    # qt
+    "QT_PLUGIN_PATH": "",
+    "QT_QPA_PLATFORMTHEME": "",
+    "QT_STYLE_OVERRIDE": "",
+    # compiler overrides — let makepkg use its own defaults
+    "CC": "",
+    "CXX": "",
+    "LD": "",
+    "AR": "",
+    "NM": "",
+    "STRIP": "",
+    "OBJCOPY": "",
+    "OBJDUMP": "",
+    "CFLAGS": "",
+    "CXXFLAGS": "",
+    "LDFLAGS": "",
+    "CPPFLAGS": "",
   }
 
 
-def _run_yay(cmd, runas, **kwargs):
+def _run_yay(cmd, runas, clean_env=True, **kwargs):
   """
   Execute a yay command as the specified user with clean environment.
 
@@ -78,6 +124,7 @@ def _run_yay(cmd, runas, **kwargs):
   Args:
       cmd: The yay command to run
       runas: Username to run as (required)
+      clean_env: Strip parent env entirely (default True)
       **kwargs: Additional args passed to cmd.run_all
 
   Returns:
@@ -95,6 +142,7 @@ def _run_yay(cmd, runas, **kwargs):
     runas=runas,
     python_shell=True,
     env=_clean_env(runas),
+    clean_env=clean_env,
     **kwargs,
   )
 
@@ -120,10 +168,7 @@ def is_installed(name, runas=None):
   user = runas or "nobody"
 
   result = __salt__["cmd.run_all"](
-    f"yay -Q {name}",
-    runas=user,
-    python_shell=True,
-    ignore_retcode=True,
+    f"yay -Q {name}", runas=user, python_shell=True, ignore_retcode=True
   )
 
   return result["retcode"] == 0
@@ -144,11 +189,7 @@ def list_installed(runas=None):
   """
   user = runas or "nobody"
 
-  result = __salt__["cmd.run_all"](
-    "yay -Q",
-    runas=user,
-    python_shell=True,
-  )
+  result = __salt__["cmd.run_all"]("yay -Q", runas=user, python_shell=True)
 
   if result["retcode"] != 0:
     return {}
@@ -252,12 +293,7 @@ def installed(name=None, pkgs=None, runas=None, refresh=False, **kwargs):
           - name: neovim
           - runas: vegcom
   """
-  ret = {
-    "name": name or "yay.installed",
-    "result": True,
-    "changes": {},
-    "comment": "",
-  }
+  ret = {"name": name or "yay.installed", "result": True, "changes": {}, "comment": ""}
 
   # Validate runas
   if not runas:
@@ -442,11 +478,7 @@ def search(query, runas=None):
   """
   user = runas or "nobody"
 
-  result = __salt__["cmd.run_all"](
-    f"yay -Ss {query}",
-    runas=user,
-    python_shell=True,
-  )
+  result = __salt__["cmd.run_all"](f"yay -Ss {query}", runas=user, python_shell=True)
 
   if result["retcode"] != 0:
     return []
@@ -482,11 +514,7 @@ def info(name, runas=None):
   """
   user = runas or "nobody"
 
-  result = __salt__["cmd.run_all"](
-    f"yay -Si {name}",
-    runas=user,
-    python_shell=True,
-  )
+  result = __salt__["cmd.run_all"](f"yay -Si {name}", runas=user, python_shell=True)
 
   if result["retcode"] != 0:
     return {}

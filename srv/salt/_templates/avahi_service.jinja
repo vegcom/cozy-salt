@@ -1,0 +1,12 @@
+<?xml version="1.0" standalone='no'?>
+<!--*-nxml-*-->
+  <service-group>
+  <name replace-wildcards="yes">%h</name>
+  <service>
+    <type>_ssh._tcp</type>
+    <port>22</port>
+{%- if description %}
+    <txt-record>sd={{ description }}</txt-record>
+{%- endif %}
+  </service>
+</service-group>

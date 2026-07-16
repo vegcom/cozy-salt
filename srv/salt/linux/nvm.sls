@@ -5,12 +5,12 @@
 
 {%- from "_macros/acl.sls" import cozy_acl %}
 
-{% set nvm_config = salt['pillar.get']('nvm', {}) %}
-{% set default_version = nvm_config.get('default_version', 'lts/*') %}
-{% set _pinned = salt['pillar.get']('versions:nvm:version', '') %}
-{% set nvm_version = _pinned or salt['github_release.latest']('nvm-sh/nvm') %}
+{%- set nvm_config = salt['pillar.get']('nvm', {}) %}
+{%- set default_version = nvm_config.get('default_version', 'lts/*') %}
+{%- set _pinned = salt['pillar.get']('versions:nvm:version', '') %}
+{%- set nvm_version = _pinned or salt['github_release.latest']('nvm-sh/nvm') %}
 {# Path configuration from pillar with defaults #}
-{% set nvm_path = salt['pillar.get']('install_paths:nvm:linux', '/opt/nvm') %}
+{%- set nvm_path = salt['pillar.get']('install_paths:nvm:linux', '/opt/nvm') %}
 {%- set service_user = salt['pillar.get']('service_user:name', 'cozy-salt-svc') %}
 
 # Create nvm directory first (NVM installer requires it to exist)
@@ -39,19 +39,11 @@ nvm_download_and_install:
       - file: nvm_directory
 
 nvm_directory_perms:
-  file.directory:
-    - name: {{ nvm_path }}
-    - user: {{ service_user }}
-    - group: cozyusers
-    - dir_mode: "0755"
-    - file_mode: "0775"
-    - makedirs: True
-    - recurse:
-      - user
-      - group
-    - include_empty: True
-    - require:
-      - file: nvm_directory
+  cmd.run:
+    - name: chown -R {{ service_user }}:cozyusers {{ nvm_path }}
+    - onlyif: test -d {{ nvm_path }}
+    - unless: "[ \"$(stat -c '%U' {{ nvm_path }})\" = \"{{ service_user }}\" ]"
+    - onchanges:
       - cmd: nvm_download_and_install
 
 # Install default Node.js version system-wide
@@ -67,7 +59,7 @@ nvm_install_default_version:
     - unless: test -d {{ nvm_path }}/versions/node
     - require:
       - cmd: nvm_download_and_install
-      - file: nvm_directory_perms
+      - cmd: nvm_directory_perms
     - env:
       - BASH_ENV: /etc/profile.d/nvm.sh
       - NVM_DIR: {{ nvm_path }}
