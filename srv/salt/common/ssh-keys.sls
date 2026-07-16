@@ -1,21 +1,20 @@
-{%- import '_macros/dotfiles.sls' as dotfiles %}
-
 {%- set users = salt['pillar.get']('users', {}) %}
 {%- set managed_users = salt['pillar.get']('managed_users', [], merge=True) %}
 {%- set is_windows = grains['os'] == 'Windows' %}
+{%- set user_homes = grains.get('user_homes', {}) %}
 
 {%- if not is_windows %}
   {%- set usernames = managed_users %}
 {%- else %}
   {%- from '_macros/windows.sls' import get_users_with_profiles with context %}
-  {%- set usernames = get_users_with_profiles().split(',') %}
+  {%- set usernames = get_users_with_profiles().split(',') | reject('equalto', '') | list %}
 {%- endif %}
 
 {%- for username in usernames %}
-  {%- set userdata = users.get(username, {}) %}
-  # FIXME: Needs to get it per username in pillar not username on disk '{{ username }}' not {{ managed_users }}
+  {%- set base_username = username.split('.')[0] %}
+  {%- set userdata = users.get(base_username, {}) %}
   {%- if userdata.get('ssh_keys') %}
-    {%- set user_home = dotfiles.get_user_home(username) %}
+    {%- set user_home = user_homes.get(username, user_homes.get(base_username, '')) %}
     {%- set ssh_dir = user_home ~ '/.ssh' %}
 
 # Ensure .ssh directory exists

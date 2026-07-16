@@ -13,9 +13,47 @@ log = logging.getLogger(__name__)
 
 __virtualname__ = "github_release"
 
+_token_cache = None
+
 
 def __virtual__():
   return __virtualname__
+
+
+def find_valid_token():
+  """
+  Return the first github token that passes a basic auth check. Result is cached per run.
+
+  Tries github:access_token first, then each entry in github:tokens.
+  Returns empty string if none are valid.
+
+  CLI Example::
+
+      salt '*' github_release.find_valid_token
+  """
+  global _token_cache
+  if _token_cache is not None:
+    return _token_cache
+
+  candidates = []
+  access_token = __salt__["pillar.get"]("github:access_token", "")
+  if access_token:
+    candidates.append(access_token)
+  candidates.extend(__salt__["pillar.get"]("github:tokens", []))
+
+  for candidate in candidates:
+    req = urllib.request.Request("https://api.github.com/user")
+    req.add_header("Authorization", f"Bearer {candidate}")
+    req.add_header("Accept", "application/vnd.github+json")
+    try:
+      with urllib.request.urlopen(req, timeout=5) as resp:
+        if resp.status == 200:
+          _token_cache = candidate
+          return _token_cache
+    except Exception:  # noqa: BLE001
+      continue
+  _token_cache = ""
+  return _token_cache
 
 
 def latest(repo, fallback=None, prerelease=False):
@@ -32,10 +70,7 @@ def latest(repo, fallback=None, prerelease=False):
       salt '*' github_release.latest Nonary/vibeshine
       salt '*' github_release.latest microsoft/winget-cli prerelease=True
   """
-  tokens = __salt__["pillar.get"]("github:tokens", [])
-  token = __salt__["pillar.get"]("github:access_token", "") or (
-    tokens[0] if tokens else ""
-  )
+  token = find_valid_token()
   if prerelease:
     url = f"https://api.github.com/repos/{repo}/releases"
   else:

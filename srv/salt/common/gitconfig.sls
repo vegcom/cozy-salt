@@ -6,24 +6,24 @@
 
 {%- set managed_users = salt['pillar.get']('managed_users', [], merge=True) %}
 {%- set is_windows = grains['os'] == 'Windows' %}
-{# Merge global and user-specific github tokens #}
-{%- set global_tokens = salt['pillar.get']('github:tokens', []) %}
 {%- set users_data = salt['pillar.get']('users', {}) %}
+{%- set user_homes = grains.get('user_homes', {}) %}
 
 # Deploy to each managed user
 {%- if not is_windows %}
   {%- set usernames = managed_users %}
 {%- else %}
   {%- from '_macros/windows.sls' import get_users_with_profiles with context %}
-  {%- set usernames = get_users_with_profiles().split(',') %}
+  {%- set usernames = get_users_with_profiles().split(',') | reject('equalto', '') | list %}
 {%- endif %}
 
 {%- for username in usernames %}
-  {%- set user_home = dotfiles.get_user_home(username) %}
-  {%- if username in user_home %}
-    {# Merge global and user-specific github tokens #}
-    {%- set user_tokens = users_data.get(username, {}).get('github', {}).get('tokens', []) %}
-    {%- set merged_tokens = global_tokens + user_tokens %}
+  {%- set base_username = username.split('.')[0] %}
+  {%- set user_home = user_homes.get(username, user_homes.get(base_username, '')) %}
+  {%- if user_home %}
+    {%- set user_tokens = users_data.get(base_username, {}).get('github', {}).get('tokens', []) %}
+    {%- set valid_token = salt['github_release.find_valid_token']() %}
+    {%- set merged_tokens = ([valid_token] if valid_token else []) + user_tokens %}
 
 deploy_gitconfig_{{ username }}:
   file.managed:
@@ -98,7 +98,7 @@ deploy_gitignore_{{ username }}:
     - makedirs: True
 
 # Deploy .gitconfig.local with user github config if present in pillar
-    {%- set github_config = users_data.get(username, {}).get('github', {}) %}
+    {%- set github_config = users_data.get(base_username, {}).get('github', {}) %}
     {%- set git_email = github_config.get('email', '') %}
     {%- set git_name = github_config.get('name', '') %}
     {%- set git_signing_key = github_config.get('signing_key', '') %}

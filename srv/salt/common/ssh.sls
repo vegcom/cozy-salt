@@ -6,20 +6,20 @@ include:
 {%- from "_macros/git-repo.sls" import git_repo %}
 {%- set users = salt['pillar.get']('users', {}) %}
 {%- set is_windows = grains['os'] == 'Windows' %}
+{%- set user_homes = grains.get('user_homes', {}) %}
 
-{%- import '_macros/dotfiles.sls' as dotfiles %}
 {%- if not is_windows %}
   {%- set usernames = salt['pillar.get']('managed_users', [], merge=True) %}
 {%- else %}
   {%- from '_macros/windows.sls' import get_users_with_profiles with context %}
-  {%- set usernames = get_users_with_profiles().split(',') %}
+  {%- set usernames = get_users_with_profiles().split(',') | reject('equalto', '') | list %}
 {%- endif %}
 
 {%- for username in usernames %}
-  {%- set userdata = users.get(username, {}) %}
-  {%- set user_home = dotfiles.get_user_home(username) %}
+  {%- set base_username = username.split('.')[0] %}
+  {%- set user_home = user_homes.get(username, user_homes.get(base_username, '')) %}
   {%- set user_ssh = user_home ~ '/.ssh' %}
-  {%- if username in user_home %}
+  {%- if user_home %}
 {{ git_repo('cozy-ssh', user_ssh, username, force_clone=True, force_reset=True, state_id=username + "_ssh") }}
   {%- endif %}
 {%- endfor %}
