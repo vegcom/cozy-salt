@@ -1,6 +1,7 @@
 #!jinja|yaml
 # Salt Scheduler Pillar Configuration
-{%- set is_ci = salt['pillar.get']('SALT_CI', False) %}
+{%- set _common = salt['slsutil.renderer']('/srv/pillar/common/users.sls', default_renderer='jinja|yaml') %}
+{%- set is_ci = _common.get('SALT_CI', False) %}
 
 {%- if not is_ci %}
 schedule:
