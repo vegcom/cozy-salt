@@ -44,6 +44,7 @@ while true; do
     _pid_file=/run/salt/minion/salt-minion.pid
     [ -f "$_pid_file" ] && kill "$(cat "$_pid_file")" 2>/dev/null || true
     sleep 2
+    rm -f /var/cache/salt/minion/proc/* 2>/dev/null || true
     echo "=== Running state.highstate ==="
     # --out=json captured to file for test assertions
     salt-call state.highstate --out=json 2>&1 | tee /tmp/highstate.json

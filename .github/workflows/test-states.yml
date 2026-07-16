@@ -31,15 +31,12 @@ jobs:
           cp srv/pillar/common/network.sls.example srv/pillar/common/network.sls
           cp srv/pillar/secrets/README.md srv/pillar/secrets/init.sls
 
-      - name: Generate master keys (gitignored, required for bind mount)
+      - name: Remove master key bind mounts for CI
         run: |
-          mkdir -p srv/salt/keys/master
-          openssl genrsa -out srv/salt/keys/master/master.pem 4096 2>/dev/null
-          openssl rsa -in srv/salt/keys/master/master.pem -pubout -out srv/salt/keys/master/master.pub 2>/dev/null
-          chmod 644 srv/salt/keys/master/master.pem
-          chmod 644 srv/salt/keys/master/master.pub
-          sed -i 's|master\.pem:/etc/salt/pki/master/master\.pem:ro|master.pem:/etc/salt/pki/master/master.pem|' docker-compose.yaml
-          sed -i 's|master\.pub:/etc/salt/pki/master/master\.pub:ro|master.pub:/etc/salt/pki/master/master.pub|' docker-compose.yaml
+          # Entrypoint generates fresh keys when none exist — no bind mount needed in CI
+          # Bind-mounted files can't be unlinked (EBUSY) even rw, which breaks salt key init
+          sed -i '/master\.pem.*salt\/pki\/master\/master\.pem/d' docker-compose.yaml
+          sed -i '/master\.pub.*salt\/pki\/master\/master\.pub/d' docker-compose.yaml
 
       - name: Test Salt states (ubuntu + rhel)
         run: pytest tests/ -m "ubuntu or rhel"
