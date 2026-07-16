@@ -28,6 +28,7 @@ resolved_restart:
 dns_search_domain{{ file.replace("/", "_").replace(".", "_") }}:
   file.managed:
     - name: {{ file }}
+    - makedirs: True
     - contents: |
         {%- set search_domains = dns.get('search_domains', dns.get('search_domain', ['local'])) %}
         {%- if search_domains is string %}
