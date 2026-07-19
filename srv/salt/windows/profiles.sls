@@ -5,7 +5,7 @@
 {%- from '_macros/windows.sls' import get_winget_user with context %}
 
 {%- set pwsh_profile_dir = salt['pillar.get']('paths:powershell_7_profile', 'C:/Program Files/PowerShell/7') %}
-{%- set repo_path = 'C:/opt/cozy/cozy-pwsh' %}
+{%- set repo_path = 'C:/opt/cozy/cache/cozy-pwsh' %}
 {%- set winget_user = get_winget_user() %}
 
 # Clone cozy-pwsh
