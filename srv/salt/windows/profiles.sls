@@ -53,7 +53,8 @@ pwsh_profile_acl:
   cmd.run:
     - name: icacls "{{ repo_path }}" /grant:r "Users:(OI)(CI)(R)" /grant:r "Administrators:(OI)(CI)(F)" /t /q
     - shell: cmd
-    - bg: True
+    - hide_output: True
+    - output_loglevel: quiet
     - require:
       - git: pwsh_profile_repo
     - onchanges:

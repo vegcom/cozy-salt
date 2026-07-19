@@ -39,8 +39,9 @@ opt_path_acl_{{ loop.index }}:
         } else {
           Write-Host "Path not found: $path (not installed yet)"
         }
+    - hide_output: True
+    - output_loglevel: quiet
     - shell: pwsh
-    - bg: True
 {%- endfor %}
 
 {# Only read registry on Windows - fails on Linux master during render #}
