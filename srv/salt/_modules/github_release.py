@@ -84,8 +84,8 @@ def latest(repo, fallback=None, prerelease=False):
     with urllib.request.urlopen(req, timeout=5) as resp:
       data = json.loads(resp.read())
       if prerelease:
-        return data[0]["tag_name"].lstrip("v")
-      return data["tag_name"].lstrip("v")
+        return data[0]["tag_name"]
+      return data["tag_name"]
   except Exception as exc:  # noqa: BLE001
     log.warning("github_release.latest(%s) failed: %s", repo, exc)
     return fallback
