@@ -7,3 +7,5 @@ skip_list:
 
 warn_list:
   - 201  # Trailing whitespace
+
+severity: True

@@ -123,8 +123,8 @@
     ".salt-lint": "yaml",
     ".shellcheckrc": "shellscript",
     "LICENSE": "raw",
-    "./srv/pillar/secrets/README.md": "plaintext",
-    "./srv/pillar/common/README.md": "plaintext",
+    "srv/pillar/secrets/README.md": "plaintext",
+    "srv/pillar/common/README.md": "plaintext",
     "torrc": "properties"
   },
   "jinjaLS.extraFileExtensions": ["jinja", "sls"],
