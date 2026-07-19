@@ -2,10 +2,10 @@
 {%- set managed_users = salt['pillar.get']('managed_users', [], merge=True) %}
 {%- set run_user = managed_users[0] if managed_users else '' -%}
 {%- set run_user_info = salt['user.info'](run_user) if run_user else {} %}
-{%- set cozy_path = 'C:\\opt\\cozy\\cache' %}
-{%- set cozy_fragments_path = cozy_path ~ '\\cozy-fragments\\' %}
+{%- set cozy_path = 'C:/opt/cozy' %}
+{%- set cozy_fragments_path = cozy_path ~ '/cache/cozy-fragments/' %}
 {%- set cozy_fragments_script = cozy_fragments_path ~ 'install.ps1' %}
-{%- set twilite_theme_dir = 'C:\\ProgramData\\Microsoft\\Windows Terminal\\Fragments\\Twilite' %}
+{%- set twilite_theme_dir = 'C:/ProgramData/Microsoft/Windows Terminal/Fragments/Twilite' %}
 {%- set twilite_theme_install_uri = "https://raw.githubusercontent.com/vegcom/WindowsTerminal-Twilite/main/install.ps1" %}
 
 {%- if run_user_info %}
