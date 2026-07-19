@@ -76,7 +76,7 @@ paths_broadcast_env_change_system:
       - reg: opt_paths_update
 
 {%- for user in users_with_profiles %}
-  {%- set username = user | split('.')[0] %}
+  {%- set username = user.split('.')[0] %}
 {#- FIX: has to be split #}
 paths_broadcast_env_change_{{ user }}:
   cmd.run:
