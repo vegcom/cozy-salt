@@ -3,43 +3,27 @@
 # Single reg.present that reads current PATH and adds all opt paths at once
 # Also handles cozyusers group and WindowsApps permissions for winget access
 
-{%- set winget_path = salt['pillar.get']('paths:winget', 'C:\\Program Files\\WindowsApps\\Microsoft.DesktopAppInstaller_1.27.460.0_x64__8wekyb3d8bbwe') %}
 {%- from '_macros/windows.sls' import get_users_with_profiles with context %}
+{%- set winget_path = salt['pillar.get']('paths:winget', 'C:\\Program Files\\WindowsApps\\Microsoft.DesktopAppInstaller_1.27.460.0_x64__8wekyb3d8bbwe') %}
 {%- set managed_users = salt['pillar.get']('managed_users', [], merge=True) %}
 {%- set users_with_profiles = get_users_with_profiles().split(',') | reject('equalto', '') | list %}
 
 {%- set opt_paths = [
-  'C:\\opt\\nvm',
-  'C:\\opt\\nvm\\nodejs',
-  'C:\\opt\\rust\\bin',
-  'C:\\opt\\miniforge3',
-  'C:\\opt\\windhawk',
-  'C:\\opt\\wt',
-  'C:\\opt\\msys',
-  'C:\\opt\\cozy\\bin',
+  'C:/opt/nvm',
+  'C:/opt/nvm/nodejs',
+  'C:/opt/rust/bin',
+  'C:/opt/miniforge3',
+  'C:/opt/windhawk',
+  'C:/opt/kubo',
+  'C:/opt/wt',
+  'C:/opt/msys',
+  'C:/opt/cozy/bin',
   winget_path
 ] %}
 
-# Create cozyusers group for shared access to managed paths
-cozyusers_group:
-  group.present:
-    - name: cozyusers
-
-# Add managed users to cozyusers group
-{%- for user in managed_users %}
-# TODO: move to groups.sls
-{{ user }}_cozyusers_member:
-  group.present:
-    - name: cozyusers
-    - addusers:
-      - {{ user }}
-    - require:
-      - group: cozyusers_group
-{%- endfor %}
-
-# Grant cozyusers read+execute on all opt paths
+# Grant cozyusers read+execute on alel opt paths
 # WindowsApps permissions are strict - need explicit grant for non-installing users
-{%- for path in opt_paths %}
+{%- for path in opt_paths | replace("/", "\\") %}
 opt_path_acl_{{ loop.index }}:
   cmd.run:
     - name: |
@@ -57,8 +41,6 @@ opt_path_acl_{{ loop.index }}:
         }
     - shell: pwsh
     - bg: True
-    - require:
-      - group: cozyusers_group
 {%- endfor %}
 
 {# Only read registry on Windows - fails on Linux master during render #}
@@ -94,11 +76,13 @@ paths_broadcast_env_change_system:
       - reg: opt_paths_update
 
 {%- for user in users_with_profiles %}
+  {%- set username = user | split('.')[0] %}
+{#- FIX: has to be split #}
 paths_broadcast_env_change_{{ user }}:
   cmd.run:
     - name: rundll32.exe user32.dll,UpdatePerUserSystemParameters ,1 ,True
     - shell: cmd
-    - runas: {{ user }}
+    - runas: {{ username }}
     - onchanges:
       - reg: opt_paths_update
 {%- endfor %}
