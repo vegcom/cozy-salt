@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-16"?>
 <Task version="1.4" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
   <RegistrationInfo>
-    <Description>Kubectl Port Forward OpenWebUI - https://kubernetes.io/docs/reference/kubectl/generated/kubectl_port-forward/</Description>
-    <URI>\Kubernetes\Kubectl Port Forward Open WebUI</URI>
+    <Description>Tailscale - https://tailscale.com/docs</Description>
+    <URI>\net\tailscale</URI>
   </RegistrationInfo>
   <Triggers>
     <BootTrigger>
-      <Enabled>true</Enabled>
+      <Enabled>false</Enabled>
     </BootTrigger>
     <LogonTrigger>
       <Enabled>true</Enabled>
@@ -14,7 +14,7 @@
   </Triggers>
   <Principals>
     <Principal id="Author">
-      <LogonType>S4U</LogonType>
+      <LogonType>InteractiveToken</LogonType>
       <RunLevel>HighestAvailable</RunLevel>
     </Principal>
   </Principals>
@@ -45,8 +45,8 @@
   </Settings>
   <Actions Context="Author">
     <Exec>
-      <Command>kubectl</Command>
-      <Arguments>port-forward --context lab -n inference statefulsets/open-webui 3000:3000</Arguments>
+      <Command>tailscale</Command>
+      <Arguments></Arguments>
     </Exec>
   </Actions>
 </Task>

@@ -44,6 +44,9 @@ scheduled_tasks:
     - name: shadowsocks
       file: windows/tasks/net/shadowsocks.xml
       enabled: True
+    - name: tailscale
+      file: windows/tasks/net/tailscale.xml
+      enabled: True
   kubernetes:
     - name: docker_registry_port_forward
       file: windows/tasks/kubernetes/docker_registry_port_forward.xml
