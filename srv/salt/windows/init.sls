@@ -22,3 +22,4 @@ include:
   - windows.wt
   - windows.vibeshine
   - windows.tailscale
+  - windows.ipfs

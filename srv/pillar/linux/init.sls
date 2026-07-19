@@ -153,3 +153,6 @@ capability_meta:
     state_name: kernel_packages
   container:
     state_name: container_packages
+
+include:
+  - linux.versions

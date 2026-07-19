@@ -47,6 +47,9 @@ scheduled_tasks:
     - name: tailscale
       file: windows/tasks/net/tailscale.xml
       enabled: True
+    - name: ipfs
+      file: windows/tasks/net/ipfs.xml
+      enabled: True
   kubernetes:
     - name: docker_registry_port_forward
       file: windows/tasks/kubernetes/docker_registry_port_forward.xml
