@@ -4,7 +4,7 @@
 {%- set nvm_config = salt['pillar.get']('nvm', {}) %}
 {%- set nvm_version = nvm_config.get('default_version', 'lts') %}
 {%- set _pinned_nvm_win = salt['pillar.get']('versions:nvm_windows:version', '') %}
-{%- set nvm_win_version = _pinned_nvm_win or salt['github_release.latest']('coreybutler/nvm-windows') or '1.2.2' %}
+{%- set nvm_win_version = _pinned_nvm_win or salt['github_release.latest']('coreybutler/nvm-windows', fallback="1.2.2") %}
 {%- set npm_pkg = "https://github.com/coreybutler/nvm-windows/releases/download/" ~ nvm_win_version ~ "/nvm-noinstall.zip" %}
 {%- set nvm_tmp = "C:/opt/cozy/cache/nvm-noinstall.zip" %}
 {# Path configuration from pillar with defaults #}

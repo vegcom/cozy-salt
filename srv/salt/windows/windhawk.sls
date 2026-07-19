@@ -1,31 +1,29 @@
 {%- set _pinned = salt['pillar.get']('versions:windhawk:version', '') %}
-{%- set windhawk_version = _pinned or salt['github_release.latest']('ramensoftware/windhawk') or '1.7.3' %}
+{%- set windhawk_version = _pinned or salt['github_release.latest']('ramensoftware/windhawk', fallback='1.7.3', prerelease=True) %}
 {%- set windhawk_path = 'C:\\opt\\windhawk' %}
 {%- set windhawk_tmp = 'C:/opt/cozy/cache/windhawk-install.exe' %}
 
-# Create C:\opt\windhawk directory for consistency
-windhawk_directory:
-  file.directory:
-    - name: {{ windhawk_path }}
-    - makedirs: True
-
-# Download windhawk installer
-windhawk_download:
-  cmd.run:
-    - name: >
-        pwsh -NoLogo -Command
-        "Invoke-WebRequest -Uri 'https://github.com/ramensoftware/windhawk/releases/download/v{{ windhawk_version }}/windhawk_setup.exe' -OutFile {{ windhawk_tmp }}"
-    - require:
-      - file: windhawk_directory
+windhawk_installer:
+  file.managed:
+    - name: {{ windhawk_tmp }}
+    - source: https://github.com/ramensoftware/windhawk/releases/download/{{ windhawk_version }}/windhawk_setup_offline.exe
+    - skip_verify: True
+    - mkdirs: True
 
 windhawk_install:
   cmd.run:
     - name: >
-        pwsh -NoLogo -Command
-        "& \"C:/opt/cozy/cache/windhawk-install.exe\" /S /AUTO_UPDATE /PORTABLE /D={{ windhawk_path }}"
+        & "C:/opt/cozy/cache/windhawk-install.exe" /S /AUTO_UPDATE /PORTABLE /D={{ windhawk_path }}
+    - shell: powershell
     - require:
-      - cmd: windhawk_download
+      - file: windhawk_installer
 
-# Install base pip packages via common orchestration
+windhawk_env:
+  environ.setenv:
+    - name: WINDHAWK_UI_PATH
+    - value: {{ windhawk_path }}
+    - update_minion: True
+    - permanent: True
+
 include:
   - windows.paths
