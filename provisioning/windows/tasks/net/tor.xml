@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-16"?>
 <Task version="1.4" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
   <RegistrationInfo>
-    <Description>The Onion Router - https://www.torproject.org/</Description>
+    <Description>The Onion Router - https://www.torproject.org</Description>
     <URI>\net\tor</URI>
   </RegistrationInfo>
   <Triggers>

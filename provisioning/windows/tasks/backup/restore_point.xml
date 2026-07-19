@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-16"?>
 <Task version="1.4" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
   <RegistrationInfo>
-    <Description>Automatic Restore Points</Description>
+    <Description>Automatic Restore Points - https://support.microsoft.com/en-US/Windows/Experience/Backup-Recovery/system-restore</Description>
     <URI>\Backups\Automatic Restore Points</URI>
   </RegistrationInfo>
   <Triggers>

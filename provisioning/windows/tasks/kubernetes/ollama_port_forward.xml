@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-16"?>
 <Task version="1.4" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
   <RegistrationInfo>
-    <Description>Kubectl Port Forward Ollama - https://kubernetes.io/docs/reference/kubectl/generated/kubectl_port-forward/</Description>
+    <Description>Kubectl Port Forward Ollama - https://kubernetes.io/docs/reference/kubectl/generated/kubectl_port-forward</Description>
     <URI>\Kubernetes\Kubectl Port Forward Ollama</URI>
   </RegistrationInfo>
   <Triggers>
