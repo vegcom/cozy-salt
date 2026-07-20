@@ -30,3 +30,4 @@ include:
   - linux.tailscale
   - linux.avahi_service
   - linux.distcc
+  - linux.ipfs
