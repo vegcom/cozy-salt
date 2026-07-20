@@ -1,5 +1,22 @@
 {%- set is_windows = grains['os_family'] == 'Windows' %}
 {%- set mine_keys = salt['mine.get']('*', 'ipfs_private_swarm_key') %}
+{%- set mine_peers = salt['mine.get']('*', 'ipfs_peer_multiaddr') %}
+{%- set _self_id = grains.get('id', '') %}
+{%- set peering_peers = [] %}
+{%- for minion_id, peer_id in mine_peers.items() %}
+  {%- if minion_id != _self_id and peer_id %}
+    {%- set _id = (peer_id | string | trim).rsplit('/p2p/', 1)[-1] %}
+    {%- do peering_peers.append({'ID': _id, 'Addrs': ['/dns4/' ~ minion_id ~ '/tcp/4001']}) %}
+  {%- endif %}
+{%- endfor %}
+
+{%- set _ts_iface = 'Tailscale' if is_windows else 'tailscale0' %}
+{%- set _ts_ips = salt['grains.get']('ip4_interfaces', {}).get(_ts_iface, []) %}
+{%- set vpn_ip = _ts_ips[0] if _ts_ips else none %}
+
+{%- set gw = salt['netinfo.default_gw']() %}
+{%- set iface = gw.get('interface', '') %}
+{%- set lan_ip = salt['grains.get']('ip4_interfaces', {}).get(iface, [''])[0] %}
 
 {%- set kubo_env = {
     "IPFS_PATH": "/opt/cozy/etc/kubo",
@@ -44,19 +61,29 @@ ipfs_configure_private_networking:
   cmd.run:
     - names:
       - ipfs bootstrap rm --all
-      - ipfs config Addresses.Swarm --json '["/ip4/10.0.0.0/ipcidr/16/tcp/4001", "/ip4/100.64.0.0/ipcidr/10/tcp/4001"]'
-      - ipfs config Addresses.API "/ip4/100.64.0.0/ipcidr/10/tcp/5001"
-      - ipfs config Addresses.Gateway "/ip4/100.64.0.0/ipcidr/10/tcp/8080"
+{%- set _swarm_addrs = [] %}
+{%- if vpn_ip %}{%- do _swarm_addrs.append('/ip4/' ~ vpn_ip ~ '/tcp/4001') %}{%- endif %}
+{%- if lan_ip %}{%- do _swarm_addrs.append('/ip4/' ~ lan_ip ~ '/tcp/4001') %}{%- endif %}
+      - ipfs config Addresses.Swarm --json '{{ _swarm_addrs | tojson }}'
+      - ipfs config Addresses.API "/ip4/127.0.0.1/tcp/5001"
+      - ipfs config Addresses.Gateway "/ip4/127.0.0.1/tcp/8080"
       - ipfs config --json Swarm.AddrFilters '[]'
-      - ipfs config Routing.Type dhtclient
+      - ipfs config Routing.Type dhtserver
       - ipfs config --json Discovery.MDNS.Enabled false
       - ipfs config --json Swarm.DisableNatPortMap true
       - ipfs config --json AutoConf.Enabled false
     - env: {{ kubo_env | json }}
+{%- if is_windows %}
+    - shell: pwsh
+{%- endif %}
 
 ipfs_config_path:
   file.directory:
+{%- if is_windows %}
+    - name: C:/opt/cozy/etc/kubo
+{%- else %}
     - name: /opt/cozy/etc/kubo
+{%- endif %}
     - mkdirs: True
 {%- if is_windows %}
     - win_owner: 'Administrators'
@@ -105,3 +132,22 @@ share_swarm_key_to_mine:
       - name: ipfs_private_swarm_key
       - mine_function: file.read
       - path: /opt/cozy/etc/kubo/swarm.key
+
+share_peer_addr_to_mine:
+  module.run:
+    - mine.send:
+      - name: ipfs_peer_multiaddr
+      - mine_function: cmd.run
+      - cmd: |
+          ipfs id --format=<id>
+
+{%- if peering_peers %}
+ipfs_configure_peering:
+  cmd.run:
+    - name: |
+        ipfs config --json Peering.Peers '{{ peering_peers | json }}'
+    - env: {{ kubo_env | json }}
+{%- if is_windows %}
+    - shell: pwsh
+{%- endif %}
+{%- endif %}
