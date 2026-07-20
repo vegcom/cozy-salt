@@ -1,6 +1,7 @@
 #!/bin/sh
 # Managed by Salt - DO NOT EDIT MANUALLY
 
-export IPFS_LOGGING=info
-export IPFS_LOGGING_FMT=json
+export GOLOG_LOG_LEVEL=warn
+export GOLOG_LOG_FMT=nocolor
+export GOLANG_PROTOBUF_REGISTRATION_CONFLICT=warn
 export IPFS_PATH=/opt/cozy/etc/kubo

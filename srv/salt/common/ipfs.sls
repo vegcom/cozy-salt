@@ -75,14 +75,15 @@ ipfs_configure_private_networking:
       - ipfs config Addresses.Swarm --json '{{ _swarm_addrs | tojson }}'
       - ipfs config Addresses.API "/ip4/127.0.0.1/tcp/5001"
       - ipfs config Addresses.Gateway "/ip4/127.0.0.1/tcp/8080"
-      - ipfs config --json Swarm.AddrFilters '[]'
       - ipfs config Routing.Type "none"
       - ipfs config --json Reprovider null
+      - ipfs config --json Swarm.AddrFilters '[]'
       - ipfs config --json Routing.DelegatedRouters '[]'
       - ipfs config --json Ipns.DelegatedPublishers '[]'
       - ipfs config --json DNS.Resolvers '{}'
-      - ipfs config Discovery.MDNS.Enabled false --bool
+      - ipfs config --bool Discovery.MDNS.Enabled false
       - ipfs config --bool Ipns.UsePubsub true
+      - ipfs config --bool Swarm.Transports.Network.Websocket false
     - env: {{ kubo_env | json }}
 {%- if is_windows %}
     - shell: pwsh
@@ -200,7 +201,7 @@ ipfs_bootstrap_peers:
 {%- if mine_cids.get(_self_id) %}
 ipfs_publish_local_identity:
   cmd.run:
-    - name: ipfs name publish /ipfs/{{ mine_cids.get(_self_id) }}
+    - name: ipfs name publish /ipfs/{{ mine_cids.get(_self_id) }}  --allow-offline
     - env: {{ kubo_env | json }}
 {%- if is_windows %}
     - shell: pwsh

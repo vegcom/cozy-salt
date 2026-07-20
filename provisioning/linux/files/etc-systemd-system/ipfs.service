@@ -1,0 +1,18 @@
+[Unit]
+Description=Kubo IPFS Daemon
+After=network.target tailscale.service
+Wants=tailscale.service
+
+[Service]
+Type=notify
+Environment="IPFS_PATH=/opt/cozy/etc/kubo"
+Environment="GOLOG_LOG_LEVEL=warn"
+Environment="GOLOG_LOG_FMT=nocolor"
+Environment="GOLANG_PROTOBUF_REGISTRATION_CONFLICT=warn"
+ExecStart=/opt/kubo/ipfs daemon --migrate=true
+Restart=on-failure
+KillSignal=SIGINT
+TimeoutStartSec=infinity
+
+[Install]
+WantedBy=multi-user.target
