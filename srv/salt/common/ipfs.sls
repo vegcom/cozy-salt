@@ -21,8 +21,7 @@
 
 {%- set kubo_env = {
     "IPFS_PATH": "/opt/cozy/etc/kubo",
-    "IPFS_LOGGING": "info",
-    "IPFS_LOGGING_FMT": "json",
+    "IPFS_LOGGING": "error",
     "GOLANG_PROTOBUF_REGISTRATION_CONFLICT": "warn"
 } %}
 
@@ -226,7 +225,6 @@ ipfs_sync_private_cluster_pins:
       - ipfs pin add /ipns/{{ peer_id }}
 {%- endfor %}
     - env: {{ kubo_env | json }}
-    - success_retcodes: [0, 1]
 {%- if is_windows %}
     - shell: pwsh
 {%- endif %}
