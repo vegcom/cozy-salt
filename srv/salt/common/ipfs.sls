@@ -61,7 +61,7 @@ ipfs_configure_private_networking:
   cmd.run:
     - names:
       - ipfs bootstrap rm --all
-{%- set _swarm_addrs = [] %}
+{%- set _swarm_addrs = ['/ip4/127.0.0.1/tcp/4001'] %}
 {%- if vpn_ip %}
   {%- do _swarm_addrs.append('/ip4/' ~ vpn_ip ~ '/tcp/4001') %}
   {%- do _swarm_addrs.append('/ip4/' ~ vpn_ip ~ '/udp/4001/quic-v1') %}
