@@ -1,6 +1,7 @@
 {%- set is_windows = grains['os_family'] == 'Windows' %}
 {%- set mine_keys = salt['mine.get']('*', 'ipfs_private_swarm_key') %}
 {%- set mine_peers = salt['mine.get']('*', 'ipfs_peer_multiaddr') %}
+{%- set mine_cids = salt['mine.get']('*', 'ipfs_current_sync_cid') %}
 {%- set _self_id = grains.get('id', '') %}
 {%- set peering_peers = [] %}
 {%- for minion_id, peer_id in mine_peers.items() %}
@@ -21,7 +22,8 @@
 {%- set kubo_env = {
     "IPFS_PATH": "/opt/cozy/etc/kubo",
     "IPFS_LOGGING": "info",
-    "IPFS_LOGGING_FMT": "json"
+    "IPFS_LOGGING_FMT": "json",
+    "GOLANG_PROTOBUF_REGISTRATION_CONFLICT": "warn"
 } %}
 
 {%- if not is_windows %}
@@ -74,10 +76,13 @@ ipfs_configure_private_networking:
       - ipfs config Addresses.API "/ip4/127.0.0.1/tcp/5001"
       - ipfs config Addresses.Gateway "/ip4/127.0.0.1/tcp/8080"
       - ipfs config --json Swarm.AddrFilters '[]'
-      - ipfs config Routing.Type "local"
-      - ipfs config --json Discovery.MDNS.Enabled false
-      - ipfs config --json Swarm.DisableNatPortMap true
-      - ipfs config --json AutoConf.Enabled false
+      - ipfs config Routing.Type "none"
+      - ipfs config --json Reprovider null
+      - ipfs config --json Routing.DelegatedRouters '[]'
+      - ipfs config --json Ipns.DelegatedPublishers '[]'
+      - ipfs config --json DNS.Resolvers '{}'
+      - ipfs config Discovery.MDNS.Enabled false --bool
+      - ipfs config --bool Ipns.UsePubsub true
     - env: {{ kubo_env | json }}
 {%- if is_windows %}
     - shell: pwsh
@@ -147,6 +152,13 @@ share_peer_addr_to_mine:
       - cmd: |
           ipfs id --format=<id>
 
+share_sync_cid_to_mine:
+  module.run:
+    - mine.send:
+      - name: ipfs_current_sync_cid
+      - mine_function: cmd.run
+      - cmd: ipfs files stat --hash /
+
 {%- if not is_windows %}
 ipfs_config_path_perms:
   file.directory:
@@ -181,6 +193,40 @@ ipfs_bootstrap_peers:
       - ipfs bootstrap add /dns4/{{ peer.Addrs[0].split('/dns4/')[1].split('/tcp/')[0] }}/tcp/4001/p2p/{{ peer.ID }}
 {%- endfor %}
     - env: {{ kubo_env | json }}
+{%- if is_windows %}
+    - shell: pwsh
+{%- endif %}
+{%- endif %}
+
+{%- if mine_cids.get(_self_id) %}
+ipfs_publish_local_identity:
+  cmd.run:
+    - name: ipfs name publish /ipfs/{{ mine_cids.get(_self_id) }}
+    - env: {{ kubo_env | json }}
+{%- if is_windows %}
+    - shell: pwsh
+{%- endif %}
+{%- endif %}
+
+{%- set _peers_to_pin = [] %}
+{%- for minion_id, cid in mine_cids.items() %}
+  {%- if minion_id != _self_id and cid %}
+    {%- set _raw = mine_peers.get(minion_id, '') | string | trim %}
+    {%- if _raw %}
+      {%- do _peers_to_pin.append(_raw.rsplit('/p2p/', 1)[-1]) %}
+    {%- endif %}
+  {%- endif %}
+{%- endfor %}
+
+{%- if _peers_to_pin %}
+ipfs_sync_private_cluster_pins:
+  cmd.run:
+    - names:
+{%- for peer_id in _peers_to_pin %}
+      - ipfs pin add /ipns/{{ peer_id }}
+{%- endfor %}
+    - env: {{ kubo_env | json }}
+    - success_retcodes: [0, 1]
 {%- if is_windows %}
     - shell: pwsh
 {%- endif %}
