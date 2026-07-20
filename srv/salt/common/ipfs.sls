@@ -62,13 +62,19 @@ ipfs_configure_private_networking:
     - names:
       - ipfs bootstrap rm --all
 {%- set _swarm_addrs = [] %}
-{%- if vpn_ip %}{%- do _swarm_addrs.append('/ip4/' ~ vpn_ip ~ '/tcp/4001') %}{%- endif %}
-{%- if lan_ip %}{%- do _swarm_addrs.append('/ip4/' ~ lan_ip ~ '/tcp/4001') %}{%- endif %}
+{%- if vpn_ip %}
+  {%- do _swarm_addrs.append('/ip4/' ~ vpn_ip ~ '/tcp/4001') %}
+  {%- do _swarm_addrs.append('/ip4/' ~ vpn_ip ~ '/udp/4001/quic-v1') %}
+{%- endif %}
+{%- if lan_ip %}
+  {%- do _swarm_addrs.append('/ip4/' ~ lan_ip ~ '/tcp/4001') %}
+  {%- do _swarm_addrs.append('/ip4/' ~ lan_ip ~ '/udp/4001/quic-v1') %}
+{%- endif %}
       - ipfs config Addresses.Swarm --json '{{ _swarm_addrs | tojson }}'
       - ipfs config Addresses.API "/ip4/127.0.0.1/tcp/5001"
       - ipfs config Addresses.Gateway "/ip4/127.0.0.1/tcp/8080"
       - ipfs config --json Swarm.AddrFilters '[]'
-      - ipfs config Routing.Type dhtserver
+      - ipfs config Routing.Type "local"
       - ipfs config --json Discovery.MDNS.Enabled false
       - ipfs config --json Swarm.DisableNatPortMap true
       - ipfs config --json AutoConf.Enabled false
@@ -141,11 +147,39 @@ share_peer_addr_to_mine:
       - cmd: |
           ipfs id --format=<id>
 
+{%- if not is_windows %}
+ipfs_config_path_perms:
+  file.directory:
+    - name: /opt/cozy/etc/kubo
+    - user: cozy-salt-svc
+    - group: cozyusers
+    - dir_mode: '0770'
+    - file_mode: '0660'
+    - recurse:
+      - user
+      - group
+      - mode
+    - require:
+      - cmd: ipfs_configure_private_networking
+      - file: ipfs_swarm_key
+{%- endif %}
+
 {%- if peering_peers %}
 ipfs_configure_peering:
   cmd.run:
     - name: |
         ipfs config --json Peering.Peers '{{ peering_peers | json }}'
+    - env: {{ kubo_env | json }}
+{%- if is_windows %}
+    - shell: pwsh
+{%- endif %}
+
+ipfs_bootstrap_peers:
+  cmd.run:
+    - names:
+{%- for peer in peering_peers %}
+      - ipfs bootstrap add /dns4/{{ peer.Addrs[0].split('/dns4/')[1].split('/tcp/')[0] }}/tcp/4001/p2p/{{ peer.ID }}
+{%- endfor %}
     - env: {{ kubo_env | json }}
 {%- if is_windows %}
     - shell: pwsh
