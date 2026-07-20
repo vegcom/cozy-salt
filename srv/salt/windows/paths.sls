@@ -23,10 +23,12 @@
 
 # Grant cozyusers read+execute on alel opt paths
 # WindowsApps permissions are strict - need explicit grant for non-installing users
-{%- for path in opt_paths | replace("/", "\\") %}
+{%- for path in opt_paths %}
+{%- set path = path | replace("/", "\\") %}
 opt_path_acl_{{ loop.index }}:
   cmd.run:
     - name: |
+        $InformationPreference = 'SilentlyContinue'
         $path = '{{ path }}'
         if (Test-Path $path) {
           $acl = Get-Acl $path
@@ -35,11 +37,7 @@ opt_path_acl_{{ loop.index }}:
           )
           $acl.AddAccessRule($rule)
           Set-Acl $path $acl
-          Write-Host "ACL updated for cozyusers on $path"
-        } else {
-          Write-Host "Path not found: $path (not installed yet)"
         }
-    - hide_output: True
     - output_loglevel: quiet
     - shell: pwsh
 {%- endfor %}
