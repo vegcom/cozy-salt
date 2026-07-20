@@ -21,7 +21,8 @@
 
 {%- set kubo_env = {
     "IPFS_PATH": "/opt/cozy/etc/kubo",
-    "IPFS_LOGGING": "error",
+    "GOLOG_LOG_FMT": "nocolor",
+    "GOLOG_LOG_LEVEL": "warn",
     "GOLANG_PROTOBUF_REGISTRATION_CONFLICT": "warn"
 } %}
 
@@ -148,8 +149,7 @@ share_peer_addr_to_mine:
     - mine.send:
       - name: ipfs_peer_multiaddr
       - mine_function: cmd.run
-      - cmd: |
-          ipfs id --format=<id>
+      - cmd: ipfs config Identity.PeerID
 
 share_sync_cid_to_mine:
   module.run:
