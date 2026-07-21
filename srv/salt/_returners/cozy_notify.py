@@ -4,8 +4,8 @@ cozy_notify returner — desktop toast after highstate/orchestrate
 
 import logging
 import os
+import platform
 import subprocess
-import tempfile
 
 log = logging.getLogger(__name__)
 
@@ -39,12 +39,12 @@ def returner(ret):
     body = fun
 
   try:
-    if __grains__.get("os_family") == "Windows":
+    if platform.system() == "Windows":
       _notify_windows(title, body)
     else:
       _notify_linux(title, body)
   except Exception as exc:
-    log.warning("cozy_notify: %s", exc)
+    log.critical("cozy_notify: notification failed: %s", exc)
 
 
 def _notify_linux(title, body):
@@ -86,37 +86,21 @@ def _notify_linux(title, body):
 
 
 def _notify_windows(title, body):
-  # Write toast PS1 to temp file, run as interactive user via scheduled task
-  ps_toast = f"""
-[Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType=WindowsRuntime] | Out-Null
-[Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom, ContentType=WindowsRuntime] | Out-Null
-$xml = [Windows.Data.Xml.Dom.XmlDocument]::new()
-$xml.LoadXml('<toast><visual><binding template="ToastGeneric"><text>{_esc(title)}</text><text>{_esc(body)}</text></binding></visual></toast>')
-[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier('Salt').Show(
-    [Windows.UI.Notifications.ToastNotification]::new($xml)
-)
-"""
-  with tempfile.NamedTemporaryFile(suffix=".ps1", delete=False, mode="w") as f:
-    f.write(ps_toast)
-    ps1_path = f.name.replace("\\", "/")
-
   try:
-    ps_run = f"""
-$user = (Get-Process explorer -IncludeUserName -ErrorAction SilentlyContinue | Select-Object -First 1).UserName
-if (-not $user) {{ exit 1 }}
-$action = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument '-NonInteractive -WindowStyle Hidden -File {ps1_path}'
-$trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddSeconds(2)
-$principal = New-ScheduledTaskPrincipal -UserId $user -LogonType Interactive -RunLevel Limited
-Register-ScheduledTask -TaskName 'CozyNotify' -Action $action -Trigger $trigger -Principal $principal -Force | Out-Null
-Start-ScheduledTask -TaskName 'CozyNotify'
-"""
     subprocess.run(
-      ["powershell", "-NonInteractive", "-WindowStyle", "Hidden", "-Command", ps_run],
-      timeout=15,
+      [
+        "powershell",
+        "-NonInteractive",
+        "-WindowStyle",
+        "Hidden",
+        "-Command",
+        f"New-BurntToastNotification -Text '{_esc(title)}', '{_esc(body)}'",
+      ],
+      timeout=10,
       check=False,
     )
   except Exception as exc:
-    log.debug("cozy_notify windows: %s", exc)
+    log.critical("cozy_notify windows: %s", exc)
 
 
 def _esc(s):
