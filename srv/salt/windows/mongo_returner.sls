@@ -2,15 +2,15 @@
 {%- set mongo_host = salt['pillar.get']('mongo.host', '') %}
 {%- set mongo_pass = salt['pillar.get']('mongo.password', '') %}
 {%- if os_key == 'windows' and (mongo_host and mongo_pass) %}
-  {%- set install_dir = salt['pillar.get']('install_paths:salt:' ~ os_key, 'C:\Program Files\Salt Project\Salt') %}
-  {%- set conf_dir = salt['pillar.get']('config_paths:salt:' ~ os_key, ' C:\salt\conf') %}
+  {%- set install_dir = salt['pillar.get']('install_paths:salt:' ~ os_key, 'C:/Program Files/Salt Project/Salt') %}
+  {%- set conf_dir = salt['pillar.get']('config_paths:salt:' ~ os_key, ' C:/salt/conf') %}
 pymongo_for_returner:
   cmd.run:
-    - name: '"{{ install_dir }}\Scripts\pip3" install pymongo'
-    - unless: '"{{ install_dir }}\Scripts\python3" -c "import pymongo"'
+    - name: '"{{ install_dir }}/Scripts/pip3" install pymongo'
+    - unless: '"{{ install_dir }}/Scripts/python3" -c "import pymongo"'
 mongo_returner:
   file.managed:
-    - name: '{{ conf_dir }}\minion.d\mongo-returner.conf'
+    - name: '{{ conf_dir }}/minion.d/mongo-returner.conf'
     - makedirs: True
     - contents: |
         mongo.host: {{ mongo_host }}

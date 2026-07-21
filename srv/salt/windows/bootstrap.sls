@@ -6,7 +6,7 @@
 {%- set winget_user = get_winget_user() %}
 {%- set winget_path = get_winget_path(winget_user) %}
 {%- if not salt['file.file_exists'](winget_path) %}
-  {%- set winget_path = salt['cmd.run']('@((Get-Item "C:\\Program Files\\WindowsApps\\Microsoft.DesktopAppInstaller*\\winget.exe").VersionInfo.FileName)[-1]', shell='powershell') %}
+  {%- set winget_path = salt['cmd.run']('@((Get-Item "C:/Program Files/WindowsApps/Microsoft.DesktopAppInstaller*/winget.exe").VersionInfo.FileName)[-1]', shell='powershell') %}
 {%- endif %}
 
 {#- Service user performs scope=machine always #}
