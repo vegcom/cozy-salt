@@ -6,10 +6,10 @@
 {%- if not is_ci %}
 schedule:
 
-  mongo_returner_sync:
+  returners_sync:
     function: state.sls
     args:
-      - common.mongo_returner
+      - common.returners
     minutes: 60
     enabled: true
 

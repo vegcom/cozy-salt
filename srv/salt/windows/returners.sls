@@ -8,7 +8,7 @@ pymongo_for_returner:
   cmd.run:
     - name: '"{{ install_dir }}/Scripts/pip3" install pymongo'
     - unless: '"{{ install_dir }}/Scripts/python3" -c "import pymongo"'
-mongo_returner:
+returners:
   file.managed:
     - name: '{{ conf_dir }}/minion.d/mongo-returner.conf'
     - makedirs: True
@@ -24,5 +24,5 @@ salt_minion_returner_restart:
   service.running:
     - name: salt-minion
     - watch:
-      - file: mongo_returner
+      - file: returners
 {%- endif %}

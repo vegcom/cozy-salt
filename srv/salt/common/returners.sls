@@ -3,5 +3,5 @@
 # Schedule: common.scheduler runs this state every 60 min to keep config fresh
 
 include:
-  - linux.mongo_returner
-  - windows.mongo_returner
+  - linux.returners
+  - windows.returners

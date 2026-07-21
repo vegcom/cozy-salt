@@ -8,7 +8,7 @@ pymongo_for_returner:
   cmd.run:
     - name: {{ install_dir }}/bin/pip3 install pymongo
     - unless: {{ install_dir }}/bin/python3 -c "import pymongo"
-mongo_returner:
+returners:
   file.managed:
     - name: {{ conf_dir }}/minion.d/mongo-returner.conf
     - mode: '0600'
@@ -28,6 +28,6 @@ salt_minion_returner_restart:
   service.running:
     - name: salt-minion
     - watch:
-      - file: mongo_returner
+      - file: returners
 {%- endif %}
 {%- endif %}
