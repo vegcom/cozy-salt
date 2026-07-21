@@ -10,7 +10,7 @@ pymongo_for_returner:
     - unless: '"{{ install_dir }}/Scripts/python3" -c "import pymongo"'
 returners:
   file.managed:
-    - name: '{{ conf_dir }}/minion.d/mongo-returner.conf'
+    - name: '{{ conf_dir }}/minion.d/returners.conf'
     - makedirs: True
     - contents: |
         mongo.host: {{ mongo_host }}
@@ -19,7 +19,11 @@ returners:
         mongo.user: {{ salt['pillar.get']('mongo.user', 'salt') }}
         mongo.password: {{ mongo_pass }}
         mongo.authdb: {{ salt['pillar.get']('mongo.authdb', 'admin') }}
-        return: mongo
+        return: multi_returner
+        multi_returner:
+          - mongo
+          - cozy_notify
+
 salt_minion_returner_restart:
   service.running:
     - name: salt-minion

@@ -10,7 +10,7 @@ pymongo_for_returner:
     - unless: {{ install_dir }}/bin/python3 -c "import pymongo"
 returners:
   file.managed:
-    - name: {{ conf_dir }}/minion.d/mongo-returner.conf
+    - name: {{ conf_dir }}/minion.d/returners.conf
     - mode: '0600'
     - makedirs: True
     - contents: |
@@ -20,7 +20,10 @@ returners:
         mongo.user: {{ salt['pillar.get']('mongo.user', 'salt') }}
         mongo.password: {{ mongo_pass }}
         mongo.authdb: {{ salt['pillar.get']('mongo.authdb', 'admin') }}
-        return: mongo
+        return: multi_returner
+        multi_returner:
+          - mongo
+          - cozy_notify
 {%- set is_container = salt['file.file_exists']('/.dockerenv') or
                       salt['file.file_exists']('/run/.containerenv') %}
 {%- if not is_container %}

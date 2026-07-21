@@ -26,6 +26,9 @@ def returner(ret):
   status = "OK" if success else "FAILED"
   title = f"Salt {status} — {minion_id}"
 
+  fun_args = ret.get("fun_args", [])
+  sls = fun_args[0] if fun_args else "highstate"
+
   retdata = ret.get("return", {})
   if isinstance(retdata, dict):
     changed = sum(
@@ -34,9 +37,9 @@ def returner(ret):
     failed = sum(
       1 for v in retdata.values() if isinstance(v, dict) and not v.get("result", True)
     )
-    body = f"{fun} — {changed} changed, {failed} failed"
+    body = f"{sls} — {changed} changed, {failed} failed"
   else:
-    body = fun
+    body = sls
 
   try:
     if platform.system() == "Windows":
@@ -94,7 +97,7 @@ def _notify_windows(title, body):
         "-WindowStyle",
         "Hidden",
         "-Command",
-        f"New-BurntToastNotification -Text '{_esc(title)}', '{_esc(body)}'",
+        f"New-BurntToastNotification -Text '{_esc(title)}', '{_esc(body)}' -AppLogo 'https://github.com/saltstack/salt/blob/master/doc/_static/salt-logo.png'",
       ],
       timeout=10,
       check=False,
