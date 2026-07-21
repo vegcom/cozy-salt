@@ -7,7 +7,7 @@ include:
   - windows.salt_minion
   - windows.service-account
   - windows.users
-  - windows.groups
+  - windows.group
   - windows.paths
   - windows.config
   - windows.install
