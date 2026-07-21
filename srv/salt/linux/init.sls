@@ -5,9 +5,6 @@
 #   install: requires cozyusers group, provides shell_packages
 #   users:   requires groups + shell_packages
 
-{%- set is_container = salt['file.file_exists']('/.dockerenv') or
-                       salt['file.file_exists']('/run/.containerenv') -%}
-
 include:
   - linux.salt_minion     # Configures salt minion.d/99-cozy.conf
   - linux.service-account # Create service account for system operations
@@ -33,6 +30,4 @@ include:
   - linux.cozy-presence
   - linux.avahi_service
   - linux.distcc
-{%- if is_container %}
   - linux.ipfs
-{%- endif %}

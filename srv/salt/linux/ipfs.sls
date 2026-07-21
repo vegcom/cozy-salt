@@ -5,6 +5,10 @@
 {%- set kubo_source = "https://github.com/ipfs/kubo/releases/download/" ~ kubo_version ~ "/kubo_" ~ kubo_version ~ "_linux-amd64.tar.gz" %}
 {%- set kubo_hash = "https://github.com/ipfs/kubo/releases/download/" ~ kubo_version ~ "/kubo_" ~ kubo_version ~ "_linux-amd64.tar.gz.sha512" %}
 
+{%- set is_container = salt['file.file_exists']('/.dockerenv') or
+                       salt['file.file_exists']('/run/.containerenv') -%}
+
+{%- if is_container %}
 include:
   - common.ipfs
   - linux.config
@@ -18,3 +22,11 @@ kubo_extract:
     - user: cozy-salt-svc
     - group: cozyusers
     - mode: '0660'
+
+{%- else %}
+
+kubo_ipfs:
+  test.nop:
+    - name: "not deploying ipfs"
+
+{%- endif %}
