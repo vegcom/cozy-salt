@@ -97,7 +97,7 @@ def _notify_windows(title, body):
         "-WindowStyle",
         "Hidden",
         "-Command",
-        f"New-BurntToastNotification -Text '{_esc(title)}', '{_esc(body)}' -AppLogo 'https://github.com/saltstack/salt/blob/master/doc/_static/salt-logo.png'",
+        f"New-BurntToastNotification -Text '{_esc(title)}', '{_esc(body)}'",
       ],
       timeout=10,
       check=False,
