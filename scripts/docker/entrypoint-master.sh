@@ -69,7 +69,6 @@ echo "[entrypoint] Writing master mongo returner config..."
 mongo_pass=$(cat "${mongo_pass_file}")
 cat > /etc/salt/master.d/mongo-returner-generated.conf <<EOF
 # Generated at container startup — do not edit, do not commit (see .gitignore)
-# master_job_cache handled minion-side via return: mongo_future_return in minion.d/
 
 mongo.host: ${MONGO_HOST:-mongo}
 mongo.port: 27017
@@ -77,6 +76,7 @@ mongo.db: salt
 mongo.user: salt
 mongo.password: ${mongo_pass}
 mongo.authdb: admin
+master_job_cache: mongo
 EOF
 echo "  + mongo-returner-generated.conf written"
 

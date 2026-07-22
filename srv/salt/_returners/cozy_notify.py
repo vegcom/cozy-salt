@@ -3,7 +3,6 @@ cozy_notify returner — desktop toast after highstate/orchestrate
 """
 
 import logging
-import os
 import platform
 import subprocess
 
@@ -62,28 +61,12 @@ def _notify_linux(title, body):
   for user in users:
     try:
       uid = pwd.getpwnam(user).pw_uid
-      env = {
-        **os.environ,
-        "DBUS_SESSION_BUS_ADDRESS": f"unix:path=/run/user/{uid}/bus",
-        "DISPLAY": ":0",
-      }
-      subprocess.run(
-        [
-          "sudo",
-          "-u",
-          user,
-          "notify-send",
-          "-a",
-          "Salt",
-          "-i",
-          "dialog-information",
-          title,
-          body,
-        ],
-        env=env,
-        timeout=5,
-        check=False,
+      dbus_addr = f"unix:path=/run/user/{uid}/bus"
+      cmd = (
+        f"DBUS_SESSION_BUS_ADDRESS={dbus_addr} DISPLAY=:0 "
+        f"notify-send -a Salt -i dialog-information '{title}' '{body}'"
       )
+      subprocess.run(["sudo", "-u", user, "bash", "-c", cmd], timeout=5, check=False)
     except Exception as exc:
       log.debug("cozy_notify linux %s: %s", user, exc)
 
