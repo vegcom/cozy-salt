@@ -1,3 +1,13 @@
+{%- set is_container = salt['file.file_exists']('/.dockerenv') or
+                      salt['file.file_exists']('/run/.containerenv') %}
+{%- if is_container %}
+
+ipfs_skip:
+  test.nop:
+    - name: "no ipfs in containeres"
+
+{%- else %}
+
 {%- set is_windows = grains['os_family'] == 'Windows' %}
 {%- set mine_keys = salt['mine.get']('*', 'ipfs_private_swarm_key') %}
 {%- set mine_peers = salt['mine.get']('*', 'ipfs_peer_multiaddr') %}
@@ -228,5 +238,6 @@ ipfs_sync_private_cluster_pins:
     - env: {{ kubo_env | json }}
 {%- if is_windows %}
     - shell: pwsh
+{%- endif %}
 {%- endif %}
 {%- endif %}
