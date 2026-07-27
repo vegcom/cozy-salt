@@ -11,6 +11,7 @@ fi
 if docker ps -a --format='{{.Names}}' --filter='name=salt' 2>/dev/null | grep -Pqe 'salt' ; then
 	alias salt="docker exec -it salt salt"
 	alias salt-key='docker exec -it salt salt-key'
+	alias salt-run='docker exec -it salt salt-run'
 	alias salt-ssh='docker exec -it salt salt'
 fi
 
