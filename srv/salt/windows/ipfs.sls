@@ -5,6 +5,16 @@
 {%- set kubo_source = "https://github.com/ipfs/kubo/releases/download/" ~ kubo_version ~ "/kubo_" ~ kubo_version ~ "_windows-amd64.zip" %}
 {%- set kubo_hash = "https://github.com/ipfs/kubo/releases/download/" ~ kubo_version ~ "/kubo_" ~ kubo_version ~ "_windows-amd64.zip.sha512" %}
 
+{%- set is_ci = salt['pillar.get']('SALT_CI', False) %}
+
+{%- if is_ci %}
+
+kubo_ipfs:
+  test.nop:
+    - name: "not deploying ipfs"
+
+{%- else %}
+
 include:
   - common.ipfs
   - windows.paths
@@ -14,3 +24,5 @@ kubo_extract:
     - name: {{ salt['file.dirname'](kubo_path) }}
     - source: {{ kubo_source }}
     - source_hash: {{ kubo_hash }}
+
+{%- endif %}

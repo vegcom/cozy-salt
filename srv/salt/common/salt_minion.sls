@@ -1,18 +1,23 @@
 {%- set salt_master = salt['pillar.get']('salt:master', '') %}
 
 {%- if grains['os_family'] == 'Windows' %}
-  {%- set minion_conf_dir = 'C:\\salt\\conf\\' %}
-  {%- set minion_conf = minion_conf_dir ~ '\\minion' %}
-  {%- set minion_conf_opt = minion_conf_dir ~ '\\minion.d\\99-cozy.conf' %}
-  {%- set minion_conf_timeout = minion_conf_dir ~ '\\minion.d\\98-timeout.conf' %}
+  {%- set minion_conf_dir = 'C:/salt/conf/' %}
 {%- else %}
   {%- set minion_conf_dir = '/etc/salt/' %}
-  {%- set minion_conf = minion_conf_dir ~ '/minion' %}
-  {%- set minion_conf_opt = minion_conf_dir ~ '/minion.d/99-cozy.conf' %}
-  {%- set minion_conf_timeout = minion_conf_dir ~ '/minion.d/98-timeout.conf' %}
 {%- endif %}
 
+{%- set minion_conf = minion_conf_dir ~ '/minion' %}
+{%- set minion_conf_beacon = minion_conf_dir ~ '/minion.d/97-beacon.conf' %}
+{%- set minion_conf_timeout = minion_conf_dir ~ '/minion.d/98-timeout.conf' %}
+{%- set minion_conf_opt = minion_conf_dir ~ '/minion.d/99-cozy.conf' %}
+
 {%- set minion_conf_obj = "default_include: " ~ "minion.d/*.conf" ~ "\n" %}
+
+{%- if grains['os_family'] != 'Windows' %}
+  {%- set salt_modules = salt['pillar.get']('salt:modules:linux', ["pyinotify", "gitpython", "pymongo", "psycopg2"]) %}
+{%- else %}
+  {%- set salt_modules = salt['pillar.get']('salt:modules:windows', ["gitpython", "pymongo", "psycopg2"]) %}
+{%- endif %}
 
 {%- set minion_confd_obj = "" %}
 {%- if salt_master %}
@@ -61,6 +66,47 @@ salt_minion_conf_timeout:
 
         # Reconnect backoff
         tcp_reconnect_backoff: 1
+
+salt_minion_conf_beacon:
+  file.managed:
+    - name: {{ minion_conf_beacon }}
+    - makedirs: True
+    {%- if grains['os_family'] != 'Windows' %}
+    - mode: '0644'
+    {%- endif %}
+    - contents: |
+        tcp_reconnect_backoff: 1
+    {%- if grains['os_family'] != 'Windows' %}
+        beacons:
+          resolv_conf:
+            - files:
+                /etc/resolv.conf:
+                  mask:
+                    - modify
+            - beacon_module: file_watch
+
+          hosts_file:
+            - files:
+                /etc/hosts:
+                  mask:
+                    - modify
+            - beacon_module: file_watch
+    {%- else %}
+        beacons:
+          hosts_file:
+            - files:
+                C:/Windows/System32/drivers/etc/hosts:
+                  mask:
+                    - modify
+            - beacon_module: windows_event_log
+    {%- endif %}
+
+{%- for module in salt_modules %}
+
+salt_minion_deps_{{ module }}:
+  pip.installed:
+    - name: {{ module }}
+{%- endfor %}
 
 # NOTE: restarting salt-minion during salt-call interrupts the run
 # apply via master: salt '*' state.sls common.salt_minion

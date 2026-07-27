@@ -1,6 +1,8 @@
 {%- set is_container = salt['file.file_exists']('/.dockerenv') or
                       salt['file.file_exists']('/run/.containerenv') %}
-{%- if is_container %}
+{%- set is_ci = salt['pillar.get']('SALT_CI', False) %}
+
+{%- if is_container or is_ci %}
 
 ipfs_skip:
   test.nop:
@@ -85,13 +87,13 @@ ipfs_configure_private_networking:
       - ipfs config Addresses.Swarm --json '{{ _swarm_addrs | tojson }}'
       - ipfs config Addresses.API "/ip4/127.0.0.1/tcp/5001"
       - ipfs config Addresses.Gateway "/ip4/127.0.0.1/tcp/8080"
-      - ipfs config Routing.Type "none"
+      - ipfs config Routing.Type "dhtclient"
       - ipfs config --json Reprovider null
       - ipfs config --json Swarm.AddrFilters '[]'
       - ipfs config --json Routing.DelegatedRouters '[]'
       - ipfs config --json Ipns.DelegatedPublishers '[]'
       - ipfs config --json DNS.Resolvers '{}'
-      - ipfs config --bool Discovery.MDNS.Enabled false
+      - ipfs config --bool Discovery.MDNS.Enabled true
       - ipfs config --bool Ipns.UsePubsub true
       - ipfs config --bool Swarm.Transports.Network.Websocket false
     - env: {{ kubo_env | json }}

@@ -8,7 +8,16 @@
 {%- set is_container = salt['file.file_exists']('/.dockerenv') or
                        salt['file.file_exists']('/run/.containerenv') -%}
 
-{%- if is_container %}
+{%- set is_ci = salt['pillar.get']('SALT_CI', False) %}
+
+{%- if is_container or is_ci %}
+
+kubo_ipfs:
+  test.nop:
+    - name: "not deploying ipfs"
+
+{%- else %}
+
 include:
   - common.ipfs
   - linux.config
@@ -22,11 +31,5 @@ kubo_extract:
     - user: cozy-salt-svc
     - group: cozyusers
     - mode: '0660'
-
-{%- else %}
-
-kubo_ipfs:
-  test.nop:
-    - name: "not deploying ipfs"
 
 {%- endif %}
