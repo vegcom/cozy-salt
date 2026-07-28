@@ -124,6 +124,18 @@ winget_features_enable:
   {%- endfor %}
 {%- endif %}
 
+# Install capability-gated system packages (host:capabilities:<name>: true)
+{%- if packages.windows.winget.gated is defined %}
+  {%- for cap_name, pkgs in packages.windows.winget.gated.items() %}
+    {%- if salt['pillar.get']('host:capabilities:' ~ cap_name, False) %}
+      {%- set filtered_pkgs = pkgs | reject('in', noscope_pkgs) | list %}
+      {%- if filtered_pkgs %}
+{{ winget_batch_install('winget_batch_gated_' ~ cap_name, filtered_pkgs, winget_path=winget_path, scope='machine', bg=true) }}
+      {%- endif %}
+    {%- endif %}
+  {%- endfor %}
+{%- endif %}
+
 # Install Winget userland packages (per user, batched by category)
 # {{ packages.windows.winget.userland }}
 {%- if packages.windows.winget.userland is defined %}
