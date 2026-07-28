@@ -1,7 +1,5 @@
 
 # Authentication
-PasswordAuthentication no
-PubkeyAuthentication yes
 PermitRootLogin prohibit-password
 PermitEmptyPasswords no
 
@@ -12,62 +10,10 @@ KbdInteractiveAuthentication no
 ChallengeResponseAuthentication no
 UsePAM yes
 {% endif %}
-PubkeyAcceptedKeyTypes +ssh-rsa,ssh-ed25519,rsa-sha2-512,rsa-sha2-256,ecdsa-sha2-nistp521,ecdsa-sha2-nistp384,ecdsa-sha2-nistp256
-
 
 # Session limits
-MaxAuthTries 10
-MaxSessions 10
-
-# Keep alive
-ClientAliveInterval 600
-ClientAliveCountMax 0
+MaxAuthTries 16
+MaxSessions 28
 
 # Protocol
 Protocol 2
-
-# Banner
-PrintMotd yes
-{% if grains['os_family'] == 'Windows' %}
-#Banner "C:\ProgramData\ssh\motd.txt"
-{% else %}
-Banner /etc/motd
-{% endif %}
-
-PermitUserEnvironment yes
-
-AcceptEnv __*GATE__
-AcceptEnv *COZY*
-AcceptEnv __PROXYJUMP_HOST__
-AcceptEnv *INTERACTIVE*
-AcceptEnv COLORTERM
-AcceptEnv LANG LC_*
-AcceptEnv LC_ADDRESS
-AcceptEnv LC_ADDRESS
-AcceptEnv LC_ALL
-AcceptEnv LC_ALL
-AcceptEnv LC_COLLATE
-AcceptEnv LC_COLLATE
-AcceptEnv LC_CTYPE
-AcceptEnv LC_CTYPE
-AcceptEnv LC_IDENTIFICATION
-AcceptEnv LC_IDENTIFICATION
-AcceptEnv LC_MEASUREMENT
-AcceptEnv LC_MEASUREMENT
-AcceptEnv LC_MESSAGES
-AcceptEnv LC_MESSAGES
-AcceptEnv LC_MONETARY
-AcceptEnv LC_MONETARY
-AcceptEnv LC_NAME
-AcceptEnv LC_NAME
-AcceptEnv LC_NUMERIC
-AcceptEnv LC_NUMERIC
-AcceptEnv LC_PAPER
-AcceptEnv LC_PAPER
-AcceptEnv LC_TELEPHONE
-AcceptEnv LC_TELEPHONE
-AcceptEnv LC_TIME
-AcceptEnv LC_TIME
-AcceptEnv NO_COLOR
-AcceptEnv TERM
-AcceptEnv TERM_PROGRAM

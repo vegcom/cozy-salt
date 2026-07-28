@@ -1,0 +1,8 @@
+# Banner
+PrintMotd yes
+
+{% if grains['os_family'] == 'Windows' %}
+Banner "C:\ProgramData\ssh\motd.txt"
+{% else %}
+Banner /etc/motd
+{% endif %}
