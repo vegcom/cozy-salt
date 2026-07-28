@@ -23,7 +23,7 @@
     - [Irongeek writeup on udev lockdown](https://www.irongeek.com/i.php?page=security/plug-and-prey-malicious-usb-devices#3.2_Locking_down_Linux_using_UDEV)
     - [x] base
     - [ ] harden
-    - [ ] reporting
+    - [x] reporting
   - [ ] iptables rules
     - [ ] base
     - [ ] harden
@@ -31,7 +31,7 @@
   - [x] pillar merge strategy: recurse broken across matchers in salt 3008.0rc2
     - [issues/68785](https://github.com/saltstack/salt/issues/68785)
     - [issues/59443](https://github.com/saltstack/salt/issues/59443)
-    - [ ] ~replace with explicit slsutil.renderer + slsutil.merge in loader~
-    - [ ] ~load sources in explicit order, merge same keys manually~
+    - [x] ~replace with explicit slsutil.renderer + slsutil.merge in loader~
+    - [x] ~load sources in explicit order, merge same keys manually~
   - [ ] pillar slots
     - [slots](https://docs.saltproject.io/en/latest/topics/slots/index.html)
