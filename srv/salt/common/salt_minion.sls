@@ -9,6 +9,8 @@
 {%- set minion_conf = minion_conf_dir ~ '/minion' %}
 {%- set minion_conf_beacon = minion_conf_dir ~ '/minion.d/97-beacon.conf' %}
 {%- set minion_conf_timeout = minion_conf_dir ~ '/minion.d/98-timeout.conf' %}
+{%- set minion_conf_grains = minion_conf_dir ~ '/minion.d/96-grains.conf' %}
+
 {%- set minion_conf_opt = minion_conf_dir ~ '/minion.d/99-cozy.conf' %}
 
 {%- set minion_conf_obj = "default_include: " ~ "minion.d/*.conf" ~ "\n" %}
@@ -75,7 +77,6 @@ salt_minion_conf_beacon:
     - mode: '0644'
     {%- endif %}
     - contents: |
-        tcp_reconnect_backoff: 1
     {%- if grains['os_family'] != 'Windows' %}
         beacons:
           resolv_conf:
@@ -100,6 +101,16 @@ salt_minion_conf_beacon:
                     - modify
             - beacon_module: windows_event_log
     {%- endif %}
+
+salt_minion_conf_grains:
+  file.managed:
+    - name: {{ minion_conf_grains }}
+    - makedirs: True
+    {%- if grains['os_family'] != 'Windows' %}
+    - mode: '0644'
+    {%- endif %}
+    - contents: |
+        grains_refresh_pre_exec: True
 
 {%- for module in salt_modules %}
 
