@@ -38,6 +38,7 @@ yay_clean() {
     PERL5LIB= PERL_LOCAL_LIB_ROOT= PERL_MB_OPT= PERL_MM_OPT= \
     JAVA_HOME= \
     QT_PLUGIN_PATH= QT_QPA_PLATFORMTHEME= QT_STYLE_OVERRIDE= \
+    GIT_CONFIG=/dev/null \
     "/usr/bin/yay" "$@"
 }
 
@@ -61,6 +62,7 @@ yay_fix() {
     PERL5LIB= PERL_LOCAL_LIB_ROOT= PERL_MB_OPT= PERL_MM_OPT= \
     JAVA_HOME= \
     QT_PLUGIN_PATH= QT_QPA_PLATFORMTHEME= QT_STYLE_OVERRIDE= \
+    GIT_CONFIG=/dev/null \
     "/usr/bin/yay" -S --noconfirm --asexplicit --answerclean All --rebuildall \
     $(/usr/bin/yay -Qneq)
 
@@ -83,6 +85,7 @@ yay_fix() {
     PERL5LIB= PERL_LOCAL_LIB_ROOT= PERL_MB_OPT= PERL_MM_OPT= \
     JAVA_HOME= \
     QT_PLUGIN_PATH= QT_QPA_PLATFORMTHEME= QT_STYLE_OVERRIDE= \
+    GIT_CONFIG=/dev/null \
     "/usr/bin/yay" -S --noconfirm --asdeps --answerclean All --rebuildall \
     $(/usr/bin/yay -Qndq)
 }

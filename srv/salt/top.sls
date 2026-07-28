@@ -2,7 +2,7 @@ base:
   # All minions get common states (dotfiles, nvm, etc.)
   '*':
     - common
-    - common.mongo_returner
+    - common.returners
 
   # All Windows systems (physical + WSL contexts)
   'os_family:Windows':

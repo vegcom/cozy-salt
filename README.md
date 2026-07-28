@@ -145,4 +145,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the **3 rules** and development workf
 
 ---
 
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/xai-org/xai-sdk-python)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/vegcom/cozy-salt)

@@ -1,0 +1,245 @@
+{%- set is_container = salt['file.file_exists']('/.dockerenv') or
+                      salt['file.file_exists']('/run/.containerenv') %}
+{%- set is_ci = salt['pillar.get']('SALT_CI', False) %}
+
+{%- if is_container or is_ci %}
+
+ipfs_skip:
+  test.nop:
+    - name: "no ipfs in containeres"
+
+{%- else %}
+
+{%- set is_windows = grains['os_family'] == 'Windows' %}
+{%- set mine_keys = salt['mine.get']('*', 'ipfs_private_swarm_key') %}
+{%- set mine_peers = salt['mine.get']('*', 'ipfs_peer_multiaddr') %}
+{%- set mine_cids = salt['mine.get']('*', 'ipfs_current_sync_cid') %}
+{%- set _self_id = grains.get('id', '') %}
+{%- set peering_peers = [] %}
+{%- for minion_id, peer_id in mine_peers.items() %}
+  {%- if minion_id != _self_id and peer_id %}
+    {%- set _id = (peer_id | string | trim).rsplit('/p2p/', 1)[-1] %}
+    {%- do peering_peers.append({'ID': _id, 'Addrs': ['/dns4/' ~ minion_id ~ '/tcp/4001']}) %}
+  {%- endif %}
+{%- endfor %}
+
+{%- set _ts_iface = 'Tailscale' if is_windows else 'tailscale0' %}
+{%- set _ts_ips = salt['grains.get']('ip4_interfaces', {}).get(_ts_iface, []) %}
+{%- set vpn_ip = _ts_ips[0] if _ts_ips else none %}
+
+{%- set gw = salt['netinfo.default_gw']() %}
+{%- set iface = gw.get('interface', '') %}
+{%- set lan_ip = salt['grains.get']('ip4_interfaces', {}).get(iface, [''])[0] %}
+
+{%- set kubo_env = {
+    "IPFS_PATH": "/opt/cozy/etc/kubo",
+    "GOLOG_LOG_FMT": "nocolor",
+    "GOLOG_LOG_LEVEL": "warn",
+    "GOLANG_PROTOBUF_REGISTRATION_CONFLICT": "warn"
+} %}
+
+{%- if not is_windows %}
+  {%- set current_path = salt['environ.get']('PATH') %}
+  {%- do kubo_env.update({"PATH": "/opt/kubo/:" ~ current_path}) %}
+{%- endif %}
+
+{%- set ipfs_requires = [] %}
+{%- for key, value in kubo_env.items() %}
+  {%- do ipfs_requires.append({'environ': 'kubo_env_' ~ key | lower}) %}
+{%- endfor %}
+
+{%- for key, value in kubo_env.items() %}
+kubo_env_{{ key | lower }}:
+  environ.setenv:
+    - name: {{ key }}
+    - value: {{ value }}
+    - update_minion: True
+  {%- if is_windows %}
+    - permanent: HKLM
+  {%- endif %}
+{%- endfor %}
+
+ipfs_init:
+  cmd.run:
+    - name: ipfs init
+    - env: {{ kubo_env | json }}
+{%- if is_windows %}
+    - unless: Test-Path "/opt/cozy/etc/kubo/config" -PathType Leaf
+    - shell: pwsh
+{%- else %}
+    - unless: test -f /opt/cozy/etc/kubo/config
+{%- endif %}
+    - require: {{ ipfs_requires | json }}
+
+ipfs_configure_private_networking:
+  cmd.run:
+    - names:
+      - ipfs bootstrap rm --all
+{%- set _swarm_addrs = ['/ip4/127.0.0.1/tcp/4001'] %}
+{%- if vpn_ip %}
+  {%- do _swarm_addrs.append('/ip4/' ~ vpn_ip ~ '/tcp/4001') %}
+  {%- do _swarm_addrs.append('/ip4/' ~ vpn_ip ~ '/udp/4001/quic-v1') %}
+{%- endif %}
+{%- if lan_ip %}
+  {%- do _swarm_addrs.append('/ip4/' ~ lan_ip ~ '/tcp/4001') %}
+  {%- do _swarm_addrs.append('/ip4/' ~ lan_ip ~ '/udp/4001/quic-v1') %}
+{%- endif %}
+      - ipfs config Addresses.Swarm --json '{{ _swarm_addrs | tojson }}'
+      - ipfs config Addresses.API "/ip4/127.0.0.1/tcp/5001"
+      - ipfs config Addresses.Gateway "/ip4/127.0.0.1/tcp/8080"
+      - ipfs config Routing.Type "dhtclient"
+      - ipfs config --json Reprovider null
+      - ipfs config --json Swarm.AddrFilters '[]'
+      - ipfs config --json Routing.DelegatedRouters '[]'
+      - ipfs config --json Ipns.DelegatedPublishers '[]'
+      - ipfs config --json DNS.Resolvers '{}'
+      - ipfs config --bool Discovery.MDNS.Enabled true
+      - ipfs config --bool Ipns.UsePubsub true
+      - ipfs config --bool Swarm.Transports.Network.Websocket false
+    - env: {{ kubo_env | json }}
+{%- if is_windows %}
+    - shell: pwsh
+{%- endif %}
+
+ipfs_config_path:
+  file.directory:
+{%- if is_windows %}
+    - name: C:/opt/cozy/etc/kubo
+{%- else %}
+    - name: /opt/cozy/etc/kubo
+{%- endif %}
+    - mkdirs: True
+{%- if is_windows %}
+    - win_owner: 'Administrators'
+    - win_perms:
+        cozyusers:
+          perms: full_control
+{%- else %}
+    - user: cozy-salt-svc
+    - group: cozyusers
+    - mode: '0770'
+    - file_mode: '0660'
+    - dir_mode: '0770'
+    - recurse:
+      - user
+      - group
+      - mode
+{%- endif %}
+
+ipfs_swarm_key:
+  file.managed:
+{%- if is_windows %}
+    - name: C:/opt/cozy/etc/kubo/swarm.key
+{%- else %}
+    - name: /opt/cozy/etc/kubo/swarm.key
+{%- endif %}
+{%- if mine_keys %}
+    - contents: |
+        {{ mine_keys.values() | first | indent(8) }}
+{%- else %}
+    - source:  salt://_templates/swarm.key.jinja
+    - template: jinja
+{%- endif %}
+    - replace: False
+{%- if not is_windows %}
+    - user: cozy-salt-svc
+    - group: cozyusers
+    - mode: '0660'
+{%- endif %}
+    - require:
+      - cmd: ipfs_init
+      - file: ipfs_config_path
+
+share_swarm_key_to_mine:
+  module.run:
+    - mine.send:
+      - name: ipfs_private_swarm_key
+      - mine_function: file.read
+      - path: /opt/cozy/etc/kubo/swarm.key
+
+share_peer_addr_to_mine:
+  module.run:
+    - mine.send:
+      - name: ipfs_peer_multiaddr
+      - mine_function: cmd.run
+      - cmd: ipfs config Identity.PeerID
+
+share_sync_cid_to_mine:
+  module.run:
+    - mine.send:
+      - name: ipfs_current_sync_cid
+      - mine_function: cmd.run
+      - cmd: ipfs files stat --hash /
+
+{%- if not is_windows %}
+ipfs_config_path_perms:
+  file.directory:
+    - name: /opt/cozy/etc/kubo
+    - user: cozy-salt-svc
+    - group: cozyusers
+    - dir_mode: '0770'
+    - file_mode: '0660'
+    - recurse:
+      - user
+      - group
+      - mode
+    - require:
+      - cmd: ipfs_configure_private_networking
+      - file: ipfs_swarm_key
+{%- endif %}
+
+{%- if peering_peers %}
+ipfs_configure_peering:
+  cmd.run:
+    - name: |
+        ipfs config --json Peering.Peers '{{ peering_peers | json }}'
+    - env: {{ kubo_env | json }}
+{%- if is_windows %}
+    - shell: pwsh
+{%- endif %}
+
+ipfs_bootstrap_peers:
+  cmd.run:
+    - names:
+{%- for peer in peering_peers %}
+      - ipfs bootstrap add /dns4/{{ peer.Addrs[0].split('/dns4/')[1].split('/tcp/')[0] }}/tcp/4001/p2p/{{ peer.ID }}
+{%- endfor %}
+    - env: {{ kubo_env | json }}
+{%- if is_windows %}
+    - shell: pwsh
+{%- endif %}
+{%- endif %}
+
+{%- if mine_cids.get(_self_id) %}
+ipfs_publish_local_identity:
+  cmd.run:
+    - name: ipfs name publish /ipfs/{{ mine_cids.get(_self_id) }}  --allow-offline
+    - env: {{ kubo_env | json }}
+{%- if is_windows %}
+    - shell: pwsh
+{%- endif %}
+{%- endif %}
+
+{%- set _peers_to_pin = [] %}
+{%- for minion_id, cid in mine_cids.items() %}
+  {%- if minion_id != _self_id and cid %}
+    {%- set _raw = mine_peers.get(minion_id, '') | string | trim %}
+    {%- if _raw %}
+      {%- do _peers_to_pin.append(_raw.rsplit('/p2p/', 1)[-1]) %}
+    {%- endif %}
+  {%- endif %}
+{%- endfor %}
+
+{%- if _peers_to_pin %}
+ipfs_sync_private_cluster_pins:
+  cmd.run:
+    - names:
+{%- for peer_id in _peers_to_pin %}
+      - ipfs pin add /ipns/{{ peer_id }}
+{%- endfor %}
+    - env: {{ kubo_env | json }}
+{%- if is_windows %}
+    - shell: pwsh
+{%- endif %}
+{%- endif %}
+{%- endif %}

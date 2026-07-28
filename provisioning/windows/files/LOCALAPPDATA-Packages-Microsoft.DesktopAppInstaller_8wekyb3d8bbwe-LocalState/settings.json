@@ -7,11 +7,11 @@
     "https://learn.microsoft.com/en-us/windows/package-manager/winget/troubleshooting",
     "https://github.com/microsoft/winget-cli/blob/master/doc/Settings.md"
   ],
-  "source": {"autoUpdateIntervalInMinutes": 90},
+  "source": { "autoUpdateIntervalInMinutes": 90 },
   "visual": {
     "progressBar": "sixel",
     "enableSixels": true,
-    "anonymizeDisplayedPaths": true,
+    "anonymizeDisplayedPaths": true
   },
   "logging": {
     "fileNameStrategy": "timestamp",
@@ -26,10 +26,10 @@
       "test",
       "config",
       "default",
-      "all",
+      "all"
     ],
-    "file": {"totalSizeLimitInMB": 2048, "fileCountLimit": 128},
-    "telemetry": {"level": "basic"}
+    "file": { "totalSizeLimitInMB": 2048, "fileCountLimit": 128 },
+    "telemetry": { "level": "basic" }
   },
   "experimentalFeatures": {
     "experimentalCmd": false,
@@ -52,14 +52,41 @@
     "maxResumes": 5,
     "preferences": {
       "scope": "machine",
-      "installerTypes": ["msi", "inno", "portable", "exe", "zip", "nullsoft", "msix", "burn", "wix", "msstore"],
+      "installerTypes": [
+        "msi",
+        "inno",
+        "portable",
+        "exe",
+        "zip",
+        "nullsoft",
+        "msix",
+        "burn",
+        "wix",
+        "msstore"
+      ],
       "locale": ["en-US", "fr-FR", "ja-JP", "ko-KR", "ru-RU", "zh-CN", "zh-TW"]
     },
     "requirements": {
-      "installerTypes": ["msi", "inno", "portable", "exe", "zip", "nullsoft", "msix", "burn", "wix", "msstore"]
+      "installerTypes": [
+        "msi",
+        "inno",
+        "portable",
+        "exe",
+        "zip",
+        "nullsoft",
+        "msix",
+        "burn",
+        "wix",
+        "msstore"
+      ]
     }
   },
-  "configureBehavior": {"defaultModuleRoot": "C:/Program Files/PowerShell/7/Modules"},
-  "downloadBehavior": {"cacheRoot": "C:/opt/WinGet/Cache/", "useSharedCache": true},
-  "installPrefReq": {"scope": "machine"}
+  "configureBehavior": {
+    "defaultModuleRoot": "C:/Program Files/PowerShell/7/Modules"
+  },
+  "downloadBehavior": {
+    "cacheRoot": "C:/opt/WinGet/Cache/",
+    "useSharedCache": true
+  },
+  "installPrefReq": { "scope": "machine" }
 }

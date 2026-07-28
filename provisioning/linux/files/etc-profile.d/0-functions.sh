@@ -41,15 +41,21 @@ safe_comp_deprecate_var() {
     :;
 }
 
-cozy_render(){
-    _helper(){
-        bash <<"EOF"
-        set -o pipefail
-        _state_output="$(sudo salt-call -l quiet state.show_states 2>&1)" || printf '\n%s\n' "${_state_output}"  2>&1 || exit 1
-        awk '/- /{gsub(/\./, "/");system("echo \"salt://"$NF".sls\" ; sudo salt-call slsutil.renderer default_renderer=jinja \"salt://"$NF".sls\"")}'" <<<${_state_output}
-EOF
-    }
-    _helper|fzf --literal --no-clear
+cozy_render() {
+    _states=$(salt-call -l quiet state.show_states 2>/dev/null |
+              awk '!/^local:/ && /^[[:space:]]*-/ {print $NF}' |
+              sed 's|\.|/|g')
+
+    if [ -z "$_states" ]; then
+        echo "Error: No states found or salt-call failed." >&2
+        return 1
+    fi
+
+    echo "$_states" | while read -r state; do
+        [ -z "$state" ] && continue
+        echo "=== Rendering: salt://${state}.sls ==="
+        salt-call -l quiet slsutil.renderer "salt://${state}.sls" default_renderer=jinja
+    done
 }
 
 

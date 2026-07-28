@@ -141,7 +141,7 @@ pacman_update:
 # ----------------------------------------------------------------------------
 # Manages /etc/makepkg.conf.d/cozy.conf for ccache + distcc integration
 # BUILDENV uses ccache only (distcc via CCACHE_PREFIX in cozy.sh)
-# DISTCC_HOSTS dynamically queried from headscale by tag:distcc_<arch>
+# DISTCC_HOSTS dynamically queried from headscale by tag:distcc
 # ============================================================================
 {%- set distcc_hosts = salt['headscale.get_distcc_hosts']() %}
 
@@ -156,7 +156,6 @@ makepkg_cozy_conf:
         # Managed by cozy-salt - DO NOT EDIT MANUALLY
         BUILDENV=(color ccache check)
         {%- if distcc_hosts %}
-        # distcc compile hosts (auto-discovered via headscale tag:distcc_x86_64)
         DISTCC_HOSTS="{{ distcc_hosts }}"
         {%- endif %}
 
@@ -169,7 +168,6 @@ makepkg_environment.d_conf:
     - contents: |
         # Managed by cozy-salt - DO NOT EDIT MANUALLY
         {%- if distcc_hosts %}
-        # distcc compile hosts (auto-discovered via headscale tag:distcc_x86_64)
         DISTCC_HOSTS="{{ distcc_hosts }}"
         {%- endif %}
 
@@ -230,6 +228,28 @@ yay_install:
     - require:
       - git: yay_clone
     - unless: which yay
+
+# ============================================================================
+# YAY CONFIG
+# Runs as per managed_user
+# ============================================================================
+
+{%- set managed_users = salt['pillar.get']('managed_users', [], merge=True) %}
+{%- import '_macros/dotfiles.sls' as dotfiles %}
+{%- from '_macros/dotfiles.sls' import get_user_home %}
+{%- for username in managed_users %}
+  {%- set user_home = get_user_home(username) | trim %}
+yay_conf_{{ username }}:
+  file.serialize:
+    - name: {{ dotfiles.dotfile_path(user_home, '.config/yay/config.json') }}
+    - serializer: json
+    - merge_if_exists: True
+    - dataset: {"GITFLAGS": "-c core.hooksPath=/dev/null -c init.templateDir=/dev/null", }
+    - mkdirs: True
+    - mode: "0644"
+    - user: {{ username }}
+    - group: {{ username }}
+{%- endfor %}
 
 # ============================================================================
 # FOUNDATION: core_utils via yay (runs first, others depend on this)

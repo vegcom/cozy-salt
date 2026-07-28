@@ -5,7 +5,7 @@
 {%- from '_macros/windows.sls' import get_winget_user with context %}
 
 {%- set pwsh_profile_dir = salt['pillar.get']('paths:powershell_7_profile', 'C:/Program Files/PowerShell/7') %}
-{%- set repo_path = 'C:/opt/cozy/cozy-pwsh' %}
+{%- set repo_path = 'C:/opt/cozy/cache/cozy-pwsh' %}
 {%- set winget_user = get_winget_user() %}
 
 # Clone cozy-pwsh
@@ -53,7 +53,8 @@ pwsh_profile_acl:
   cmd.run:
     - name: icacls "{{ repo_path }}" /grant:r "Users:(OI)(CI)(R)" /grant:r "Administrators:(OI)(CI)(F)" /t /q
     - shell: cmd
-    - bg: True
+    - hide_output: True
+    - output_loglevel: quiet
     - require:
       - git: pwsh_profile_repo
     - onchanges:

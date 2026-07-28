@@ -44,6 +44,12 @@ scheduled_tasks:
     - name: shadowsocks
       file: windows/tasks/net/shadowsocks.xml
       enabled: True
+    - name: tailscale
+      file: windows/tasks/net/tailscale.xml
+      enabled: True
+    - name: ipfs
+      file: windows/tasks/net/ipfs.xml
+      enabled: True
   kubernetes:
     - name: docker_registry_port_forward
       file: windows/tasks/kubernetes/docker_registry_port_forward.xml
@@ -69,7 +75,7 @@ schedule:
   windows_health_check:
     function: cmd.script
     args:
-      - salt://windows/files/opt-cozy/health-check.ps1
+      - salt://windows/files/opt-cozy-bin/health-check.ps1
     kwargs:
       shell: powershell
     days: 7

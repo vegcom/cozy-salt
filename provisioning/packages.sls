@@ -10,7 +10,7 @@
 # ============================================================================
 # SHARED PACKAGE LISTS (DRY - referenced by distro sections below)
 # ============================================================================
-{%- set _core = ['curl', 'git', 'jq', 'rsync', 'tree', 'unzip', 'wget', 'aria2', 'dkms'] %}
+{%- set _core = ['curl', 'git', 'jq', 'rsync', 'tree', 'unzip', 'wget', 'aria2', 'dkms', 'inotify-tools'] %}
 {%- set _monitoring_base = ['htop', 'lsof', 'ltrace', 'strace', 'sysstat'] %}
 {%- set _shell = ['bash-completion', 'screen', 'tmux', 'shellcheck', 'zsh'] %}
 {%- set _shell_rhel = (_shell | reject('equalto', 'shellcheck') | list) + ['ShellCheck'] %}
@@ -93,7 +93,7 @@ package_metadata:
   provides:
     avahi: {ubuntu: avahi-daemon, debian: avahi-daemon, rhel: avahi, arch: avahi}
     build_essentials: {ubuntu: build-essential, debian: build-essential, rhel: ['gcc', 'gcc-c++', 'make', 'autoconf', 'automake'], arch: base-devel}
-    compression_7z: {ubuntu: 7zip, debian: 7zip, rhel: p7zip, arch: p7zip}
+    compression_7z: {ubuntu: 7zip, debian: 7zip, rhel: 7zip, arch: p7zip}
     dns_utils: {ubuntu: bind9-dnsutils, debian: bind9-dnsutils, rhel: bind-utils, arch: bind}
     etcd_client: {ubuntu: etcd-client, debian: etcd-client, rhel: etcd-client, arch: etcd-bin}
     github_cli: {ubuntu: gh, debian: gh, rhel: gh, arch: github-cli}
@@ -116,7 +116,7 @@ ubuntu: {{ _apt | tojson }}
 rhel:
   acl: [acl]
   build_tools: {{ (_build_base + ['gcc', 'gcc-c++', 'make']) | tojson }}
-  compression: {{ (_compress_base + ['p7zip', 'p7zip-plugins', 'xz']) | tojson }}
+  compression: {{ (_compress_base + ['7zip', 'xz']) | tojson }}
   core_utils: {{ (_core + ['vim-enhanced']) | tojson }}
   kvm: [libvirt, libvirt-client, libvirt-daemon, qemu-img, qemu-kvm, virt-install]
   modern_cli: {{ (_modern_cli_base + ['fd-find']) | tojson }}
@@ -132,7 +132,7 @@ rhel:
 arch:
   build_tools: {{ (_build_base + ['base-devel']) | tojson }}
   compression: {{ (_compress_base + ['p7zip', 'xz']) | tojson }}
-  core_utils: {{ (_core + ['vim', 'sed', 'glibc', 'glibc-locales', 'man-db']) | tojson }}
+  core_utils: {{ (_core + ['vim', 'sed', 'glibc', 'glibc-locales', 'man-db', 'python-pyinotify']) | tojson }}
   modern_cli: {{ (_modern_cli_base + ['fd']) | tojson }}
   monitoring: {{ (_monitoring_base + ['duf', 'ncdu']) | tojson }}
   networking: {{ (_net_base + ['avahi', 'bind', 'etcd-bin', 'iputils', 'net-tools', 'openbsd-netcat', 'openssh', 'wsdd', 'nss-mdns']) | tojson }}
@@ -158,7 +158,7 @@ arch:
 # ============================================================================
 windows:
 
-  pwsh_modules: [PowerShellGet, Microsoft.PowerShell.PSResourceGet, PackageManagement, PSReadLine, Microsoft.WinGet.Client, Microsoft.WinGet.CommandNotFound, powershell-yaml, PSFzf, PSWindowsUpdate, Terminal-Icons]
+  pwsh_modules: [PowerShellGet, Microsoft.PowerShell.PSResourceGet, PackageManagement, PSReadLine, Microsoft.WinGet.Client, Microsoft.WinGet.CommandNotFound, powershell-yaml, PSFzf, PSWindowsUpdate, Terminal-Icons, BurntToast]
 
   choco: [chocolatey-compatibility.extension, chocolatey-core.extension, chocolatey-font-helpers.extension, cheatengine, colortool, Cygwin, dive, docker-cli, docker-compose, make,  vim, winbtrfs, ext2fsd, jq, tor]
 
@@ -177,7 +177,7 @@ windows:
       compression: [Giorgiotani.Peazip]
       development: [GitHub.GitHubDesktop, GitHub.cli, Gitleaks.Gitleaks, JetBrains.IntelliJIDEA.Community, Microsoft.VisualStudio.BuildTools, Microsoft.VisualStudio.Community, Microsoft.VisualStudioCode, Microsoft.VisualStudioCode.CLI, Microsoft.VisualStudioCode.Insiders, Microsoft.VisualStudioCode.Insiders.CLI, MSYS2.MSYS2, NSIS.NSIS, Kitware.CMake, Anthropic.ClaudeCode, BurntSushi.ripgrep.MSVC]
       editor: [Obsidian.Obsidian]
-      file_management: [7zip.7zip, WinSCP.WinSCP]
+      file_management: [7zip.7zip, WinSCP.WinSCP, voidtools.Everything.Cli, voidtools.Everything]
       games: [Valve.Steam]
       hardware: [BitSum.ParkControl, BitSum.ProcessLasso, Guru3D.RTSS, TechPowerUp.NVCleanstall, Wagnardsoft.DisplayDriverUninstaller, REALiX.HWiNFO, TechPowerUp.GPU-Z, tuna-f1sh.cyme]
       kubernetes: [Kubecolor.kubecolor, Freelensapp.Freelens]

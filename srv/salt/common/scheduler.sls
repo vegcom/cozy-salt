@@ -1,20 +1,22 @@
-#!jinja|yaml
 # Salt Scheduler State Configuration
 # NOTE: Schedules now managed on MASTER (srv/master.d/schedule.conf)
 # This state absents any legacy minion-side schedules
 
 # Absent legacy minion schedules (highstates moved to master orchestration)
 # Note: windows_health_check stays minion-side (needs local DISM access)
-{%- set legacy_schedules = ['linux_highstate', 'daily_highstate'] %}
+{%- set legacy_schedules = [] %}
 {%- for job_name in legacy_schedules %}
+  {%- if job_name %}
 absent_legacy_schedule_{{ job_name }}:
   schedule.absent:
     - name: {{ job_name }}
+  {%- endif %}
 {%- endfor %}
 
 # Keep ability to deploy minion-specific schedules if needed (rare)
 {%- set schedules = salt['pillar.get']('schedule', {}) %}
 {%- for job_name, job_config in schedules.items() %}
+{%- if job_name and job_config %}
 schedule_{{ job_name }}:
   schedule.present:
     - name: {{ job_name }}
@@ -46,4 +48,5 @@ schedule_{{ job_name }}:
     {%- if 'enabled' in job_config %}
     - enabled: {{ job_config['enabled'] | lower }}
     {%- endif %}
+  {%- endif %}
 {%- endfor %}

@@ -172,7 +172,8 @@ FROM salt-base-rpm AS salt-minion-rpm
 # Install Salt Minion from pre-configured repos
 # git required for git.latest states (common.vim etc) on first highstate run
 RUN dnf install -y salt-minion git iproute procps-ng && \
-    dnf clean all && rm -rf /var/cache/dnf /tmp/*
+    dnf clean all && rm -rf /var/cache/dnf /tmp/* && \
+    /opt/saltstack/salt/bin/pip3 install --root-user-action ignore pymongo pyinotify gitpython
 
 # Pre-configure minion (master hostname will be set at runtime)
 RUN mkdir -p /etc/salt/minion.d && \

@@ -29,11 +29,6 @@ case $- in
     *) return 2>/dev/null ;;
 esac
 
-if [ -d /etc/bash_completion.d/ ] ; then
-	. /etc/bash_completion.d/*.bash 2>/dev/null
-fi
-
-
 if [ "$STARSHIP_DISABLE" != "true" ]; then command -v starship >/dev/null && eval "$(starship init bash)" ; fi
 if [ "$CARAPACE_DISABLE" != "true" ]; then command -v carapace >/dev/null && eval "$(carapace _carapace)" ; fi
 if [ "$OXIDE_DISABLE" != "true" ]; then command -v zoxide >/dev/null && eval "$(zoxide init bash)" ; fi

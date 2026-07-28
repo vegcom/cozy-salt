@@ -11,7 +11,9 @@
     - name: https://{{ token }}@github.com/{{ org }}/{{ repo }}.git
     - target: {{ target }}
     - branch: {{ branch }}
+{%- if grains['os'] != 'Windows' %}
     - user: {{ user }}
+{%- endif %}
 {%- if force_clone %}
     - force_clone: True
 {%- endif %}

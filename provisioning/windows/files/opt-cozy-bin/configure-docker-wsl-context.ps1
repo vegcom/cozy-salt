@@ -14,9 +14,3 @@ if (-not $hasContext) {
 }
 
 docker context use wsl 2>$null
-docker info 2>$null | Out-Null
-
-if ($LASTEXITCODE -ne 0) {
-    docker context use default 2>$null
-    exit 1
-}

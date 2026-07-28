@@ -17,7 +17,6 @@ choco_upgrade:
 winget_upgrade_machine:
   cmd.run:
     - name: '{{ winget_path }} upgrade --all --accept-source-agreements --accept-package-agreements --disable-interactivity'
-    # - runas: {{ svc_name }}
     - onlyif: Test-Path '{{ winget_path }}'
     - shell: powershell
 

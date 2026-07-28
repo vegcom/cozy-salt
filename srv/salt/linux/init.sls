@@ -26,7 +26,8 @@ include:
   - linux.rust
   - linux.miniforge
   - linux.homebrew
-  - linux.cozy-presence
   - linux.tailscale
+  - linux.cozy-presence
   - linux.avahi_service
   - linux.distcc
+  - linux.ipfs

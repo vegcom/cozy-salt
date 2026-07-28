@@ -3,11 +3,11 @@
 # See docs/modules/common-gitconfig.md for usage
 
 {%- import '_macros/dotfiles.sls' as dotfiles %}
+{%- from '_macros/dotfiles.sls' import get_user_home %}
 
 {%- set managed_users = salt['pillar.get']('managed_users', [], merge=True) %}
 {%- set is_windows = grains['os'] == 'Windows' %}
 {%- set users_data = salt['pillar.get']('users', {}) %}
-{%- set user_homes = grains.get('user_homes', {}) %}
 
 # Deploy to each managed user
 {%- if not is_windows %}
@@ -19,11 +19,11 @@
 
 {%- for username in usernames %}
   {%- set base_username = username.split('.')[0] %}
-  {%- set user_home = user_homes.get(username, user_homes.get(base_username, '')) %}
+  {%- set user_home = get_user_home(username) | trim %}
   {%- if user_home %}
+    {%- set global_tokens = salt['pillar.get']('github:tokens', []) %}
     {%- set user_tokens = users_data.get(base_username, {}).get('github', {}).get('tokens', []) %}
-    {%- set valid_token = salt['github_release.find_valid_token']() %}
-    {%- set merged_tokens = ([valid_token] if valid_token else []) + user_tokens %}
+    {%- set merged_tokens = global_tokens + user_tokens %}
 
 deploy_gitconfig_{{ username }}:
   file.managed:

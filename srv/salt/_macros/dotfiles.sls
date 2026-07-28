@@ -26,13 +26,14 @@
 {%- endfor %}
 {%- endmacro %}
 
-{#- Get platform-appropriate user home directory path -#}
+{#- Get platform-appropriate user home directory path for a specific user -#}
 {%- macro get_user_home(username) -%}
+  {%- set base = username.split('.')[0] -%}
   {%- if grains['os_family'] == 'Windows' -%}
-  {%- set user_home = salt['cmd.run']('(Resolve-Path("$HOME")).Path', shell='powershell') | replace("\\", "/") -%}
-    {{ user_home }}
+    {%- set _cmd = "Get-ChildItem 'HKLM:/SOFTWARE/Microsoft/Windows NT/CurrentVersion/ProfileList' | ForEach-Object { $p = (Get-ItemProperty $_.PSPath).ProfileImagePath; if ($p -match 'Users\\\\" ~ base ~ "(\\..*)?$') { $p.Replace('\\','/') } } | Select-Object -First 1" -%}
+    {{ salt['cmd.run'](_cmd, shell='powershell') | trim }}
   {%- else -%}
-    /home/{{ username }}
+    /home/{{ base }}
   {%- endif -%}
 {%- endmacro -%}
 

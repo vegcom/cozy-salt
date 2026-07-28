@@ -9,6 +9,8 @@
 #       advertise-exit-node: True
 #       advertise-routes: "10.0.0.0/24"
 
+{%- set is_windows = grains['os_family'] == 'Windows' %}
+
 {%- set enabled = salt['pillar.get']('host:capabilities:tailscale', True) %}
 {%- set headscale = salt['pillar.get']('headscale', {}) %}
 {%- set auth_key = headscale.get('auth-key', '') %}
@@ -30,7 +32,7 @@
 
 tailscale_up:
   cmd.run:
-    - name: tailscale up --force-reauth --reset --report-posture --login-server {{ login_server }} --auth-key {{ auth_key }}
+    - name: tailscale up --force-reauth {%- if is_windows %} --unattended {%- endif %} --reset --report-posture --login-server {{ login_server }} --auth-key {{ auth_key }}
     - unless: tailscale ip
 
   {%- if flag_parts %}
@@ -40,9 +42,10 @@ tailscale_set:
     - onlyif: tailscale status
     - require:
       - cmd: tailscale_up
-{%- endif %}
+  {%- endif %}
 
-{%- else %}
+  {%- else %}
+
 tailscale_up_skipped:
   test.nop:
     - name: >-

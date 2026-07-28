@@ -7,6 +7,7 @@ include:
   - windows.salt_minion
   - windows.service-account
   - windows.users
+  - windows.group
   - windows.paths
   - windows.config
   - windows.install
@@ -21,3 +22,4 @@ include:
   - windows.wt
   - windows.vibeshine
   - windows.tailscale
+  - windows.ipfs

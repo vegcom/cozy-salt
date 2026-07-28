@@ -52,6 +52,23 @@ else
     echo "[entrypoint] WARNING: SALT_API_USER_PASS not set — SaltGUI login will fail"
 fi
 
+# minion config
+echo "[entrypoint] Configuring master as local minion..."
+mkdir -p /etc/salt/minion.d
+echo "master: localhost" > /etc/salt/minion.d/master.conf
+echo "id: salt" > /etc/salt/minion.d/id.conf
+
+# Auth
+autosign_file="/etc/salt/autosign.d/autosign_file.conf"
+autoreject_file="/etc/salt/autosign.d/autoreject_file.conf"
+echo "[entrypoint] Writing master aclAuth config..."
+if [ ! -d /etc/salt/autosign.d ]; then
+    mkdir -p /etc/salt/autosign.d
+    touch ${autosign_file}
+    touch ${autoreject_file}
+fi
+
+# Mongo
 echo "[entrypoint] Initialising mongo credentials..."
 mongo_dir="/srv/data/mongo"
 mkdir -p "${mongo_dir}"
@@ -69,8 +86,7 @@ echo "[entrypoint] Writing master mongo returner config..."
 mongo_pass=$(cat "${mongo_pass_file}")
 cat > /etc/salt/master.d/mongo-returner-generated.conf <<EOF
 # Generated at container startup — do not edit, do not commit (see .gitignore)
-# master_job_cache handled minion-side via return: mongo_future_return in minion.d/
-
+# docs configuration/master: https://docs.saltproject.io/en/latest/ref/configuration/master.html
 mongo.host: ${MONGO_HOST:-mongo}
 mongo.port: 27017
 mongo.db: salt
@@ -80,8 +96,8 @@ mongo.authdb: admin
 EOF
 echo "  + mongo-returner-generated.conf written"
 
+# Sqlite
 echo "[entrypoint] Initialising sqlite3 returner schema..."
-# TODO: place into it's own .py file
 mkdir -p /srv/data/sqlite || true
 python3 -c "
 import sqlite3, os, shutil
@@ -103,11 +119,6 @@ else:
 
 "
 chown salt:salt /srv/data/sqlite/salt_returns.db 2>/dev/null || true
-
-echo "[entrypoint] Configuring master as local minion..."
-mkdir -p /etc/salt/minion.d
-echo "master: localhost" > /etc/salt/minion.d/master.conf
-echo "id: salt" > /etc/salt/minion.d/id.conf
 
 # Load pre-shared key so master's pre-accepted pub matches what minion presents
 preload_dir="/etc/salt/pki/minion-preload"
@@ -133,7 +144,7 @@ echo "[entrypoint] Starting avahi-daemon..."
 avahi-daemon --no-drop-root --daemonize --debug &
 
 echo "[entrypoint] Starting Salt API..."
-salt-api -d --log-level=info
+salt-api -d --log-level=info --log-file-level=warning
 
 echo "[entrypoint] Starting Salt Master..."
-exec salt-master --log-level=info
+exec salt-master --log-level=info --log-file-level=warning
