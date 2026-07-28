@@ -173,30 +173,21 @@ windows:
 
     system:
       browser: [Google.Chrome]
-      communication: [hoppscotch.Hoppscotch]
+      communication: []
       compression: [Giorgiotani.Peazip]
-      development: [GitHub.GitHubDesktop, GitHub.cli, Gitleaks.Gitleaks, JetBrains.IntelliJIDEA.Community, Microsoft.VisualStudio.BuildTools, Microsoft.VisualStudio.Community, Microsoft.VisualStudioCode, Microsoft.VisualStudioCode.CLI, Microsoft.VisualStudioCode.Insiders, Microsoft.VisualStudioCode.Insiders.CLI, MSYS2.MSYS2, NSIS.NSIS, Kitware.CMake, Anthropic.ClaudeCode, BurntSushi.ripgrep.MSVC]
+      development: [GitHub.GitHubDesktop, GitHub.cli, Gitleaks.Gitleaks, JetBrains.IntelliJIDEA.Community, Microsoft.VisualStudio.BuildTools, Microsoft.VisualStudio.Community, Microsoft.VisualStudioCode, Microsoft.VisualStudioCode.CLI, Microsoft.VisualStudioCode.Insiders, Microsoft.VisualStudioCode.Insiders.CLI, MSYS2.MSYS2, NSIS.NSIS, Kitware.CMake, Anthropic.ClaudeCode, BurntSushi.ripgrep.MSVC, hoppscotch.Hoppscotch]
       editor: [Obsidian.Obsidian]
       file_management: [7zip.7zip, WinSCP.WinSCP, voidtools.Everything.Cli, voidtools.Everything]
       games: [Valve.Steam]
-      hardware: [BitSum.ParkControl, BitSum.ProcessLasso, Guru3D.RTSS, TechPowerUp.NVCleanstall, Wagnardsoft.DisplayDriverUninstaller, REALiX.HWiNFO, TechPowerUp.GPU-Z, tuna-f1sh.cyme]
+      hardware: [TechPowerUp.NVCleanstall, Wagnardsoft.DisplayDriverUninstaller, tuna-f1sh.cyme]
       kubernetes: [Kubecolor.kubecolor, Freelensapp.Freelens]
-      media_creative: [Audacity.Audacity, Cockos.REAPER, Inkscape.Inkscape, KDE.Krita, rocksdanister.LivelyWallpaper]
       media: [ImageMagick.ImageMagick, Ruben2776.PicView, Gyan.FFmpeg, yang991178.fluent-reader]
-      networking: [Apple.Bonjour, SSHFS-Win.SSHFS-Win, WinFsp.WinFsp, WiresharkFoundation.Wireshark, Tailscale.Tailscale]
-      rgb_peripherals: [namazso.PawnIO, Nefarius.HidHide, OpenRGB.OpenRGB, ViGEm.ViGEmBus]
+      networking: [Apple.Bonjour, WiresharkFoundation.Wireshark, Tailscale.Tailscale]
       ricing: [Rainmeter.Rainmeter]
       shell: [Git.Git]
       sync_backup: [Syncthing.Syncthing, Martchus.syncthingtray]
       terminal: [Alacritty.Alacritty, Maximus5.ConEmu, Microsoft.WindowsTerminal]
       utilities: [CodeSector.TeraCopy, AntibodySoftware.WizTree, qBittorrent.qBittorrent, WerWolv.ImHex]
-
-    gated:
-      voicemeter: [VB-Audio.Voicemeeter.Potato]
-      xsplit: [SplitmediaLabs.XSplitBroadcaster]
-
-    # 360 noscope - packages that choke on --scope machine flag
-    noscope: [Microsoft.PowerShell, Starship.Starship, Rem0o.FanControl, Ruben2776.PicView, Olivia.VIA, Insecure.Nmap, Microsoft.UI.Xaml.2.7, Microsoft.UI.Xaml.2.8, Microsoft.DotNet.Runtime.9, Microsoft.DotNet.DesktopRuntime.10, NASM.NASM, Vencord.Vesktop, Microsoft.Sysinternals.Suite, Microsoft.VCLibs.Desktop.14, TRGamer-tech.FluentTaskScheduler, HandBrake.HandBrake]
 
     userland:
       communication: [Telegram.TelegramDesktop]
@@ -209,9 +200,36 @@ windows:
       utilities: [Microsoft.PowerToys, davidegiacometti.VisualStudioForCmdPal, nickknissen.TailscaleCommandPalette,  Rclone.Rclone, Rufus.Rufus]
       ricing: [MicaForEveryone.MicaForEveryone]
 
+    gated:
+      voicemeter: [VB-Audio.Voicemeeter.Potato]
+      xsplit: []
+      ghelper: [seerge.g-helper]
+      controllers: [Rem0o.FanControl, OpenRGB.OpenRGB]
+      bitsum: [BitSum.ParkControl, BitSum.ProcessLasso]
+      rtss: [Guru3D.RTSS]
+      hw_monitor: [REALiX.HWiNFO, TechPowerUp.GPU-Z]
+      peripherals_ctrl: [namazso.PawnIO, Nefarius.HidHide, ViGEm.ViGEmBus]
+      media_stream: []
+      media_video: []
+      media_audio: [Audacity.Audacity, Cockos.REAPER]
+      media_imaeg: [Inkscape.Inkscape, KDE.Krita]
+
+    noscope:
+      communication: [Vencord.Vesktop]
+      terminal: [Microsoft.PowerShell, Starship.Starship]
+      utilities: [Microsoft.Sysinternals.Suite, TRGamer-tech.FluentTaskScheduler]
+      development: [Microsoft.VCLibs.Desktop.14, NASM.NASM]
+      media: [Ruben2776.PicView, HandBrake.HandBrake]
+      via: [Olivia.VIA]
+      ui_libraries: [Microsoft.UI.Xaml.2.7, Microsoft.UI.Xaml.2.8]
+      vcredist: [Microsoft.DotNet.Runtime.9, Microsoft.DotNet.DesktopRuntime.10]
+      networking: [Insecure.Nmap]
+      xsplit: [SplitmediaLabs.XSplitBroadcaster]
+
 # ============================================================================
 # LANGUAGE-SPECIFIC PACKAGES
 # ============================================================================
+
 pip_base: [pip, setuptools, wheel, pipx, uv, pre-commit, ipython, pytest, mypy, ruff, pipenv, pixi, poetry, gitpython, djlint]
 
 npm_global:

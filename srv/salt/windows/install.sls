@@ -110,7 +110,7 @@ winget_features_enable:
 {%- endif %}
 
 # Install Winget system packages, machine scope (batched by category)
-{%- set noscope_pkgs = packages.windows.winget.get('noscope', []) %}
+{%- set noscope_pkgs = packages.windows.winget.get('noscope', {}).values() | list | flatten %}
 {%- if packages.windows.winget.system is defined %}
   {%- for category, pkgs in packages.windows.winget.system.items() %}
     {%- set filtered_pkgs = pkgs | reject('in', noscope_pkgs) | list %}
@@ -131,6 +131,10 @@ winget_features_enable:
       {%- set filtered_pkgs = pkgs | reject('in', noscope_pkgs) | list %}
       {%- if filtered_pkgs %}
 {{ winget_batch_install('winget_batch_gated_' ~ cap_name, filtered_pkgs, winget_path=winget_path, scope='machine', bg=true) }}
+      {%- endif %}
+      {%- set noscope_gated_pkgs = pkgs | select('in', noscope_pkgs) | list %}
+      {%- if noscope_gated_pkgs %}
+{{ winget_batch_install('winget_batch_gated_' ~ cap_name ~ '_noscope', noscope_gated_pkgs, winget_path=winget_path, bg=true, scope=false) }}
       {%- endif %}
     {%- endif %}
   {%- endfor %}
