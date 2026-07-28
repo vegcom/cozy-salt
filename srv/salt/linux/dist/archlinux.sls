@@ -234,11 +234,11 @@ yay_install:
 # Runs as per managed_user
 # ============================================================================
 
-{#- FIXME: `grains.get user_homes` not returning dict #}
 {%- set managed_users = salt['pillar.get']('managed_users', [], merge=True) %}
 {%- import '_macros/dotfiles.sls' as dotfiles %}
+{%- from '_macros/dotfiles.sls' import get_user_home %}
 {%- for username in managed_users %}
-  {%- set user_home = "/home/" ~ username %}
+  {%- set user_home = get_user_home(username) | trim %}
 yay_conf_{{ username }}:
   file.serialize:
     - name: {{ dotfiles.dotfile_path(user_home, '.config/yay/config.json') }}
