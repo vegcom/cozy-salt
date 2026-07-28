@@ -1,0 +1,13 @@
+AuthorizedKeysFile .ssh/authorized_keys
+{%- if grains['os_family'] != 'Windows' %}
+ChallengeResponseAuthentication no
+UsePAM yes
+{%- endif %}
+{%- if grains['os_family'] == 'Windows' %}
+Match Group administrators
+    AuthorizedKeysFile __PROGRAMDATA__/ssh/administrators_authorized_keys
+KbdInteractiveAuthentication no
+{%- endif %}
+MaxAuthTries 16
+PermitEmptyPasswords no
+PermitRootLogin prohibit-password

@@ -1,19 +1,18 @@
-
-# Authentication
-PermitRootLogin prohibit-password
-PermitEmptyPasswords no
-
-# Security
-{% if grains['os_family'] == 'Windows' %}
-KbdInteractiveAuthentication no
-{% else %}
-ChallengeResponseAuthentication no
-UsePAM yes
-{% endif %}
-
-# Session limits
-MaxAuthTries 16
-MaxSessions 28
-
-# Protocol
-Protocol 2
+# Deprecated
+{%- set ssh_service_name = 'sshd' if grains['os_family'] in ['Arch', 'Windows', 'RedHat'] else 'ssh' %}
+{%- set paths = salt['pillar.get']('paths', {}) %}
+{%- if grains['os_family'] == 'Windows' -%}
+  {%- set sshd_config_path = paths.get('sshd_config_d', 'C:/ProgramData/ssh') %}
+  {%- set sshd_opt_include = paths.get('sshd_opt_path', 'C:/opt/cozy/etc/sshd_config_d') %}
+{%- else %}
+  {%- set sshd_config_path = paths.get('sshd_config_d', '/etc/ssh') %}
+  {%- set sshd_opt_include = paths.get('sshd_opt_path', '/opt/cozy/etc/sshd_config_d') %}
+{%- endif %}
+{%- set sshd_config = sshd_config_path ~ '/sshd_config' %}
+{%- set sshd_config_d = sshd_config_path ~ '/sshd_config.d' %}
+{%- set includes = ["hardening", "environment", "banner", "connection", "auth"] %}
+{%- set start = 99 %}
+# See the following:
+{%- for idx in range(includes|length) %}
+# - {{ sshd_config_d }}/{{ start - idx }}-{{ includes[idx] }}.conf
+{%- endfor %}

@@ -16,10 +16,11 @@ sshd_config:
   file.managed:
     - name: {{ sshd_config }}
     - source: salt://_templates/sshd_config.jinja
+    - template: jinja
     - makedirs: True
     - makedirs: True
 {#- Should be `salt://_templates/sshd_<name>.conf.jinja` #}
-{%- set includes = ["hardening", "environment", "banner", "connection"] %}
+{%- set includes = ["hardening", "environment", "banner", "connection", "auth"] %}
 {%- set start = 99 %}
 {%- for idx in range(includes|length) %}
 sshd_{{ includes[idx] }}_config:

@@ -1,8 +1,6 @@
-# Banner
 PrintMotd yes
-
-{% if grains['os_family'] == 'Windows' %}
+{%- if grains['os_family'] == 'Windows' %}
 Banner "C:\ProgramData\ssh\motd.txt"
-{% else %}
+{%- else %}
 Banner /etc/motd
-{% endif %}
+{%- endif %}

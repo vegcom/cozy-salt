@@ -4,16 +4,16 @@
   "ecdsa-sha2-nistp256", "ecdsa-sha2-nistp384", "ecdsa-sha2-nistp521",
   "rsa-sha2-256", "rsa-sha2-512",
   "ssh-ed25519",
-  "ssh-rsa"
-] ) -%}
+  "ssh-rsa"] ) %}
 {%- set pub_accept_string = "+" ~ public_accept_key_types | join(",") %}
-AuthorizedKeysFile .ssh/authorized_keys
 ClientAliveCountMax 0
 ClientAliveInterval 600
+MaxSessions 28
+PasswordAuthentication no
 Port {{ ssh_port }}
+Protocol 2
 PubkeyAcceptedKeyTypes {{ pub_accept_string }}
 PubkeyAuthentication yes
-PasswordAuthentication no
 Subsystem sftp internal://sftp-server
 {%- if grains['os_family'] != 'Windows' %}
 X11Forwarding yes
