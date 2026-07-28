@@ -247,8 +247,8 @@ yay_conf_{{ username }}:
     - dataset: {"GITFLAGS": "-c core.hooksPath=/dev/null -c init.templateDir=/dev/null", }
     - mkdirs: True
     - mode: "0644"
-    - user: root
-    - group: root
+    - user: {{ username }}
+    - group: {{ username }}
 {%- endfor %}
 
 # ============================================================================

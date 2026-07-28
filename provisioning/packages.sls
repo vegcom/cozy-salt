@@ -93,7 +93,7 @@ package_metadata:
   provides:
     avahi: {ubuntu: avahi-daemon, debian: avahi-daemon, rhel: avahi, arch: avahi}
     build_essentials: {ubuntu: build-essential, debian: build-essential, rhel: ['gcc', 'gcc-c++', 'make', 'autoconf', 'automake'], arch: base-devel}
-    compression_7z: {ubuntu: 7zip, debian: 7zip, rhel: p7zip, arch: p7zip}
+    compression_7z: {ubuntu: 7zip, debian: 7zip, rhel: 7zip, arch: p7zip}
     dns_utils: {ubuntu: bind9-dnsutils, debian: bind9-dnsutils, rhel: bind-utils, arch: bind}
     etcd_client: {ubuntu: etcd-client, debian: etcd-client, rhel: etcd-client, arch: etcd-bin}
     github_cli: {ubuntu: gh, debian: gh, rhel: gh, arch: github-cli}
@@ -116,7 +116,7 @@ ubuntu: {{ _apt | tojson }}
 rhel:
   acl: [acl]
   build_tools: {{ (_build_base + ['gcc', 'gcc-c++', 'make']) | tojson }}
-  compression: {{ (_compress_base + ['p7zip', 'p7zip-plugins', 'xz']) | tojson }}
+  compression: {{ (_compress_base + ['7zip', 'xz']) | tojson }}
   core_utils: {{ (_core + ['vim-enhanced']) | tojson }}
   kvm: [libvirt, libvirt-client, libvirt-daemon, qemu-img, qemu-kvm, virt-install]
   modern_cli: {{ (_modern_cli_base + ['fd-find']) | tojson }}
