@@ -16,9 +16,9 @@
 {%- set minion_conf_obj = "default_include: " ~ "minion.d/*.conf" ~ "\n" %}
 
 {%- if grains['os_family'] != 'Windows' %}
-  {%- set salt_modules = salt['pillar.get']('salt:modules:linux', ["pyinotify", "gitpython", "pymongo", "psycopg2"]) %}
+  {%- set salt_modules = salt['pillar.get']('salt:modules:linux', ["pyinotify", "gitpython", "pymongo"]) %}
 {%- else %}
-  {%- set salt_modules = salt['pillar.get']('salt:modules:windows', ["gitpython", "pymongo", "psycopg2"]) %}
+  {%- set salt_modules = salt['pillar.get']('salt:modules:windows', ["gitpython", "pymongo"]) %}
 {%- endif %}
 
 {%- set minion_confd_obj = "" %}
