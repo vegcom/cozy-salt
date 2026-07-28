@@ -17,16 +17,14 @@
     - enforce_password: {{ 'True' if userdata.get('password') else 'False' }}
     - win_logonscript: C:\\opt\cozy\bin\login.ps1
 
-# Salt's user.present groups parameter has a bug on Windows (ValueError: list.remove)
-# Use PowerShell Add-LocalGroupMember instead
-{{ username }}_add_to_groups:
-  cmd.run:
-    - name: |
-        {%- for group in userdata.get('windows_groups', ['Users']) %}
-        Add-LocalGroupMember -Group "{{ group }}" -Member "{{ username }}" -ErrorAction SilentlyContinue
-        {%- endfor %}
-    - shell: pwsh
+{%- for group in userdata.get('windows_groups', ['Users']) %}
+{{ username }}_add_to_{{ group | lower | replace(' ', '_') }}:
+  group.present:
+    - name: {{ group }}
+    - addusers:
+      - {{ username }}
     - require:
       - user: {{ username }}_user
+{%- endfor %}
 
 {%- endfor %}

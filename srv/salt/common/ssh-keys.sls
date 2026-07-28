@@ -1,7 +1,7 @@
+{%- from '_macros/dotfiles.sls' import get_user_home %}
 {%- set users = salt['pillar.get']('users', {}) %}
 {%- set managed_users = salt['pillar.get']('managed_users', [], merge=True) %}
 {%- set is_windows = grains['os'] == 'Windows' %}
-{%- set user_homes = grains.get('user_homes', {}) %}
 
 {%- if not is_windows %}
   {%- set usernames = managed_users %}
@@ -14,7 +14,7 @@
   {%- set base_username = username.split('.')[0] %}
   {%- set userdata = users.get(base_username, {}) %}
   {%- if userdata.get('ssh_keys') %}
-    {%- set user_home = user_homes.get(username, user_homes.get(base_username, '')) %}
+    {%- set user_home = get_user_home(username) | trim %}
     {%- set ssh_dir = user_home ~ '/.ssh' %}
 
 # Ensure .ssh directory exists

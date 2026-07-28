@@ -20,11 +20,24 @@ def __virtual__():
   return __virtualname__
 
 
+def _collect_tokens():
+  """Gather all github tokens from pillar — global + per-user."""
+  tokens = []
+  try:
+    tokens.extend(__salt__["pillar.get"]("github:tokens", []))  # noqa: F821
+    users = __salt__["pillar.get"]("users", {})  # noqa: F821
+    for _username, userdata in users.items():
+      tokens.extend(userdata.get("github", {}).get("tokens", []))
+  except Exception:  # noqa: BLE001
+    pass
+  return tokens
+
+
 def find_valid_token():
   """
   Return the first github token that passes a basic auth check. Result is cached per run.
 
-  Tries github:access_token first, then each entry in github:tokens.
+  Reads tokens from all per-user pillar files via slsutil.renderer.
   Returns empty string if none are valid.
 
   CLI Example::
@@ -35,11 +48,7 @@ def find_valid_token():
   if _token_cache is not None:
     return _token_cache
 
-  candidates = []
-  access_token = __salt__["pillar.get"]("github:access_token", "")
-  if access_token:
-    candidates.append(access_token)
-  candidates.extend(__salt__["pillar.get"]("github:tokens", []))
+  candidates = _collect_tokens()
 
   for candidate in candidates:
     req = urllib.request.Request("https://api.github.com/user")
