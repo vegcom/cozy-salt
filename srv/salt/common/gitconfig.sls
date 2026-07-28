@@ -18,7 +18,7 @@
 {%- endif %}
 
 {%- for username in usernames %}
-  {%- set base_username = username.split('.')[0] %}
+  {%- set base_username = username | replace('.' ~ grains['id'], '') %}
   {%- set user_home = get_user_home(username) | trim %}
   {%- if user_home %}
     {%- set global_tokens = salt['pillar.get']('github:tokens', []) %}

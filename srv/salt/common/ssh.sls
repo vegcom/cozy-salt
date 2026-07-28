@@ -16,7 +16,7 @@ include:
 {%- endif %}
 
 {%- for username in usernames %}
-  {%- set base_username = username.split('.')[0] %}
+  {%- set base_username = username | replace('.' ~ grains['id'], '') %}
   {%- set user_home = get_user_home(username) | trim %}
   {%- set user_ssh = user_home ~ '/.ssh' %}
   {%- if user_home %}

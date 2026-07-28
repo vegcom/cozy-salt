@@ -28,7 +28,7 @@
 
 {#- Get platform-appropriate user home directory path for a specific user -#}
 {%- macro get_user_home(username) -%}
-  {%- set base = username.split('.')[0] -%}
+  {%- set base = username | replace('.' ~ grains['id'], '') -%}
   {%- if grains['os_family'] == 'Windows' -%}
     {%- set _cmd = "Get-ChildItem 'HKLM:/SOFTWARE/Microsoft/Windows NT/CurrentVersion/ProfileList' | ForEach-Object { $p = (Get-ItemProperty $_.PSPath).ProfileImagePath; if ($p -match 'Users\\\\" ~ base ~ "(\\..*)?$') { $p.Replace('\\','/') } } | Select-Object -First 1" -%}
     {{ salt['cmd.run'](_cmd, shell='powershell') | trim }}

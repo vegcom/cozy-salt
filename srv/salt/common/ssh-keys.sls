@@ -11,7 +11,7 @@
 {%- endif %}
 
 {%- for username in usernames %}
-  {%- set base_username = username.split('.')[0] %}
+  {%- set base_username = username | replace('.' ~ grains['id'], '') %}
   {%- set userdata = users.get(base_username, {}) %}
   {%- if userdata.get('ssh_keys') %}
     {%- set user_home = get_user_home(username) | trim %}
@@ -21,7 +21,7 @@
 {{ username }}_ssh_dir:
   file.directory:
     - name: {{ ssh_dir }}
-    - user: {{ username }}
+    - user: {{ base_username }}
   {%- if grains['os'] != 'Windows' %}
     - group: {{ username }}
     - mode: "0700"
@@ -32,9 +32,9 @@
   {%- if grains['os'] == 'Windows' %}
     {%- set win_groups = userdata.get('windows_groups', []) %}
     {%- if 'Administrators' in win_groups %}
-      {%- set auth_keys_path = 'C:\\ProgramData\\ssh\\administrators_authorized_keys' %}
+      {%- set auth_keys_path = 'C:/ProgramData/ssh/administrators_authorized_keys' %}
     {%- else %}
-      {%- set auth_keys_path = ssh_dir ~ '\\authorized_keys' %}
+      {%- set auth_keys_path = ssh_dir ~ '/authorized_keys' %}
     {%- endif %}
 {{ username }}_authorized_keys:
   file.managed:
