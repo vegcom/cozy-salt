@@ -72,7 +72,7 @@ RUN apt-get update && \
       salt-master salt-minion salt-api salt-ssh python3-cherrypy3 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* && \
-    /opt/saltstack/salt/bin/pip3 install --root-user-action ignore pymongo pyinotify gitpython
+    /opt/saltstack/salt/bin/pip3 install --root-user-action ignore pymongo pyinotify gitpython psycopg2
 
 # Create mount points with correct ownership
 # Note: /srv/salt/files is for provisioning files mounted separately
@@ -124,7 +124,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
     apt-get install -y --no-install-recommends salt-minion git iproute2 procps && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* && \
-    /opt/saltstack/salt/bin/pip3 install --root-user-action ignore pymongo pyinotify gitpython
+    /opt/saltstack/salt/bin/pip3 install --root-user-action ignore pymongo pyinotify gitpython psycopg2
 
 # Pre-configure minion (master hostname will be set at runtime)
 RUN mkdir -p /etc/salt/minion.d && \
@@ -172,7 +172,8 @@ FROM salt-base-rpm AS salt-minion-rpm
 # Install Salt Minion from pre-configured repos
 # git required for git.latest states (common.vim etc) on first highstate run
 RUN dnf install -y salt-minion git iproute procps-ng && \
-    dnf clean all && rm -rf /var/cache/dnf /tmp/*
+    dnf clean all && rm -rf /var/cache/dnf /tmp/* && \
+    /opt/saltstack/salt/bin/pip3 install --root-user-action ignore pymongo pyinotify gitpython psycopg2
 
 # Pre-configure minion (master hostname will be set at runtime)
 RUN mkdir -p /etc/salt/minion.d && \
