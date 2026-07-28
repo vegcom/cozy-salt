@@ -12,7 +12,7 @@ vibeshine_download:
   cmd.run:
     - name: >
         pwsh -NoLogo -Command
-        "Invoke-WebRequest -Uri 'https://github.com/Nonary/vibeshine/releases/download/{{ vibeshine_version }}/VibeshineSetup-v{{ vibeshine_version }}.exe' -OutFile {{ vibeshine_tmp }}"
+        "Invoke-WebRequest -Uri 'https://github.com/Nonary/vibeshine/releases/download/{{ vibeshine_version }}/VibeshineSetup-{{ vibeshine_version }}.exe' -OutFile {{ vibeshine_tmp }}"
     - require:
       - file: vibeshine_directory
 
