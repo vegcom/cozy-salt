@@ -135,13 +135,26 @@ disable_delivery_optimization:
     - vdata: 0
     - vtype: REG_DWORD
 
+# Enable Windows sudo (Win11 24H2+) - inline mode, no new window
+enable_sudo_inline:
+  reg.present:
+    - name: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Sudo
+    - vname: Enabled
+    - vdata: 3
+    - vtype: REG_DWORD
+
 # ============================================================================
-# Windows AD
+# Windows Utils
 # ============================================================================
-# install_ad_tools:
-#   cmd.run:
-#     - name: powershell -NoProfile -Command 'Get-WindowsCapability -Online | Where-Object Name -like 'Rsat.ActiveDirectory.DS-LDS.Tools*' | Add-WindowsCapability -Online -Verbose'
-#     - timeout: 300
+
+{%- set utils = ["Rsat.ActiveDirectory.DS-LDS.Tools", "Microsoft.Windows.DEPLOYMENT.Image", ] %}
+{%- for util in utils %}
+install_ad_{{ utils | replace() }}:
+  cmd.run:
+    - name: Get-WindowsCapability -Online | Where-Object Name -like 'Rsat.ActiveDirectory.DS-LDS.Tools*' | Add-WindowsCapability -Online -Verbose
+    - shell: powershell
+    - timeout: 300
+{%- endfor %}
 
 # ============================================================================
 # Required Packages

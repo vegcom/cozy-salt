@@ -5,7 +5,6 @@
 
 {%- from '_macros/windows.sls' import get_users_with_profiles with context %}
 {%- set winget_path = salt['pillar.get']('paths:winget', 'C:\\Program Files\\WindowsApps\\Microsoft.DesktopAppInstaller_1.27.460.0_x64__8wekyb3d8bbwe') %}
-{%- set managed_users = salt['pillar.get']('managed_users', [], merge=True) %}
 {%- set users_with_profiles = get_users_with_profiles().split(',') | reject('equalto', '') | list %}
 
 {%- set opt_paths = [
@@ -21,7 +20,7 @@
   winget_path
 ] %}
 
-# Grant cozyusers read+execute on alel opt paths
+# Grant cozyusers read+execute on all opt paths
 # WindowsApps permissions are strict - need explicit grant for non-installing users
 {%- for path in opt_paths %}
 {%- set path = path | replace("/", "\\") %}
@@ -75,8 +74,7 @@ paths_broadcast_env_change_system:
       - reg: opt_paths_update
 
 {%- for user in users_with_profiles %}
-  {%- set username = user.split('.')[0] %}
-{#- FIX: has to be split #}
+  {%- set username = user | replace('.' ~ grains['id'], '') %}
 paths_broadcast_env_change_{{ user }}:
   cmd.run:
     - name: rundll32.exe user32.dll,UpdatePerUserSystemParameters ,1 ,True

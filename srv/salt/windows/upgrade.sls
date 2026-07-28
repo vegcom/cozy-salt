@@ -23,10 +23,11 @@ winget_upgrade_machine:
 # Per-user upgrades (userland packages)
 {%- for user in users_with_profiles %}
 {%- set user_winget = get_winget_path(user) | trim %}
+{%- set base_user = user | replace('.' ~ grains['id'], '') %}
 winget_upgrade_{{ user | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
     - name: '{{ user_winget }} upgrade --all --accept-source-agreements --accept-package-agreements --disable-interactivity'
-    - runas: {{ user }}
+    - runas: {{ base_user }}
     - shell: powershell
     - onlyif: '& ''{{ user_winget }}'' --version 2>&1 | Select-String -Quiet "v\d"'
 {%- endfor %}
