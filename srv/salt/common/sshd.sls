@@ -1,12 +1,14 @@
 {%- set ssh_enabled = ssh_enabled | default(true) %}
 {%- if ssh_enabled %}
+{#- Should be `salt://_templates/sshd_<name>.conf.jinja` #}
+{%- set includes = ["hardening", "environment", "banner", "connection", "auth"] %}
   {%- set ssh_service_name = 'sshd' if grains['os_family'] in ['Arch', 'Windows', 'RedHat'] else 'ssh' %}
   {%- set paths = salt['pillar.get']('paths', {}) %}
   {%- if grains['os_family'] == 'Windows' -%}
-    {%- set sshd_config_path = paths.get('sshd_config_d', 'C:/ProgramData/ssh') %}
+    {%- set sshd_config_path = paths.get('sshd_config', 'C:/ProgramData/ssh') %}
     {%- set sshd_opt_include = paths.get('sshd_opt_path', 'C:/opt/cozy/etc/sshd_config_d') %}
   {%- else %}
-    {%- set sshd_config_path = paths.get('sshd_config_d', '/etc/ssh') %}
+    {%- set sshd_config_path = paths.get('sshd_config', '/etc/ssh') %}
     {%- set sshd_opt_include = paths.get('sshd_opt_path', '/opt/cozy/etc/sshd_config_d') %}
   {%- endif %}
   {%- set sshd_config = sshd_config_path ~ '/sshd_config' %}
@@ -19,8 +21,6 @@ sshd_config:
     - template: jinja
     - makedirs: True
     - makedirs: True
-{#- Should be `salt://_templates/sshd_<name>.conf.jinja` #}
-{%- set includes = ["hardening", "environment", "banner", "connection", "auth"] %}
 {%- set start = 99 %}
 {%- for idx in range(includes|length) %}
 sshd_{{ includes[idx] }}_config:

@@ -9,7 +9,7 @@ openssh_default_shell:
   reg.present:
     - name: HKLM\SOFTWARE\OpenSSH
     - vname: DefaultShell
-    - vdata: {{ pwsh_exe | replace("/", "\\") }}
+    - vdata: {{ pwsh_exe }}
     - vtype: REG_SZ
 include:
   - common.sshd

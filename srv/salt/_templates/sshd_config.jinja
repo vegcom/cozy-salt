@@ -1,12 +1,12 @@
 {%- set paths = salt['pillar.get']('paths', {}) %}
 {%- if grains['os_family'] == 'Windows' -%}
-  {%- set sshd_config_path = paths.get('sshd_config_d', 'C:/ProgramData/ssh') %}
+  {%- set sshd_config_path = paths.get('sshd_config', 'C:/ProgramData/ssh') %}
   {%- set sshd_opt_include = paths.get('sshd_opt_path', 'C:/opt/cozy/etc/sshd_config_d') %}
 {%- else %}
-  {%- set sshd_config_path = paths.get('sshd_config_d', '/etc/ssh') %}
+  {%- set sshd_config_path = paths.get('sshd_config', '/etc/ssh') %}
   {%- set sshd_opt_include = paths.get('sshd_opt_path', '/opt/cozy/etc/sshd_config_d') %}
 {%- endif %}
-{%- set sshd_config = sshd_config_path ~ '/sshd_config' %}
 {%- set sshd_config_d = sshd_config_path ~ '/sshd_config.d' %}
+Include sshd_config.d/*.conf
 Include {{ sshd_config_d }}/*.conf
-Include /opt/cozy/sshd_config_d/*.conf
+Include {{ sshd_opt_include }}/*.conf

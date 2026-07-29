@@ -18,8 +18,8 @@ nvm:
 
 # Windows system paths
 paths:
-  powershell_7_profile: 'C:\Program Files\PowerShell\7'
-  sshd_config_d: 'C:\ProgramData\ssh\sshd_config.d'
+  powershell_7_profile: 'C:/Program Files/PowerShell/7'
+  sshd_config_d: 'C:/ProgramData/ssh/sshd_config.d'
 
 # Windows scheduled tasks (define tasks to deploy via schtasks)
 # Each task references an XML file in provisioning/windows/tasks/

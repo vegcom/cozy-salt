@@ -1,3 +1,4 @@
+{%- set paths = salt['pillar.get']('paths', {}) %}
 {%- set is_wsl = grains.get('kernel_release', '').find('WSL') != -1 %}
 {%- set ssh_port = 2222 if is_wsl else salt['pillar.get']('ssh:port', 22) %}
 {%- set public_accept_key_types = salt['pillar.get']('ssh:public_accept_key_types', [
@@ -6,6 +7,11 @@
   "ssh-ed25519",
   "ssh-rsa"] ) %}
 {%- set pub_accept_string = "+" ~ public_accept_key_types | join(",") %}
+{%- if grains['os_family'] == 'Windows' %}
+  {%- set pwsh_7_profile = paths.get('powershell_7_profile', 'C:/Program Files/PowerShell/7') %}
+  {%- set pwsh_exe = pwsh_7_profile + "/pwsh.exe" %}
+  {%- set pwsh_present = salt['file.file_exists'](pwsh_exe) %}
+{%- endif %}
 ClientAliveCountMax 0
 ClientAliveInterval 600
 MaxSessions 28
@@ -14,6 +20,15 @@ Port {{ ssh_port }}
 Protocol 2
 PubkeyAcceptedKeyTypes {{ pub_accept_string }}
 PubkeyAuthentication yes
+Subsystem sftp internal://sftp-server
+{%- if grains['os_family'] == 'Windows' and pwsh_present %}
+{#-
+    FIXME: Enter-PSSession
+        - The SSH client session has ended with error message: The SSH transport process has abruptly terminated causing this remote session to break.
+        - This only prevents `Enter-PSSession -HostName "localhost" -Debug -Verbose` from expected execution `ssh localhost` is fine
+#}
+Subsystem powershell {{ pwsh_exe }} -SSHServerMode -NoLogo
+{%- endif %}
 Subsystem sftp internal://sftp-server
 {%- if grains['os_family'] != 'Windows' %}
 X11Forwarding yes
