@@ -96,9 +96,21 @@ ipfs_configure_private_networking:
       - ipfs config --bool Discovery.MDNS.Enabled true
       - ipfs config --bool Ipns.UsePubsub true
       - ipfs config --bool Swarm.Transports.Network.Websocket false
+      - ipfs config --bool AutoConf.Enabled false
     - env: {{ kubo_env | json }}
 {%- if is_windows %}
     - shell: pwsh
+{%- endif %}
+
+{%- if not is_windows %}
+ipfs_service:
+  service.running:
+    - name: ipfs
+    - enable: True
+    - reload: True
+    - no_block: True
+    - require:
+      - cmd: ipfs_configure_private_networking
 {%- endif %}
 
 ipfs_config_path:
@@ -193,6 +205,9 @@ ipfs_config_path_perms:
     - require:
       - cmd: ipfs_configure_private_networking
       - file: ipfs_swarm_key
+  {%- if mine_cids.get(_self_id) %}
+      - cmd: ipfs_publish_local_identity
+  {%- endif %}
 {%- endif %}
 
 {%- if peering_peers %}
