@@ -147,11 +147,16 @@ enable_sudo_inline:
 # Windows Utils
 # ============================================================================
 
-{%- set utils = ["Rsat.ActiveDirectory.DS-LDS.Tools", "Microsoft.Windows.DEPLOYMENT.Image", ] %}
+{%- set utils = [
+  "Tools.DeveloperMode.Core",
+  "VBSCRIPT",
+] %}
 {%- for util in utils %}
-install_ad_{{ utils | replace() }}:
+
+# {{ util }}
+install_ad_{{ util | lower | replace(".", "_") | replace("-", "_") }}:
   cmd.run:
-    - name: Get-WindowsCapability -Online | Where-Object Name -like 'Rsat.ActiveDirectory.DS-LDS.Tools*' | Add-WindowsCapability -Online -Verbose
+    - name: Get-WindowsCapability -Online | Where-Object Name -like '{{ util }}*' | Add-WindowsCapability -Online -Verbose
     - shell: powershell
     - timeout: 300
 {%- endfor %}
