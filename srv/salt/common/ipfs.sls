@@ -16,6 +16,8 @@ ipfs_skip:
 {%- set mine_cids = salt['mine.get']('*', 'ipfs_current_sync_cid') %}
 {%- set _self_id = grains.get('id', '') %}
 {%- set _IPFS_EMPTY_CID = 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn' %}
+{%- set _self_cid_raw = mine_cids.get(_self_id, '') | string | trim %}
+{%- set _self_cid = _self_cid_raw if (_self_cid_raw | length >= 32 and ' ' not in _self_cid_raw and _self_cid_raw != _IPFS_EMPTY_CID) else '' %}
 {%- set peering_peers = [] %}
 {%- for minion_id, peer_id in mine_peers.items() %}
   {%- set _peer_str = peer_id | string | trim %}
@@ -221,10 +223,9 @@ ipfs_config_path_perms:
     - require:
       - cmd: ipfs_configure_private_networking
       - file: ipfs_swarm_key
-  {%- set _self_cid = mine_cids.get(_self_id, '') | string | trim %}
-  {%- if _self_cid and (_self_cid.startswith('Qm') or _self_cid.startswith('baf')) %}
+  {% if _self_cid %}
       - cmd: ipfs_publish_local_identity
-  {%- endif %}
+  {% endif %}
 {%- endif %}
 
 {%- if peering_peers %}
@@ -248,8 +249,7 @@ ipfs_bootstrap_peers:
 {%- endif %}
 {%- endif %}
 
-{%- set _self_cid = mine_cids.get(_self_id, '') | string | trim %}
-{%- if _self_cid and (_self_cid.startswith('Qm') or _self_cid.startswith('baf')) %}
+{%- if _self_cid %}
 ipfs_publish_local_identity:
   cmd.run:
     - name: ipfs name publish /ipfs/{{ _self_cid }}  --allow-offline
