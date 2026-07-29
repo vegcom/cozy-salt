@@ -15,6 +15,7 @@ ipfs_skip:
 {%- set mine_peers = salt['mine.get']('*', 'ipfs_peer_multiaddr') %}
 {%- set mine_cids = salt['mine.get']('*', 'ipfs_current_sync_cid') %}
 {%- set _self_id = grains.get('id', '') %}
+{%- set _IPFS_EMPTY_CID = 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn' %}
 {%- set peering_peers = [] %}
 {%- for minion_id, peer_id in mine_peers.items() %}
   {%- set _peer_str = peer_id | string | trim %}
@@ -220,7 +221,8 @@ ipfs_config_path_perms:
     - require:
       - cmd: ipfs_configure_private_networking
       - file: ipfs_swarm_key
-  {%- if mine_cids.get(_self_id) %}
+  {%- set _self_cid = mine_cids.get(_self_id, '') | string | trim %}
+  {%- if _self_cid and (_self_cid.startswith('Qm') or _self_cid.startswith('baf')) %}
       - cmd: ipfs_publish_local_identity
   {%- endif %}
 {%- endif %}
@@ -246,10 +248,11 @@ ipfs_bootstrap_peers:
 {%- endif %}
 {%- endif %}
 
-{%- if mine_cids.get(_self_id) %}
+{%- set _self_cid = mine_cids.get(_self_id, '') | string | trim %}
+{%- if _self_cid and (_self_cid.startswith('Qm') or _self_cid.startswith('baf')) %}
 ipfs_publish_local_identity:
   cmd.run:
-    - name: ipfs name publish /ipfs/{{ mine_cids.get(_self_id) }}  --allow-offline
+    - name: ipfs name publish /ipfs/{{ _self_cid }}  --allow-offline
     - env: {{ kubo_env | json }}
 {%- if is_windows %}
     - shell: powershell
@@ -258,7 +261,8 @@ ipfs_publish_local_identity:
 
 {%- set _peers_to_pin = [] %}
 {%- for minion_id, cid in mine_cids.items() %}
-  {%- if minion_id != _self_id and cid %}
+  {%- set _cid_str = cid | string | trim %}
+  {%- if minion_id != _self_id and _cid_str and _cid_str != _IPFS_EMPTY_CID and (_cid_str.startswith('Qm') or _cid_str.startswith('baf')) %}
     {%- set _raw = mine_peers.get(minion_id, '') | string | trim %}
     {%- if _raw and '\n' not in _raw and not _raw.startswith('Error') %}
       {%- do _peers_to_pin.append(_raw.rsplit('/p2p/', 1)[-1]) %}
@@ -277,21 +281,25 @@ ipfs_publish_local_identity:
 #}
 {%- set mine_mfs = salt['mine.get']('*', 'ipfs_mfs_paths') %}
 {%- set _mfs_cp_cmds = [] %}
+{%- set _mfs_seen_paths = [] %}
 {%- for minion_id, ls_output in mine_mfs.items() %}
-  {%- if minion_id != _self_id and ls_output %}
-    {%- for line in ls_output.strip().split('\n') %}
+  {%- set _ls_str = ls_output | string | trim %}
+  {%- if minion_id != _self_id and _ls_str and 'Error' not in _ls_str %}
+    {%- for line in _ls_str.split('\n') %}
       {%- set parts = line.split() %}
-      {%- if parts | length >= 2 %}
+      {%- if parts | length >= 3 and (parts[1].startswith('Qm') or parts[1].startswith('baf')) and parts[1] != _IPFS_EMPTY_CID %}
         {%- set path_name = parts[0].rstrip('/') %}
-        {%- set cid = parts[1] %}
-        {%- do _mfs_cp_cmds.append({'cmd': 'ipfs files cp /ipfs/' ~ cid ~ ' /' ~ path_name, 'unless': 'ipfs files stat /' ~ path_name}) %}
+        {%- if path_name not in _mfs_seen_paths %}
+          {%- do _mfs_seen_paths.append(path_name) %}
+          {%- do _mfs_cp_cmds.append({'cmd': 'ipfs files cp /ipfs/' ~ parts[1] ~ ' /' ~ path_name, 'unless': 'ipfs files stat /' ~ path_name}) %}
+        {%- endif %}
       {%- endif %}
     {%- endfor %}
   {%- endif %}
 {%- endfor %}
 
 {%- for entry in _mfs_cp_cmds %}
-ipfs_sync_mfs_{{ loop.index }}_{{ entry.cmd | md5 }}:
+ipfs_sync_mfs_{{ entry.cmd | md5 }}:
   cmd.run:
     - name: {{ entry.cmd }}
     - unless: {{ entry.unless }}
