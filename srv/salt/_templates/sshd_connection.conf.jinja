@@ -20,7 +20,6 @@ Port {{ ssh_port }}
 Protocol 2
 PubkeyAcceptedKeyTypes {{ pub_accept_string }}
 PubkeyAuthentication yes
-Subsystem sftp internal://sftp-server
 {%- if grains['os_family'] == 'Windows' and pwsh_present %}
 {#-
     FIXME: Enter-PSSession
