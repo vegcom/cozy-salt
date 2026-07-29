@@ -94,7 +94,7 @@ ipfs_init:
     - name: ipfs init
     - env: {{ kubo_env | json }}
 {%- if is_windows %}
-    - shell: pwsh
+    - shell: powershell
 {%- endif %}
     - success_retcodes:
       - 0
@@ -131,7 +131,7 @@ ipfs_configure_private_networking:
       - ipfs config --bool AutoConf.Enabled false
     - env: {{ kubo_env | json }}
 {%- if is_windows %}
-    - shell: pwsh
+    - shell: powershell
 {%- endif %}
 
 {%- if not is_windows %}
@@ -228,7 +228,7 @@ ipfs_configure_peering:
         ipfs config --json Peering.Peers '{{ peering_peers | json }}'
     - env: {{ kubo_env | json }}
 {%- if is_windows %}
-    - shell: pwsh
+    - shell: powershell
 {%- endif %}
 
 ipfs_bootstrap_peers:
@@ -239,7 +239,7 @@ ipfs_bootstrap_peers:
 {%- endfor %}
     - env: {{ kubo_env | json }}
 {%- if is_windows %}
-    - shell: pwsh
+    - shell: powershell
 {%- endif %}
 {%- endif %}
 
@@ -249,7 +249,7 @@ ipfs_publish_local_identity:
     - name: ipfs name publish /ipfs/{{ mine_cids.get(_self_id) }}  --allow-offline
     - env: {{ kubo_env | json }}
 {%- if is_windows %}
-    - shell: pwsh
+    - shell: powershell
 {%- endif %}
 {%- endif %}
 
@@ -294,7 +294,7 @@ ipfs_sync_mfs_{{ loop.index }}_{{ entry.cmd | md5 }}:
     - unless: {{ entry.unless }}
     - env: {{ kubo_env | json }}
 {%- if is_windows %}
-    - shell: pwsh
+    - shell: powershell
 {%- endif %}
     - success_retcodes:
       - 0
@@ -313,7 +313,7 @@ ipfs_sync_private_cluster_pins:
       - 0
       - 1
 {%- if is_windows %}
-    - shell: pwsh
+    - shell: powershell
 {%- endif %}
 {%- endif %}
 {%- endif %}
