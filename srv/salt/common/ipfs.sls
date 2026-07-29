@@ -231,7 +231,8 @@ ipfs_config_path_perms:
 {%- if peering_peers %}
 ipfs_configure_peering:
   cmd.run:
-    - name: ipfs config --json Peering.Peers '{{ peering_peers | json }}'
+    - name: >-
+        ipfs config --json Peering.Peers '{{ peering_peers | json }}'
     - env: {{ kubo_env | json }}
 {%- if is_windows %}
     - shell: powershell
