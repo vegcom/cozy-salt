@@ -42,10 +42,8 @@ ipfs_skip:
 
 {%- if not is_windows %}
   {%- do kubo_env.update({"IPFS_PATH": "/opt/cozy/etc/kubo"}) %}
-  {%- do kubo_env.update({"PATH": "/opt/kubo/:" ~ current_path}) %}
 {%- else %}
   {%- do kubo_env.update({"IPFS_PATH": "C:/opt/cozy/etc/kubo"}) %}
-  {%- do kubo_env.update({"PATH": "C:/opt/kubo/;" ~ current_path}) %}
 {%- endif %}
 
 {%- set ipfs_requires = [{'file': 'ipfs_config_path'}] %}
@@ -88,6 +86,12 @@ kubo_env_{{ key | lower }}:
     - permanent: HKLM
   {%- endif %}
 {%- endfor %}
+
+{%- if not is_windows %}
+  {%- do kubo_env.update({"PATH": "/opt/kubo/:" ~ current_path}) %}
+{%- else %}
+  {%- do kubo_env.update({"PATH": "C:/opt/kubo/;" ~ current_path}) %}
+{%- endif %}
 
 ipfs_init:
   cmd.run:
@@ -224,8 +228,7 @@ ipfs_config_path_perms:
 {%- if peering_peers %}
 ipfs_configure_peering:
   cmd.run:
-    - name: |
-        ipfs config --json Peering.Peers '{{ peering_peers | json }}'
+    - name: ipfs config --json Peering.Peers '{{ peering_peers | json }}'
     - env: {{ kubo_env | json }}
 {%- if is_windows %}
     - shell: powershell
@@ -275,10 +278,11 @@ ipfs_publish_local_identity:
 {%- set mine_mfs = salt['mine.get']('*', 'ipfs_mfs_paths') %}
 {%- set _mfs_cp_cmds = [] %}
 {%- for minion_id, ls_output in mine_mfs.items() %}
-  {%- if minion_id != _self_id and ls_output %}
-    {%- for line in ls_output.strip().split('\n') %}
+  {%- set _ls_str = ls_output | string | trim %}
+  {%- if minion_id != _self_id and _ls_str and 'Error' not in _ls_str %}
+    {%- for line in _ls_str.split('\n') %}
       {%- set parts = line.split() %}
-      {%- if parts | length >= 2 %}
+      {%- if parts | length >= 3 and (parts[1].startswith('Qm') or parts[1].startswith('baf')) %}
         {%- set path_name = parts[0].rstrip('/') %}
         {%- set cid = parts[1] %}
         {%- do _mfs_cp_cmds.append({'cmd': 'ipfs files cp /ipfs/' ~ cid ~ ' /' ~ path_name, 'unless': 'ipfs files stat /' ~ path_name}) %}
