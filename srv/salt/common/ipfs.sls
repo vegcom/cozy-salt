@@ -157,7 +157,7 @@ ipfs_swarm_key:
     - name: /opt/cozy/etc/kubo/swarm.key
 {%- endif %}
 {%- if mine_keys %}
-    - contents: |
+    - contents: |-
         {{ mine_keys.values() | first | indent(8) }}
 {%- else %}
     - source:  salt://_templates/swarm.key.jinja
@@ -278,11 +278,10 @@ ipfs_publish_local_identity:
 {%- set mine_mfs = salt['mine.get']('*', 'ipfs_mfs_paths') %}
 {%- set _mfs_cp_cmds = [] %}
 {%- for minion_id, ls_output in mine_mfs.items() %}
-  {%- set _ls_str = ls_output | string | trim %}
-  {%- if minion_id != _self_id and _ls_str and 'Error' not in _ls_str %}
-    {%- for line in _ls_str.split('\n') %}
+  {%- if minion_id != _self_id and ls_output %}
+    {%- for line in ls_output.strip().split('\n') %}
       {%- set parts = line.split() %}
-      {%- if parts | length >= 3 and (parts[1].startswith('Qm') or parts[1].startswith('baf')) %}
+      {%- if parts | length >= 2 %}
         {%- set path_name = parts[0].rstrip('/') %}
         {%- set cid = parts[1] %}
         {%- do _mfs_cp_cmds.append({'cmd': 'ipfs files cp /ipfs/' ~ cid ~ ' /' ~ path_name, 'unless': 'ipfs files stat /' ~ path_name}) %}
