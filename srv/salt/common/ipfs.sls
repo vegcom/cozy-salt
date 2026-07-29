@@ -171,6 +171,13 @@ share_sync_cid_to_mine:
       - mine_function: cmd.run
       - cmd: ipfs files stat --hash /
 
+share_mfs_paths_to_mine:
+  module.run:
+    - mine.send:
+      - name: ipfs_mfs_paths
+      - mine_function: cmd.run
+      - cmd: ipfs files ls -l /
+
 {%- if not is_windows %}
 ipfs_config_path_perms:
   file.directory:
@@ -230,14 +237,54 @@ ipfs_publish_local_identity:
   {%- endif %}
 {%- endfor %}
 
+{#
+  MFS sync: peers' /path → CID mappings come from mine (ipfs_mfs_paths).
+  This state copies any MFS paths from peers that don't exist locally yet.
+
+  NEW HOST BOOTSTRAP: on a fresh node, manually seed content into MFS first:
+    ipfs files cp /ipfs/<root-cid> /<path>
+  e.g.: ipfs files cp /ipfs/QmYBoexv... /git
+  After that, highstate handles all future sync automatically.
+#}
+{%- set mine_mfs = salt['mine.get']('*', 'ipfs_mfs_paths') %}
+{%- set _mfs_cp_cmds = [] %}
+{%- for minion_id, ls_output in mine_mfs.items() %}
+  {%- if minion_id != _self_id and ls_output %}
+    {%- for line in ls_output.strip().split('\n') %}
+      {%- set parts = line.split() %}
+      {%- if parts | length >= 2 %}
+        {%- set path_name = parts[0].rstrip('/') %}
+        {%- set cid = parts[1] %}
+        {%- set local_stat = salt['cmd.run']('ipfs files stat /' ~ path_name, env=kubo_env) %}
+        {%- if 'Error' in local_stat %}
+          {%- do _mfs_cp_cmds.append('ipfs files cp /ipfs/' ~ cid ~ ' /' ~ path_name) %}
+        {%- endif %}
+      {%- endif %}
+    {%- endfor %}
+  {%- endif %}
+{%- endfor %}
+
+{%- if _mfs_cp_cmds %}
+ipfs_sync_mfs_paths:
+  cmd.run:
+    - names: {{ _mfs_cp_cmds | tojson }}
+    - env: {{ kubo_env | json }}
+{%- if is_windows %}
+    - shell: pwsh
+{%- endif %}
+{%- endif %}
+
 {%- if _peers_to_pin %}
 ipfs_sync_private_cluster_pins:
   cmd.run:
     - names:
 {%- for peer_id in _peers_to_pin %}
-      - ipfs pin add /ipns/{{ peer_id }}
+      - ipfs pin add /ipns/{{ peer_id }} --timeout 30s
 {%- endfor %}
     - env: {{ kubo_env | json }}
+    - success_retcodes:
+      - 0
+      - 1
 {%- if is_windows %}
     - shell: pwsh
 {%- endif %}

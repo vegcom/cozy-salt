@@ -160,7 +160,7 @@ windows:
 
   pwsh_modules: [PowerShellGet, Microsoft.PowerShell.PSResourceGet, PackageManagement, PSReadLine, Microsoft.WinGet.Client, Microsoft.WinGet.CommandNotFound, powershell-yaml, PSFzf, PSWindowsUpdate, Terminal-Icons, BurntToast]
 
-  choco: [chocolatey-compatibility.extension, chocolatey-core.extension, chocolatey-font-helpers.extension, cheatengine, colortool, Cygwin, dive, docker-cli, docker-compose, make,  vim, winbtrfs, ext2fsd, jq, tor]
+  choco: [chocolatey-compatibility.extension, chocolatey-core.extension, chocolatey-font-helpers.extension, cheatengine, colortool, Cygwin, dive, docker-cli, docker-compose, make,  vim, winbtrfs, ext2fsd, jq, tor, ipfs-mount]
 
   winget:
 
