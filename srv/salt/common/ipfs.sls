@@ -34,7 +34,7 @@ ipfs_skip:
 {%- set kubo_env = {
     "GOLOG_LOG_FMT": "nocolor",
     "GOLOG_LOG_LEVEL": "warn",
-    "GOLANG_PROTOBUF_REGISTRATION_CONFLICT": "warn"
+    "GOLANG_PROTOBUF_REGISTRATION_CONFLICT": "warn",
 } %}
 
 {%- set current_path = salt['environ.get']('PATH') %}
@@ -101,10 +101,6 @@ ipfs_init:
     - require:
       - file: ipfs_config_path
 
-ipfs_configure_private_networking:
-  cmd.run:
-    - names:
-      - ipfs bootstrap rm --all
 {%- set _swarm_addrs = ['/ip4/127.0.0.1/tcp/4001'] %}
 {%- if vpn_ip %}
   {%- do _swarm_addrs.append('/ip4/' ~ vpn_ip ~ '/tcp/4001') %}
@@ -114,6 +110,10 @@ ipfs_configure_private_networking:
   {%- do _swarm_addrs.append('/ip4/' ~ lan_ip ~ '/tcp/4001') %}
   {%- do _swarm_addrs.append('/ip4/' ~ lan_ip ~ '/udp/4001/quic-v1') %}
 {%- endif %}
+ipfs_configure_private_networking:
+  cmd.run:
+    - names:
+      - ipfs bootstrap rm --all
       - ipfs config Addresses.Swarm --json '{{ _swarm_addrs | tojson }}'
       - ipfs config Addresses.API "/ip4/127.0.0.1/tcp/5001"
       - ipfs config Addresses.Gateway "/ip4/127.0.0.1/tcp/8080"
