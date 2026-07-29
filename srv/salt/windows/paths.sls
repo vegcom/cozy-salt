@@ -56,7 +56,7 @@ opt_path_acl_{{ loop.index }}:
         }
     - output_loglevel: quiet
     - hide_output: True
-    - shell: pwsh
+    - shell: powershell
 {%- endfor %}
 
 {# Only read registry on Windows - fails on Linux master during render #}
