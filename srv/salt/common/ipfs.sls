@@ -262,7 +262,7 @@ ipfs_publish_local_identity:
 {%- set _peers_to_pin = [] %}
 {%- for minion_id, cid in mine_cids.items() %}
   {%- set _cid_str = cid | string | trim %}
-  {%- if minion_id != _self_id and _cid_str and _cid_str != _IPFS_EMPTY_CID and (_cid_str.startswith('Qm') or _cid_str.startswith('baf')) %}
+  {%- if minion_id != _self_id and _cid_str and _cid_str != _IPFS_EMPTY_CID and (_cid_str | length >= 32 and ' ' not in _cid_str) %}
     {%- set _raw = mine_peers.get(minion_id, '') | string | trim %}
     {%- if _raw and '\n' not in _raw and not _raw.startswith('Error') %}
       {%- do _peers_to_pin.append(_raw.rsplit('/p2p/', 1)[-1]) %}
@@ -287,7 +287,7 @@ ipfs_publish_local_identity:
   {%- if minion_id != _self_id and _ls_str and 'Error' not in _ls_str %}
     {%- for line in _ls_str.split('\n') %}
       {%- set parts = line.split() %}
-      {%- if parts | length >= 3 and (parts[1].startswith('Qm') or parts[1].startswith('baf')) and parts[1] != _IPFS_EMPTY_CID %}
+      {%- if parts | length >= 3 and parts[1] | length >= 32 and ' ' not in parts[1] and parts[1] != _IPFS_EMPTY_CID %}
         {%- set path_name = parts[0].rstrip('/') %}
         {%- if path_name not in _mfs_seen_paths %}
           {%- do _mfs_seen_paths.append(path_name) %}
