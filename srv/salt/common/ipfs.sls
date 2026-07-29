@@ -17,8 +17,9 @@ ipfs_skip:
 {%- set _self_id = grains.get('id', '') %}
 {%- set peering_peers = [] %}
 {%- for minion_id, peer_id in mine_peers.items() %}
-  {%- if minion_id != _self_id and peer_id %}
-    {%- set _id = (peer_id | string | trim).rsplit('/p2p/', 1)[-1] %}
+  {%- set _peer_str = peer_id | string | trim %}
+  {%- if minion_id != _self_id and _peer_str and '\n' not in _peer_str and not _peer_str.startswith('Error') %}
+    {%- set _id = _peer_str.rsplit('/p2p/', 1)[-1] %}
     {%- do peering_peers.append({'ID': _id, 'Addrs': ['/dns4/' ~ minion_id ~ '/tcp/4001']}) %}
   {%- endif %}
 {%- endfor %}
@@ -110,6 +111,7 @@ ipfs_init:
   {%- do _swarm_addrs.append('/ip4/' ~ lan_ip ~ '/tcp/4001') %}
   {%- do _swarm_addrs.append('/ip4/' ~ lan_ip ~ '/udp/4001/quic-v1') %}
 {%- endif %}
+
 ipfs_configure_private_networking:
   cmd.run:
     - names:
@@ -255,7 +257,7 @@ ipfs_publish_local_identity:
 {%- for minion_id, cid in mine_cids.items() %}
   {%- if minion_id != _self_id and cid %}
     {%- set _raw = mine_peers.get(minion_id, '') | string | trim %}
-    {%- if _raw %}
+    {%- if _raw and '\n' not in _raw and not _raw.startswith('Error') %}
       {%- do _peers_to_pin.append(_raw.rsplit('/p2p/', 1)[-1]) %}
     {%- endif %}
   {%- endif %}
