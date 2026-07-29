@@ -158,7 +158,9 @@ install_ad_{{ util | lower | replace(".", "_") | replace("-", "_") }}:
   cmd.run:
     - name: Get-WindowsCapability -Online | Where-Object Name -like '{{ util }}*' | Add-WindowsCapability -Online -Verbose
     - shell: powershell
-    - timeout: 300
+    - bg: True
+    - hide_output: True
+    - output_loglevel: quiet
 {%- endfor %}
 
 # ============================================================================
