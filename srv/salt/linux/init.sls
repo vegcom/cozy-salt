@@ -22,6 +22,7 @@ include:
   - linux.k3s
   - linux.macvlan-shim    # Macvlan shim for host→container routing (noop if pillar unset)
   - linux.users           # Create users (requires groups + shell_packages)
+  - linux.smb             # SMB/CIFS automounts per user
   - linux.nvm
   - linux.rust
   - linux.miniforge

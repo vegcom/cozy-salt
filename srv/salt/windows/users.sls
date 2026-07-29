@@ -15,7 +15,7 @@
     - password_lock: False
     - empty_password: {{ 'True' if not userdata.get('password') else 'False' }}
     - enforce_password: {{ 'True' if userdata.get('password') else 'False' }}
-    - win_logonscript: C:\\opt\cozy\bin\login.ps1
+    - win_logonscript: C:/opt/cozy/bin/login.ps1
 
 {%- for group in userdata.get('windows_groups', ['Users']) %}
 {{ username }}_add_to_{{ group | lower | replace(' ', '_') }}:
