@@ -39,4 +39,8 @@ sshd_service:
   {%- for inc in includes %}
       - file: sshd_{{ inc }}_config
   {%- endfor %}
+{%- else %}
+sshd_config:
+  test.nop:
+    - name: SSH config disabled:(host:services:ssh_enabled = false)
 {%- endif %}
