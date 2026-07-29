@@ -63,11 +63,10 @@ ipfs_init:
   cmd.run:
     - name: ipfs init
     - env: {{ kubo_env | json }}
+    - unless: ipfs repo ls
 {%- if is_windows %}
-    - unless: Test-Path "/opt/cozy/etc/kubo/config" -PathType Leaf
     - shell: pwsh
 {%- else %}
-    - unless: test -f /opt/cozy/etc/kubo/config
 {%- endif %}
     - require: {{ ipfs_requires | json }}
 
@@ -270,24 +269,22 @@ ipfs_publish_local_identity:
       {%- if parts | length >= 2 %}
         {%- set path_name = parts[0].rstrip('/') %}
         {%- set cid = parts[1] %}
-        {%- set local_stat = salt['cmd.run']('ipfs files stat /' ~ path_name, env=kubo_env) %}
-        {%- if 'Error' in local_stat %}
-          {%- do _mfs_cp_cmds.append('ipfs files cp /ipfs/' ~ cid ~ ' /' ~ path_name) %}
-        {%- endif %}
+        {%- do _mfs_cp_cmds.append({'cmd': 'ipfs files cp /ipfs/' ~ cid ~ ' /' ~ path_name, 'unless': 'ipfs files stat /' ~ path_name}) %}
       {%- endif %}
     {%- endfor %}
   {%- endif %}
 {%- endfor %}
 
-{%- if _mfs_cp_cmds %}
-ipfs_sync_mfs_paths:
+{%- for entry in _mfs_cp_cmds %}
+ipfs_sync_mfs_{{ loop.index }}_{{ entry.cmd | md5 }}:
   cmd.run:
-    - names: {{ _mfs_cp_cmds | tojson }}
+    - name: {{ entry.cmd }}
+    - unless: {{ entry.unless }}
     - env: {{ kubo_env | json }}
 {%- if is_windows %}
     - shell: pwsh
 {%- endif %}
-{%- endif %}
+{%- endfor %}
 
 {%- if _peers_to_pin %}
 ipfs_sync_private_cluster_pins:
