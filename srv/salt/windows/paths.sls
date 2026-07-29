@@ -20,9 +20,26 @@
   winget_path
 ] %}
 
+{%- set config_paths = ['C:/opt/cozy/etc'] %}
+{%- set cache_paths = ['C:/opt/cozy/cache'] %}
+{%- set ext_paths = [] %}
+{%- for p in config_paths + cache_paths %}
+  {%- do ext_paths.append(p) %}
+# Ensure additional paths are created
+{{ p | replace("C:/", "") | replace("/", "_") }}:
+  file.directory:
+    - name: {{ p }}
+    - mkdirs: True
+    - win_owner: 'Administrators'
+    - win_perms:
+        cozyusers:
+          perms: full_control
+
+{%- endfor %}
+
 # Grant cozyusers read+execute on all opt paths
 # WindowsApps permissions are strict - need explicit grant for non-installing users
-{%- for path in opt_paths %}
+{%- for path in opt_paths + ext_paths %}
 {%- set path = path | replace("/", "\\") %}
 opt_path_acl_{{ loop.index }}:
   cmd.run:
@@ -38,6 +55,7 @@ opt_path_acl_{{ loop.index }}:
           Set-Acl $path $acl
         }
     - output_loglevel: quiet
+    - hide_output: True
     - shell: pwsh
 {%- endfor %}
 
