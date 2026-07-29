@@ -87,7 +87,6 @@ cache_pip_base_{{ package | replace('-', '_') }}:
     - name: {{ mamba_bin }} --use-uv run pip download {%- if pip_architectures|length > 1 %} {%- for arch in pip_architectures %} --platform {{ arch }} {%- endfor %} {%- endif %} --dest {{ pip_cache }} --pre --index-url https://pypi.org/simple {{ package }}
     - hide_output: True
     - output_loglevel: quiet
-    - bg: True
     - order: 0
     {%- if grains['os_family'] == 'Windows' %}
     - shell: powershell

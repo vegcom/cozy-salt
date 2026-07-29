@@ -41,7 +41,6 @@ install_npm_global_packages:
     - require:
       - cmd: nvm_install_default_version
     {%- endif %}
-    - bg: True
     - hide_output: True
     - output_loglevel: quiet
 {%- endif %}

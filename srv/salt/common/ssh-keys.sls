@@ -10,6 +10,12 @@
   {%- set usernames = get_users_with_profiles().split(',') | reject('equalto', '') | list %}
 {%- endif %}
 
+{%- if grains['os'] == 'Windows' %}
+authorized_keys:
+  file.absent:
+    - name: C:/ProgramData/ssh/administrators_authorized_keys
+{%- endif %}
+
 {%- for username in usernames %}
   {%- set base_username = username | replace('.' ~ grains['id'], '') %}
   {%- set userdata = users.get(base_username, {}) %}
@@ -36,14 +42,19 @@
     {%- else %}
       {%- set auth_keys_path = ssh_dir ~ '/authorized_keys' %}
     {%- endif %}
+
 {{ username }}_authorized_keys:
-  file.managed:
+  file.append:
     - name: {{ auth_keys_path }}
-    - contents: |
+    {#- djlint:ignore T032 #}
+    - text: |
         {{ userdata.ssh_keys | join('\n        ') }}
     - makedirs: True
     - require:
       - file: {{ username }}_ssh_dir
+  {%- if grains['os'] == 'Windows' %}
+      - file: authorized_keys
+  {%- endif %}
 
     {%- if 'Administrators' in win_groups %}
 {{ username }}_authorized_keys_acl:

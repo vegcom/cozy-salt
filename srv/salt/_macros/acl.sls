@@ -11,7 +11,6 @@
     - output_loglevel: quiet
     - onlyif: Test-Path "{{ path }}"
     - shell: powershell
-    - bg: True
   {%- if requires %}
     - require:
     {%- for require in requires %}
