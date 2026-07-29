@@ -19,6 +19,10 @@ install_oh_my_zsh:
     - env: {{ omzsh_env | json }}
     - cwd: /
     - runas: {{ svc_name }}
-    - unles: test -d $ZSH
+    - hide_output: True
+    - output_loglevel: quiet
+    - success_retcodes:
+      - 0
+      - 1
 
 {{ git_repo('zsh-autocomplete', '/opt/cozy/etc/oh-my-zsh/custom/plugins/zsh-autocomplete', svc_name, org='marlonrichert', state_id='marlonrichert/zsh-autocomplete') }}
