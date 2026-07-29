@@ -32,21 +32,50 @@ ipfs_skip:
 {%- set lan_ip = salt['grains.get']('ip4_interfaces', {}).get(iface, [''])[0] %}
 
 {%- set kubo_env = {
-    "IPFS_PATH": "/opt/cozy/etc/kubo",
     "GOLOG_LOG_FMT": "nocolor",
     "GOLOG_LOG_LEVEL": "warn",
     "GOLANG_PROTOBUF_REGISTRATION_CONFLICT": "warn"
 } %}
 
+{%- set current_path = salt['environ.get']('PATH') %}
+
 {%- if not is_windows %}
-  {%- set current_path = salt['environ.get']('PATH') %}
+  {%- do kubo_env.update({"IPFS_PATH": "/opt/cozy/etc/kubo"}) %}
   {%- do kubo_env.update({"PATH": "/opt/kubo/:" ~ current_path}) %}
+{%- else %}
+  {%- do kubo_env.update({"IPFS_PATH": "C:/opt/cozy/etc/kubo"}) %}
+  {%- do kubo_env.update({"PATH": "C:/opt/kubo/;" ~ current_path}) %}
 {%- endif %}
 
-{%- set ipfs_requires = [] %}
+{%- set ipfs_requires = [{'file': 'ipfs_config_path'}] %}
 {%- for key, value in kubo_env.items() %}
   {%- do ipfs_requires.append({'environ': 'kubo_env_' ~ key | lower}) %}
 {%- endfor %}
+
+ipfs_config_path:
+  file.directory:
+{%- if is_windows %}
+    - name: C:/opt/cozy/etc/kubo
+{%- else %}
+    - name: /opt/cozy/etc/kubo
+{%- endif %}
+    - mkdirs: True
+{%- if is_windows %}
+    - win_owner: 'Administrators'
+    - win_perms:
+        cozyusers:
+          perms: full_control
+{%- else %}
+    - user: cozy-salt-svc
+    - group: cozyusers
+    - mode: '0770'
+    - file_mode: '0660'
+    - dir_mode: '0770'
+    - recurse:
+      - user
+      - group
+      - mode
+{%- endif %}
 
 {%- for key, value in kubo_env.items() %}
 kubo_env_{{ key | lower }}:
@@ -63,12 +92,14 @@ ipfs_init:
   cmd.run:
     - name: ipfs init
     - env: {{ kubo_env | json }}
-    - unless: ipfs repo ls
 {%- if is_windows %}
     - shell: pwsh
-{%- else %}
 {%- endif %}
-    - require: {{ ipfs_requires | json }}
+    - success_retcodes:
+      - 0
+      - 1
+    - require:
+      - file: ipfs_config_path
 
 ipfs_configure_private_networking:
   cmd.run:
@@ -112,31 +143,6 @@ ipfs_service:
       - cmd: ipfs_configure_private_networking
 {%- endif %}
 
-ipfs_config_path:
-  file.directory:
-{%- if is_windows %}
-    - name: C:/opt/cozy/etc/kubo
-{%- else %}
-    - name: /opt/cozy/etc/kubo
-{%- endif %}
-    - mkdirs: True
-{%- if is_windows %}
-    - win_owner: 'Administrators'
-    - win_perms:
-        cozyusers:
-          perms: full_control
-{%- else %}
-    - user: cozy-salt-svc
-    - group: cozyusers
-    - mode: '0770'
-    - file_mode: '0660'
-    - dir_mode: '0770'
-    - recurse:
-      - user
-      - group
-      - mode
-{%- endif %}
-
 ipfs_swarm_key:
   file.managed:
 {%- if is_windows %}
@@ -157,8 +163,8 @@ ipfs_swarm_key:
     - group: cozyusers
     - mode: '0660'
 {%- endif %}
+    - mkdirs: True
     - require:
-      - cmd: ipfs_init
       - file: ipfs_config_path
 
 share_swarm_key_to_mine:
@@ -166,7 +172,11 @@ share_swarm_key_to_mine:
     - mine.send:
       - name: ipfs_private_swarm_key
       - mine_function: file.read
+{%- if is_windows %}
+      - path: C:/opt/cozy/etc/kubo/swarm.key
+{%- else %}
       - path: /opt/cozy/etc/kubo/swarm.key
+{%- endif %}
 
 share_peer_addr_to_mine:
   module.run:
@@ -284,6 +294,9 @@ ipfs_sync_mfs_{{ loop.index }}_{{ entry.cmd | md5 }}:
 {%- if is_windows %}
     - shell: pwsh
 {%- endif %}
+    - success_retcodes:
+      - 0
+      - 1
 {%- endfor %}
 
 {%- if _peers_to_pin %}
