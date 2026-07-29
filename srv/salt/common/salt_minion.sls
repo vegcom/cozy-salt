@@ -141,6 +141,9 @@ salt_minion_service:
   service.running:
     - name: salt-minion
     - enable: True
+  {%- if grains['os_family'] != 'Windows' %}
+    - reload: True
+  {%- endif %}
     - watch:
       - file: salt_minion_conf
       - file: salt_minion_conf_opt
