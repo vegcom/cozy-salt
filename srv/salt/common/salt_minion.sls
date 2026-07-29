@@ -10,6 +10,7 @@
 {%- set minion_conf_beacon = minion_conf_dir ~ '/minion.d/97-beacon.conf' %}
 {%- set minion_conf_timeout = minion_conf_dir ~ '/minion.d/98-timeout.conf' %}
 {%- set minion_conf_grains = minion_conf_dir ~ '/minion.d/96-grains.conf' %}
+{%- set minion_conf_logging = minion_conf_dir ~ '/minion.d/95-logging.conf' %}
 
 {%- set minion_conf_opt = minion_conf_dir ~ '/minion.d/99-cozy.conf' %}
 
@@ -112,6 +113,18 @@ salt_minion_conf_grains:
     - contents: |
         grains_refresh_pre_exec: True
 
+salt_minion_conf_logging:
+  file.managed:
+    - name: {{ minion_conf_logging }}
+    - contents: |
+        log_granular_levels:
+          'salt': 'error'
+          'salt.modules': 'info'
+          'salt.loaded.ext.module.custom_module': 'warning'
+          'salt.loaded.ext.states.custom_module': 'warning'
+          'salt.utils.schedule': 'error'
+          'salt.beacons': 'error'
+
 {%- for module in salt_modules %}
 
 salt_minion_deps_{{ module }}:
@@ -132,4 +145,6 @@ salt_minion_service:
       - file: salt_minion_conf
       - file: salt_minion_conf_opt
       - file: salt_minion_conf_timeout
+      - file: salt_minion_conf_logging
+
 {%- endif %}
