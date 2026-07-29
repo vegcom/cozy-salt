@@ -19,3 +19,6 @@ run_configure_docker_wsl_context:
   cmd.run:
     - name: pwsh -ExecutionPolicy Bypass -File C:\opt\cozy\bin\configure-docker-wsl-context.ps1
     - shell: pwsh
+    - success_retcodes:
+      - 0
+      - 1
