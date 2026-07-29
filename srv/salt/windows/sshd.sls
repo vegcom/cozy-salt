@@ -23,11 +23,11 @@ apply_common_sshd:
 sshd_service:
   test.nop:
     - name: |
-    SSH service disabled:
+        SSH service disabled:
   {%- if not ssh_enabled %}
-    (host:services:ssh_enabled = false)
+        (host:services:ssh_enabled = false)
   {%- elif not pwsh_present %}
-    FileNotFound: "{{ pwsh_exe }}"
+        FileNotFound: "{{ pwsh_exe }}"
   {%- else %}
     unknown
   {%- endif %}

@@ -15,10 +15,10 @@ apply_common_sshd:
 sshd_service:
   test.nop:
     - name: |
-    SSH service disabled:
+        SSH service disabled:
     {%- if not ssh_enabled %}
-    (host:services:ssh_enabled = false)
+        (host:services:ssh_enabled = false)
     {%- else %}
-    unknown
+        unknown
     {%- endif %}
 {%- endif %}
