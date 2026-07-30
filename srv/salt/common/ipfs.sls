@@ -33,7 +33,8 @@ ipfs_skip:
 
 {%- set gw = salt['netinfo.default_gw']() %}
 {%- set iface = gw.get('interface', '') %}
-{%- set lan_ip = salt['grains.get']('ip4_interfaces', {}).get(iface, [''])[0] %}
+{%- set _iface_ips = salt['grains.get']('ip4_interfaces', {}).get(iface, []) %}
+{%- set lan_ip = _iface_ips[0] if _iface_ips else none %}
 
 {%- set kubo_env = {
     "GOLOG_LOG_FMT": "nocolor",
@@ -223,9 +224,9 @@ ipfs_config_path_perms:
     - require:
       - cmd: ipfs_configure_private_networking
       - file: ipfs_swarm_key
-  {% if _self_cid %}
+  {%- if _self_cid %}
       - cmd: ipfs_publish_local_identity
-  {% endif %}
+  {%- endif %}
 {%- endif %}
 
 {%- if peering_peers %}
