@@ -194,6 +194,7 @@ share_peer_addr_to_mine:
       - name: ipfs_peer_multiaddr
       - mine_function: cmd.run
       - cmd: ipfs config Identity.PeerID
+      - env: {{ kubo_env | json }}
 
 share_sync_cid_to_mine:
   module.run:
@@ -201,6 +202,7 @@ share_sync_cid_to_mine:
       - name: ipfs_current_sync_cid
       - mine_function: cmd.run
       - cmd: ipfs files stat --hash /
+      - env: {{ kubo_env | json }}
 
 share_mfs_paths_to_mine:
   module.run:
@@ -208,6 +210,7 @@ share_mfs_paths_to_mine:
       - name: ipfs_mfs_paths
       - mine_function: cmd.run
       - cmd: ipfs files ls -l /
+      - env: {{ kubo_env | json }}
 
 {%- if not is_windows %}
 ipfs_config_path_perms:
