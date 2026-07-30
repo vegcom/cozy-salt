@@ -135,7 +135,7 @@ arch:
   core_utils: {{ (_core + ['vim', 'sed', 'glibc', 'glibc-locales', 'man-db', 'python-pyinotify']) | tojson }}
   modern_cli: {{ (_modern_cli_base + ['fd']) | tojson }}
   monitoring: {{ (_monitoring_base + ['duf', 'ncdu']) | tojson }}
-  networking: {{ (_net_base + ['avahi', 'bind', 'etcd-bin', 'iputils', 'net-tools', 'openbsd-netcat', 'openssh', 'wsdd', 'nss-mdns']) | tojson }}
+  networking: {{ (_net_base + ['avahi', 'bind', 'etcd', 'iputils', 'net-tools', 'openbsd-netcat', 'openssh', 'wsdd', 'nss-mdns']) | tojson }}
   shell_enhancements: {{ (_shell + ['zsh', 'zsh-autosuggestions', 'zsh-syntax-highlighting']) | tojson }}
   vcs_extras: {{ (_vcs_base + ['github-cli']) | tojson }}
   acl: [acl]
