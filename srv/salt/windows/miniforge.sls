@@ -16,6 +16,8 @@
 miniforge_directory:
   file.absent:
     - name: {{ miniforge_path }}
+    - onlyif: powershell -NoProfile -Command "Test-Path '{{ miniforge_path }}'"
+    - unless: powershell -NoProfile -Command "Test-Path '{{ miniforge_path }}\condabin'"
 {%- else %}
 miniforge_directory:
   test.nop:
@@ -32,13 +34,10 @@ miniforge_download:
 
 miniforge_install:
   cmd.run:
-    - name: >
-        & "{{ miniforge_tmp }}" /InstallationType=AllUsers /RegisterPython=1 /S /D={{ miniforge_path | replace('/', '\\') }}
-    - hide_output: True
-    - output_loglevel: quiet
-    - shell: powershell
+    - name: 'start /wait "" "{{ miniforge_tmp }}" /S /InstallationType=AllUsers /RegisterPython=1 /D={{ miniforge_path | replace("/", "\\") }}'
+    - shell: cmd
     - require:
-      - cmd: miniforge_download
+      - file: miniforge_download
 
 # Set system-wide environment variable for Miniforge/Conda
 miniforge_conda_home:

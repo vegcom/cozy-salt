@@ -80,6 +80,8 @@ conda_base_version:
 # Install pip base packages in miniforge base environment
 {%- for package in packages.get('pip_base', []) %}
 
+{%- set pip_cache_enabled = salt['pillar.get']('pip:cache_enabled', False) %}
+{%- if pip_cache_enabled %}
 # Cache base environment
 cache_pip_base_{{ package | replace('-', '_') }}:
   cmd.run:
@@ -94,6 +96,7 @@ cache_pip_base_{{ package | replace('-', '_') }}:
     - require:
       - cmd: miniforge_install
       - cmd: conda_base_version
+{%- endif %}
 
 install_pip_base_{{ package | replace('-', '_') }}:
   cmd.run:
