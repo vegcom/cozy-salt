@@ -139,7 +139,7 @@ arch:
   shell_enhancements: {{ (_shell + ['zsh', 'zsh-autosuggestions', 'zsh-syntax-highlighting']) | tojson }}
   vcs_extras: {{ (_vcs_base + ['github-cli']) | tojson }}
   acl: [acl]
-  container: [docker, docker-buildx]
+  container: [docker, docker-buildx, docker-compose]
   debugging: [downgrade]
   fonts: [noto-fonts, noto-fonts-emoji, noto-fonts-cjk, ttf-fira-code, ttf-hack, ttf-jetbrains-mono, inter-font]
   gaming: [waydroid-launcher-git, protontricks, steam, gamescope,  lib32-gamescope-plus, mangohud, moonlight-qt, protonup-qt-bin]
