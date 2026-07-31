@@ -158,7 +158,7 @@ arch:
 # ============================================================================
 windows:
 
-  pwsh_modules: [PowerShellGet, Microsoft.PowerShell.PSResourceGet, PackageManagement, PSReadLine, Microsoft.WinGet.Client, Microsoft.WinGet.CommandNotFound, powershell-yaml, PSFzf, PSWindowsUpdate, Terminal-Icons, BurntToast]
+  pwsh_modules: [PowerShellGet, Microsoft.PowerShell.PSResourceGet, PackageManagement, PSReadLine, Microsoft.WinGet.Client, powershell-yaml, PSFzf, PSWindowsUpdate, Terminal-Icons, BurntToast]
 
   choco: [chocolatey-compatibility.extension, chocolatey-core.extension, chocolatey-font-helpers.extension, cheatengine, colortool, Cygwin, dive, docker-cli, docker-compose, make,  vim, winbtrfs, ext2fsd, jq, tor, ipfs-mount]
 
@@ -173,7 +173,7 @@ windows:
 
     system:
       browser: [Google.Chrome]
-      communication: []
+      communication: [Vencord.Vesktop]
       compression: [Giorgiotani.Peazip]
       development: [GitHub.GitHubDesktop, GitHub.cli, Gitleaks.Gitleaks, JetBrains.IntelliJIDEA.Community, Microsoft.VisualStudio.BuildTools, Microsoft.VisualStudio.Community, Microsoft.VisualStudioCode, Microsoft.VisualStudioCode.CLI, Microsoft.VisualStudioCode.Insiders, Microsoft.VisualStudioCode.Insiders.CLI, MSYS2.MSYS2, NSIS.NSIS, Kitware.CMake, Anthropic.ClaudeCode, BurntSushi.ripgrep.MSVC, hoppscotch.Hoppscotch, Microsoft.VCLibs.Desktop.14, NASM.NASM]
       editor: [Obsidian.Obsidian]
@@ -190,7 +190,7 @@ windows:
       utilities: [CodeSector.TeraCopy, AntibodySoftware.WizTree, qBittorrent.qBittorrent, WerWolv.ImHex, Microsoft.Sysinternals.Suite, TRGamer-tech.FluentTaskScheduler]
 
     userland:
-      communication: [Telegram.TelegramDesktop, Vencord.Vesktop]
+      communication: [Telegram.TelegramDesktop]
       desktop_customization: [AutoHotkey.AutoHotkey, File-New-Project.EarTrumpet]
       development: [DenoLand.Deno, direnv.direnv, Hashicorp.Terraform, Hashicorp.TerraformLanguageServer, nektos.act, waterlan.dos2unix]
       gaming: [HeroicGamesLauncher.HeroicGamesLauncher, mtkennerly.ludusavi, Playnite.Playnite, SpecialK.SpecialK]
@@ -202,7 +202,7 @@ windows:
 
     gated:
       voicemeter: [VB-Audio.Voicemeeter.Potato]
-      xsplit: []
+      xsplit: [SplitmediaLabs.XSplitBroadcaster]
       ghelper: [seerge.g-helper]
       controllers: [Rem0o.FanControl, OpenRGB.OpenRGB]
       bitsum: [BitSum.ParkControl, BitSum.ProcessLasso]
@@ -215,7 +215,10 @@ windows:
       media_imaeg: [Inkscape.Inkscape, KDE.Krita]
       via: [Olivia.VIA]
 
-    {#- Noscope functions as metadata for packages present in other lists #}
+    {#-
+    Note: Noscope functions as metadata.
+          Only applies to system pkgs.
+    #}
     noscope:
       communication: [Vencord.Vesktop]
       terminal: [Microsoft.PowerShell, Starship.Starship]
@@ -225,7 +228,7 @@ windows:
       via: [Olivia.VIA]
       ui_libraries: [Microsoft.UI.Xaml.2.7, Microsoft.UI.Xaml.2.8]
       vcredist: [Microsoft.DotNet.Runtime.9, Microsoft.DotNet.DesktopRuntime.10]
-      networking: [Insecure.Nmap]
+      networking: [Insecure.Nmap, Tailscale.Tailscale]
       xsplit: [SplitmediaLabs.XSplitBroadcaster]
 
 # ============================================================================
