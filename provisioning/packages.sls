@@ -165,32 +165,32 @@ windows:
   winget:
 
     runtimes:
-      dotnet: [Microsoft.DotNet.DesktopRuntime.8, Microsoft.DotNet.DesktopRuntime.9, Microsoft.DotNet.Framework.DeveloperPack.4.6, Microsoft.DotNet.Runtime.8]
+      dotnet: [Microsoft.DotNet.DesktopRuntime.8, Microsoft.DotNet.DesktopRuntime.9, Microsoft.DotNet.Framework.DeveloperPack.4.6, Microsoft.DotNet.Runtime.8, Microsoft.DotNet.Runtime.9, Microsoft.DotNet.DesktopRuntime.10]
       java: [Oracle.JavaRuntimeEnvironment, Oracle.JDK.26]
       sdks: [Microsoft.WindowsADK, Microsoft.NuGet]
-      ui_libraries: []
+      ui_libraries: [Microsoft.UI.Xaml.2.7, Microsoft.UI.Xaml.2.8]
       vcredist: [Microsoft.VCRedist.2008.x64, Microsoft.VCRedist.2008.x86, Microsoft.VCRedist.2010.x64, Microsoft.VCRedist.2010.x86, Microsoft.VCRedist.2012.x64, Microsoft.VCRedist.2012.x86, Microsoft.VCRedist.2013.x64, Microsoft.VCRedist.2013.x86, Microsoft.VCRedist.2015+.x64, Microsoft.VCRedist.2015+.x86]
 
     system:
       browser: [Google.Chrome]
       communication: []
       compression: [Giorgiotani.Peazip]
-      development: [GitHub.GitHubDesktop, GitHub.cli, Gitleaks.Gitleaks, JetBrains.IntelliJIDEA.Community, Microsoft.VisualStudio.BuildTools, Microsoft.VisualStudio.Community, Microsoft.VisualStudioCode, Microsoft.VisualStudioCode.CLI, Microsoft.VisualStudioCode.Insiders, Microsoft.VisualStudioCode.Insiders.CLI, MSYS2.MSYS2, NSIS.NSIS, Kitware.CMake, Anthropic.ClaudeCode, BurntSushi.ripgrep.MSVC, hoppscotch.Hoppscotch]
+      development: [GitHub.GitHubDesktop, GitHub.cli, Gitleaks.Gitleaks, JetBrains.IntelliJIDEA.Community, Microsoft.VisualStudio.BuildTools, Microsoft.VisualStudio.Community, Microsoft.VisualStudioCode, Microsoft.VisualStudioCode.CLI, Microsoft.VisualStudioCode.Insiders, Microsoft.VisualStudioCode.Insiders.CLI, MSYS2.MSYS2, NSIS.NSIS, Kitware.CMake, Anthropic.ClaudeCode, BurntSushi.ripgrep.MSVC, hoppscotch.Hoppscotch, Microsoft.VCLibs.Desktop.14, NASM.NASM]
       editor: [Obsidian.Obsidian]
       file_management: [7zip.7zip, WinSCP.WinSCP, voidtools.Everything.Cli, voidtools.Everything]
       games: [Valve.Steam]
       hardware: [TechPowerUp.NVCleanstall, Wagnardsoft.DisplayDriverUninstaller, tuna-f1sh.cyme]
       kubernetes: [Kubecolor.kubecolor, Freelensapp.Freelens]
-      media: [ImageMagick.ImageMagick, Ruben2776.PicView, Gyan.FFmpeg, yang991178.fluent-reader]
-      networking: [Apple.Bonjour, WiresharkFoundation.Wireshark, Tailscale.Tailscale]
+      media: [ImageMagick.ImageMagick, Ruben2776.PicView, Gyan.FFmpeg, yang991178.fluent-reader, Ruben2776.PicView, HandBrake.HandBrake]
+      networking: [Apple.Bonjour, WiresharkFoundation.Wireshark, Tailscale.Tailscale, Insecure.Nmap]
       ricing: [Rainmeter.Rainmeter]
       shell: [Git.Git]
       sync_backup: [Syncthing.Syncthing, Martchus.syncthingtray]
-      terminal: [Alacritty.Alacritty, Maximus5.ConEmu, Microsoft.WindowsTerminal]
-      utilities: [CodeSector.TeraCopy, AntibodySoftware.WizTree, qBittorrent.qBittorrent, WerWolv.ImHex]
+      terminal: [Alacritty.Alacritty, Maximus5.ConEmu, Microsoft.WindowsTerminal, Microsoft.PowerShell, Starship.Starship]
+      utilities: [CodeSector.TeraCopy, AntibodySoftware.WizTree, qBittorrent.qBittorrent, WerWolv.ImHex, Microsoft.Sysinternals.Suite, TRGamer-tech.FluentTaskScheduler]
 
     userland:
-      communication: [Telegram.TelegramDesktop]
+      communication: [Telegram.TelegramDesktop, Vencord.Vesktop]
       desktop_customization: [AutoHotkey.AutoHotkey, File-New-Project.EarTrumpet]
       development: [DenoLand.Deno, direnv.direnv, Hashicorp.Terraform, Hashicorp.TerraformLanguageServer, nektos.act, waterlan.dos2unix]
       gaming: [HeroicGamesLauncher.HeroicGamesLauncher, mtkennerly.ludusavi, Playnite.Playnite, SpecialK.SpecialK]
@@ -213,7 +213,9 @@ windows:
       media_video: []
       media_audio: [Audacity.Audacity, Cockos.REAPER]
       media_imaeg: [Inkscape.Inkscape, KDE.Krita]
+      via: [Olivia.VIA]
 
+    {#- Noscope functions as metadata for packages present in other lists #}
     noscope:
       communication: [Vencord.Vesktop]
       terminal: [Microsoft.PowerShell, Starship.Starship]
