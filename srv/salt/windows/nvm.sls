@@ -14,19 +14,12 @@
 {%- set node_path = nvm_path ~ '\\nodejs' %}
 {%- set env_registry = salt['pillar.get']('windows:env_registry', 'HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment') %}
 
-nvm_download:
-  cmd.run:
-    - name: >
-        pwsh -NoLogo -Command
-        "Invoke-WebRequest -Uri '{{ npm_pkg }}' -OutFile {{ nvm_tmp }}"
-
 nvm_install:
-  cmd.run:
-    - name: >
-        pwsh -NoLogo -Command
-        "Expand-Archive -Path {{ nvm_tmp }} -DestinationPath {{ nvm_path }} -Force"
-    - require:
-      - cmd: nvm_download
+  archive.extracted:
+    - name: {{ nvm_path }}
+    - source: {{ npm_pkg }}
+    - skip_verify: True
+    - enforce_toplevel: False
 
 nvm_npm_settings:
   file.managed:
@@ -36,7 +29,7 @@ nvm_npm_settings:
       - 'path: {{ node_path }}'
       - 'symlink: {{ node_path }}'
     - require:
-      - cmd: nvm_install
+      - archive: nvm_install
 
 nvm_home:
   reg.present:
@@ -45,7 +38,7 @@ nvm_home:
     - vdata: {{ nvm_path }}
     - vtype: REG_SZ
     - require:
-      - cmd: nvm_install
+      - archive: nvm_install
 
 # NVM_SYMLINK tells nvm-windows where to create the active node symlink/junction
 nvm_symlink:
@@ -55,7 +48,7 @@ nvm_symlink:
     - vdata: {{ node_path }}
     - vtype: REG_SZ
     - require:
-      - cmd: nvm_install
+      - archive: nvm_install
 
 install_default_node_version:
   cmd.run:
@@ -63,7 +56,7 @@ install_default_node_version:
     - shell: pwsh
     - unless: {{ nvm_bin }} list | findstr "{{ nvm_version }}"
     - require:
-      - cmd: nvm_install
+      - archive: nvm_install
       - file: nvm_npm_settings
       - reg: nvm_symlink
 
@@ -90,4 +83,3 @@ nvm_use_default:
 # PATH updates handled by windows.paths (avoids race conditions)
 include:
   - common.nvm
-  - windows.paths

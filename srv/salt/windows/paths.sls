@@ -17,6 +17,13 @@
   'C:/opt/wt',
   'C:/opt/msys',
   'C:/opt/cozy/bin',
+] %}
+
+{%- set choco_path = salt['pillar.get']('paths:choco', 'C:/ProgramData/Chocolatey/bin') %}
+{%- set tailscale_path = salt['pillar.get']('paths:tailscale', 'C:/Program Files/Tailscale') %} #
+
+{%- set cmd_paths = [
+  choco_path,
   winget_path
 ] %}
 
@@ -69,7 +76,7 @@ opt_path_acl_{{ loop.index }}:
 # Merge paths if absent
 {%- set paths = current_path.split(';') %}
 
-{%- for p in opt_paths %}
+{%- for p in opt_paths + cmd_paths %}
   {%- if p not in paths %}
     {%- do paths.append(p) %}
   {%- endif %}

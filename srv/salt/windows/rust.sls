@@ -4,8 +4,8 @@
 # PATH updates handled by windows.paths (avoids race conditions)
 
 {# Path configuration from pillar with defaults #}
-{% set rust_path = salt['pillar.get']('install_paths:rust:windows', 'C:\\opt\\rust') %}
-{% set env_registry = salt['pillar.get']('windows:env_registry', 'HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment') %}
+{%- set rust_path = salt['pillar.get']('install_paths:rust:windows', 'C:\\opt\\rust') %}
+{%- set env_registry = salt['pillar.get']('windows:env_registry', 'HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment') %}
 
 # Create C:\opt\rust directory
 rust_directory:
@@ -15,8 +15,11 @@ rust_directory:
 
 # Download rustup-init.exe
 rust_download:
-  cmd.run:
-    - name: pwsh -Command "Invoke-WebRequest -Uri https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe -OutFile {{ rust_path }}\rustup-init.exe"
+  file.managed:
+    - name: {{ rust_path }}\rustup-init.exe
+    - source: https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe
+    - skip_verify: True
+    - mkdirs: True
     - require:
       - file: rust_directory
 
@@ -27,7 +30,7 @@ rust_install:
   cmd.run:
     - name: pwsh -Command "& { $env:RUSTUP_HOME='{{ rust_path }}'; $env:CARGO_HOME='{{ rust_path }}'; {{ rust_path }}\rustup-init.exe -y --no-modify-path }"
     - require:
-      - cmd: rust_download
+      - file: rust_download
 
 # Set system-wide environment variables for Rust
 # HKEY_LOCAL_MACHINE ensures all users have access

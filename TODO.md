@@ -19,6 +19,13 @@
 - [ ] [vegcom/cozy-salt](https://github.com/vegcom/cozy-salt/tree/develop)
   - [ ] refactor: modernize_formula
     - [ ] `cmd.run.*(wget|curl)` and migrate to `file.managed` + `cmd.run` pattern `srv/salt/linux/k3s.sls` pattern as reference
+      - [x] windows
+        - [x] nvm
+        - [x] miniforge
+        - [x] qmk_msys
+        - [x] rust
+        - [x] salt
+      - [ ] linux
   - [x] udev rules
     - [Irongeek writeup on udev lockdown](https://www.irongeek.com/i.php?page=security/plug-and-prey-malicious-usb-devices#3.2_Locking_down_Linux_using_UDEV)
     - [x] base

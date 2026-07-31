@@ -24,11 +24,10 @@
 pwsh_module_{{ module | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
     - shell: powershell
-    {#- FIXME: edge cases may require `Remove-Module PackageManagement,PowerShellGet -Force -ErrorAction SilentlyContinue|Out-Null` #}
-    - name: Install-Module -Name {{ module }} -Scope AllUsers -AllowClobber -SkipPublisherCheck -Force -Repository PSGallery 2>$null
-    - onlyif: Get-Command pwsh -ErrorAction SilentlyContinue 2>$null|Out-Null
-    - unless: Get-Module -ErrorAction SilentlyContinue -All|Select-Object 'Name'|Select-String {{ module }} 2>$null|Out-Null | Out-String
+    - name: Install-Module -Name {{ module }} -Scope AllUsers -AllowClobber -SkipPublisherCheck -Force -Repository PSGallery
+    - unless: if (!(Get-Module -ListAvailable -Name "{{ module }}")) { exit 1 }
   {%- endfor %}
+
 {%- endif %}
 
 # ============================================================================
@@ -105,7 +104,7 @@ winget_features_enable:
 # Install Winget runtime packages, machine scope (batched by sub-category)
 {%- if packages.windows.winget.runtimes is defined %}
   {%- for category, pkgs in packages.windows.winget.runtimes.items() %}
-{{ winget_batch_install('winget_batch_runtimes_' ~ category, pkgs, winget_path=winget_path, scope='machine', force=true) }}
+{{ winget_batch_install('winget_batch_runtimes_' ~ category, pkgs, winget_path=winget_path, scope='machine', force=true, bg=true) }}
   {%- endfor %}
 {%- endif %}
 
@@ -115,11 +114,11 @@ winget_features_enable:
   {%- for category, pkgs in packages.windows.winget.system.items() %}
     {%- set filtered_pkgs = pkgs | reject('in', noscope_pkgs) | list %}
     {%- if filtered_pkgs %}
-{{ winget_batch_install('winget_batch_system_' ~ category, filtered_pkgs, winget_path=winget_path, scope='machine', force=True) }}
+{{ winget_batch_install('winget_batch_system_' ~ category, filtered_pkgs, winget_path=winget_path, scope='machine', force=true, bg=true) }}
     {%- endif %}
     {%- set noscope_category_pkgs = pkgs | select('in', noscope_pkgs) | list %}
     {%- if noscope_category_pkgs %}
-{{ winget_batch_install('winget_batch_system_' ~ category ~ '_noscope', noscope_category_pkgs, winget_path=winget_path, scope=false, force=true) }}
+{{ winget_batch_install('winget_batch_system_' ~ category ~ '_noscope', noscope_category_pkgs, winget_path=winget_path, scope=false, force=true, bg=true) }}
     {%- endif %}
   {%- endfor %}
 {%- endif %}
@@ -134,7 +133,7 @@ winget_features_enable:
       {%- endif %}
       {%- set noscope_gated_pkgs = pkgs | select('in', noscope_pkgs) | list %}
       {%- if noscope_gated_pkgs %}
-{{ winget_batch_install('winget_batch_gated_' ~ cap_name ~ '_noscope', noscope_gated_pkgs, winget_path=winget_path, scope=false, force=true) }}
+{{ winget_batch_install('winget_batch_gated_' ~ cap_name ~ '_noscope', noscope_gated_pkgs, winget_path=winget_path, scope=false, force=true, bg=true) }}
       {%- endif %}
     {%- endif %}
   {%- endfor %}
@@ -148,7 +147,7 @@ winget_features_enable:
     {%- set winget_uri = user_info.get(user, {}).get("winget_uri", false) %}
     {%- if winget_uri and UserName and salt['file.file_exists'](winget_uri) %}
       {%- for category, pkgs in packages.windows.winget.userland.items() %}
-{{ winget_batch_install('winget_batch_userland_' ~ UserName ~ '_' ~ category, pkgs, winget_user=UserName, winget_path=winget_uri, scope='user', force=true) }}
+{{ winget_batch_install('winget_batch_userland_' ~ UserName ~ '_' ~ category, pkgs, winget_user=UserName, winget_path=winget_uri, scope='user', force=true, bg=true) }}
       {%- endfor %}
     {%- endif %}
   {%- endfor %}

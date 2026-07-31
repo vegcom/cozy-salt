@@ -3,11 +3,11 @@
 {%- set minion_id = grains['id'] %}
 
 salt_update_download:
-  cmd.run:
-    - name: >-
-        powershell -NonInteractive -ExecutionPolicy Bypass -Command
-        "Invoke-WebRequest -Uri https://github.com/saltstack/salt-bootstrap/raw/refs/heads/develop/salt-quick-start.ps1
-        -OutFile C:/opt/cozy/cache/salt-quick-start.ps1"
+  file.managed:
+    - name: C:/opt/cozy/cache/salt-quick-start.ps1
+    - source: https://github.com/saltstack/salt-bootstrap/raw/refs/heads/develop/salt-quick-start.ps1
+    - skip_verify: True
+    - mkdirs: True
 
 salt_update:
   cmd.run:
@@ -15,5 +15,5 @@ salt_update:
         powershell -NonInteractive -ExecutionPolicy Bypass -Command
         "& C:/opt/cozy/cache/salt-quick-start.ps1 -master {{ master }} -minion-name {{ minion_id }}"
     - require:
-      - cmd: salt_update_download
+      - file: salt_update_download
 {%- endif %}

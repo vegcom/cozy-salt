@@ -67,6 +67,3 @@ nvm_install_default_version:
 # Install global npm packages via common orchestration
 include:
   - common.nvm
-
-# Set ACLs for cozyusers group access
-{{ cozy_acl(nvm_path) }}

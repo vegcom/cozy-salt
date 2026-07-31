@@ -11,15 +11,12 @@ qmk_msysdirectory:
     - name: {{ qmk_msys_path }}
     - makedirs: True
 
-# Download wt installer
 qmk_msys_download:
-  cmd.run:
-    - name: >
-        pwsh -NoLogo -Command
-        "Invoke-WebRequest -Uri \"{{ qmk_uri }}\"
-        -OutFile \"{{ qmk_msys_tmp }}\""
-    - require:
-      - file: qmk_msysdirectory
+  file.managed:
+    - name: {{ qmk_msys_tmp }}
+    - source: {{ qmk_uri }}
+    - skip_verify: True
+    - mkdirs: True
 
 qmk_msys_install:
   cmd.run:
@@ -30,7 +27,7 @@ qmk_msys_install:
         /VERYSILENT
         /DIR={{ qmk_msys_path }}"
     - require:
-      - cmd: qmk_msys_download
+      - file: qmk_msys_download
 
 include:
   - windows.paths

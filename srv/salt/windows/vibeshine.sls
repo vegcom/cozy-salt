@@ -9,12 +9,11 @@ vibeshine_directory:
     - makedirs: True
 
 vibeshine_download:
-  cmd.run:
-    - name: >
-        pwsh -NoLogo -Command
-        "Invoke-WebRequest -Uri 'https://github.com/Nonary/vibeshine/releases/download/{{ vibeshine_version }}/VibeshineSetup-{{ vibeshine_version }}.exe' -OutFile {{ vibeshine_tmp }}"
-    - require:
-      - file: vibeshine_directory
+  file.managed:
+    - name: {{ vibeshine_tmp }}
+    - source: https://github.com/Nonary/vibeshine/releases/download/{{ vibeshine_version }}/VibeshineSetup-{{ vibeshine_version }}.exe
+    - skip_verify: True
+    - mkdirs: True
 
 vibeshine_install:
   cmd.run:
@@ -22,4 +21,4 @@ vibeshine_install:
         pwsh -NoLogo -Command
         "& '{{ vibeshine_tmp }}' /qn /norestart"
     - require:
-      - cmd: vibeshine_download
+      - file: vibeshine_download

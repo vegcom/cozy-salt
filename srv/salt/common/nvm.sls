@@ -6,6 +6,7 @@
 {%- from '_macros/packages.sls' import get_packages %}
 {%- set packages = get_packages() | load_json %}
 {%- set nvm_config = salt['pillar.get']('nvm', {}) %}
+{%- from "_macros/acl.sls" import cozy_acl %}
 
 # nvm on windows does not accept wildcards
 {%- set default_version = nvm_config.get('default_version', 'lts') %}
@@ -44,3 +45,5 @@ install_npm_global_packages:
     - hide_output: True
     - output_loglevel: quiet
 {%- endif %}
+
+{{ cozy_acl(nvm_path) }}

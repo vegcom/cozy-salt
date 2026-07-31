@@ -19,11 +19,12 @@ miniforge_directory:
     - makedirs: True
     - clean: False
 
-# Download miniforge installer
 miniforge_download:
-  cmd.run:
-    - name: |
-        curl -fsSL -o /tmp/miniforge-init.sh https://github.com/conda-forge/miniforge/releases/download/{{ miniforge_version }}/Miniforge3-Linux-{{ cpu_arch }}.sh
+  file.managed:
+    - name: /tmp/miniforge-init.sh
+    - source: https://github.com/conda-forge/miniforge/releases/download/{{ miniforge_version }}/Miniforge3-Linux-{{ cpu_arch }}.sh
+    - skip_verify: True
+    - mkdirs: True
 
 # Remove stale _conda symlink so -u reinstall doesn't fail on ln conflict
 miniforge_clean_conda_symlink:
@@ -42,7 +43,7 @@ miniforge_install:
     - name: bash /tmp/miniforge-init.sh -b -u -s -p {{ miniforge_path }}
     - runas: root
     - require:
-      - cmd: miniforge_download
+      - file: miniforge_download
       - file: miniforge_clean_conda_symlink
 
 # Install base pip packages via common orchestration
