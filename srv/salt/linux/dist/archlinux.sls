@@ -239,16 +239,25 @@ yay_install:
 {%- from '_macros/dotfiles.sls' import get_user_home %}
 {%- for username in managed_users %}
   {%- set user_home = get_user_home(username) | trim %}
+yay_conf_dir_{{ username }}:
+  file.directory:
+    - name: {{ user_home ~ '/.config/yay' }}
+    - mkdirs: True
+    - force: True
+    - mode: "0750"
+    - user: {{ username }}
+    - group: {{ username }}
+
 yay_conf_{{ username }}:
   file.serialize:
     - name: {{ dotfiles.dotfile_path(user_home, '.config/yay/config.json') }}
     - serializer: json
     - merge_if_exists: True
     - dataset: {"GITFLAGS": "-c core.hooksPath=/dev/null -c init.templateDir=/dev/null", }
-    - mkdirs: True
-    - mode: "0644"
+    - mode: "0640"
     - user: {{ username }}
     - group: {{ username }}
+
 {%- endfor %}
 
 # ============================================================================
