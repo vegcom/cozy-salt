@@ -126,10 +126,14 @@ salt_minion_conf_logging:
           'salt.beacons': 'error'
 
 {%- for module in salt_modules %}
+{#-
+FIXME: we don't actually want to do this it breaks salts working state for onedir
+  - Evaluate fallout and remediation for fleet
+#}
+# salt_minion_deps_{{ module }}:
+#   pip.installed:
+#     - name: {{ module }}
 
-salt_minion_deps_{{ module }}:
-  pip.installed:
-    - name: {{ module }}
 {%- endfor %}
 
 # NOTE: restarting salt-minion during salt-call interrupts the run
