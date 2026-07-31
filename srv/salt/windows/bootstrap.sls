@@ -160,7 +160,11 @@ enable_sudo_inline:
 # {{ util }}
 install_ad_{{ util | lower | replace(".", "_") | replace("-", "_") }}:
   cmd.run:
-    - name: Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile -Command `\"Get-WindowsCapability -Online | Where-Object Name -like '{{ util }}*' | Add-WindowsCapability -Online -Verbose`\"" -WindowStyle Hidden
+    - name: >-
+        Start-Process -FilePath "powershell.exe"
+        -ArgumentList @('-NoProfile', '-NonInteractive', '-Command',
+        "Get-WindowsCapability -Online | Where-Object Name -like '{{ util }}*' | Add-WindowsCapability -Online")
+        -WindowStyle Hidden
     - shell: powershell
 {%- endfor %}
 
