@@ -148,19 +148,20 @@ enable_sudo_inline:
 # ============================================================================
 
 {%- set utils = [
+  "AppxPackagingTool",
+  "DebugTools",
   "Tools.DeveloperMode.Core",
   "VBSCRIPT",
+  "WindowsDesktop",
 ] %}
+
 {%- for util in utils %}
 
 # {{ util }}
 install_ad_{{ util | lower | replace(".", "_") | replace("-", "_") }}:
   cmd.run:
-    - name: Get-WindowsCapability -Online | Where-Object Name -like '{{ util }}*' | Add-WindowsCapability -Online -Verbose
+    - name: Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile -Command `\"Get-WindowsCapability -Online | Where-Object Name -like '{{ util }}*' | Add-WindowsCapability -Online -Verbose`\"" -WindowStyle Hidden
     - shell: powershell
-    - bg: True
-    - hide_output: True
-    - output_loglevel: quiet
 {%- endfor %}
 
 # ============================================================================
@@ -171,7 +172,6 @@ configure_nuget:
   cmd.run:
     - name: '[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12'
     - shell: powershell
-    - unless:
     - timeout: 300
 
 install_powershell:
@@ -216,14 +216,12 @@ opt_cozy_directory:
 opt_acl_cozyusers:
   cmd.run:
     - name: |
-        icacls "C:\opt" /grant "cozyusers:(OI)(CI)F" /t /c
+        Start-Process -FilePath "icacls.exe" -ArgumentList '"C:\opt" /grant "cozyusers:(OI)(CI)F" /t /c' -WindowStyle Hidden
     - shell: powershell
     - hide_output: True
     - output_loglevel: quiet
     - require:
       - file: opt_directory
-    - unless:
-      - powershell -NoProfile -Command "icacls 'C:\opt\cozy' /t /c | Select-String -Quiet -Pattern 'cozyusers.*(\((I|O)\))' | Get-Member"
 
 # ============================================================================
 # Update Paths

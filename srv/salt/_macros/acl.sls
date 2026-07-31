@@ -6,7 +6,7 @@
 {%- set icacls_perm = 'F' if perms == 'rwx' else 'RX' %}
 {{ state_id }}_acl:
   cmd.run:
-    - name: icacls "{{ path }}" /grant "{{ group }}:(OI)(CI){{ icacls_perm }}" /t /c /q
+    - name: Start-Process -FilePath "icacls.exe" -ArgumentList '"{{ path }}" /grant "{{ group }}:(OI)(CI){{ icacls_perm }}" /t /c /q' -WindowStyle Hidden
     - hide_output: True
     - output_loglevel: quiet
     - onlyif: Test-Path "{{ path }}"
