@@ -10,47 +10,35 @@
 {%- set miniforge_tmp = 'C:/opt/cozy/cache/miniforge-install.exe' %}
 {%- set env_registry = salt['pillar.get']('windows:env_registry', 'HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Control/Session Manager/Environment') %}
 
-# Create C:\opt\miniforge3 directory for consistency
+# Miniforge will not install if path is present even if unpopulate
+{%- set miniforge_dir_exists = salt['file.file_exists'](miniforge_path ~ '/condabin') %}
+{%- if not miniforge_dir_exists %}
 miniforge_directory:
-  file.directory:
+  file.absent:
     - name: {{ miniforge_path }}
-    - makedirs: True
-    - clean: False
+{%- else %}
+miniforge_directory:
+  test.nop:
+      - name: "Valid install: `{{ miniforge_path }}/condabin` present"
+{%- endif %}
 
 # Download miniforge installer
 miniforge_download:
-  cmd.run:
-    - name: >
-        pwsh -NoLogo -Command
-        "Invoke-WebRequest -Uri 'https://github.com/conda-forge/miniforge/releases/download/{{ miniforge_version }}/Miniforge3-Windows-x86_64.exe' -OutFile {{ miniforge_tmp }}"
-    - hide_output: True
-    - output_loglevel: quiet
-    - shell: pwsh
-    - require:
-      - file: miniforge_directory
+  file.managed:
+    - name: {{ miniforge_tmp }}
+    - source: https://github.com/conda-forge/miniforge/releases/download/{{ miniforge_version }}/Miniforge3-Windows-x86_64.exe
+    - skip_verify: True
+    - mkdirs: True
 
 miniforge_install:
   cmd.run:
     - name: >
-        pwsh -NoLogo -Command
-        '& "{{ miniforge_tmp }}" /InstallationType=AllUsers /RegisterPython=1 /S /D={{ miniforge_path }}'
+        & "{{ miniforge_tmp }}" /InstallationType=AllUsers /RegisterPython=1 /S /D={{ miniforge_path | replace('/', '\\') }}
     - hide_output: True
     - output_loglevel: quiet
-    - shell: pwsh
+    - shell: powershell
     - require:
       - cmd: miniforge_download
-
-miniforge_clean:
-  cmd.run:
-    - name: >
-        pwsh -NoLogo -Command
-        "Remove-Item -Path {{ miniforge_tmp }} -Force"
-    - hide_output: True
-    - output_loglevel: quiet
-    - shell: pwsh
-    - require:
-      - cmd: miniforge_install
-      - file: miniforge_directory
 
 # Set system-wide environment variable for Miniforge/Conda
 miniforge_conda_home:
@@ -61,7 +49,6 @@ miniforge_conda_home:
     - vtype: REG_SZ
     - require:
       - cmd: miniforge_install
-      - file: miniforge_directory
 
 # Create pip data dir
 pip_datadir:
@@ -73,4 +60,3 @@ pip_datadir:
 # Install base pip packages via common orchestration
 include:
   - common.miniforge
-  - windows.paths
