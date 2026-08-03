@@ -144,7 +144,7 @@ echo "[entrypoint] Starting avahi-daemon..."
 avahi-daemon --no-drop-root --daemonize --debug &
 
 echo "[entrypoint] Starting Salt API..."
-salt-api -d --log-level=info --log-file-level=warning
+salt-api -d --log-level=info --log-file-level=${SALT_API_LOG_LEVEL:-warning}
 
 echo "[entrypoint] Starting Salt Master..."
-exec salt-master --log-level=info --log-file-level=warning
+exec salt-master --log-level=info --log-file-level=${SALT_MASTER_LOG_LEVEL:-warning}
