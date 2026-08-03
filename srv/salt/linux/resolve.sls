@@ -40,7 +40,7 @@ dns_search_domain{{ file.replace("/", "_").replace(".", "_") }}:
         nameserver {{ nameserver }}
         {%- endfor %}
     - mode: "0644"
-    - unless: grep -q 'tailscale' {{ file }}
+    - unless: test -L {{ file }} || lsattr {{ file }} 2>/dev/null | grep -q -- '-i-'
 {%- endfor %}
 
 {%- else %}
