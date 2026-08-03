@@ -29,7 +29,7 @@
   - [x] udev rules
     - [Irongeek writeup on udev lockdown](https://www.irongeek.com/i.php?page=security/plug-and-prey-malicious-usb-devices#3.2_Locking_down_Linux_using_UDEV)
     - [x] base
-    - [ ] harden
+    - [x] ~~harden~~ no longer hardening with saltstack
     - [x] reporting
   - [ ] iptables rules
     - [ ] base
@@ -42,3 +42,4 @@
     - [x] ~load sources in explicit order, merge same keys manually~
   - [ ] pillar slots
     - [slots](https://docs.saltproject.io/en/latest/topics/slots/index.html)
+  - [ ] auto update salt-minion [modules/all/salt.modules.pip](https://docs.saltproject.io/en/latest/ref/modules/all/salt.modules.pip.html)
