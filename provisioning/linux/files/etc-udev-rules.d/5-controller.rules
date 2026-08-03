@@ -2,4 +2,4 @@
 
 # https://www.man7.org/linux/man-pages/man7/udev.7.html
 
-ACTION=="add", ATTR{idVendor}=="Valve Software", ATTR{idProduct}=="Steam Controller", RUN+="/bin/sh -c 'true'"
+ATTRS{idVendor}=="28de", ATTRS{idProduct}=="1205|1142", RUN+="/bin/sh -c 'true'"

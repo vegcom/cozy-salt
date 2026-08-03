@@ -3,21 +3,27 @@
 # https://www.irongeek.com/security/plug-and-prey-malicious-usb-devices.htm
 # https://www.man7.org/linux/man-pages/man7/udev.7.html
 
-# Defaut disable - DEBUG: disabled
-ACTION=="add", SUBSYSTEMS=="usb", RUN+="/bin/sh -c 'for host in /sys/bus/usb/devices/usb*; do echo 1 > $host/authorized_default; done'"
+# Skip processing completely for TPM device events to prevent system log noise
+KERNEL=="tpmrm[0-9]*", GOTO="acl_end"
+
+# Defaut allow
+ACTION=="add", SUBSYSTEMS=="usb", RUN+="/bin/sh -c 'for host in /sys/bus/usb/devices/usb*; do echo 1 > $$host/authorized_default; done'"
+
+# Default allow classes
 
 # hub devices
-ACTION=="add", ATTR{bDeviceClass}=="09", RUN+="/bin/sh -c 'echo 1 >/sys$DEVPATH/authorized'"
-# storage devices
-ACTION=="add", ATTR{bDeviceClass}=="08", RUN+="/bin/sh -c 'echo 1 >/sys$DEVPATH/authorized'"
-# hid
-ACTION=="add", ATTR{bDeviceClass}=="03", RUN+="/bin/sh -c 'echo 1 >/sys$DEVPATH/authorized'"
-# communications
-ACTION=="add", ATTR{bDeviceClass}=="02", RUN+="/bin/sh -c 'echo 1 >/sys$DEVPATH/authorized'"
-# audio
-ACTION=="add", ATTR{bDeviceClass}=="01", RUN+="/bin/sh -c 'echo 1 >/sys$DEVPATH/authorized'"
+ACTION=="add", ATTR{bDeviceClass}=="09", RUN+="/bin/sh -c 'echo 1 >/sys%p/authorized'"
 
-#Other things to enable - example, not for prod
-# ACTION=="add", ATTR{idVendor}=="046d", ATTR{idProduct}=="0809", RUN+="/bin/sh -c 'echo 1 >/sys$DEVPATH/authorized'"
-# ACTION=="add", ATTR{serial}=="078606B90DD3", RUN+="/bin/sh -c 'echo 1 >/sys$DEVPATH/authorized'"
-# ACTION=="add", ATTR{product}=="802.11 n WLAN", RUN+="/bin/sh -c 'echo 1 >/sys$DEVPATH/authorized'"
+# storage devices
+ACTION=="add", ATTR{bDeviceClass}=="08", RUN+="/bin/sh -c 'echo 1 >/sys%p/authorized'"
+
+# hid
+ACTION=="add", ATTR{bDeviceClass}=="03", RUN+="/bin/sh -c 'echo 1 >/sys%p/authorized'"
+
+# communications
+ACTION=="add", ATTR{bDeviceClass}=="02", RUN+="/bin/sh -c 'echo 1 >/sys%p/authorized'"
+
+# audio
+ACTION=="add", ATTR{bDeviceClass}=="01", RUN+="/bin/sh -c 'echo 1 >/sys%p/authorized'"
+
+LABEL="acl_end"
