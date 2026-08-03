@@ -13,7 +13,7 @@ windhawk_installer:
 windhawk_install:
   cmd.run:
     - name: >
-        & "C:/opt/cozy/cache/windhawk-install.exe" /S /AUTO_UPDATE /PORTABLE /D={{ windhawk_path }}
+        & "C:/opt/cozy/cache/windhawk-install.exe" /S /AUTO_UPDATE /PORTABLE /D={{ windhawk_path | replace("/", "\\") }}
     - shell: powershell
     - require:
       - file: windhawk_installer
@@ -21,7 +21,7 @@ windhawk_install:
 windhawk_env:
   environ.setenv:
     - name: WINDHAWK_UI_PATH
-    - value: {{ windhawk_path }}
+    - value: {{ windhawk_path | replace("/", "\\") }}
     - update_minion: True
     - permanent: True
 
