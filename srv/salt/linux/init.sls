@@ -31,4 +31,3 @@ include:
   - linux.cozy-presence
   - linux.avahi_service
   - linux.distcc
-  - linux.ipfs

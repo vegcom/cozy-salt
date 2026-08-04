@@ -1,0 +1,25 @@
+{%- set is_windows = grains['os_family'] == 'Windows' %}
+{%- set ipfs_path = 'C:/opt/cozy/etc/kubo' if is_windows else '/opt/cozy/etc/kubo' %}
+{%- set kubo_bin = 'C:/opt/kubo' if is_windows else '/opt/kubo' %}
+
+mine_functions:
+  ipfs_private_swarm_key:
+    mine_function: file.read
+    path: {{ ipfs_path }}/swarm.key
+  ipfs_peer_multiaddr:
+    mine_function: cmd.run
+    cmd: ipfs config Identity.PeerID
+    env:
+      IPFS_PATH: {{ ipfs_path }}
+  ipfs_current_sync_cid:
+    mine_function: cmd.run
+    cmd: ipfs files stat --hash /
+    env:
+      IPFS_PATH: {{ ipfs_path }}
+  ipfs_mfs_paths:
+    mine_function: cmd.run
+    cmd: ipfs files ls -l /
+    env:
+      IPFS_PATH: {{ ipfs_path }}
+
+mine_interval: 60

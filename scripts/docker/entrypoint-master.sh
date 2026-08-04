@@ -147,4 +147,16 @@ echo "[entrypoint] Starting Salt API..."
 salt-api -d --log-level=info --log-file-level=${SALT_API_LOG_LEVEL:-warning}
 
 echo "[entrypoint] Starting Salt Master..."
+
+# After master is up: wait for minions, refresh mine, fire cozy/master/online
+(
+    sleep 15
+    until salt '*' test.ping --timeout 5 --quiet 2>/dev/null; do
+        sleep 5
+    done
+    salt '*' mine.update --timeout 10 2>/dev/null || true
+    salt-run event.fire '{}' 'cozy/master/online'
+    echo "[entrypoint] cozy/master/online fired"
+) &
+
 exec salt-master --log-level=info --log-file-level=${SALT_MASTER_LOG_LEVEL:-warning}

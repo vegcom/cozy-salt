@@ -8,3 +8,4 @@ include:
   - common.gitconfig
   - common.vim
   - common.starship
+  - common.ipfs
