@@ -4,7 +4,7 @@
 # shellcheck disable=SC3028
 if [ "${EUID:-$(id -u)}" -ne 0 ] && [ ! -b "${SUDO_USER}" ]; then
 	if [ -f /opt/saltstack/salt/salt-call ]; then
-		alias salt-call="sudo /opt/saltstack/salt/salt-call"
+		alias salt-call="sudo -E /opt/saltstack/salt/salt-call"
 	fi
 fi
 
@@ -29,4 +29,4 @@ if [ -s /etc/bash_completion.d/salt.bash ] ; then
 	. /etc/bash_completion.d/salt.bash
 fi
 
-export PATH="/opt/saltstack/salt/:$PATH"
+export PATH="/opt/saltstack/salt:$PATH"
