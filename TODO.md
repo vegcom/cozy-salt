@@ -43,3 +43,4 @@
   - [ ] pillar slots
     - [slots](https://docs.saltproject.io/en/latest/topics/slots/index.html)
   - [ ] auto update salt-minion [modules/all/salt.modules.pip](https://docs.saltproject.io/en/latest/ref/modules/all/salt.modules.pip.html)
+  - [ ] acl enforcement and default envs_dir to /opt/miniforge3/envs
