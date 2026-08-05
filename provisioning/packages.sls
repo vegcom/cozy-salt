@@ -212,7 +212,7 @@ windows:
       media_stream: []
       media_video: []
       media_audio: [Audacity.Audacity, Cockos.REAPER]
-      media_imaeg: [Inkscape.Inkscape, KDE.Krita]
+      media_image: [Inkscape.Inkscape, KDE.Krita]
       via: [Olivia.VIA]
 
     {#-
