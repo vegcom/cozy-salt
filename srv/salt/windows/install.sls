@@ -28,7 +28,7 @@ pwsh_module_{{ module | replace('.', '_') | replace('-', '_') }}:
   cmd.run:
     - name: |-
         powershell -Command "Import-Module PowerShellGet ; Install-Module -Name {{ module }} -Scope AllUsers -AllowClobber -SkipPublisherCheck -Force -Repository PSGallery"
-    - unless: powershell -Command 'if (!(Get-Module -ListAvailable -Name "{{ module }}")) { exit 1 }''
+    - unless: powershell -Command 'if (!(Get-Module -ListAvailable -Name "{{ module }}")) { exit 1 }'
   {%- endfor %}
 
 {%- endif %}
