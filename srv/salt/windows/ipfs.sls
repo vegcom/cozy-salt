@@ -4,7 +4,7 @@
 {%- set kubo_path = 'C:/opt/kubo' %}
 {%- set arch = salt['grains.get']('osarch') %}
 {%- set kubo_source = "https://github.com/ipfs/kubo/releases/download/" ~ kubo_version ~ "/kubo_" ~ kubo_version ~ "_windows-" ~ arch ~ ".zip" %}
-{%- set kubo_hash = kubo_source ~ "sha512" %}
+{%- set kubo_hash = kubo_source ~ ".sha512" %}
 
 {%- set is_ci = salt['pillar.get']('SALT_CI', False) %}
 
