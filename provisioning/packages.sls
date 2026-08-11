@@ -173,7 +173,7 @@ windows:
 
     system:
       browser: [Google.Chrome]
-      communication: [Vencord.Vesktop]
+      communication: []
       compression: [Giorgiotani.Peazip]
       development: [GitHub.GitHubDesktop, GitHub.cli, Gitleaks.Gitleaks, JetBrains.IntelliJIDEA.Community, Microsoft.VisualStudio.BuildTools, Microsoft.VisualStudio.Community, Microsoft.VisualStudioCode, Microsoft.VisualStudioCode.CLI, Microsoft.VisualStudioCode.Insiders, Microsoft.VisualStudioCode.Insiders.CLI, MSYS2.MSYS2, NSIS.NSIS, Kitware.CMake, Anthropic.ClaudeCode, BurntSushi.ripgrep.MSVC, hoppscotch.Hoppscotch, Microsoft.VCLibs.Desktop.14, NASM.NASM]
       editor: [Obsidian.Obsidian]
@@ -190,7 +190,7 @@ windows:
       utilities: [CodeSector.TeraCopy, AntibodySoftware.WizTree, qBittorrent.qBittorrent, WerWolv.ImHex, Microsoft.Sysinternals.Suite, TRGamer-tech.FluentTaskScheduler]
 
     userland:
-      communication: [Telegram.TelegramDesktop]
+      communication: [Telegram.TelegramDesktop, Vencord.Vesktop]
       desktop_customization: [AutoHotkey.AutoHotkey, File-New-Project.EarTrumpet]
       development: [DenoLand.Deno, direnv.direnv, Hashicorp.Terraform, Hashicorp.TerraformLanguageServer, nektos.act, waterlan.dos2unix]
       gaming: [ItchIo.Itch, mtkennerly.ludusavi, Playnite.Playnite, SpecialK.SpecialK]
