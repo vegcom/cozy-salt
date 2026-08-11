@@ -1,4 +1,5 @@
-PrintMotd yes
+PrintMotd no
+PrintLastLog no
 {%- if grains['os_family'] == 'Windows' %}
 Banner "C:\ProgramData\ssh\motd.txt"
 {%- else %}
