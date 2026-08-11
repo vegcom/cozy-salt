@@ -4,7 +4,7 @@
 {%- set service_user = salt['pillar.get']('service_user', {}) %}
 
 {%- set winget_force = salt['pillar.get']('winget_force', False) %}
-{%- set winget_bg  = salt['pillar.get']('winget_bg', False) %}
+{%- set winget_bg = salt['pillar.get']('winget_bg', False) %}
 
 {%- set svc_name = service_user.get('name', 'cozy-salt-svc') %}
 # TODO: move to grains to reduce render time
