@@ -41,6 +41,10 @@ if (-not (Get-EventLog -List | Where-Object { $_.Log -eq $logName })) {
     New-EventLog -LogName $logName -Source $source
 }
 
+if (-not [System.Diagnostics.EventLog]::SourceExists($source)) {
+    New-EventLog -LogName $logName -Source $source
+}
+
 function Log-Event {
     param(
         [string]$Message,
