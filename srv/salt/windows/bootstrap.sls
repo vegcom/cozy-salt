@@ -150,20 +150,24 @@ enable_sudo_inline:
 {%- set utils = [
   "AppxPackagingTool",
   "DebugTools",
+  "Microsoft-Hyper-V",
+  "SMB1Protocol",
+  "Sysmon",
   "Tools.DeveloperMode.Core",
   "VBSCRIPT",
   "WindowsDesktop",
+  "WorkFolders-Client",
 ] %}
 
 {%- for util in utils %}
 
 # {{ util }}
-install_ad_{{ util | lower | replace(".", "_") | replace("-", "_") }}:
+install_{{ util | lower | replace(".", "_") | replace("-", "_") }}:
   cmd.run:
     - name: >-
         Start-Process -FilePath "powershell.exe"
         -ArgumentList @('-NoProfile', '-NonInteractive', '-Command',
-        "Get-WindowsCapability -Online | Where-Object Name -like '{{ util }}*' | Add-WindowsCapability -Online")
+        "Get-WindowsCapability -Online | Where-Object Name -like '{{ util }}*' | Add-WindowsCapability -Online -All")
         -WindowStyle Hidden
     - shell: powershell
 {%- endfor %}
