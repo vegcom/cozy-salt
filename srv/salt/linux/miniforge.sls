@@ -56,3 +56,9 @@ miniforge_install:
 # Install base pip packages via common orchestration
 include:
   - common.miniforge
+
+extend:
+  conda_config:
+    cmd.run:
+      - require:
+        - cmd: miniforge_install
