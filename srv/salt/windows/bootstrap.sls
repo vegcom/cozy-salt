@@ -151,7 +151,6 @@ enable_sudo_inline:
   "AppxPackagingTool",
   "DebugTools",
   "Microsoft-Hyper-V",
-  "SMB1Protocol",
   "Sysmon",
   "Tools.DeveloperMode.Core",
   "VBSCRIPT",
