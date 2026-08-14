@@ -1,3 +1,5 @@
 src = ["src", "tests"]
-select = ["E", "F", "I"]
-ignore = []
+builtins = ["__salt__", "__grains__", "__pillar__", "__opts__"]
+lint.select = ["E", "F", "I"]
+lint.ignore = []
+
