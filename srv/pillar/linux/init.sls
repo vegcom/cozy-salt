@@ -21,7 +21,7 @@ host:
     tailscale: true
     avahi: true
   services:
-    ssh_enabled: {{ True if not  (salt['file.file_exists']('/.dockerenv') or salt['file.file_exists']('/run/.containerenv')) }}
+    ssh_enabled: {{ True if not (salt['file.file_exists']('/.dockerenv') or salt['file.file_exists']('/run/.containerenv')) }}
 
 locales:
   - en_US.UTF-8 UTF-8
