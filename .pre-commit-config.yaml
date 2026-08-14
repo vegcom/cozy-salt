@@ -8,7 +8,7 @@ repos:
     rev: v0.11.0.1
     hooks:
       - id: shellcheck
-        args: ["--severity=warning", "--shell=bash"]
+        args: ['--severity=warning', '--shell=bash']
         exclude: \.zshrc$|zshrc$|zshrc\.machine$
 
   # YAML linting (catches Salt state syntax issues early)
@@ -16,7 +16,12 @@ repos:
     rev: v1.38.0
     hooks:
       - id: yamllint
-        args: ["--strict", "-d", "{extends: relaxed, rules: {line-length: {max: 200}}}"]
+        args:
+          [
+            '--strict',
+            '-d',
+            '{extends: relaxed, rules: {line-length: {max: 200}}}',
+          ]
         files: \.(yaml|yml|sls)$
 
   # Python linting (for Salt modules)
@@ -24,7 +29,7 @@ repos:
     rev: v0.16.3
     hooks:
       - id: ruff
-        args: ["--fix"]
+        args: ['--fix']
       - id: ruff-format
 
   # General file hygiene
@@ -35,10 +40,10 @@ repos:
         exclude: \.md$
       - id: end-of-file-fixer
       - id: check-yaml
-        args: ["--unsafe"]  # Allow custom YAML tags (Salt uses Jinja)
-        exclude: \.sls$     # Skip .sls files (Jinja templates break YAML parser)
+        args: ['--unsafe'] # Allow custom YAML tags (Salt uses Jinja)
+        exclude: \.sls$ # Skip .sls files (Jinja templates break YAML parser)
       - id: check-added-large-files
-        args: ["--maxkb=500"]
+        args: ['--maxkb=500']
       - id: check-merge-conflict
 
   # Validate SaltStack states
