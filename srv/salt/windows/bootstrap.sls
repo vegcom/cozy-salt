@@ -162,14 +162,17 @@ enable_sudo_inline:
 {%- for util in utils %}
 
 # {{ util }}
-install_{{ util | lower | replace(".", "_") | replace("-", "_") }}:
+install_feature_{{ util | lower | replace(".", "_") | replace("-", "_") }}:
   cmd.run:
-    - name: >-
-        Start-Process -FilePath "powershell.exe"
-        -ArgumentList @('-NoProfile', '-NonInteractive', '-Command',
-        "Get-WindowsCapability -Online | Where-Object Name -like '{{ util }}*' | Add-WindowsCapability -Online -All")
-        -WindowStyle Hidden
-    - shell: powershell
+    - name: pwsh
+    - args:
+      - -NonInteractive
+      - -Command
+      - |
+          Start-Process pwsh.exe -WindowStyle Hidden -ArgumentList '-NonInteractive','-Command',"Get-WindowsCapability -Online | Where-Object { $_.Name -like '{{ util }}*' } | Add-WindowsCapability -Online -All"
+    - require:
+      - cmd: install_powershell
+      - cmd: broadcast_env_change
 {%- endfor %}
 
 # ============================================================================
