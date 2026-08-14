@@ -1,4 +1,4 @@
-## summary
+## summary  <!-- markdownlint-disable MD041 -->
 
 - what changed and why, grouped by area if it touches more than one thing
 
