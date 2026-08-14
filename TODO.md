@@ -29,19 +29,19 @@
     - [ ] adopt `include:`/`extend:` ordering pattern from `windows/miniforge.sls`
       - common sls stays OS-agnostic, OS-specific sls `include:`s it then `extend:`s the
         specific state IDs to attach a `require: - cmd: <os_install_state>` — keeps the
-        install-order coupling owned by the OS file instead of baked into common/*
+        install-order coupling owned by the OS file instead of baked into common/\*
       - [ ] `common/rust.sls` currently hardcodes `require: cmd: rust_install` (windows)
-        / `cmd: rust_download_and_install` (linux) via if/else — implicit contract on
-        exact state ID names, should flip to `extend:` from `windows/rust.sls` +
-        `linux/rust.sls` instead
+            / `cmd: rust_download_and_install` (linux) via if/else — implicit contract on
+            exact state ID names, should flip to `extend:` from `windows/rust.sls` +
+            `linux/rust.sls` instead
       - [ ] `common/tailscale.sls` has no `require` on any install state at all —
-        `tailscale_up` assumes `tailscale` binary already on PATH; fine today because
-        of highstate ordering luck, fragile if run standalone. needs an install state
-        to extend against (or an explicit `onlyif: which tailscale` guard + skip state)
+            `tailscale_up` assumes `tailscale` binary already on PATH; fine today because
+            of highstate ordering luck, fragile if run standalone. needs an install state
+            to extend against (or an explicit `onlyif: which tailscale` guard + skip state)
       - [ ] audit remaining `windows/*.sls` with bare `include: common.*` for the same
-        gap: `salt_minion.sls`, `sshd.sls` (already handled differently via `require_in`
-        + `context`, probably fine), `tor.sls` (`.shadowsocks` include, check),
-        `windhawk.sls`
+            gap: `salt_minion.sls`, `sshd.sls` (already handled differently via `require_in`
+        - `context`, probably fine), `tor.sls` (`.shadowsocks` include, check),
+          `windhawk.sls`
   - [x] udev rules
     - [Irongeek writeup on udev lockdown](https://www.irongeek.com/i.php?page=security/plug-and-prey-malicious-usb-devices#3.2_Locking_down_Linux_using_UDEV)
     - [x] base
