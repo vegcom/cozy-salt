@@ -83,3 +83,4 @@ nvm_use_default:
 # PATH updates handled by windows.paths (avoids race conditions)
 include:
   - common.nvm
+  - windows.paths

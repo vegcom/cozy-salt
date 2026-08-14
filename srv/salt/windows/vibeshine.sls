@@ -22,3 +22,6 @@ vibeshine_install:
         "& '{{ vibeshine_tmp }}' /qn /norestart"
     - require:
       - file: vibeshine_download
+
+include:
+  - windows.paths
