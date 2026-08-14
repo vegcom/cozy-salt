@@ -8,12 +8,19 @@
     "mkhl.direnv",
     "jkillian.custom-local-formatters",
     "akrikun.saltstack-toolkit",
-    "noamzaks.jinja-ls",
+    "wholroyd.jinja",
     "warpnet.salt-lint",
     "Jota0222.multi-formatter",
     "samuelcolvin.jinjahtml",
     "tamasfe.even-better-toml",
     "redhat.vscode-xml",
-    "foxundermoon.shell-format"
+    "foxundermoon.shell-format",
+    "MarinaGlancy.bulk-problem-diagnostics",
+    "rust-lang.rust-analyzer",
+    "ms-dotnettools.csharp",
+    "christian-kohler.npm-intellisense",
+    "vegcom.twilite",
+    "miman.json-schema-viewer",
+    "ms-toolsai.jupyter"
   ]
 }
