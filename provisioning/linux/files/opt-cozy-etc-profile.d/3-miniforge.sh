@@ -5,8 +5,9 @@
 
 export CONDA_PKGS_BASE="${TMPDIR}/cache/miniforge"
 export CONDA_PKGS_DIRS="${CONDA_PKGS_BASE}/${UID:-$(id -u)}"
-
 export CONDA_BASE_PATH="${CONDA_BASE_PATH:-/opt/miniforge3/bin/}"
+export CONDA_EXE="$CONDA_BASE_PATH/conda"
+export MAMBA_EXE="$CONDA_BASE_PATH/mamba"
 
 if [ -n "$BASH_VERSION" ] || [ -n "$ZSH_VERSION" ] && [ -n "$SHELL" ]; then
 	_SHELL_NAME="$(basename ${SHELL})"
