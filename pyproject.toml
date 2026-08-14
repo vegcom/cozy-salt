@@ -114,6 +114,7 @@ docstring-code-line-length = "dynamic"
 [tool.ruff.lint.isort]
 split-on-trailing-comma = false
 
-
-[tool.djlint]
+[tool.djlint]  # Mirrored in .djlint.toml
 exclude = "srv/pillar/secrets/README.md,srv/pillar/common/README.md"
+use_gitignore = true
+ignore = "H025"

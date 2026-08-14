@@ -1,0 +1,3 @@
+exclude = "srv/pillar/secrets/README.md,srv/pillar/common/README.md"
+ignore="H025"
+use_gitignore=true
