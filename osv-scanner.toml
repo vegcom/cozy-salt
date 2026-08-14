@@ -1,0 +1,4 @@
+[[IgnoredVulns]]
+
+[IgnoredFiles]
+paths = ["package-lock.json"]
