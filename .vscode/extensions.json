@@ -11,6 +11,9 @@
     "noamzaks.jinja-ls",
     "warpnet.salt-lint",
     "Jota0222.multi-formatter",
-    "samuelcolvin.jinjahtml"
+    "samuelcolvin.jinjahtml",
+    "tamasfe.even-better-toml",
+    "redhat.vscode-xml",
+    "foxundermoon.shell-format"
   ]
 }
