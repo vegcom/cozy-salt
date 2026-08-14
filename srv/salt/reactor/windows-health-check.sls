@@ -2,15 +2,15 @@
 # Reactor: Windows Health Check Failure
 # Triggers emergency-maint.ps1 when health-check fires failure event
 
-{% set data = data or {} %}
-{% set minion_id = data.get('minion', data.get('id', '')) %}
+{%- set data = data or {} %}
+{%- set minion_id = data.get('minion', data.get('id', '')) %}
 
-{% if minion_id %}
+{%- if minion_id %}
 windows_emergency_maintenance:
   cmd.script:
     - tgt: {{ minion_id }}
     - arg:
-      - salt://windows/files/opt-cozy/bin/emergency-maint.ps1
+      - salt://windows/files/opt-cozy-bin/emergency-maint.ps1
     - kwarg:
         shell: powershell
-{% endif %}
+{%- endif %}
