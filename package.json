@@ -19,7 +19,8 @@
     },
     "MD030": false,
     "MD022": false,
-    "MD025": false
+    "MD025": false,
+    "MD012": false
   },
   "eslintIgnore": [
     "*.md"
