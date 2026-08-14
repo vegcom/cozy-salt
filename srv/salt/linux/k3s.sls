@@ -65,7 +65,7 @@ k3s_env_config:
     - name: /etc/environment.d/cozy-k3s.conf
     - contents: |
         K3S_DATA_DIR={{ k3s_data_dir }}
-    - mode: '0644'
+    - mode: '0640'
     - makedirs: True
 
 k3s_download_script:
@@ -74,7 +74,7 @@ k3s_download_script:
     - order: 0
     - source: https://raw.githubusercontent.com/k3s-io/k3s/main/install.sh
     - source_hash: https://raw.githubusercontent.com/k3s-io/k3s/main/install.sh.sha256sum
-    - mode: "0755"
+    - mode: "0750"
 
 k3s_setup_script:
   cmd.run:
@@ -86,7 +86,7 @@ k3s_setup_script:
     - hide_output: True
     - output_loglevel: quiet
     - env:
-      - K3S_KUBECONFIG_MODE: "664"
+      - K3S_KUBECONFIG_MODE: "600"
       - K3S_KUBECONFIG_GROUP: "cozyusers"
       - INSTALL_K3S_CHANNEL: "{{ k3s_channel }}"
       - INSTALL_K3S_EXEC: "{{ k3s_exec }}"
@@ -116,28 +116,10 @@ k3s_kubeconfig:
     - name: /etc/rancher/k3s/k3s.yaml
     - order: 3
     - contents: {{ kubeconfig | yaml_encode }}
-    - mode: '0660'
+    - mode: '0640'
     - group: cozyusers
     - makedirs: True
     - show_changes: False
     - require:
       - service: k3s_service_start
-
-{#-
-FIXME: `cannot rename the context "default", it's not in /etc/rancher/k3s/k3s.yaml`
-#}
-
-# k3s_kubeconfig_context:
-#   cmd.run:
-#     - name: kubectl config rename-context default {{ salt['grains.get']('id') }}
-#     - order: 4
-#     - env:
-#       - KUBECONFIG: /etc/rancher/k3s/k3s.yaml
-#     - require:
-#       - service: k3s_service_start
-#       - file: k3s_kubeconfig
-#     - unless: kubectl config get-contexts --no-headers --output=name|grep -qv {{ salt['grains.get']("id") }}
-#     - watch:
-#       - file: k3s_kubeconfig
-#       - service: k3s_service_start
 {%- endif %}
