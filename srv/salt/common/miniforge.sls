@@ -60,11 +60,11 @@ pip_config:
 conda_config:
   cmd.run:
     - names:
-      - {{ conda_bin }} config --system --remove-key envs_dirs{%- if grains['os_family'] != 'Windows' -%}&>/dev/null||true {%- endif %}
+      - {{ conda_bin }} config --system --remove-key envs_dirs
       - {{ conda_bin }} config --system --add envs_dirs {{ conda_envs }}
     - success_retcodes:
       - 0
-      - 2
+      - 1
     {%- if grains['os_family'] == 'Windows' %}
     - shell: powershell
     {%- endif %}
