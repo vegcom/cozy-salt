@@ -9,14 +9,6 @@ wsl_config:
     - mode: "0644"
     - makedirs: True
     - host_name: {{ host_name }}
-wsl_config_notification:
-  test.show_notification:
-    - text: |
-        /etc/wsl.conf updated. Changes require WSL restart:
-          Windows: wsl --shutdown
-          Then: wsl
-    - onchanges:
-      - file: wsl_config
 {%- else %}
 wsl_config:
   test.nop:
