@@ -4,7 +4,6 @@ param(
     [string]$WingetPath,
     [string]$Packages,
     [string]$Scope,
-    [string]$RunAsUser,
     [string]$SkipDeps = "false",
     [string]$Prerelease = "false",
     [string]$Force = "false",
@@ -37,38 +36,23 @@ foreach ($pkg in $PackageList) {
     }
 
     # Build argument list dynamically
-    $args = @("install", "--exact",
+    $wingetArgs = @("install", "--exact",
               "--accept-source-agreements", "--accept-package-agreements",
               "--ignore-warnings", "--disable-interactivity")
 
-    if (-not $_Upgrade)    { $args += "--no-upgrade" }
-    if ($_Prerelease)      { $args += "--include-prerelease" }
-    if ($_SkipDeps)        { $args += "--skip-dependencies" }
-    if ($_Force)           { $args += "--force" }
+    if (-not $_Upgrade)    { $wingetArgs += "--no-upgrade" }
+    if ($_Prerelease)      { $wingetArgs += "--include-prerelease" }
+    if ($_SkipDeps)        { $wingetArgs += "--skip-dependencies" }
+    if ($_Force)           { $wingetArgs += "--force" }
 
     if ($Scope -ne "") {
-        $args += @("--scope", $Scope)
+        $wingetArgs += @("--scope", $Scope)
     }
 
-    $args += $pkg
+    $wingetArgs += $pkg
 
-    if ($RunAsUser -and $RunAsUser -ne "") {
-        # Build the command string
-        $cmd = "& `"$WingetPath`" $($args -join ' ')"
-
-        # Run system pwsh, but tell it to execute the command as that user
-        Start-Process pwsh.exe -ArgumentList @(
-            "-NoProfile",
-            "-Command",
-            $cmd
-        ) -Wait -WorkingDirectory "C:\Users\$RunAsUser"
-        $code = $LASTEXITCODE
-    }
-    else {
-        & $WingetPath @args
-        $code = $LASTEXITCODE
-    }
-
+    & $WingetPath @wingetArgs
+    $code = $LASTEXITCODE
 
     $results[$pkg] = @{
         ExitCode = $code

@@ -192,7 +192,6 @@ Output generates:
       - runas: <user>
       - shell: powershell
       - timeout: 600 -#}
-
 # TODO: prevent duplicate run ( each user when ran for a particuarl user )
 {%- macro winget_batch_install(state_name, packages, winget_user=False, winget_path=False, scope=False, skip_deps=False, prerelease=False, shell="powershell", force=False, upgrade=False, bg=False) -%}
   {%- if packages | length > 0 -%}
@@ -208,6 +207,12 @@ Output generates:
         -Force {{ force | lower }}
         -Upgrade {{ upgrade | lower }}
     - shell: powershell
+    {%- if winget_user %}
+    # runas uses S4U logon (salt-minion runs as SYSTEM w/ SeTcbPrivilege), no
+    # password needed, user does NOT need to be logged in. Do not replace
+    # this with SSH/credential-based approaches, it's already solved.
+    - runas: {{ winget_user }}
+    {%- endif %}
     {%- if not bg %}
     - hide_output: True
     - output_loglevel: quiet
