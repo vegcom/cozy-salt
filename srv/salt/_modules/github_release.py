@@ -35,10 +35,11 @@ def _collect_tokens():
 
 def find_valid_token():
   """
-  Return the first github token that passes a basic auth check. Result is cached per run.
+  Return the first github token that passes a basic auth check. Result is
+  cached per run.
 
   Reads tokens from all per-user pillar files via slsutil.renderer.
-  Returns empty string if none are valid.
+
 
   CLI Example::
 
