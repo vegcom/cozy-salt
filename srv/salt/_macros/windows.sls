@@ -49,7 +49,7 @@
   {%- set candidates = managed_users + [service_user] -%}
   {%- set found_user = none -%}
   {%- for user in candidates -%}
-    {%- if found_user is none and user in real_profiles -%}
+    {%- if found_user is sameas none and user in real_profiles -%}
       {%- set found_user = user -%}
     {%- endif -%}
   {%- endfor -%}
