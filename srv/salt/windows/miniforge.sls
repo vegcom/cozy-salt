@@ -76,7 +76,6 @@ pip_datadir:
     - makedirs: True
     - clean: False
 
-{%- if miniforge_file_exists %}
 # Install base pip packages via common orchestration
 include:
   - common.miniforge
@@ -86,4 +85,3 @@ extend:
     cmd.run:
       - require:
         - cmd: miniforge_install
-{%- endif %}

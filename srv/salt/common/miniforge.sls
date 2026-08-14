@@ -16,7 +16,7 @@
   {%- set pip_cache = salt['pillar.get']('cache_paths:pip:windows') %}
   {%- set conda_envs = miniforge_path ~ '/envs' %}
   {%- set miniforge_mgr = conda_bin %}
-  {%- set python_bin = miniforge_path ~ "python" ~ python_version.replace(".","") ~ ".exe" %}
+  {%- set python_bin = miniforge_path ~ "/python" ~ python_version.replace(".","") ~ ".exe" %}
 {%- else %}
   {%- set miniforge_path = salt['pillar.get']('install_paths:miniforge:linux', '/opt/miniforge3') %}
   {%- set pip_bin = miniforge_path ~ '/bin/pip' %}
