@@ -15,5 +15,5 @@ if [ -n "$BASH_VERSION" ] || [ -n "$ZSH_VERSION" ] && [ -n "$SHELL" ] ; then
 fi
 
 if [ -f "${CONDA_BASE_PATH}/conda" ];then
-  ${CONDA_BASE_PATH}/conda config --remove envs_dirs "/home/${USER}/.conda/envs" &>/dev/null||true
+  ${CONDA_BASE_PATH}/conda config --remove envs_dirs "/home/${USER}/.conda/envs" >/dev/null 2>&1 || true
 fi
