@@ -18,6 +18,9 @@ miniforge_directory:
     - group: cozyusers
     - makedirs: True
     - clean: False
+    - recurse:
+      - user
+      - group
 
 miniforge_download:
   file.managed:
@@ -25,6 +28,7 @@ miniforge_download:
     - source: https://github.com/conda-forge/miniforge/releases/download/{{ miniforge_version }}/Miniforge3-Linux-{{ cpu_arch }}.sh
     - skip_verify: True
     - mkdirs: True
+    - provides: /tmp/miniforge-init.sh
 
 # Remove stale _conda symlink so -u reinstall doesn't fail on ln conflict
 miniforge_clean_conda_symlink:
@@ -42,6 +46,9 @@ miniforge_install:
   cmd.run:
     - name: bash /tmp/miniforge-init.sh -b -u -s -p {{ miniforge_path }}
     - runas: root
+    - hide_output: True
+    - output_loglevel: quiet
+    - order: 0
     - require:
       - file: miniforge_download
       - file: miniforge_clean_conda_symlink

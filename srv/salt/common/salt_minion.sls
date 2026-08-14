@@ -117,6 +117,8 @@ salt_minion_conf_logging:
   file.managed:
     - name: {{ minion_conf_logging }}
     - contents: |
+        zmq_monitor: True
+        cache_jobs: True
         log_granular_levels:
           'salt': 'error'
           'salt.modules': 'info'

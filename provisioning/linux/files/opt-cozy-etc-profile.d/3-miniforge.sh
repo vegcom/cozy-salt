@@ -13,3 +13,7 @@ if [ -n "$BASH_VERSION" ] || [ -n "$ZSH_VERSION" ] && [ -n "$SHELL" ] ; then
   eval "$($CONDA_BASE_PATH/conda shell.$_SHELL_NAME hook)" >/dev/null
 	eval "$($CONDA_BASE_PATH/mamba shell hook --shell ${_SHELL_NAME})" >/dev/null
 fi
+
+if [ -f "${CONDA_BASE_PATH}/conda" ];then
+  ${CONDA_BASE_PATH}/conda config --remove envs_dirs "/home/${USER}/.conda/envs" &>/dev/null||true
+fi
