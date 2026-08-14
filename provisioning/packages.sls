@@ -251,6 +251,7 @@ npm_global:
   - serverless
   - tsx
   - webpack
+  - npm-check-updates
 
 brew:
   formula: [atuin, carapace, pandoc, weasyprint, zoxide, dive, starship, direnv, claude-code, kubecolor, fzf, xdotool, cyme, ripgrep]
