@@ -67,24 +67,24 @@
     "multiFormatter.formatterList": ["charliermarsh.ruff"]
   },
   "[scss]": {
-    "editor.defaultFormatter": "vscode.css-language-features",
+    "editor.defaultFormatter": "vscode.css-language-features"
   },
   "[shellscript]": {
-    "editor.defaultFormatter": "foxundermoon.shell-format",
+    "editor.defaultFormatter": "foxundermoon.shell-format"
   },
   "[sql]": {
     "editor.defaultFormatter": "Jota0222.multi-formatter",
     "multiFormatter.formatterList": ["adpyke.vscode-sql-formatter"]
   },
   "[toml]": {
-    "editor.defaultFormatter": "tamasfe.even-better-toml",
+    "editor.defaultFormatter": "tamasfe.even-better-toml"
   },
   "[xml]": {
     "editor.defaultFormatter": "Jota0222.multi-formatter",
-    "multiFormatter.formatterList": ["redhat.vscode-xml",]
+    "multiFormatter.formatterList": ["redhat.vscode-xml"]
   },
   "[yaml]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "csharp.backgroundAnalysis.analyzerDiagnosticsScope": "fullSolution",
   "csharp.backgroundAnalysis.compilerDiagnosticsScope": "fullSolution",
