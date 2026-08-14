@@ -167,8 +167,6 @@ get_capability_{{ capability | lower | replace(".", "_") | replace("-", "_") }}:
         Get-WindowsCapability -Online | Where-Object { $_.Name -like '{{ capability }}*' } | Add-WindowsCapability -Online
     - shell: powershell
     - timeout: 1800
-    - unless: |
-        (Get-WindowsCapability -Online | Where-Object { $_.Name -like '{{ capability }}*' } | Where-Object { $_.State -ne 'Installed' }) -eq $null
     - require:
       - cmd: install_powershell
       - cmd: broadcast_env_change
