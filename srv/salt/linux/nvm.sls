@@ -37,6 +37,8 @@ nvm_download_and_install:
     - runas: {{ service_user }}
     - require:
       - file: nvm_directory
+    - hide_output: True
+    - output_loglevel: quiet
 
 nvm_directory_perms:
   cmd.run:

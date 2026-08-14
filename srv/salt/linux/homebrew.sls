@@ -26,6 +26,8 @@ homebrew_install:
     - require:
       - file: linuxbrew_directory
     - creates: {{ homebrew_base }}/bin/brew
+    - hide_output: True
+    - output_loglevel: quiet
 
 homebrew_svc_acl:
   cmd.run:
@@ -33,7 +35,6 @@ homebrew_svc_acl:
         setfacl -R -m u:{{ service_user }}:rwx {{ homebrew_base }}
         setfacl -R -m d:u:{{ service_user }}:rwx {{ homebrew_base }}
     - onlyif: test -d {{ homebrew_base }}
-    - unless: getfacl {{ homebrew_base }} 2>/dev/null | grep -q "user:{{ service_user }}:rwx"
     - require:
       - cmd: homebrew_install
 

@@ -7,6 +7,8 @@ tailscale_install:
   cmd.run:
     - name: curl -fsSL https://tailscale.com/install.sh | sh
     - unless: command -v tailscale
+    - hide_output: True
+    - output_loglevel: quiet
 
 include:
   - common.tailscale

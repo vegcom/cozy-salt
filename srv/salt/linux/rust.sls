@@ -32,6 +32,8 @@ rust_download_and_install:
     - name: RUSTUP_HOME={{ rust_path }} CARGO_HOME={{ rust_path }} /tmp/rustup-init.sh --no-modify-path -y
     - require:
       - cmd: rust_download_script
+    - hide_output: True
+    - output_loglevel: quiet
 
 # Install Rust components via common orchestration
 include:
