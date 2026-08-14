@@ -17,6 +17,6 @@ Wants=network-online.target
 What={{ device }}
 Where=/home/{{ username }}/{{ mountpoint }}
 Type=cifs
-Options=credentials={{ credentials_file }},uid={{ uid }},gid={{ gid }},{{ mount_opts }}
+Options=credentials={{ credentials_file }},uid={{ uid }},gid={{ gid }},mfsymlinks,{{ mount_opts }}
 TimeoutSec=10
 RetrySec=10
