@@ -170,7 +170,8 @@ install_feature_{{ util | lower | replace(".", "_") | replace("-", "_") }}:
       - -Command
       - |
           Start-Process pwsh.exe -WindowStyle Hidden -ArgumentList '-NonInteractive','-Command',"Get-WindowsCapability -Online | Where-Object { $_.Name -like '{{ util }}*' } | Add-WindowsCapability -Online -All"
-    - unless: pwsh -NoProfile -NonInteractive -Command "(Get-WindowsCapability -Online | Where-Object { $_.Name -like '{{ util }}*' }).State -eq 'Installed'"
+    # FIXME: unless statementfails to process name `.Name: The term '.Name' is not recognized as a name of a cmdlet, function, script file, or executable program.`
+    # - unless: pwsh -NoProfile -NonInteractive -Command "(Get-WindowsCapability -Online | Where-Object { $_.Name -like '{{ util }}*' }).State -eq 'Installed'"
     - require:
       - cmd: install_powershell
       - cmd: broadcast_env_change
