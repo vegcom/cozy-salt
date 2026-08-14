@@ -194,7 +194,7 @@ Output generates:
       - timeout: 600 -#}
 
 # TODO: prevent duplicate run ( each user when ran for a particuarl user )
-{%- macro winget_batch_install(state_name, packages, winget_user=False, winget_path=False, scope=False, skip_deps=False, prerelease=false, shell="powershell", force=False, upgrade=False, bg=False) -%}
+{%- macro winget_batch_install(state_name, packages, winget_user=False, winget_path=False, scope=False, skip_deps=False, prerelease=False, shell="powershell", force=False, upgrade=False, bg=False) -%}
   {%- if packages | length > 0 -%}
     {{ state_name }}:
     cmd.script:
@@ -208,10 +208,13 @@ Output generates:
         -Force {{ force | lower }}
         -Upgrade {{ upgrade | lower }}
     - shell: powershell
+    {%- if not bg %}
     - hide_output: True
     - output_loglevel: quiet
-    - bg: {{ bg | string | lower }}
-    - timeout: 600
+    - timeout: 1800
     - stateful: True
+    {%- else %}
+    - bg: {{ bg | string | lower }}
+    {%- endif %}
   {%- endif -%}
 {%- endmacro -%}
