@@ -28,7 +28,7 @@
       - [ ] linux
     - [ ] adopt `include:`/`extend:` ordering pattern from `windows/miniforge.sls`
       - common sls stays OS-agnostic, OS-specific sls `include:`s it then `extend:`s the
-        specific state IDs to attach a `require: - cmd: <os_install_state>` — keeps the
+        specific state IDs to attach a `require: - cmd: os_install_state` — keeps the
         install-order coupling owned by the OS file instead of baked into common/\*
       - [ ] `common/rust.sls` currently hardcodes `require: cmd: rust_install` (windows)
             / `cmd: rust_download_and_install` (linux) via if/else — implicit contract on
@@ -60,3 +60,4 @@
     - [slots](https://docs.saltproject.io/en/latest/topics/slots/index.html)
   - [ ] auto update salt-minion [modules/all/salt.modules.pip](https://docs.saltproject.io/en/latest/ref/modules/all/salt.modules.pip.html)
   - [ ] acl enforcement and default envs_dir to /opt/miniforge3/envs
+  - [ ] install/config sysmon on windows (e.g. `sysmon -accepteula -i`)
