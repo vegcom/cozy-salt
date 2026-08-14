@@ -59,7 +59,10 @@ def _clean_env(runas):
     "LANG": "en_US.UTF-8",
     "LC_ALL": "en_US.UTF-8",
     # path — system + distcc for distributed builds
-    "PATH": "/usr/lib/distcc/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+    "PATH": (
+      "/usr/lib/distcc/bin:/usr/local/sbin:/usr/local/bin:"
+      "/usr/sbin:/usr/bin:/sbin:/bin"
+    ),
     # distcc
     "DISTCC_HOSTS": os.environ.get("DISTCC_HOSTS", ""),
     # xdg
