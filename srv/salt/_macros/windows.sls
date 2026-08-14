@@ -209,8 +209,7 @@ Output generates:
     - shell: powershell
     {%- if winget_user %}
     # runas uses S4U logon (salt-minion runs as SYSTEM w/ SeTcbPrivilege), no
-    # password needed, user does NOT need to be logged in. Do not replace
-    # this with SSH/credential-based approaches, it's already solved.
+    # password needed, user does NOT need to be logged in.
     - runas: {{ winget_user }}
     {%- endif %}
     {%- if not bg %}

@@ -54,8 +54,8 @@
   - [x] pillar merge strategy: recurse broken across matchers in salt 3008.0rc2
     - [issues/68785](https://github.com/saltstack/salt/issues/68785)
     - [issues/59443](https://github.com/saltstack/salt/issues/59443)
-    - [x] ~replace with explicit slsutil.renderer + slsutil.merge in loader~
-    - [x] ~load sources in explicit order, merge same keys manually~
+    - [x] ~~replace with explicit slsutil.renderer + slsutil.merge in loader~~
+    - [x] ~~load sources in explicit order, merge same keys manually~~
   - [ ] pillar slots
     - [slots](https://docs.saltproject.io/en/latest/topics/slots/index.html)
   - [ ] auto update salt-minion [modules/all/salt.modules.pip](https://docs.saltproject.io/en/latest/ref/modules/all/salt.modules.pip.html)

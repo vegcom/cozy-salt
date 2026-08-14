@@ -13,213 +13,215 @@ from typing import Optional
 
 @dataclass
 class StateResult:
-  """Result of a single Salt state execution."""
+    """Result of a single Salt state execution."""
 
-  state_id: str
-  result: Optional[bool]
-  comment: str = ""
-  changes: dict = field(default_factory=dict)
-  duration: float = 0.0
-  name: str = ""
-  state_type: str = ""
+    state_id: str
+    result: Optional[bool]
+    comment: str = ""
+    changes: dict = field(default_factory=dict)
+    duration: float = 0.0
+    name: str = ""
+    state_type: str = ""
 
-  @property
-  def succeeded(self) -> bool:
-    """True if state succeeded."""
-    return self.result is True
+    @property
+    def succeeded(self) -> bool:
+        """True if state succeeded."""
+        return self.result is True
 
-  @property
-  def failed(self) -> bool:
-    """True if state failed."""
-    return self.result is False
+    @property
+    def failed(self) -> bool:
+        """True if state failed."""
+        return self.result is False
 
-  def __repr__(self) -> str:
-    status = "OK" if self.succeeded else "FAIL" if self.failed else "SKIP"
-    return f"<StateResult {self.state_id} [{status}]>"
+    def __repr__(self) -> str:
+        status = "OK" if self.succeeded else "FAIL" if self.failed else "SKIP"
+        return f"<StateResult {self.state_id} [{status}]>"
 
 
 @dataclass
 class ParsedResults:
-  """Aggregated results from a Salt highstate run."""
+    """Aggregated results from a Salt highstate run."""
 
-  states: list[StateResult] = field(default_factory=list)
-  raw_data: dict = field(default_factory=dict)
+    states: list[StateResult] = field(default_factory=list)
+    raw_data: dict = field(default_factory=dict)
 
-  @property
-  def total(self) -> int:
-    """Total number of states."""
-    return len(self.states)
+    @property
+    def total(self) -> int:
+        """Total number of states."""
+        return len(self.states)
 
-  @property
-  def succeeded(self) -> int:
-    """Number of succeeded states."""
-    return sum(1 for s in self.states if s.succeeded)
+    @property
+    def succeeded(self) -> int:
+        """Number of succeeded states."""
+        return sum(1 for s in self.states if s.succeeded)
 
-  @property
-  def failed(self) -> int:
-    """Number of failed states."""
-    return sum(1 for s in self.states if s.failed)
+    @property
+    def failed(self) -> int:
+        """Number of failed states."""
+        return sum(1 for s in self.states if s.failed)
 
-  @property
-  def failed_states(self) -> list[StateResult]:
-    """List of failed states."""
-    return [s for s in self.states if s.failed]
+    @property
+    def failed_states(self) -> list[StateResult]:
+        """List of failed states."""
+        return [s for s in self.states if s.failed]
 
-  @property
-  def all_succeeded(self) -> bool:
-    """True if all states succeeded."""
-    return self.failed == 0 and self.total > 0
+    @property
+    def all_succeeded(self) -> bool:
+        """True if all states succeeded."""
+        return self.failed == 0 and self.total > 0
 
-  def get_state(self, pattern: str) -> Optional[StateResult]:
-    """Get first state matching pattern (regex)."""
-    regex = re.compile(pattern)
-    for state in self.states:
-      if regex.search(state.state_id):
-        return state
-    return None
+    def get_state(self, pattern: str) -> Optional[StateResult]:
+        """Get first state matching pattern (regex)."""
+        regex = re.compile(pattern)
+        for state in self.states:
+            if regex.search(state.state_id):
+                return state
+        return None
 
-  def get_states(self, pattern: str) -> list[StateResult]:
-    """Get all states matching pattern (regex)."""
-    regex = re.compile(pattern)
-    return [s for s in self.states if regex.search(s.state_id)]
+    def get_states(self, pattern: str) -> list[StateResult]:
+        """Get all states matching pattern (regex)."""
+        regex = re.compile(pattern)
+        return [s for s in self.states if regex.search(s.state_id)]
 
 
 class SaltResultParser:
-  """
-  Parser for Salt state.highstate JSON output.
-
-  Handles the nested structure of Salt JSON output and
-  extracts individual state results for validation.
-  """
-
-  # Metadata keys to skip when parsing states
-  METADATA_KEYS = {"retcode", "out", "jid"}
-
-  @staticmethod
-  def extract_json(raw_output: str) -> str:
     """
-    Extract highstate JSON from raw output that may contain mixed content.
+    Parser for Salt state.highstate JSON output.
 
-    Salt --out=json with 2>&1 can produce multiple JSON objects (e.g. a JID
-    conflict list response before the real highstate dict). Scan all candidates
-    and prefer the last valid object where 'local' is a dict.
+    Handles the nested structure of Salt JSON output and
+    extracts individual state results for validation.
     """
-    candidates = []
-    pos = 0
-    while True:
-      pos = raw_output.find("{", pos)
-      if pos == -1:
-        break
-      try:
-        data = json.loads(raw_output[pos:])
-        if isinstance(data, dict):
-          candidates.append((pos, data))
-      except json.JSONDecodeError:
-        pass
-      pos += 1
 
-    # Prefer last candidate where local is a dict (real highstate output)
-    for _, data in reversed(candidates):
-      if isinstance(data.get("local"), dict):
-        return json.dumps(data)
+    # Metadata keys to skip when parsing states
+    METADATA_KEYS = {"retcode", "out", "jid"}
 
-    if candidates:
-      return json.dumps(candidates[-1][1])
+    @staticmethod
+    def extract_json(raw_output: str) -> str:
+        """
+        Extract highstate JSON from raw output that may contain mixed content.
 
-    raise ValueError("No JSON object found in output")
+        Salt --out=json with 2>&1 can produce multiple JSON objects (e.g. a JID
+        conflict list response before the real highstate dict). Scan all candidates
+        and prefer the last valid object where 'local' is a dict.
+        """
+        candidates = []
+        pos = 0
+        while True:
+            pos = raw_output.find("{", pos)
+            if pos == -1:
+                break
+            try:
+                data = json.loads(raw_output[pos:])
+                if isinstance(data, dict):
+                    candidates.append((pos, data))
+            except json.JSONDecodeError:
+                pass
+            pos += 1
 
-  @classmethod
-  def parse(cls, raw_output: str) -> ParsedResults:
-    """
-    Parse raw salt-call output into structured results.
+        # Prefer last candidate where local is a dict (real highstate output)
+        for _, data in reversed(candidates):
+            if isinstance(data.get("local"), dict):
+                return json.dumps(data)
 
-    Args:
-        raw_output: Raw stdout from salt-call --out=json.
+        if candidates:
+            return json.dumps(candidates[-1][1])
 
-    Returns:
-        ParsedResults with individual state results.
+        raise ValueError("No JSON object found in output")
 
-    Raises:
-        ValueError: If output is not valid JSON.
-        KeyError: If expected structure is missing.
-    """
-    # Extract JSON portion
-    json_str = cls.extract_json(raw_output)
+    @classmethod
+    def parse(cls, raw_output: str) -> ParsedResults:
+        """
+        Parse raw salt-call output into structured results.
 
-    try:
-      data = json.loads(json_str)
-    except json.JSONDecodeError as e:
-      raise ValueError(f"Invalid JSON: {e}")
+        Args:
+            raw_output: Raw stdout from salt-call --out=json.
 
-    if not isinstance(data, dict):
-      raise ValueError(f"Expected dict, got {type(data).__name__}")
+        Returns:
+            ParsedResults with individual state results.
 
-    # Salt output is nested under 'local' key
-    local_data = data.get("local", {})
+        Raises:
+            ValueError: If output is not valid JSON.
+            KeyError: If expected structure is missing.
+        """
+        # Extract JSON portion
+        json_str = cls.extract_json(raw_output)
 
-    if not isinstance(local_data, dict):
-      raise ValueError(f"Expected dict for 'local', got {type(local_data).__name__}")
+        try:
+            data = json.loads(json_str)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Invalid JSON: {e}")
 
-    states = []
+        if not isinstance(data, dict):
+            raise ValueError(f"Expected dict, got {type(data).__name__}")
 
-    for state_id, state_data in local_data.items():
-      # Skip metadata keys
-      if state_id in cls.METADATA_KEYS:
-        continue
+        # Salt output is nested under 'local' key
+        local_data = data.get("local", {})
 
-      # Skip non-dict entries
-      if not isinstance(state_data, dict):
-        continue
+        if not isinstance(local_data, dict):
+            raise ValueError(
+                f"Expected dict for 'local', got {type(local_data).__name__}"
+            )
 
-      state = StateResult(
-        state_id=state_id,
-        result=state_data.get("result"),
-        comment=state_data.get("comment", ""),
-        changes=state_data.get("changes", {}),
-        duration=state_data.get("duration", 0.0),
-        name=state_data.get("name", ""),
-        state_type=state_data.get("__sls__", ""),
-      )
-      states.append(state)
+        states = []
 
-    return ParsedResults(states=states, raw_data=data)
+        for state_id, state_data in local_data.items():
+            # Skip metadata keys
+            if state_id in cls.METADATA_KEYS:
+                continue
 
-  @classmethod
-  def parse_file(cls, filepath: str) -> ParsedResults:
-    """
-    Parse a JSON file containing salt-call output.
+            # Skip non-dict entries
+            if not isinstance(state_data, dict):
+                continue
 
-    Args:
-        filepath: Path to JSON file.
+            state = StateResult(
+                state_id=state_id,
+                result=state_data.get("result"),
+                comment=state_data.get("comment", ""),
+                changes=state_data.get("changes", {}),
+                duration=state_data.get("duration", 0.0),
+                name=state_data.get("name", ""),
+                state_type=state_data.get("__sls__", ""),
+            )
+            states.append(state)
 
-    Returns:
-        ParsedResults with individual state results.
-    """
-    with open(filepath, "r") as f:
-      return cls.parse(f.read())
+        return ParsedResults(states=states, raw_data=data)
 
-  @staticmethod
-  def format_failures(results: ParsedResults) -> str:
-    """
-    Format failed states for error output.
+    @classmethod
+    def parse_file(cls, filepath: str) -> ParsedResults:
+        """
+        Parse a JSON file containing salt-call output.
 
-    Args:
-        results: Parsed results.
+        Args:
+            filepath: Path to JSON file.
 
-    Returns:
-        Human-readable failure summary.
-    """
-    if not results.failed_states:
-      return "No failures"
+        Returns:
+            ParsedResults with individual state results.
+        """
+        with open(filepath, "r") as f:
+            return cls.parse(f.read())
 
-    lines = [f"Failed states ({results.failed}/{results.total}):"]
+    @staticmethod
+    def format_failures(results: ParsedResults) -> str:
+        """
+        Format failed states for error output.
 
-    for state in results.failed_states:
-      lines.append(f"\n  State: {state.state_id}")
-      lines.append(f"    Comment: {state.comment}")
-      if state.changes:
-        changes_str = json.dumps(state.changes, indent=6)
-        lines.append(f"    Changes: {changes_str}")
-      lines.append(f"    Duration: {state.duration}ms")
+        Args:
+            results: Parsed results.
 
-    return "\n".join(lines)
+        Returns:
+            Human-readable failure summary.
+        """
+        if not results.failed_states:
+            return "No failures"
+
+        lines = [f"Failed states ({results.failed}/{results.total}):"]
+
+        for state in results.failed_states:
+            lines.append(f"\n  State: {state.state_id}")
+            lines.append(f"    Comment: {state.comment}")
+            if state.changes:
+                changes_str = json.dumps(state.changes, indent=6)
+                lines.append(f"    Changes: {changes_str}")
+            lines.append(f"    Duration: {state.duration}ms")
+
+        return "\n".join(lines)
