@@ -50,7 +50,7 @@ k3s_not_enabled:
 
     {%- set k3s_kwargs_extra = "--prefer-bundled-bin --disable-apiserver-lb" ~ " " ~ "--server=" ~ k3s_server ~ " " ~ "--token=" ~ k3s_auth_resolved %}
   {%- endif %}
-  {%- set embedded_registry = "--embedded-registry --disable-cloud-controller" if salt["pillar.get"]("k3s.embedded_registry") else " " %}
+  {%- set embedded_registry = "--embedded-registry" if salt["pillar.get"]("k3s:embedded_registry") else False %}
   {%- set k3s_exec = [k3s_args, k3s_kwargs, k3s_kwargs_opt, k3s_kwargs_extra, embedded_registry] | join(' ') | trim %}
   {%- set kubeconfig_raw = salt['mine.get'](k3s_host, 'k3s_kubeconfig').get(k3s_host, '') %}
   {%- if kubeconfig_raw %}
