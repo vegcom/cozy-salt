@@ -1,6 +1,11 @@
 # Windows Bootstrap State
 # "Make you behave like a predictable Windows target"
 
+{#-
+TODO: check against canary
+  ["DebugTools", "WindowsDesktop", "AppxPackagingTool"]
+#}
+
 {%- from '_macros/windows.sls' import get_winget_user, get_winget_path with context %}
 
 {%- set winget_user = get_winget_user() %}
@@ -144,37 +149,51 @@ enable_sudo_inline:
     - vtype: REG_DWORD
 
 # ============================================================================
-# Windows Utils
+# Windows capabilities
 # ============================================================================
 
-{%- set utils = [
+{%- set capabilities = [
   "AppxPackagingTool",
-  "DebugTools",
-  "Microsoft-Hyper-V",
-  "Sysmon",
+  "Msix.PackagingTool",
   "Tools.DeveloperMode.Core",
   "VBSCRIPT",
-  "WindowsDesktop",
-  "WorkFolders-Client",
+  "WMIC",
 ] %}
 
-{%- for util in utils %}
-
-# {{ util }}
-install_feature_{{ util | lower | replace(".", "_") | replace("-", "_") }}:
+{%- for capability in capabilities %}
+get_capability_{{ capability | lower | replace(".", "_") | replace("-", "_") }}:
   cmd.run:
-    - name: pwsh
-    - args:
-      - -NonInteractive
-      - -Command
-      - |
-          Start-Process pwsh.exe -WindowStyle Hidden -ArgumentList '-NonInteractive','-Command',"Get-WindowsCapability -Online | Where-Object { $_.Name -like '{{ util }}*' } | Add-WindowsCapability -Online -All"
-    # FIXME: unless statementfails to process name `.Name: The term '.Name' is not recognized as a name of a cmdlet, function, script file, or executable program.`
-    # - unless: pwsh -NoProfile -NonInteractive -Command "(Get-WindowsCapability -Online | Where-Object { $_.Name -like '{{ util }}*' }).State -eq 'Installed'"
+    - name: |
+        Get-WindowsCapability -Online | Where-Object { $_.Name -like '{{ capability }}*' } | Add-WindowsCapability -Online
+    - shell: powershell
+    - timeout: 1800
+    - unless: |
+        (Get-WindowsCapability -Online | Where-Object { $_.Name -like '{{ capability }}*' } | Where-Object { $_.State -ne 'Installed' }) -eq $null
     - require:
       - cmd: install_powershell
       - cmd: broadcast_env_change
 {%- endfor %}
+
+# ============================================================================
+# Windows features
+# ============================================================================
+
+{%- set features = [
+  "Containers",
+  "Microsoft-Hyper-V",
+  "Sysmon",
+  "WorkFolders-Client",
+] %}
+
+get_features:
+  cmd.run:
+    - name: |
+        Enable-WindowsOptionalFeature -NoRestart -Online -All -FeatureName {{ features | join(",") }}
+    - shell: powershell
+    - timeout: 1800
+    - require:
+      - cmd: install_powershell
+      - cmd: broadcast_env_change
 
 # ============================================================================
 # Required Packages
