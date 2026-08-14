@@ -1,0 +1,1 @@
+import_paths = ["srv/salt", "srv/pillar", "provisioning"]

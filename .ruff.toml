@@ -1,0 +1,3 @@
+src = ["src", "tests"]
+select = ["E", "F", "I"]
+ignore = []
