@@ -1,5 +1,4 @@
 {
-  "default": true,
   "MD007": false,
   "MD012": false,
   "MD013": {
@@ -8,6 +7,7 @@
   "MD022": false,
   "MD025": false,
   "MD030": false,
+  "default": true,
   "files": {
     ".github/PULL_REQUEST_TEMPLATE.md": {
       "MD041": false

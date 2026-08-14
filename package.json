@@ -6,6 +6,7 @@
     "prettier": "^3.9.6"
   },
   "dependencies": {
-    "npm-check-updates": "^23.0.2"
+    "npm-check-updates": "^23.0.2",
+    "prettier-plugin-sort-json": "^4.2.0"
   }
 }
