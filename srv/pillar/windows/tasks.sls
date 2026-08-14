@@ -33,3 +33,7 @@ scheduled_tasks:
     - name: open_webui_port_forward
       file: windows/tasks/kubernetes/open_webui_port_forward.xml
       enabled: False
+  update:
+    - name: winget_update
+      file: windows/tasks/update/winget.xml
+      enabled: true
