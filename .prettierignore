@@ -1,2 +1,2 @@
-./srv/pillar/secrets/README.md
-./srv/pillar/common/README.md
+./srv/pillar/*/README.md
+.github/PULL_REQUEST_TEMPLATE.md
