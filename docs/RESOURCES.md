@@ -12,8 +12,12 @@
 
 ## Pillar
 
-[topics/slots](https://docs.saltproject.io/en/latest/topics/slots/index.html)
+- [topics/slots](https://docs.saltproject.io/en/latest/topics/slots/index.html)
 
 ## General Resources
 
-[Irongeek writeup on udev lockdown](https://www.irongeek.com/i.php?page=security/plug-and-prey-malicious-usb-devices#3.2_Locking_down_Linux_using_UDEV)
+- [Irongeek writeup on udev lockdown](https://www.irongeek.com/i.php?page=security/plug-and-prey-malicious-usb-devices#3.2_Locking_down_Linux_using_UDEV)
+
+## Need to debug weird behaviour
+
+- `sudo strace -ttffs4096 -p $(pgrep -f MinionProcessManager) -e trace=read,write,stat,statx,lstat,fsta`
