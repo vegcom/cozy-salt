@@ -64,3 +64,14 @@
   - [ ] incorrect naming `file.directory` accepts `makedirs` not `mkdirs` [salt.states.file](https://docs.saltproject.io/en/3006/ref/states/all/salt.states.file.html)
     - [ ] identify all instances of `file.directory` and `mkdirs` and adjust.
     - peace be with you 🙏
+  - [ ] distcc not operating as expected
+    - [ ] `~/.distcc/hosts` has to be managed
+      - [ ] per user `~/.distcc/hosts` via `srv/salt/linux/distcc.sls`
+    - [ ] `srv/salt/linux/dist/archlinux/legacy.sls` needs to haave distcc steps put into `srv/salt/linux/distcc.sls`
+      - [ ] `srv/salt/linux/dist/archlinux/legacy.sls` should no longer manage distcc
+      - [ ] `srv/salt/linux/distcc.sls` should handle distcc mgmt
+      - consider leveraging `vegcom/distcc-docker` distcc container via `docker-compose.yml`
+        - integrates with tailscale
+        - provides avahi
+        - [ ] audit before deploy, small changes can be made for quality of life if integrated into salt echossytem
+          - can be managed like `provisioning/linux/files/opt-cozy-docker/docker-proxy.yaml`
