@@ -76,9 +76,11 @@
       - [x] `srv/salt/linux/distcc.sls` should handle distcc mgmt (client-side; server-side already there)
       - consider leveraging `vegcom/distcc-docker` distcc container via `docker-compose.yml`
         - integrates with tailscale
-        - ~~provides avahi~~ avahi removed, distccd's own zeroconf never worked over tailscale either (no broadcast domain), rely on MagicDNS hostnames instead
+        - ~~provides avahi~~ avahi removed, distccd's own zeroconf never worked over tailscale either (no broadcast domain)
+          - rely on MagicDNS hostnames instead
         - removed tagging from distcc containers, will need to likely evaluate by id instead.
-          - [x] adjust distcc container evaluation in `headscale.get_distcc_hosts` — switched to `get_nodes_by_hostname_prefix`, matches `distcc`, `distcc-1`, `distcc-2`, etc. by TS_HOSTNAME pattern instead of tag
+          - [x] adjust distcc container evaluation in `headscale.get_distcc_hosts`
+            - switched to `get_nodes_by_hostname_prefix`, matches `distcc`, `distcc-1`, `distcc-2`, etc.
+              - by TS_HOSTNAME pattern instead of tag
         - [ ] audit before deploy, small changes can be made for quality of life if integrated into salt echossytem
           - can be managed like `provisioning/linux/files/opt-cozy-docker/docker-proxy.yaml`
-
