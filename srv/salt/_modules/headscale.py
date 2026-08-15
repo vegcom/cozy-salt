@@ -134,20 +134,53 @@ def get_nodes_by_tag(tag, online_only=True):
     return [n for n in nodes if tag_normalized in n.get("tags", [])]
 
 
-def get_distcc_hosts(tag="distcc", online_only=True):
+def get_nodes_by_hostname_prefix(prefix, online_only=True):
     """
-    Return space-separated hostnames for DISTCC_HOSTS.
+    Return nodes whose hostname matches prefix exactly or prefix-N
+    (e.g. prefix "distcc" matches "distcc", "distcc-1", "distcc-2").
 
-    tag
-        Tag name without 'tag:' prefix (e.g. "distcc", "distcc-arm64"). Default "distcc".
+    distcc containers set TS_HOSTNAME to a shared base name; tailscale/headscale
+    dedupes collisions by appending -1, -2, etc. Tag-based matching broke once
+    distcc-docker stopped setting --advertise-tags (see TODO.md), so we match
+    on the hostname pattern headscale actually assigns instead.
+
+    prefix
+        Base hostname to match (e.g. "distcc").
+    online_only
+        If True, only return online nodes. Default True.
+
+    CLI example::
+
+        salt 'guava' headscale.get_nodes_by_hostname_prefix distcc
+    """
+    import re
+
+    pattern = re.compile(rf"^{re.escape(prefix)}(-\d+)?$")
+    nodes = get_online_nodes() if online_only else get_nodes()
+    result = []
+    for n in nodes:
+        name = n.get("givenName") or n.get("name") or ""
+        if pattern.match(name):
+            result.append(n)
+    return result
+
+
+def get_distcc_hosts(prefix="distcc", online_only=True):
+    """
+    Return space-separated hostnames for DISTCC_HOSTS, matched by hostname
+    prefix rather than tag (distcc containers no longer advertise tags,
+    see TODO.md). Matches "distcc", "distcc-1", "distcc-2", etc.
+
+    prefix
+        Base hostname to match. Default "distcc".
     online_only
         If True, only return online nodes. Default True.
 
     CLI example::
 
         salt 'guava' headscale.get_distcc_hosts
-        salt 'guava' headscale.get_distcc_hosts tag=distcc-arm64
+        salt 'guava' headscale.get_distcc_hosts prefix=distcc-arm64
     """
-    nodes = get_nodes_by_tag(f"tag:{tag}", online_only=online_only)
+    nodes = get_nodes_by_hostname_prefix(prefix, online_only=online_only)
     hostnames = [n.get("givenName") or n.get("name") for n in nodes]
-    return " ".join(hostnames)
+    return " ".join(sorted(hostnames))
