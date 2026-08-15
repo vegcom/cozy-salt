@@ -65,13 +65,20 @@
     - [ ] identify all instances of `file.directory` and `mkdirs` and adjust.
     - peace be with you 🙏
   - [ ] distcc not operating as expected
-    - [ ] `~/.distcc/hosts` has to be managed
-      - [ ] per user `~/.distcc/hosts` via `srv/salt/linux/distcc.sls`
+    - [x] ~~`~/.distcc/hosts` has to be managed~~
+      - [x] per user `~/.distcc/hosts` via `srv/salt/linux/distcc.sls`
+      - confirmed zeroconf/avahi discovery does not work over tailscale (no
+        multicast on the mesh) — dropped `+zeroconf` from the hosts file and
+        removed avahi from distcc-docker entirely, hostnames now rendered
+        directly (e.g. `distcc distcc-1 distcc-2 distcc-3`)
     - [ ] `srv/salt/linux/dist/archlinux/legacy.sls` needs to haave distcc steps put into `srv/salt/linux/distcc.sls`
       - [ ] `srv/salt/linux/dist/archlinux/legacy.sls` should no longer manage distcc
-      - [ ] `srv/salt/linux/distcc.sls` should handle distcc mgmt
+      - [x] `srv/salt/linux/distcc.sls` should handle distcc mgmt (client-side; server-side already there)
       - consider leveraging `vegcom/distcc-docker` distcc container via `docker-compose.yml`
         - integrates with tailscale
-        - provides avahi
+        - ~~provides avahi~~ avahi removed, distccd's own zeroconf never worked over tailscale either (no broadcast domain), rely on MagicDNS hostnames instead
+        - removed tagging from distcc containers, will need to likely evaluate by id instead.
+          - [x] adjust distcc container evaluation in `headscale.get_distcc_hosts` — switched to `get_nodes_by_hostname_prefix`, matches `distcc`, `distcc-1`, `distcc-2`, etc. by TS_HOSTNAME pattern instead of tag
         - [ ] audit before deploy, small changes can be made for quality of life if integrated into salt echossytem
           - can be managed like `provisioning/linux/files/opt-cozy-docker/docker-proxy.yaml`
+
