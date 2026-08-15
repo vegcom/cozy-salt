@@ -16,6 +16,8 @@ base:
     - common.scheduler
     - common.mongo
     - common.pip
+    - common.mine
+
 
   # Layer 2: OS-family
   'G@os_family:Windows':
