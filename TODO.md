@@ -61,3 +61,6 @@
   - [ ] auto update salt-minion [modules/all/salt.modules.pip](https://docs.saltproject.io/en/latest/ref/modules/all/salt.modules.pip.html)
   - [ ] acl enforcement and default envs_dir to /opt/miniforge3/envs
   - [ ] install/config sysmon on windows (e.g. `sysmon -accepteula -i`)
+  - [ ] incorrect naming `file.directory` accepts `makedirs` not `mkdirs` [salt.states.file](https://docs.saltproject.io/en/3006/ref/states/all/salt.states.file.html)
+    - [ ] identify all instances of `file.directory` and `mkdirs` and adjust.
+    - peace be with you 🙏
