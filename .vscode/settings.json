@@ -1,15 +1,21 @@
 {
   "[css]": {
     "editor.defaultFormatter": "Jota0222.multi-formatter",
-    "multiFormatter.formatterList": ["vscode.css-language-features"]
+    "multiFormatter.formatterList": [
+      "vscode.css-language-features"
+    ]
   },
   "[dockercompose]": {
     "editor.defaultFormatter": "Jota0222.multi-formatter",
-    "multiFormatter.formatterList": ["SashaBusinaro.yaml-compose-sorter"]
+    "multiFormatter.formatterList": [
+      "SashaBusinaro.yaml-compose-sorter"
+    ]
   },
   "[dockerfile]": {
     "editor.defaultFormatter": "Jota0222.multi-formatter",
-    "multiFormatter.formatterList": ["jeff-hykin.better-dockerfile-syntax"]
+    "multiFormatter.formatterList": [
+      "jeff-hykin.better-dockerfile-syntax"
+    ]
   },
   "[html]": {
     "editor.defaultFormatter": "samuelcolvin.jinjahtml",
@@ -21,25 +27,33 @@
   "[jinja-json]": {
     "editor.defaultFormatter": "samuelcolvin.jinjahtml",
     "editor.formatOnSave": true,
-    "multiFormatter.formatterList": ["akrikun.saltstack-toolkit"]
+    "multiFormatter.formatterList": [
+      "akrikun.saltstack-toolkit"
+    ]
   },
   "[jinja-yaml]": {
     "editor.defaultFormatter": "akrikun.saltstack-toolkit",
     "editor.formatOnSave": true,
-    "multiFormatter.formatterList": ["akrikun.saltstack-toolkit"]
+    "multiFormatter.formatterList": [
+      "akrikun.saltstack-toolkit"
+    ]
   },
   "[jinja]": {
     "editor.defaultFormatter": "akrikun.saltstack-toolkit",
     "editor.formatOnSave": true,
-    "multiFormatter.formatterList": ["akrikun.saltstack-toolkit"]
+    "multiFormatter.formatterList": [
+      "akrikun.saltstack-toolkit"
+    ]
   },
   "[json]": {
     "editor.defaultFormatter": "Jota0222.multi-formatter",
     "editor.formatOnPaste": true,
     "editor.formatOnSave": true,
-    "editor.formatOnType": true,
     "editor.formatOnSaveMode": "file",
-    "multiFormatter.formatterList": ["esbenp.prettier-vscode"]
+    "editor.formatOnType": true,
+    "multiFormatter.formatterList": [
+      "esbenp.prettier-vscode"
+    ]
   },
   "[jsonc]": {
     "editor.defaultFormatter": "charliermarsh.ruff",
@@ -52,11 +66,15 @@
   },
   "[less]": {
     "editor.defaultFormatter": "monosans.djlint",
-    "multiFormatter.formatterList": ["monosans.djlint"]
+    "multiFormatter.formatterList": [
+      "monosans.djlint"
+    ]
   },
   "[markdown]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "multiFormatter.formatterList": ["esbenp.prettier-vscode"]
+    "multiFormatter.formatterList": [
+      "esbenp.prettier-vscode"
+    ]
   },
   "[plaintext]": {
     "editor.formatOnPaste": false,
@@ -64,7 +82,9 @@
   },
   "[python]": {
     "editor.defaultFormatter": "Jota0222.multi-formatter",
-    "multiFormatter.formatterList": ["charliermarsh.ruff"]
+    "multiFormatter.formatterList": [
+      "charliermarsh.ruff"
+    ]
   },
   "[scss]": {
     "editor.defaultFormatter": "vscode.css-language-features"
@@ -74,20 +94,22 @@
   },
   "[sql]": {
     "editor.defaultFormatter": "Jota0222.multi-formatter",
-    "multiFormatter.formatterList": ["adpyke.vscode-sql-formatter"]
+    "multiFormatter.formatterList": [
+      "adpyke.vscode-sql-formatter"
+    ]
   },
   "[toml]": {
     "editor.defaultFormatter": "tamasfe.even-better-toml"
   },
   "[xml]": {
     "editor.defaultFormatter": "Jota0222.multi-formatter",
-    "multiFormatter.formatterList": ["redhat.vscode-xml"]
+    "multiFormatter.formatterList": [
+      "redhat.vscode-xml"
+    ]
   },
   "[yaml]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "csharp.backgroundAnalysis.analyzerDiagnosticsScope": "fullSolution",
-  "csharp.backgroundAnalysis.compilerDiagnosticsScope": "fullSolution",
   "direnv.restart.automatic": true,
   "djlint.enableLinting": false,
   "editor.formatOnSaveMode": "modificationsIfAvailable",
@@ -99,6 +121,7 @@
     ".gitattributes*": "gitconfig",
     ".gitconfig*": "gitconfig",
     ".gitmessage*": "git-commit",
+    ".prettierrc": "json",
     ".salt-lint": "yaml",
     ".shellcheckrc": "shellscript",
     ".vscode/settings.json": "json",
@@ -108,15 +131,8 @@
     "LICENSE": "raw",
     "srv/pillar/common/README.md": "plaintext",
     "srv/pillar/secrets/README.md": "plaintext",
-    "torrc": "properties",
-    ".prettierrc": "json"
+    "torrc": "properties"
   },
-  "jinjaLS.extraFileExtensions": ["jinja", "sls"],
-  "jinjaLS.importPaths": [
-    "${workspaceFolder}/srv/salt",
-    "${workspaceFolder}/srv/pillar",
-    "${workspaceFolder}/provisioning"
-  ],
   "js/ts.tsserver.experimental.enableProjectDiagnostics": true,
   "json.schemaDownload.enable": true,
   "json.validate.enable": true,
@@ -126,7 +142,9 @@
   "python-envs.defaultPackageManager": "ms-python.python:conda",
   "python.analysis.diagnosticMode": "workspace",
   "python.terminal.useEnvFile": true,
-  "python.testing.pytestArgs": ["tests"],
+  "python.testing.pytestArgs": [
+    "tests"
+  ],
   "python.testing.pytestEnabled": true,
   "python.testing.unittestEnabled": true,
   "ruff.configurationPreference": "filesystemFirst",
@@ -138,18 +156,26 @@
   "ruff.showSyntaxErrors": true,
   "ruff.trace.server": "messages",
   "rust-analyzer.diagnostics.enable": true,
-  "rust-analyzer.workspace.discoverConfiguredRoles": true,
   "saltstack.format.enforceDashTags": true,
   "saltstack.lint.duplicateStateIds": true,
   "saltstack.lint.enabled": true,
   "saltstack.lint.jinjaBlocks": true,
   "saltstack.lint.tabs": true,
   "saltstack.lint.trailingWhitespace": true,
-  "saltstack.pillarRoots": ["srv/pillar"],
+  "saltstack.pillarRoots": [
+    "srv/pillar"
+  ],
   "saltstack.stateRoots": [
     "${workspaceFolder}/srv/salt",
     "${workspaceFolder}/provisioning"
   ],
+  "xml.fileAssociations": [
+    {
+      "pattern": "${workspaceFolder}/provisioning/windows/tasks/*/*.xml",
+      "systemId": "${workspaceFolder}/.vscode/tasks.xsd"
+    }
+  ],
+  "xml.format.xsiSchemaLocationSplit": "onElement",
   "yaml-compose-sorter.addBlankLinesBetweenServices": false,
   "yaml-compose-sorter.addBlankLinesBetweenTopLevelKeys": false,
   "yaml-compose-sorter.transformKeyValueLists": true
