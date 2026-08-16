@@ -89,7 +89,7 @@ opt_paths_update:
     - name: HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
     - vname: Path
     - vtype: REG_EXPAND_SZ
-    - vdata: '{{ merged_paths }}'
+    - vdata: '{{ merged_paths | replace('/', '\\') }}'
 
 paths_broadcast_env_change_system:
   cmd.run:
