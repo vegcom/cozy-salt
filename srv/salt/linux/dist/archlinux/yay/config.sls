@@ -15,21 +15,7 @@
 {%- set managed_users = salt['pillar.get']('managed_users', [], merge=True) %}
 {%- import '_macros/dotfiles.sls' as dotfiles %}
 
-{%- set _yay_config = {
-  "gitflags": "-c core.hooksPath=/dev/null -c init.templateDir=/dev/null -c include.path=/dev/null -c commit.gpgsign=false -c tag.forceSignAnnotated=false",
-  "rpc": true, "requestsplitn": 28,
-  "completionrefreshtime": 3, "maxconcurrentdownloads": 0,
-  "removemake": "no", "keepSrc": true,
-  "redownload": "all", "batchinstall": true,
-  "debug": true,
-  "devel": false, "rebuild": "tree",
-  "doubleconfirm": false,
-  "answerclean": "", "answerdiff": "",
-  "answeredit": "", "answerupgrade": "", "combinedupgrade": true,
-  "useask": true, "sudoloop": true,
-  "sortby": "popularity",
-  "timeupdate": true,
-} %}
+{%- set _yay_config = {} %}
 
 {%- for username in managed_users %}
   {%- set user_home = dotfiles.get_user_home(username) | trim %}
@@ -44,12 +30,28 @@ yay_conf_dir_{{ username }}:
     - group: {{ username }}
 
 yay_conf_{{ username }}:
-  file.serialize:
-    - name: {{ dotfiles.dotfile_path(user_home, '.config/yay/config.json') }}
-    - serializer: json
-    - merge_if_exists: True
-    - dataset: {{ _yay_config | tojson }}
-    - user: {{ username }}
-    - group: {{ username }}
+  file.managed:
+    - name: {{ dotfiles.dotfile_path(user_home, '.config/yay/init.lua') }}
+    - contents: |-
+        -- Managed by Salt - DO NOT EDIT MANUALLY
+        -- Example init.lua: https://github.com/Jguer/yay/blob/next/doc/init.lua
+        -- Online Manu: https://jguer.github.io/yay/man.html
+
+        yay.opt.batch_install = true
+        yay.opt.combined_upgrade = true
+        yay.opt.double_confirm = false
+        yay.opt.editor = "vim"
+        yay.opt.editor_flags = "-u /dev/null"
+        yay.opt.git_flags = "-c core.hooksPath=/dev/null -c init.templateDir=/dev/null -c include.path=/dev/null -c core.attributesfile=/dev/null -c core.excludesfile=/dev/null"
+        yay.opt.keep_src = true
+        yay.opt.max_concurrent_downloads = 0
+        yay.opt.rebuild = "tree"
+        yay.opt.redownload = "all"
+        yay.opt.remove_make = "no"
+        yay.opt.rpc = false
+        yay.opt.single_line_results = true
+        yay.opt.sort_by = "popularity"
+        yay.opt.sudo_loop = true
+        yay.opt.use_ask = true
 
 {%- endfor %}
