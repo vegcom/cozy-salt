@@ -2,6 +2,11 @@
 # Deploy tasks defined in pillar via schtasks XML import
 # See docs/modules/windows-tasks.md for configuration
 
+enable_schtask_log:
+  cmd.run:
+    - name: wevtutil set-log Microsoft-Windows-TaskScheduler/Operational /enabled:true /maxSize:104857600
+    - shell: powershell
+
 {%- set scheduled_tasks = salt['pillar.get']('scheduled_tasks', {}) %}
 
 {%- for category, tasks_list in scheduled_tasks.items() %}
