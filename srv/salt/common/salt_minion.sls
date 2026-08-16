@@ -1,30 +1,19 @@
 {%- set salt_master = salt['pillar.get']('salt:master', '') %}
-
 {%- if grains['os_family'] == 'Windows' %}
   {%- set minion_conf_dir = 'C:/salt/conf' %}
 {%- else %}
   {%- set minion_conf_dir = '/etc/salt' %}
 {%- endif %}
-
 {%- set minion_conf = minion_conf_dir ~ '/minion' %}
 {%- set minion_conf_beacon = minion_conf_dir ~ '/minion.d/97-beacon.conf' %}
 {%- set minion_conf_timeout = minion_conf_dir ~ '/minion.d/98-timeout.conf' %}
 {%- set minion_conf_grains = minion_conf_dir ~ '/minion.d/96-grains.conf' %}
 {%- set minion_conf_logging = minion_conf_dir ~ '/minion.d/95-logging.conf' %}
-
 {%- set minion_conf_opt = minion_conf_dir ~ '/minion.d/99-cozy.conf' %}
-
 {%- set minion_conf_obj = "default_include: " ~ "minion.d/*.conf" ~ "\n" %}
-
-{%- if grains['os_family'] != 'Windows' %}
-  {%- set salt_modules = salt['pillar.get']('salt:modules:linux', ["pyinotify", "gitpython", "pymongo"]) %}
-{%- else %}
-  {%- set salt_modules = salt['pillar.get']('salt:modules:windows', ["gitpython", "pymongo"]) %}
-{%- endif %}
-
 {%- set minion_confd_obj = "" %}
 {%- if salt_master %}
-{%- set minion_confd_obj = "master: " ~ salt_master ~ "\n" %}
+  {%- set minion_confd_obj = "master: " ~ salt_master ~ "\n" %}
 {%- endif %}
 
 salt_minion_conf:
@@ -127,17 +116,6 @@ salt_minion_conf_logging:
           'salt.utils.schedule': 'error'
           'salt.beacons': 'error'
 
-{%- for module in salt_modules %}
-{#-
-FIXME: we don't actually want to do this it breaks salts working state for onedir
-  - Evaluate fallout and remediation for fleet
-#}
-# salt_minion_deps_{{ module }}:
-#   pip.installed:
-#     - name: {{ module }}
-
-{%- endfor %}
-
 # NOTE: restarting salt-minion during salt-call interrupts the run
 # apply via master: salt '*' state.sls common.salt_minion
 {%- set is_container = salt['file.file_exists']('/.dockerenv') or
@@ -147,9 +125,6 @@ salt_minion_service:
   service.running:
     - name: salt-minion
     - enable: True
-  {%- if grains['os_family'] != 'Windows' %}
-    - reload: True
-  {%- endif %}
     - watch:
       - file: salt_minion_conf
       - file: salt_minion_conf_opt

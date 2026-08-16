@@ -85,7 +85,14 @@ pacman_install_reflector:
     - require:
       - cmd: pacman_sync_key
 
-# TODO: add reflector.conf override via pillar for custom mirror settings
+{%- from '_macros/paths.sls' import managed_tree with context %}
+{{ managed_tree(
+  '/etc/systemd/system/reflector.d',
+  'salt://linux/files/etc-systemd-system-reflector.d',
+  recurse=True, clean=True,
+  user='root', group='root'
+) }}
+
 reflector_timer:
   service.running:
     - name: reflector.timer
@@ -95,7 +102,11 @@ reflector_timer:
 
 pacman_refresh_repo:
   cmd.run:
-    - name: reflector --latest 5 --sort rate --save /etc/pacman.d/mirrorlist
+    - name: >
+           reflector --save /etc/pacman.d/mirrorlist
+           --age 2 --delay 4 --cache-timeout 8
+           --completion-percent 100
+           --latest 16 --sort score
     - require:
       - pkg: pacman_install_reflector
 
