@@ -2,8 +2,11 @@
                        dir_mode='0755', file_mode='0644',
                        clean=False, require=None, order=None, recurse=False) %}
 
+{%- set state_name = name.replace('/', '_') %}
+{%- set state_name = state_name[1:] if state_name.startswith('_') else state_name %}
+
 {#- manage path #}
-{{ name }}_dir:
+{{ state_name }}_dir:
   file.directory:
     - name: {{ name }}
     - user: {{ user }}
@@ -18,7 +21,7 @@
     {%- endif %}
 
 {# recursively place files #}
-{{ name }}_files:
+{{ state_name }}_files:
   file.recurse:
     - name: {{ name }}
     - source: {{ source }}
@@ -34,7 +37,7 @@
       - group
 {%- endif %}
     - require:
-      - file: {{ name }}_dir
+      - file: {{ state_name }}_dir
     {%- if order is not none %}
     - order: {{ order }}
     {%- endif %}
