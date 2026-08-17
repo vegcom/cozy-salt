@@ -54,7 +54,7 @@ config_paths:
     linux: /etc/pip.conf
   salt:
     linux: /etc/salt
-    windows: 'C:/salt/conf'
+    windows: 'C:/ProgramData/Salt Project/Salt/conf'
   cozy:
     windows: C:/opt/cozy/etc
     linux: /opt/cozy/etc

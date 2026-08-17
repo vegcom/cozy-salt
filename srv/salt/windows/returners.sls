@@ -1,4 +1,4 @@
-{%- set conf_dir = salt['pillar.get']('config_paths:salt:windows', 'C:/salt/conf') %}
+{%- set conf_dir = salt['pillar.get']('config_paths:salt:windows', 'C:/ProgramData/Salt Project/Salt/conf') %}
 
 returners:
   file.managed:

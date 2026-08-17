@@ -1,6 +1,6 @@
 {%- set salt_master = salt['pillar.get']('salt:master', '') %}
 {%- if grains['os_family'] == 'Windows' %}
-  {%- set minion_conf_dir = 'C:/salt/conf' %}
+  {%- set minion_conf_dir = 'C:/ProgramData/Salt Project/Salt/conf' %}
 {%- else %}
   {%- set minion_conf_dir = '/etc/salt' %}
 {%- endif %}
