@@ -64,6 +64,11 @@
   - [ ] incorrect naming `file.directory` accepts `makedirs` not `mkdirs` [salt.states.file](https://docs.saltproject.io/en/3006/ref/states/all/salt.states.file.html)
     - [ ] identify all instances of `file.directory` and `mkdirs` and adjust.
     - peace be with you 🙏
+  - [ ] FIX SSH windows
+    - current provides 9.5, we want 9.6 or higher, winget provides v10
+    - `winget install --scope machine Microsoft.OpenSSH.Preview`
+    - `New-Service -Name "sshd" -BinaryPathName '"C:\Program Files\OpenSSH\sshd.exe" --service' -Description "OpenSSH SSH Server (v10 Preview)" -StartupType Automatic`
+    Files\OpenSSH\sshd.exe"`
   - [ ] distcc not operating as expected
     - [x] ~~`~/.distcc/hosts` has to be managed~~
       - [x] per user `~/.distcc/hosts` via `srv/salt/linux/distcc.sls`

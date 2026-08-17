@@ -182,7 +182,7 @@ windows:
       hardware: [TechPowerUp.NVCleanstall, Wagnardsoft.DisplayDriverUninstaller, tuna-f1sh.cyme]
       kubernetes: [Kubecolor.kubecolor, Freelensapp.Freelens]
       media: [ImageMagick.ImageMagick, Ruben2776.PicView, Gyan.FFmpeg, yang991178.fluent-reader, Ruben2776.PicView, HandBrake.HandBrake]
-      networking: [Apple.Bonjour, WiresharkFoundation.Wireshark, Tailscale.Tailscale, Insecure.Nmap]
+      networking: [Apple.Bonjour, WiresharkFoundation.Wireshark, Tailscale.Tailscale, Insecure.Nmap, Microsoft.OpenSSH.Preview]
       ricing: [Rainmeter.Rainmeter]
       shell: [Git.Git]
       sync_backup: [Syncthing.Syncthing, Martchus.syncthingtray]

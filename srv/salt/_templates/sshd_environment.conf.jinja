@@ -1,8 +1,17 @@
 PermitUserEnvironment yes
-AcceptEnv __*GATE__
-AcceptEnv *COZY*
-AcceptEnv *INTERACTIVE*
+
+# cozy-ssh
+AcceptEnv __PROXYJUMP_GATE__
+AcceptEnv __SSH_CONN_HASH_GATE__
+AcceptEnv __SSH_CONN_INIT_HOST_GATE__
+AcceptEnv __SSH_ORIGINAL_TARGET_GATE__
+AcceptEnv __SSH_RESOLVED_TARGET_GATE__
+
+# Tooling
+AcceptEnv INTERACTIVE
 AcceptEnv COLORTERM
+
+# General
 AcceptEnv LANG
 AcceptEnv LC_*
 AcceptEnv LC_ADDRESS

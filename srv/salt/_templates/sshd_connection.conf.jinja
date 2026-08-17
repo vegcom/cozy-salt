@@ -28,7 +28,7 @@ PubkeyAuthentication yes
 #}
 Subsystem powershell {{ pwsh_exe }} -SSHServerMode -NoLogo
 {%- endif %}
-Subsystem sftp internal://sftp-server
+Subsystem sftp internal-sftp
 {%- if grains['os_family'] != 'Windows' %}
 X11Forwarding yes
 {%- endif %}

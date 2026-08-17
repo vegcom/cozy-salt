@@ -19,12 +19,14 @@
   'C:/opt/cozy/bin',
 ] %}
 
-{%- set choco_path = salt['pillar.get']('paths:choco', 'C:/ProgramData/Chocolatey/bin') %}
-{%- set tailscale_path = salt['pillar.get']('paths:tailscale', 'C:/Program Files/Tailscale') %} #
+{%- set choco_path = salt['pillar.get']('paths:choco:windows', 'C:/ProgramData/Chocolatey/bin') %}
+{%- set tailscale_path = salt['pillar.get']('paths:tailscale:windows', 'C:/Program Files/Tailscale') %} #
+{%- set ssh_path = salt['pillar.get']('paths:ssh:windows', 'C:/Program Files/OpenSSH') %} #
 
 {%- set cmd_paths = [
   choco_path,
-  winget_path
+  winget_path,
+  ssh_path
 ] %}
 
 {%- set config_paths = ['C:/opt/cozy/etc'] %}
