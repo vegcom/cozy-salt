@@ -9,8 +9,7 @@
 pwsh_module_upgrade:
   cmd.run:
     - name: |-
-        (Get-InstalledModule).Name|ForEach { Update-Module -Scope AllUsers -AllowPrerelease -Force -Name $_ }
-    - onlyif: 'if (Get-Command pwsh -EA SilentlyContinue) { exit 0 } else { exit 1 }'
+        pwsh -Command '(Get-InstalledModule).Name|ForEach { Update-Module -Scope AllUsers -AllowPrerelease -Force -Name $_ }'
     - shell: powershell
 
 # Choco upgrade
