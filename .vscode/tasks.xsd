@@ -135,7 +135,7 @@
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
-   
+
     <!-- RegistrationTrigger -->
     <xs:complexType name="registrationTriggerType">
         <xs:complexContent>
@@ -163,15 +163,15 @@
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>
-    </xs:complexType>    
- 
-    <!--valueQueries-->   
+    </xs:complexType>
+
+    <!--valueQueries-->
     <xs:complexType name="namedValues">
          <xs:sequence>
              <xs:element name="Value" type="namedValue" minOccurs="1" maxOccurs="32"/>
          </xs:sequence>
-    </xs:complexType>       
-      
+    </xs:complexType>
+
     <xs:complexType name="namedValue">
          <xs:simpleContent>
              <xs:extension base="nonEmptyString">
@@ -197,11 +197,11 @@
                         </xs:simpleType>
                     </xs:element>
                     <xs:element name="MatchingElement" type="nonEmptyString" minOccurs="0" />
-                    <xs:element name="ValueQueries" type="namedValues" minOccurs="0" />              
+                    <xs:element name="ValueQueries" type="namedValues" minOccurs="0" />
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>
-    </xs:complexType>    
+    </xs:complexType>
 
     <!-- LogonTrigger -->
     <xs:complexType name="logonTriggerType">
@@ -338,7 +338,7 @@
     <xs:complexType name="daysOfMonthType">
         <xs:sequence>
             <xs:element name="Day" type="dayOfMonthType" minOccurs="0" maxOccurs="32" />
-        </xs:sequence>    
+        </xs:sequence>
     </xs:complexType>
     <xs:simpleType name="dayOfMonthType">
         <xs:restriction base="xs:string">
@@ -383,7 +383,7 @@
             <xs:element name="DisallowStartOnRemoteAppSession"  type="xs:boolean"                   default="false"     minOccurs="0" />
         </xs:all>
     </xs:complexType>
-    
+
     <!-- MultipleInstancesPolicy -->
     <xs:simpleType name="multipleInstancesPolicyType">
         <xs:restriction base="xs:string">
@@ -503,12 +503,12 @@
             <xs:enumeration value="Unrestricted" />
         </xs:restriction>
     </xs:simpleType>
-   
+
     <xs:complexType name="requiredPrivilegesType">
          <xs:sequence>
              <xs:element name="Privilege" type="privilegeType" minOccurs="1" maxOccurs="64"/>
          </xs:sequence>
-    </xs:complexType>       
+    </xs:complexType>
 
     <xs:simpleType name="privilegeType">
         <xs:restriction base="xs:string">
