@@ -6,6 +6,7 @@ See docs/modules/github_release.md for usage.
 
 import json
 import logging
+import os
 import urllib.error
 import urllib.request
 
@@ -21,7 +22,7 @@ def __virtual__():
 
 
 def _collect_tokens():
-    """Gather all github tokens from pillar — global + per-user."""
+    """Gather all github tokens from pillar — global + per-user; and env"""
     tokens = []
     try:
         tokens.extend(__salt__["pillar.get"]("github:tokens", []))  # noqa: F821
@@ -30,6 +31,12 @@ def _collect_tokens():
             tokens.extend(userdata.get("github", {}).get("tokens", []))
     except Exception:  # noqa: BLE001
         pass
+
+    for env_var in ("GH_TOKEN", "GITHUB_TOKEN"):
+        env_token = os.getenv(env_var)
+        if env_token:
+            tokens.append(env_token)
+
     return tokens
 
 

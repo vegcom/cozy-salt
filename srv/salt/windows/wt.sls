@@ -7,8 +7,9 @@
 {%- set cozy_fragments_script = cozy_fragments_path ~ 'install.ps1' %}
 {%- set twilite_theme_dir = 'C:/ProgramData/Microsoft/Windows Terminal/Fragments/Twilite' %}
 {%- set twilite_theme_install_uri = "https://raw.githubusercontent.com/vegcom/WindowsTerminal-Twilite/main/install.ps1" %}
+{%- set gh_token = salt['github_release.find_valid_token']() %}
 
-{%- if run_user_info %}
+{%- if run_user_info and gh_token %}
 cozy_fragments_repo_dir:
   file.directory:
     - name: '{{ cozy_path }}'
@@ -44,5 +45,11 @@ twilite_theme_install:
 {%- else %}
 cozy_fragments_noop:
   test.nop:
-    - name: Cozy fragments requires a user account to run
+    - name: >
+        Cozy fragments requires
+        {%- if not run_user_info %}
+        a user account to run
+        {%- else %}
+        pillar github:tokens
+        {%- endif %}
 {%- endif %}
