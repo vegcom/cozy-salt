@@ -1,0 +1,37 @@
+FROM archlinux:multilib-devel
+
+RUN pacman -Syu --noconfirm distcc tailscale dbus inetutils && \
+    pacman -Scc --noconfirm
+
+# distcc user (Arch sometimes creates it, sometimes not)
+RUN useradd -r -s /usr/bin/nologin distcc || true
+
+# cmdlist: allowed compilers for distccd
+RUN printf "/usr/bin/gcc\n/usr/bin/g++\n/usr/bin/cc\n/usr/bin/c++\n" > /etc/distcc/cmdlist
+ENV DISTCC_CMDLIST=/etc/distcc/cmdlist
+
+ENV DISTCC_CMDLIST=/etc/distcc/cmdlist
+ENV ALLOW="127.0.0.1/8 100.64.0.0/10 10.0.0.0/24"
+
+# Tailscale env
+ENV TS_AUTHKEY=""
+ENV TS_SERVER=""
+ENV TS_TAG="distcc"
+ENV TS_HOSTNAME="distcc"
+
+EXPOSE 3632
+
+# Start dbus, tailscaled (kernel tun), then distccd
+CMD ["/bin/sh", "-c", "\
+  mkdir -p /run/dbus /dev/net && \
+  mknod /dev/net/tun c 10 200 2>/dev/null || true && \
+  dbus-daemon --system --fork && \
+  tailscaled --state=/var/lib/tailscale/tailscaled.state & \
+  sleep 2 && \
+  tailscale up --authkey=${TS_AUTHKEY} --login-server=${TS_SERVER} --hostname=${TS_HOSTNAME} && \
+  sleep 1 && \
+  exec distccd \
+  --jobs $(nproc) \
+  --log-stderr --no-detach --daemon \
+  --log-level debug --user distcc \
+  --allow \"127.0.0.1/8,100.64.0.0/10,10.0.0.0/24\""]

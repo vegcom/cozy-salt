@@ -1,0 +1,23 @@
+services:
+  distcc:
+    build: .
+    env_file: .env
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+      - NET_BROADCAST
+      - NET_RAW
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    healthcheck:
+      test: ['CMD', 'pgrep', '-x', 'distccd']
+      interval: 30s
+      timeout: 5s
+      retries: 4
+    deploy:
+      replicas: 2
+    labels:
+      - 'cozy.service=distcc'
+      - 'cozy.env=prod'
+      - 'cozy.role=distcc'
+      - 'cozy.project=distcc-docker'
