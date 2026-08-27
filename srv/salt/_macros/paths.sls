@@ -1,6 +1,6 @@
 {%- macro managed_tree(name, source, user='root', group='root',
                        dir_mode='0755', file_mode='0644',
-                       clean=False, require=None, order=None, recurse=False) %}
+                       clean=False, require=None, order=None, recurse=False, mkdirs=True) %}
 
 {%- set state_name = name.replace('/', '_') %}
 {%- set state_name = state_name[1:] if state_name.startswith('_') else state_name %}
@@ -12,6 +12,7 @@
     - user: {{ user }}
     - group: {{ group }}
     - mode: "{{ dir_mode }}"
+    - mkdirs: {{ mkdirs }}
     {%- if require %}
     - require:
       - {{ require }}
