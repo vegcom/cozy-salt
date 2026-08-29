@@ -1,3 +1,4 @@
+name: distcc
 services:
   distcc:
     build:
