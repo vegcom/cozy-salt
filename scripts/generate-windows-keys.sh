@@ -8,7 +8,7 @@ mkdir -p "$KEYS_DIR"
 
 # Check if keys already exist
 if [ -f "$KEYS_DIR/minion.pem" ] && [ -f "$KEYS_DIR/minion.pub" ]; then
-	exit 0
+  exit 0
 fi
 
 # Generate RSA keys (matches Dockerfile keygen stage)
