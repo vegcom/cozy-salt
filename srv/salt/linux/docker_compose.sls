@@ -1,8 +1,8 @@
 {%- from '_macros/paths.sls' import managed_tree with context %}
 
 {%- set docker_enabled = salt['pillar.get']('host:capabilities:docker', False) %}
-{%- set managed_users = salt['pillar.get']('managed_users', [], merge=True) -%}
-{%- set run_user = managed_users[0] if managed_users else '' -%}
+{%- set managed_users = salt['pillar.get']('managed_users', [], merge=True) %}
+{%- set run_user = managed_users[0] if managed_users else '' %}
 {%- set cozy_docker = salt['pillar.get']('install_paths:docker:linux') %}
 {%- set is_container = salt['file.file_exists']('/.dockerenv') or salt['file.file_exists']('/run/.containerenv') -%}
 {%- set pillar_ref_prefix = '__salt_pillar_' %}
@@ -23,6 +23,7 @@ docker_member_{{ run_user }}:
     - addusers:
       - {{ run_user }}
     - unless: getent group docker|grep -q {{ run_user }}
+
     {%- for name, entry in config.items() %}
       {%- set services = entry.get('services', {}) %}
       {%- set path = entry.get('path', '') %}
@@ -49,9 +50,12 @@ docker_compose_up_{{ name.replace("-", "_") }}:
       {%- endfor %}
     {%- endif %}
     {%- endfor %}
+
   {%- else %}
+
 docker_not_enabled:
   test.nop:
     - name: Skipping docker_compose
+
   {%- endif %}
 {%- endif %}
