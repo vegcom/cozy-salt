@@ -1,6 +1,8 @@
 services:
   distcc:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.distcc
     env_file: .env
     restart: unless-stopped
     cap_add:

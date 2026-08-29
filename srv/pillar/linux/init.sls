@@ -156,3 +156,4 @@ capability_meta:
 
 include:
   - linux.versions
+  - linux.docker

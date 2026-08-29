@@ -35,3 +35,5 @@ CMD ["/bin/sh", "-c", "\
   --log-stderr --no-detach --daemon \
   --log-level debug --user distcc \
   --allow \"127.0.0.1/8,100.64.0.0/10,10.0.0.0/24\""]
+
+HEALTHCHECK CMD ["bash", "-c", "echo > /dev/tcp/127.0.0.1/3632"]

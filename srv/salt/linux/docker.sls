@@ -70,7 +70,6 @@ docker_service:
   {%- endif %}
 
 include:
-  - linux.docker-proxy
   - linux.docker_compose
 
 {%- endif %}

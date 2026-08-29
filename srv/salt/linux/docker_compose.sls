@@ -1,11 +1,21 @@
+{%- from '_macros/paths.sls' import managed_tree with context %}
+
 {%- set docker_enabled = salt['pillar.get']('host:capabilities:docker', False) %}
 {%- set managed_users = salt['pillar.get']('managed_users', [], merge=True) -%}
 {%- set run_user = managed_users[0] if managed_users else '' -%}
+{%- set cozy_docker = salt['pillar.get']('install_paths:docker:linux') %}
 {%- set is_container = salt['file.file_exists']('/.dockerenv') or salt['file.file_exists']('/run/.containerenv') -%}
 {%- if run_user and not is_container %}
   {%- if docker_enabled %}
     {%- set config = salt['pillar.get']('docker_compose', {}) %}
     {%- set _id = salt['grains.get']('id') %}
+
+{{ managed_tree(cozy_docker,
+                'salt://linux/files/opt-cozy-docker',
+                user='cozy-salt-svc', group='cozyusers',
+                recurse=True, clean=True,
+                dir_mode='0775', file_mode='0665') }}
+
 docker_member_{{ run_user }}:
   group.present:
     - name: docker
@@ -18,7 +28,8 @@ docker_member_{{ run_user }}:
       {%- set files = entry.get('files', []) %}
       {%- if files is string %}{%- set files = [files] %}{%- endif %}
         {%- set files_args = files | map('regex_replace', '^(.*)$', '-f \\1') | join(' ') %}
-        {%- set compose_cmd = 'docker --context default compose --quiet-build --quiet-pull ' ~ files_args ~ ' up -d --build --remove-orphans' %}
+        {%- set compose_cmd = 'docker --context default compose ' ~ files_args ~ ' up -d --build --remove-orphans' %}
+
 docker_compose_up_{{ name.replace("-", "_") }}:
   cmd.run:
     - name: {{ compose_cmd }}
