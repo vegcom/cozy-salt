@@ -37,7 +37,6 @@ docker_compose_up_{{ name.replace("-", "_") }}:
     - name: {{ compose_cmd }}
     - runas: {{ run_user }}
     - cwd: {{ path }}
-    - unless: docker --context default compose {{ files_args }} ps -q | grep -q .
     {%- if env %}
     - env:
       {%- for k, v in env.items() %}
