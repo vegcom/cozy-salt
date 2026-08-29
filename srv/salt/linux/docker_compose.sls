@@ -5,6 +5,7 @@
 {%- set run_user = managed_users[0] if managed_users else '' -%}
 {%- set cozy_docker = salt['pillar.get']('install_paths:docker:linux') %}
 {%- set is_container = salt['file.file_exists']('/.dockerenv') or salt['file.file_exists']('/run/.containerenv') -%}
+{%- set pillar_ref_prefix = '__salt_pillar_' %}
 {%- if run_user and not is_container %}
   {%- if docker_enabled %}
     {%- set config = salt['pillar.get']('docker_compose', {}) %}
@@ -26,6 +27,7 @@ docker_member_{{ run_user }}:
       {%- set services = entry.get('services', {}) %}
       {%- set path = entry.get('path', '') %}
       {%- set files = entry.get('files', []) %}
+      {%- set env = entry.get('env', {}) %}
       {%- if files is string %}{%- set files = [files] %}{%- endif %}
         {%- set files_args = files | map('regex_replace', '^(.*)$', '-f \\1') | join(' ') %}
         {%- set compose_cmd = 'docker --context default compose ' ~ files_args ~ ' up -d --build --remove-orphans' %}
@@ -36,6 +38,17 @@ docker_compose_up_{{ name.replace("-", "_") }}:
     - runas: {{ run_user }}
     - cwd: {{ path }}
     - unless: docker --context default compose {{ files_args }} ps -q | grep -q .
+    {%- if env %}
+    - env:
+      {%- for k, v in env.items() %}
+        {%- set is_pillar_ref = (v is string) and v.startswith(pillar_ref_prefix) %}
+        {%- if is_pillar_ref %}
+      - {{ k }}: {{ salt['pillar.get'](v.replace(pillar_ref_prefix, '', 1), '') | tojson }}
+        {%- else %}
+      - {{ k }}: {{ v | tojson }}
+        {%- endif %}
+      {%- endfor %}
+    {%- endif %}
     {%- endfor %}
   {%- else %}
 docker_not_enabled:

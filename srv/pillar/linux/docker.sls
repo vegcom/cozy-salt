@@ -2,14 +2,17 @@
 
 docker_compose:
 
-  distcc-docker:
+  distcc:
     path: /opt/cozy/docker/
     files: [/opt/cozy/docker/distcc.yaml]
+    env:
+      TS_AUTHKEY: __salt_pillar_headscale:auth-key
+      TS_SERVER: __salt_pillar_headscale:login-server
     services:
       distcc-docker:
         tags: ['salt-managed', 'distcc']
 
-  docker-proxy:
+  proxy:
     path: /opt/cozy/docker/
     files: [/opt/cozy/docker/docker-proxy.yaml]
     services:
