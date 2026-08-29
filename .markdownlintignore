@@ -1,6 +1,5 @@
-srv/pillar/secrets/README.md
-srv/pillar/common/README.md
-docs/**/*.md
 srv/**/*.md
-provisioning/**/*.md
 .github/PULL_REQUEST_TEMPLATE.md
+SECURITY.md
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
