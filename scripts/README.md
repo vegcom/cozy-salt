@@ -4,7 +4,7 @@ This directory contains utility scripts for Salt master/minion setup, enrollment
 
 ## Directory Structure
 
-```
+```plain
 scripts/
 ├── docker/               Container initialization scripts
 │   ├── entrypoint-master.sh
@@ -50,9 +50,11 @@ These scripts enroll existing systems (not in containers) as Salt minions.
 - Installs Salt minion package from official repos
 - Configures `/etc/salt/minion` with master address
 - Usage:
+
   ```bash
   curl https://your-repo/scripts/enrollment/install-linux-minion.sh | sudo bash
   ```
+
 - Requirements: Sudo access, internet connectivity
 - Sets master address (default: `salt.local`)
 
@@ -63,10 +65,12 @@ These scripts enroll existing systems (not in containers) as Salt minions.
 - Installs to `C:\Program Files\Salt Project\Salt`
 - Registers as Windows service (starts on boot)
 - Usage (PowerShell as Admin):
+
   ```powershell
   Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
   Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://your-repo/scripts/enrollment/install-windows-minion.ps1')
   ```
+
 - Requirements: PowerShell 5.0+, Admin privileges, internet
 - Restarts Salt minion service after installation
 
@@ -100,9 +104,11 @@ These scripts enroll existing systems (not in containers) as Salt minions.
 - Both scripts do the same thing in different languages (bash/PowerShell)
 - Creates key pair: `scripts/pki/minion/{minion.pem, minion.pub}`
 - Usage:
+
   ```bash
   ./scripts/generate-windows-keys.sh  # or PowerShell version
   ```
+
 - Used by: `make setup-windows-keys` target
 - Context: Keys mounted in Dockur Windows VM to pre-authenticate
 
