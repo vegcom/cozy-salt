@@ -1,10 +1,11 @@
 # Windows Provisioning Files
 
-This directory contains Windows-specific provisioning files deployed by Salt states. These files configure system-wide PowerShell, initial setup, and automation tasks.
+This directory contains Windows-specific provisioning files deployed by Salt states. These files configure system-wide
+PowerShell, initial setup, and automation tasks.
 
 ## Directory Structure
 
-```
+```plain
 provisioning/windows/
 ├── Autounattend.xml              Windows 11 unattended setup configuration
 ├── files/
@@ -25,13 +26,13 @@ provisioning/windows/
 
 ### File Deployment Targets
 
-| Source                                 | Deployment Target                             | Permission       | Deployed By         |
-| -------------------------------------- | --------------------------------------------- | ---------------- | ------------------- |
-| `cozy-pwsh.git`                        | `C:\Program Files\PowerShell\7\*`             | 644 (readable)   | `windows.profiles`  |
-| `files/opt-cozy/*.ps1`                 | `C:\opt\cozy\*`                               | 755 (executable) | `windows.opt-cozy`  |
-| `tasks/wsl/*.xml`                      | `C:\Windows\System32\tasks\cozy\*`            | 644 (readable)   | `windows.tasks.wsl` |
-| `tasks/kubernetes/*.xml`               | `C:\Windows\System32\tasks\cozy\kubernetes\*` | 644 (readable)   | `windows.tasks.k8s` |
-| `Autounattend.xml`                     | Mounted at Windows boot (Dockur)              | N/A              | Dockur VM setup     |
+| Source                   | Deployment Target                             | Permission       | Deployed By         |
+| ------------------------ | --------------------------------------------- | ---------------- | ------------------- |
+| `cozy-pwsh.git`          | `C:\Program Files\PowerShell\7\*`             | 644 (readable)   | `windows.profiles`  |
+| `files/opt-cozy/*.ps1`   | `C:\opt\cozy\*`                               | 755 (executable) | `windows.opt-cozy`  |
+| `tasks/wsl/*.xml`        | `C:\Windows\System32\tasks\cozy\*`            | 644 (readable)   | `windows.tasks.wsl` |
+| `tasks/kubernetes/*.xml` | `C:\Windows\System32\tasks\cozy\kubernetes\*` | 644 (readable)   | `windows.tasks.k8s` |
+| `Autounattend.xml`       | Mounted at Windows boot (Dockur)              | N/A              | Dockur VM setup     |
 
 ### Salt States for Deployment
 
@@ -58,7 +59,7 @@ Located in `srv/salt/windows/`:
 
 ### Deployment Flow
 
-```
+```plain
 Salt Master (Linux Docker)
     ↓ (via salt-minion)
 Windows Target System
@@ -68,17 +69,20 @@ C:\opt\cozy\
 C:\Windows\System32\tasks\cozy\
 ```
 
-Salt mounts `provisioning/windows/` at `/provisioning` in master container, which resolves to `salt://windows/` in state files.
+Salt mounts `provisioning/windows/` at `/provisioning` in master container, which resolves to
+`salt://windows/` in state files.
 
 ## PowerShell Profile System
 
-The PowerShell profile is maintained in the external repository [cozy-pwsh.git](https://github.com/vegcom/cozy-pwsh.git) and fetched dynamically by Salt.
+The PowerShell profile is maintained in the external repository
+[cozy-pwsh.git](https://github.com/vegcom/cozy-pwsh.git) and fetched dynamically by Salt.
 
 **For profile configuration and customization, see**: [cozy-pwsh](https://github.com/vegcom/cozy-pwsh.git)
 
 ### Overview
 
-The PowerShell profile is modular and composable, allowing independent configuration of different tools while maintaining a single entry point.
+The PowerShell profile is modular and composable,
+allowing independent configuration of different tools while maintaining a single entry point.
 
 **Profile entry point**: `Microsoft.PowerShell_profile.ps1`
 
@@ -115,7 +119,7 @@ Config files load in this specific order in `Microsoft.PowerShell_profile.ps1`:
 
 Each tool/service has its own configuration file in `config.d/`:
 
-```
+```plain
 config.d/
 ├── init.ps1          [CORE] Logging framework
 ├── time.ps1          [CORE] Timing utilities
@@ -373,6 +377,7 @@ If PowerShell fails to load profile:
    ```
 
 3. **Check for syntax errors**:
+
    ```powershell
    Test-Path "C:\Program Files\PowerShell\7\profile.ps1"
    Get-Content "C:\Program Files\PowerShell\7\profile.ps1" | powershell -Command { . $input }
@@ -403,6 +408,7 @@ If tasks don't run:
    ```
 
 3. **Re-register task**:
+
    ```powershell
    schtasks /create /tn "cozy\task-name" /xml "C:\path\to\task.xml" /f
    ```

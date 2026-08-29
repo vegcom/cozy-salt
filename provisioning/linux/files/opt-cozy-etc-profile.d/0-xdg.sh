@@ -6,5 +6,5 @@ if [ -n "$XDG_RUNTIME_DIR" ]; then
 fi
 
 if [ -n "$DBUS_SESSION_BUS_ADDRESS" ]; then
-	export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u)/bus
+	export DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$(id -u)/bus"
 fi

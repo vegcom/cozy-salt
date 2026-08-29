@@ -8,6 +8,7 @@
 (return 0 2>/dev/null) || return 2>/dev/null || exit 0
 
 # Gate, only run for interactive
+# shellcheck disable=SC2317
 case $- in *i*) ;; *) return 2>/dev/null || exit 0 ;; esac
 
 # Gate, only run foor root ssh sessions
@@ -51,6 +52,7 @@ host_mem=$(mem_used)
 
 #-----------------------------------------------
 # load container
+# shellcheck disable=SC2162
 read load1 load5 load15 _ < /proc/loadavg
 
 
