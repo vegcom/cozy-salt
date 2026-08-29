@@ -17,6 +17,8 @@ SaltStack IaC for Windows/Linux workstation provisioning. Master runs in Docker.
 
 > [!NOTE]
 > [AI-generated docs available on DeepWiki](https://deepwiki.com/vegcom/cozy-salt) — auto-generated, may drift.
+>
+> [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/vegcom/cozy-salt)
 
 ## [outstanding folks who made it so](AUTHORS.md)
 
@@ -108,29 +110,27 @@ ip route add 10.0.0.220/32 dev frontend-shim
 ## Enrollment
 
 OneDir install is proper install
+[salt/install-guide](https://docs.saltproject.io/salt/install-guide)
 
-Related: <https://github.com/saltstack/salt-bootstrap/pull/2101> (Arch onedir fix)
-
-### Linux
-
-```shell
-# Win-Stall on GNU/LInux
-# Example master is 10.0.0.220
-curl -L https://raw.githubusercontent.com/saltstack/salt-bootstrap/develop/bootstrap-salt.sh | sh -s -- -D -d -A salt -i linux_minion onedir latest
+```pwsh
+# Windows option
+scripts/enroll.ps1
 ```
 
-### Windows
-
-```powershell
-# Install salt
-# Example master is 10.0.0.220
-Invoke-WebRequest -Uri https://github.com/saltstack/salt-bootstrap/raw/refs/heads/develop/salt-quick-start.ps1 -OutFile "$env:TEMP\salt-quick-start.ps1" ; & "$env:TEMP\salt-quick-start.ps1"
+```bash
+# Linux option
+scripts/enroll.sh
 ```
 
 ### Theme and customization
 
 > [!NOTE]
-> [Themeing and customization](https://github.com/vegcom/Twilite-Theme) — leverages **Twilite**: _A theme for those who love a cute purple hue._
+> [Themeing and customization](https://github.com/vegcom/Twilite-Theme) —
+> leverages **Twilite**: _A theme for those who love a cute purple hue._
+
+## Little wins
+
+- [Arch onedir fix](https://github.com/saltstack/salt-bootstrap/pull/2101)
 
 ## Contributing
 
@@ -142,7 +142,3 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the **3 rules** and development workf
 
 - <https://github.com/saltstack/salt>
 - <https://github.com/erwindon/SaltGUI>
-
----
-
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/vegcom/cozy-salt)
