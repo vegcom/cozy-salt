@@ -8,5 +8,27 @@
   "MD025": false,
   "MD030": false,
   "default": true,
-  "files": {}
+  "files": {},
+  "overrides": {
+    "CONTRIBUTING.md": {
+      "config": {
+        "MD013": false
+      }
+    },
+    "CODE_OF_CONDUCT.md": {
+      "config": {
+        "MD013": false
+      }
+    },
+    "SECURITY.md": {
+      "config": {
+        "MD013": false
+      }
+    },
+    ".github/PULL_REQUEST_TEMPLATE.md": {
+      "config": {
+        "MD013": false
+      }
+    }
+  }
 }
