@@ -1,3 +1,4 @@
+---
 name: cozy-salt
 channels:
   - conda-forge
@@ -22,3 +23,5 @@ dependencies:
       - pre-commit
       - djlint
       - gitpython
+      - checkov
+      - bandit

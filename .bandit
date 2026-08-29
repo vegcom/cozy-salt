@@ -1,0 +1,16 @@
+[bandit]
+
+exclude = tests
+
+skips = B101,B310,B112,B105,B607,B603,B108,B404,B110,B604
+
+# low  Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.  bandit/B101
+# low  Consider possible security implications associated with the subprocess module.  bandit/B404
+# low  Possible hardcoded password:  bandit/B105
+# low  Starting a process with a partial executable path  bandit/B607
+# low  subprocess call - check for execution of untrusted input.  bandit/B603
+# low  Try, Except, Continue detected.  bandit/B112
+# low  Try, Except, Pass detected.  bandit/B110
+# medium  Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected.  bandit/B310
+# medium  Function call with shell=True parameter identified, possible security issue.  bandit/B604
+# medium  Probable insecure usage of temp file/directory.  bandit/B108

@@ -1,4 +1,3 @@
 [[IgnoredVulns]]
-
-[IgnoredFiles]
-paths = ["package-lock.json"]
+id = "GHSA-c9gm-7rf7-4v5h"
+reason = "Not applicable to production build"

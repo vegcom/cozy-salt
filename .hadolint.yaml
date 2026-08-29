@@ -1,0 +1,14 @@
+---
+trustedRegistries:
+  - docker.io
+  - my-company.com:5000
+  - '*.gcr.io'
+
+failure-threshold: error
+
+ignored:
+  # pinned versions
+  - DL3008
+  - DL3041
+  # set SHELL option
+  - DL4006

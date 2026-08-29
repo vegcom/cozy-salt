@@ -28,3 +28,5 @@ disable=SC2000
 
 # SC1071 -  ShellCheck only supports sh/bash/dash/ksh/'busybox sh' scripts. we provide zsh at times as well.
 disable=SC1071
+
+disable=SC1091
