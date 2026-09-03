@@ -1,5 +1,5 @@
 {%- set is_container = salt['file.file_exists']('/.dockerenv') or salt['file.file_exists']('/run/.containerenv') %}
-{%- set ssh_enabled = salt['pillar.get']('host:services:ssh_enabled', not is_container) %}
+{%- set ssh_enabled = salt['pillar.get']('host:capabilities:sshd', not is_container) %}
 {%- if ssh_enabled %}
 {#- Should be `salt://_templates/sshd_<name>.conf.jinja` #}
 {%- set includes = ["hardening", "environment", "banner", "connection", "auth"] %}
@@ -42,5 +42,5 @@ sshd_service:
 {%- else %}
 sshd_config:
   test.nop:
-    - name: SSH config disabled:(host:services:ssh_enabled = false)
+    - name: SSH config disabled:(host:capabilities:sshd = false)
 {%- endif %}

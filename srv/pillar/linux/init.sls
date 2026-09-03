@@ -18,10 +18,10 @@ host:
   capabilities:
     kvm: {{ 'kvm-host' in salt['grains.get']('roles', []) }}
     k3s: {{ 'k3s-host' in salt['grains.get']('roles', []) }}
-    tailscale: true
-    avahi: true
-  services:
-    ssh_enabled: {{ True if not (salt['file.file_exists']('/.dockerenv') or salt['file.file_exists']('/run/.containerenv')) }}
+    tailscale: {{ True if not salt['grains.get']('virtual', '') in ['docker', 'container', 'lxc'] }}
+    avahi: {{ True if not salt['grains.get']('virtual', '') in ['docker', 'container', 'lxc'] }}
+    distcc_server: {{ True if not salt['grains.get']('virtual', '') in ['docker', 'container', 'lxc'] }}
+    sshd: {{ True if not salt['grains.get']('virtual', '') in ['docker', 'container', 'lxc'] }}
 
 locales:
   - en_US.UTF-8 UTF-8

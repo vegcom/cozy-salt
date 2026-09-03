@@ -1,6 +1,6 @@
 {%- set is_container = salt['file.file_exists']('/.dockerenv') or
                       salt['file.file_exists']('/run/.containerenv') %}
-{%- set ssh_enabled = salt['pillar.get']('host:services:ssh_enabled', not is_container) %}
+{%- set ssh_enabled = salt['pillar.get']('host:capabilities:sshd', not is_container) %}
 
 {%- if ssh_enabled %}
 include:
@@ -17,7 +17,7 @@ sshd_service:
     - name: |
         SSH service disabled:
     {%- if not ssh_enabled %}
-        (host:services:ssh_enabled = false)
+        (host:capabilities:sshd = false)
     {%- else %}
         unknown
     {%- endif %}
