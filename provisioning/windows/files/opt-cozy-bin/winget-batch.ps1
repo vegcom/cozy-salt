@@ -5,7 +5,6 @@ param(
     [string]$Packages,
     [string]$Scope,
     [string]$SkipDeps = "false",
-    [string]$Prerelease = "false",
     [string]$Force = "false",
     [string]$Upgrade = "false"
 )
@@ -13,7 +12,6 @@ param(
 $PackageList = $Packages -split ','
 
 $_SkipDeps   = $SkipDeps   -in @("true", "1")
-$_Prerelease = $Prerelease -in @("true", "1")
 $_Force      = $Force      -in @("true", "1")
 $_Upgrade    = $Upgrade    -in @("true", "1")
 
@@ -41,7 +39,6 @@ foreach ($pkg in $PackageList) {
               "--ignore-warnings", "--disable-interactivity")
 
     if (-not $_Upgrade)    { $wingetArgs += "--no-upgrade" }
-    if ($_Prerelease)      { $wingetArgs += "--include-prerelease" }
     if ($_SkipDeps)        { $wingetArgs += "--skip-dependencies" }
     if ($_Force)           { $wingetArgs += "--force" }
 

@@ -166,7 +166,6 @@ Parameters:
   winget_path: Full path to winget.exe
   scope: Install scope ('machine' or 'user', default: 'machine')
   skip_dependencies: Skip processing dependencies (default: false)
-  prerelease: Allow pre-release packages (default: false)
   shell: Define shell used for execution (default: 'powershell')
   force: Force installation/reinstall (default: false)
   upgrade: Enable package upgrades (default: false)
@@ -193,7 +192,7 @@ Output generates:
       - shell: powershell
       - timeout: 600 -#}
 # TODO: prevent duplicate run ( each user when ran for a particuarl user )
-{%- macro winget_batch_install(state_name, packages, winget_user=False, winget_path=False, scope=False, skip_deps=False, prerelease=False, shell="powershell", force=False, upgrade=False, bg=False) -%}
+{%- macro winget_batch_install(state_name, packages, winget_user=False, winget_path=False, scope=False, skip_deps=False, shell="powershell", force=False, upgrade=False, bg=False) -%}
   {%- if packages | length > 0 -%}
     {{ state_name }}:
     cmd.script:
@@ -203,7 +202,6 @@ Output generates:
         -Packages "{{ packages | join(',') }}"
         -Scope "{{ scope if scope else '' }}"
         -SkipDeps {{ skip_deps | lower }}
-        -Prerelease {{ prerelease | lower }}
         -Force {{ force | lower }}
         -Upgrade {{ upgrade | lower }}
     - shell: powershell
