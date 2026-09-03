@@ -1,0 +1,9 @@
+.git
+.ruff_cache
+.trunk
+.vscode
+__pycache__
+*.pyc
+node_modules
+srv/data
+srv/salt/keys
