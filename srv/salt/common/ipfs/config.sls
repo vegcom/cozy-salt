@@ -10,8 +10,8 @@
 {%- set _iface_ips = salt['grains.get']('ip4_interfaces', {}).get(iface, []) %}
 {%- set lan_ip = _iface_ips[0] if _iface_ips else none %}
 
-{%- set gateway_port = salt[pillar.get]('ipfs.config.gateway_port', '3696') %}
-{%- set api_port = salt[pillar.get]('ipfs.config.api_port', '5001') %}
+{%- set gateway_port = salt['pillar.get']('ipfs:config:gateway_port', '3696') %}
+{%- set api_port = salt['pillar.get']('ipfs:config:gateway_port', '5001') %}
 
 {%- set kubo_env = {
     "GOLOG_LOG_FMT": "nocolor",
