@@ -68,35 +68,8 @@ if [ ! -d /etc/salt/autosign.d ]; then
     touch ${autoreject_file}
 fi
 
-# Mongo
-echo "[entrypoint] Initialising mongo credentials..."
-mongo_dir="/srv/data/mongo"
-mkdir -p "${mongo_dir}"
-mongo_pass_file="${mongo_dir}/password"
-if [[ ! -f "${mongo_pass_file}" ]]; then
-    openssl rand -base64 48 | tr -d '/+=' | head -c 32 > "${mongo_pass_file}"
-    chmod 664 "${mongo_pass_file}"
-    echo "  + mongo password generated"
-else
-    echo "  + mongo password exists"
-fi
-echo "${MONGO_HOST:-mongo}" > "${mongo_dir}/host"
-
-echo "[entrypoint] Writing master mongo returner config..."
-mongo_pass=$(cat "${mongo_pass_file}")
-cat > /etc/salt/master.d/mongo-returner-generated.conf <<EOF
-# Generated at container startup — do not edit, do not commit (see .gitignore)
-# docs configuration/master: https://docs.saltproject.io/en/latest/ref/configuration/master.html
-mongo.host: ${MONGO_HOST:-mongo}
-mongo.port: 27017
-mongo.db: salt
-mongo.user: salt
-mongo.password: ${mongo_pass}
-mongo.authdb: admin
-EOF
-echo "  + mongo-returner-generated.conf written"
-
 # Sqlite
+
 echo "[entrypoint] Initialising sqlite3 returner schema..."
 mkdir -p /srv/data/sqlite || true
 python3 -c "

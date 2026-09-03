@@ -100,6 +100,36 @@ services:
       cozy.project: cozy-salt
     hostname: mongo
 
+  winget-manifest:
+    container_name: winget-manifest
+    build:
+      context: https://github.com/June-Cozy/cozy-winget.git
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      salt:
+        condition: service_healthy
+    expose:
+      - "8080"
+    volumes:
+      - winget-manifest-data:/data
+    environment:
+      MANIFEST_REPO_URL: https://github.com/June-Cozy/cozy-winget.git
+      MANIFEST_PULL_INTERVAL: "86400"
+    networks:
+      - salt-net
+    labels:
+      cozy.service: winget-manifest
+      cozy.role: winget-manifest
+      cozy.project: cozy-salt
+    healthcheck:
+      test: [ "CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/v1/health', timeout=3)" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    hostname: winget-manifest
+
   # Ubuntu test minion - auto-applies highstate on startup
   salt-minion-ubuntu:
     container_name: salt-minion-ubuntu-test
@@ -187,6 +217,7 @@ volumes:
   salt-logs:
   salt-pki:
   mongo-data:
+  winget-manifest-data:
 
 networks:
   salt-net:
