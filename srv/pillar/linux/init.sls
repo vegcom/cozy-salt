@@ -6,6 +6,9 @@
 {%- else %}
   {%- set detected_user = salt['environ.get']('SUDO_USER') or salt['environ.get']('LOGNAME') or 'root' %}
 {%- endif %}
+{%- set is_ci = _common.get('SALT_CI', False) %}
+{%- set is_virtual = True if not salt['grains.get']('virtual', '') in ['docker', 'container', 'lxc'] %}
+
 user:
   name: {{ detected_user }}
 
@@ -18,10 +21,10 @@ host:
   capabilities:
     kvm: {{ 'kvm-host' in salt['grains.get']('roles', []) }}
     k3s: {{ 'k3s-host' in salt['grains.get']('roles', []) }}
-    tailscale: {{ True if not salt['grains.get']('virtual', '') in ['docker', 'container', 'lxc'] }}
-    avahi: {{ True if not salt['grains.get']('virtual', '') in ['docker', 'container', 'lxc'] }}
-    distcc_server: {{ True if not salt['grains.get']('virtual', '') in ['docker', 'container', 'lxc'] }}
-    sshd: {{ True if not salt['grains.get']('virtual', '') in ['docker', 'container', 'lxc'] }}
+    distcc_server: {{ 'distcc_server' in salt['grains.get']('roles', []) }}
+    tailscale: {{ True if not is_virtual or is_ci else False }}
+    avahi: {{ True if not is_virtual or is_ci else False }}
+    sshd: {{ True if not is_virtual or is_ci else False }}
 
 locales:
   - en_US.UTF-8 UTF-8
