@@ -54,13 +54,13 @@ Sets `NVM_HOME`, `NVM_SYMLINK`, `CONDA_HOME` automatically.
 
 Pillar template files (committed) show structure and defaults. Copy templates to create instance files:
 
-| Template | Purpose | Instance | Notes |
-| --- | --- | --- | --- |
-| `srv/pillar/host/example.sls` | Per-host config template | `srv/pillar/host/{hostname}.sls` | Loaded if exists, never tracked |
-| `srv/pillar/class/example.sls` | Hardware class template | `srv/pillar/class/{classname}.sls` | Reference for structure |
-| `srv/pillar/users/demo.sls` | User config template | `srv/pillar/users/{username}.sls` | Local files only, demo.sls tracked |
-| `srv/pillar/common/README.md` | User metadata template | `srv/pillar/common/users.sls` | Shows structure (tracked) |
-| `srv/pillar/secrets/README.md` | Secrets template | `srv/pillar/secrets/init.sls` | reference for includes, create locally |
+| Template                       | Purpose                  | Instance                           | Notes                                  |
+| ------------------------------ | ------------------------ | ---------------------------------- | -------------------------------------- |
+| `srv/pillar/host/example.sls`  | Per-host config template | `srv/pillar/host/{hostname}.sls`   | Loaded if exists, never tracked        |
+| `srv/pillar/class/example.sls` | Hardware class template  | `srv/pillar/class/{classname}.sls` | Reference for structure                |
+| `srv/pillar/users/demo.sls`    | User config template     | `srv/pillar/users/{username}.sls`  | Local files only, demo.sls tracked     |
+| `srv/pillar/common/example.sls`  | User metadata template   | `srv/pillar/common/users.sls`      | Shows structure (tracked)              |
+| `srv/pillar/secrets/example.sls` | Secrets template         | `srv/pillar/secrets/init.sls`      | reference for includes, create locally |
 
 **Creating a new host configuration**:
 
@@ -112,27 +112,27 @@ When adding a new module:
 
 ## Submodules
 
-| repo | path |
-| :--- | :--- |
+| repo                                                                              | path                                         |
+| :-------------------------------------------------------------------------------- | :------------------------------------------- |
 | [vegcom/cozy-salt-enrollment.git](https://github.com/vegcom/cozy-salt-enrollment) | [scripts/enrollment/](./scripts/enrollment/) |
 
 ## Dynamic Git Deployments
 
-| repo | deployment |
-| :--- | :--------- |
-| [vegcom/cozy-vim](https://github.com/vegcom/cozy-vim) | `~/.vim` (per-user via git_repo macro in common/vim.sls) |
-| [vegcom/cozy-pwsh](https://github.com/vegcom/cozy-pwsh) | `C:\Program Files\PowerShell\7` (system-wide via windows/profiles.sls) |
-| [vegcom/cozy-presence](https://github.com/vegcom/cozy-presence) | `/opt/cozy/cozy-presence` (linux service via linux/cozy-presence.sls) |
+| repo                                                              | deployment                                                                   |
+| :---------------------------------------------------------------- | :--------------------------------------------------------------------------- |
+| [vegcom/cozy-vim](https://github.com/vegcom/cozy-vim)             | `~/.vim` (per-user via git_repo macro in common/vim.sls)                     |
+| [vegcom/cozy-pwsh](https://github.com/vegcom/cozy-pwsh)           | `C:\Program Files\PowerShell\7` (system-wide via windows/profiles.sls)       |
+| [vegcom/cozy-presence](https://github.com/vegcom/cozy-presence)   | `/opt/cozy/cozy-presence` (linux service via linux/cozy-presence.sls)        |
 | [vegcom/cozy-fragments](https://github.com/vegcom/cozy-fragments) | `C:\opt\cozy\cozy-fragments` (Windows Terminal fragments via windows/wt.sls) |
-| [vegcom/cozy-ssh](https://github.com/vegcom/cozy-ssh) | `~/.ssh` (per-user via common/ssh.sls, cross-platform) |
+| [vegcom/cozy-ssh](https://github.com/vegcom/cozy-ssh)             | `~/.ssh` (per-user via common/ssh.sls, cross-platform)                       |
 
 ## Ecosystem (not yet integrated)
 
-| repo | description |
-| :--- | :---------- |
-| [vegcom/cozy-share](https://github.com/vegcom/cozy-share) | SMB/file share management |
-| [vegcom/cozy-scale](https://github.com/vegcom/cozy-scale) | scaling / infra tooling |
-| [vegcom/cozy-dash](https://github.com/vegcom/cozy-dash) | dashboard |
-| [vegcom/cozy-archiso](https://github.com/vegcom/cozy-archiso) | Arch ISO builder |
-| [vegcom/cozy-pxe](https://github.com/vegcom/cozy-pxe) | PXE boot |
-| [vegcom/cozy-ipa](https://github.com/vegcom/cozy-ipa) | IPA / identity management |
+| repo                                                          | description               |
+| :------------------------------------------------------------ | :------------------------ |
+| [vegcom/cozy-share](https://github.com/vegcom/cozy-share)     | SMB/file share management |
+| [vegcom/cozy-scale](https://github.com/vegcom/cozy-scale)     | scaling / infra tooling   |
+| [vegcom/cozy-dash](https://github.com/vegcom/cozy-dash)       | dashboard                 |
+| [vegcom/cozy-archiso](https://github.com/vegcom/cozy-archiso) | Arch ISO builder          |
+| [vegcom/cozy-pxe](https://github.com/vegcom/cozy-pxe)         | PXE boot                  |
+| [vegcom/cozy-ipa](https://github.com/vegcom/cozy-ipa)         | IPA / identity management |

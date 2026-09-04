@@ -1,0 +1,59 @@
+# Secrets configuration (rename to init.sls locally and fill with actual values)
+# This file is gitignored and should never be committed
+# See CONTRIBUTING.md for details
+
+# global defaults, host pillar can override
+# per-host overrides go in srv/pillar/host/{hostname}.sls:
+
+service_user:
+  password: "cozy_1234abcd!"
+
+# github:
+#   access_token: ghp_your_github_pat_token_here
+
+# k3s:
+#   token: k3s_your_k3s_token_here
+#   server: https://example:6443
+#   host:  https://example:6443
+
+# headscale:
+#   auth-key: "hskey-auth-1234abcd"
+#   login-server: "https://vpn.example.com"
+#   api-key: "..."
+
+# tailscale:
+#   flags:
+#     accept-routes: true
+#     accept-dns: true
+#     operator: cozy-salt-svc
+
+# tailscale:
+#   flags:
+#     advertise-routes: "10.0.0.0/24"
+#     advertise-exit-node: true
+
+# services:
+#   embedding:
+#     langcache:
+#       url: http://langcache.local:30801
+#       dim: 384
+#     qwen3:
+#       url: http://qwen3.local:30800
+#       dim: 1024
+
+# network:
+#   dns:
+#     search_domain: local
+#     nameservers:
+#       - 10.0.0.1
+#       - 1.1.1.1
+#       - 1.0.0.1
+#   hosts:
+#     example-host:
+#       comment: "example metal host"
+#       ips:
+#         - 10.0.0.1
+#       names:
+#         - veganism
+#         - unifi
+#         - gw
