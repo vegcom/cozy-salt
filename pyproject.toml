@@ -99,4 +99,3 @@ docstring-code-line-length = "dynamic"
 "./srv/salt/_states/yay.py" = ["F821"]
 [tool.ruff.lint.isort]
 split-on-trailing-comma = false
-
