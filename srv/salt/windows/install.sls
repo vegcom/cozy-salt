@@ -1,6 +1,8 @@
 {%- from '_macros/windows.sls' import get_users_with_profiles, get_winget_system_path, get_user_winget_info, winget_batch_install with context %}
 {%- from '_macros/packages.sls' import get_packages %}
+{%- from '_macros/winget.sls' import classify_winget_scopes with context %}
 {%- set packages = get_packages() | load_json %}
+
 {%- set service_user = salt['pillar.get']('service_user', {}) %}
 
 {%- set winget_force = salt['pillar.get']('windows:winget:force', False) %}
@@ -74,24 +76,8 @@ choco_{{ pkg | replace('.', '_') | replace('-', '_') }}:
 {%- endif %}
 
 # ============================================================================
-# WINGET INSTALLATIONS - BATCHED BY
+# WINGET INSTALLATIONS - BATCHED BY CATEGORY, ROUTED BY MANIFEST SCOPE
 # ============================================================================
-
-{#- TODO: Solve similar to linux, deploy paths in full; fix/correct naming scheme  #}
-{%- if packages.windows.winget.userland is defined %}
-  {%- for user in users_with_profiles %}
-    {%- set UserName = user_info.get(user, {}).get("UserName", false) %}
-    {%- set winget_settings = user_info.get(user, {}).get("winget_settings", false) %}
-    {%- if winget_settings and UserName %}
-winget_config_{{ user }}:
-  file.managed:
-    - name: {{ winget_settings }}
-    - source: salt://windows/files/LOCALAPPDATA-Packages-Microsoft.DesktopAppInstaller_8wekyb3d8bbwe-LocalState/settings.json
-    - user: {{ UserName }}
-    - makedirs: True
-    {%- endif %}
-  {%- endfor %}
-{%- endif %}
 
 # Winget bootstrap/repair
 winget_bootstrap:
@@ -106,54 +92,89 @@ winget_features_enable:
     - shell: powershell
     - name: winget configure --enable
 
-# Install Winget runtime packages, machine scope (batched by sub-category)
-{%- if packages.windows.winget.runtimes is defined %}
-  {%- for category, pkgs in packages.windows.winget.runtimes.items() %}
-{{ winget_batch_install('winget_batch_runtimes_' ~ category, pkgs, winget_path=winget_path, scope='machine', force=winget_force, bg=winget_bg) }}
+{#- Every non-gated winget category lives flat under windows.winget now -
+   the manifest server tells us per-package whether it's machine-scoped,
+   user-scoped only, or scopeless, so no more hand-maintained noscope list. #}
+{%- set _system_categories = {} %}
+{%- for _cat, _pkgs in packages.windows.winget.items() %}
+  {%- if _cat not in ['gated'] %}
+    {%- do _system_categories.update({_cat: _pkgs}) %}
+  {%- endif %}
+{%- endfor %}
+
+{%- set _all_winget_ids = namespace(ids=[]) %}
+{%- for _pkgs in _system_categories.values() %}
+  {%- do _all_winget_ids.ids.extend(_pkgs) %}
+{%- endfor %}
+{%- for _pkgs in packages.windows.winget.get('gated', {}).values() %}
+  {%- do _all_winget_ids.ids.extend(_pkgs) %}
+{%- endfor %}
+{%- set scopes = classify_winget_scopes(_all_winget_ids.ids) | load_json %}
+
+{#- winget_config_{user}: needed before any per-user (non-machine-scope) install #}
+{%- if scopes.user or scopes.none %}
+  {%- for user in users_with_profiles %}
+    {%- set UserName = user_info.get(user, {}).get("UserName", false) %}
+    {%- set winget_settings = user_info.get(user, {}).get("winget_settings", false) %}
+    {%- if winget_settings and UserName %}
+winget_config_{{ user }}:
+  file.managed:
+    - name: {{ winget_settings }}
+    - source: salt://windows/files/LOCALAPPDATA-Packages-Microsoft.DesktopAppInstaller_8wekyb3d8bbwe-LocalState/settings.json
+    - user: {{ UserName }}
+    - makedirs: True
+    {%- endif %}
   {%- endfor %}
 {%- endif %}
 
-# Install Winget system packages, machine scope (batched by category)
-{%- set noscope_pkgs = packages.windows.winget.get('noscope', {}).values() | list | flatten %}
-{%- if packages.windows.winget.system is defined %}
-  {%- for category, pkgs in packages.windows.winget.system.items() %}
-    {%- set filtered_pkgs = pkgs | reject('in', noscope_pkgs) | list %}
-    {%- if filtered_pkgs %}
-{{ winget_batch_install('winget_batch_system_' ~ category, filtered_pkgs, winget_path=winget_path, scope='machine', force=winget_force ,bg=winget_bg) }}
-    {%- endif %}
-    {%- set noscope_category_pkgs = pkgs | select('in', noscope_pkgs) | list %}
-    {%- if noscope_category_pkgs %}
-{{ winget_batch_install('winget_batch_system_' ~ category ~ '_noscope', noscope_category_pkgs, winget_path=winget_path, scope=false, force=winget_force, bg=winget_bg) }}
-    {%- endif %}
-  {%- endfor %}
-{%- endif %}
+# Install Winget packages (batched by category, routed to machine/user/none)
+{%- for category, pkgs in _system_categories.items() %}
+  {%- set machine_pkgs = pkgs | select('in', scopes.machine) | list %}
+  {%- set user_pkgs = pkgs | select('in', scopes.user) | list %}
+  {%- set none_pkgs = pkgs | select('in', scopes.none) | list %}
+  {%- if machine_pkgs %}
+{{ winget_batch_install('winget_batch_machine_' ~ category, machine_pkgs, winget_path=winget_path, scope='machine', force=winget_force, bg=winget_bg) }}
+  {%- endif %}
+  {%- if user_pkgs or none_pkgs %}
+    {%- for user in users_with_profiles %}
+      {%- set UserName = user_info.get(user, {}).get("UserName", false) %}
+      {%- set winget_uri = user_info.get(user, {}).get("winget_uri", false) %}
+      {%- if winget_uri and UserName and salt['file.file_exists'](winget_uri) %}
+        {%- if user_pkgs %}
+{{ winget_batch_install('winget_batch_user_' ~ UserName ~ '_' ~ category, user_pkgs, winget_user=UserName, winget_path=winget_uri, scope='user', force=winget_force, bg=winget_bg) }}
+        {%- endif %}
+        {%- if none_pkgs %}
+{{ winget_batch_install('winget_batch_none_' ~ UserName ~ '_' ~ category, none_pkgs, winget_user=UserName, winget_path=winget_uri, scope=false, force=winget_force, bg=winget_bg) }}
+        {%- endif %}
+      {%- endif %}
+    {%- endfor %}
+  {%- endif %}
+{%- endfor %}
 
-# Install capability-gated system packages (host:capabilities:$name: true)
+# Install capability-gated packages (host:capabilities:$name: true)
 {%- if packages.windows.winget.gated is defined %}
   {%- for cap_name, pkgs in packages.windows.winget.gated.items() %}
     {%- if salt['pillar.get']('host:capabilities:' ~ cap_name, False) %}
-      {%- set filtered_pkgs = pkgs | reject('in', noscope_pkgs) | list %}
-      {%- if filtered_pkgs %}
-{{ winget_batch_install('winget_batch_gated_' ~ cap_name, filtered_pkgs, winget_path=winget_path, scope='machine') }}
+      {%- set machine_pkgs = pkgs | select('in', scopes.machine) | list %}
+      {%- if machine_pkgs %}
+{{ winget_batch_install('winget_batch_gated_' ~ cap_name, machine_pkgs, winget_path=winget_path, scope='machine', force=winget_force, bg=winget_bg) }}
       {%- endif %}
-      {%- set noscope_gated_pkgs = pkgs | select('in', noscope_pkgs) | list %}
-      {%- if noscope_gated_pkgs %}
-{{ winget_batch_install('winget_batch_gated_' ~ cap_name ~ '_noscope', noscope_gated_pkgs, winget_path=winget_path, scope=false, force=winget_force, bg=winget_bg) }}
+      {%- set user_pkgs = pkgs | select('in', scopes.user) | list %}
+      {%- set none_pkgs = pkgs | select('in', scopes.none) | list %}
+      {%- if user_pkgs or none_pkgs %}
+        {%- for user in users_with_profiles %}
+          {%- set UserName = user_info.get(user, {}).get("UserName", false) %}
+          {%- set winget_uri = user_info.get(user, {}).get("winget_uri", false) %}
+          {%- if winget_uri and UserName and salt['file.file_exists'](winget_uri) %}
+            {%- if user_pkgs %}
+{{ winget_batch_install('winget_batch_gated_' ~ cap_name ~ '_' ~ UserName ~ '_user', user_pkgs, winget_user=UserName, winget_path=winget_uri, scope='user', force=winget_force, bg=winget_bg) }}
+            {%- endif %}
+            {%- if none_pkgs %}
+{{ winget_batch_install('winget_batch_gated_' ~ cap_name ~ '_' ~ UserName ~ '_none', none_pkgs, winget_user=UserName, winget_path=winget_uri, scope=false, force=winget_force, bg=winget_bg) }}
+            {%- endif %}
+          {%- endif %}
+        {%- endfor %}
       {%- endif %}
-    {%- endif %}
-  {%- endfor %}
-{%- endif %}
-
-# Install Winget userland packages (per user, batched by category)
-# {{ packages.windows.winget.userland }}
-{%- if packages.windows.winget.userland is defined %}
-  {%- for user in users_with_profiles %}
-    {%- set UserName = user_info.get(user, {}).get("UserName", false) %}
-    {%- set winget_uri = user_info.get(user, {}).get("winget_uri", false) %}
-    {%- if winget_uri and UserName and salt['file.file_exists'](winget_uri) %}
-      {%- for category, pkgs in packages.windows.winget.userland.items() %}
-{{ winget_batch_install('winget_batch_userland_' ~ UserName ~ '_' ~ category, pkgs, winget_user=UserName, winget_path=winget_uri, scope='user', force=winget_force, bg=winget_bg) }}
-      {%- endfor %}
     {%- endif %}
   {%- endfor %}
 {%- endif %}

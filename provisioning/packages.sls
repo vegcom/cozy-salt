@@ -163,42 +163,32 @@ windows:
   choco: [chocolatey-compatibility.extension, chocolatey-core.extension, chocolatey-font-helpers.extension, cheatengine, colortool, Cygwin, dive, docker-cli, docker-compose, make,  vim, winbtrfs, ext2fsd, jq, tor, ipfs-mount]
 
   winget:
-
-    runtimes:
-      dotnet: [Microsoft.DotNet.DesktopRuntime.8, Microsoft.DotNet.DesktopRuntime.9, Microsoft.DotNet.Framework.DeveloperPack.4.6, Microsoft.DotNet.Runtime.8, Microsoft.DotNet.Runtime.9, Microsoft.DotNet.DesktopRuntime.10]
-      java: [Oracle.JavaRuntimeEnvironment, Oracle.JDK.26]
-      sdks: [Microsoft.WindowsADK, Microsoft.NuGet]
-      ui_libraries: [Microsoft.UI.Xaml.2.7, Microsoft.UI.Xaml.2.8]
-      vcredist: [Microsoft.VCRedist.2008.x64, Microsoft.VCRedist.2008.x86, Microsoft.VCRedist.2010.x64, Microsoft.VCRedist.2010.x86, Microsoft.VCRedist.2012.x64, Microsoft.VCRedist.2012.x86, Microsoft.VCRedist.2013.x64, Microsoft.VCRedist.2013.x86, Microsoft.VCRedist.2015+.x64, Microsoft.VCRedist.2015+.x86]
-
-    system:
-      browser: [Google.Chrome]
-      communication: []
-      compression: [Giorgiotani.Peazip]
-      development: [GitHub.GitHubDesktop, GitHub.cli, Gitleaks.Gitleaks, JetBrains.IntelliJIDEA.Community, Microsoft.VisualStudio.BuildTools, Microsoft.VisualStudio.Community, Microsoft.VisualStudioCode, Microsoft.VisualStudioCode.CLI, Microsoft.VisualStudioCode.Insiders, Microsoft.VisualStudioCode.Insiders.CLI, MSYS2.MSYS2, NSIS.NSIS, Kitware.CMake, Anthropic.ClaudeCode, BurntSushi.ripgrep.MSVC, hoppscotch.Hoppscotch, Microsoft.VCLibs.Desktop.14, NASM.NASM]
-      editor: [Obsidian.Obsidian]
-      file_management: [7zip.7zip, WinSCP.WinSCP, voidtools.Everything.Cli, voidtools.Everything]
-      games: [Valve.Steam, derrod.legendary]
-      hardware: [TechPowerUp.NVCleanstall, Wagnardsoft.DisplayDriverUninstaller, tuna-f1sh.cyme]
-      kubernetes: [Kubecolor.kubecolor, Freelensapp.Freelens]
-      media: [ImageMagick.ImageMagick, Ruben2776.PicView, Gyan.FFmpeg, yang991178.fluent-reader, Ruben2776.PicView, HandBrake.HandBrake]
-      networking: [Apple.Bonjour, WiresharkFoundation.Wireshark, Tailscale.Tailscale, Insecure.Nmap, Microsoft.OpenSSH.Preview]
-      ricing: [Rainmeter.Rainmeter]
-      shell: [Git.Git]
-      sync_backup: [Syncthing.Syncthing, Martchus.syncthingtray]
-      terminal: [Alacritty.Alacritty, Maximus5.ConEmu, Microsoft.WindowsTerminal, Microsoft.PowerShell, Starship.Starship]
-      utilities: [CodeSector.TeraCopy, AntibodySoftware.WizTree, qBittorrent.qBittorrent, WerWolv.ImHex, Microsoft.Sysinternals.Suite, TRGamer-tech.FluentTaskScheduler]
-
-    userland:
-      communication: [Telegram.TelegramDesktop, Vencord.Vesktop]
-      desktop_customization: [AutoHotkey.AutoHotkey, File-New-Project.EarTrumpet]
-      development: [DenoLand.Deno, direnv.direnv, Hashicorp.Terraform, Hashicorp.TerraformLanguageServer, nektos.act, waterlan.dos2unix]
-      gaming: [ItchIo.Itch, mtkennerly.ludusavi, Playnite.Playnite, SpecialK.SpecialK]
-      kubernetes: [Helm.Helm, Kubernetes.kubectl, stern.stern]
-      media_creative: [yt-dlp.yt-dlp]
-      networking: [evsar3.sshfs-win-manager]
-      utilities: [Microsoft.PowerToys, davidegiacometti.VisualStudioForCmdPal, nickknissen.TailscaleCommandPalette,  Rclone.Rclone, Rufus.Rufus]
-      ricing: [MicaForEveryone.MicaForEveryone]
+    dotnet: [Microsoft.DotNet.DesktopRuntime.8, Microsoft.DotNet.DesktopRuntime.9, Microsoft.DotNet.Framework.DeveloperPack.4.6, Microsoft.DotNet.Runtime.8, Microsoft.DotNet.Runtime.9, Microsoft.DotNet.DesktopRuntime.10]
+    java: [Oracle.JavaRuntimeEnvironment, Oracle.JDK.26]
+    sdks: [Microsoft.WindowsADK, Microsoft.NuGet]
+    ui_libraries: [Microsoft.UI.Xaml.2.7, Microsoft.UI.Xaml.2.8]
+    vcredist: [Microsoft.VCRedist.2008.x64, Microsoft.VCRedist.2008.x86, Microsoft.VCRedist.2010.x64, Microsoft.VCRedist.2010.x86, Microsoft.VCRedist.2012.x64, Microsoft.VCRedist.2012.x86, Microsoft.VCRedist.2013.x64, Microsoft.VCRedist.2013.x86, Microsoft.VCRedist.2015+.x64, Microsoft.VCRedist.2015+.x86]
+    browser: [Google.Chrome]
+    communication: [Telegram.TelegramDesktop, Vencord.Vesktop]
+    compression: [Giorgiotani.Peazip]
+    desktop_customization: [AutoHotkey.AutoHotkey, File-New-Project.EarTrumpet]
+    development: [GitHub.GitHubDesktop, GitHub.cli, Gitleaks.Gitleaks, JetBrains.IntelliJIDEA.Community, Microsoft.VisualStudio.BuildTools, Microsoft.VisualStudio.Community, Microsoft.VisualStudioCode, Microsoft.VisualStudioCode.CLI, Microsoft.VisualStudioCode.Insiders, Microsoft.VisualStudioCode.Insiders.CLI, MSYS2.MSYS2, NSIS.NSIS, Kitware.CMake, Anthropic.ClaudeCode, BurntSushi.ripgrep.MSVC, hoppscotch.Hoppscotch, Microsoft.VCLibs.Desktop.14, NASM.NASM, DenoLand.Deno, direnv.direnv, Hashicorp.Terraform, Hashicorp.TerraformLanguageServer, nektos.act, waterlan.dos2unix]
+    editor: [Obsidian.Obsidian]
+    file_management: [7zip.7zip, WinSCP.WinSCP, voidtools.Everything.Cli, voidtools.Everything]
+    games: [Valve.Steam, derrod.legendary, ItchIo.Itch, mtkennerly.ludusavi, Playnite.Playnite, SpecialK.SpecialK]
+    hardware: [TechPowerUp.NVCleanstall, Wagnardsoft.DisplayDriverUninstaller, tuna-f1sh.cyme]
+    kubernetes: [Kubecolor.kubecolor, Freelensapp.Freelens, Helm.Helm, Kubernetes.kubectl, stern.stern]
+    media_audio: [Audacity.Audacity]
+    media_image: [ImageMagick.ImageMagick, Ruben2776.PicView]
+    media_stream: []
+    media_text: [yang991178.fluent-reader]
+    media_video: [Gyan.FFmpeg, HandBrake.HandBrake, yt-dlp.yt-dlp]
+    networking: [Apple.Bonjour, WiresharkFoundation.Wireshark, Tailscale.Tailscale, Insecure.Nmap, Microsoft.OpenSSH.Preview]
+    ricing: [Rainmeter.Rainmeter, MicaForEveryone.MicaForEveryone]
+    shell: [Git.Git]
+    sync_backup: [Syncthing.Syncthing, Martchus.syncthingtray]
+    terminal: [Alacritty.Alacritty, Maximus5.ConEmu, Microsoft.WindowsTerminal, Microsoft.PowerShell, Starship.Starship]
+    utilities: [CodeSector.TeraCopy, AntibodySoftware.WizTree, qBittorrent.qBittorrent, WerWolv.ImHex, Microsoft.Sysinternals.Suite, TRGamer-tech.FluentTaskScheduler, Microsoft.PowerToys, davidegiacometti.VisualStudioForCmdPal, nickknissen.TailscaleCommandPalette,  Rclone.Rclone, Rufus.Rufus]
 
     gated:
       voicemeter: [VB-Audio.Voicemeeter.Potato]
@@ -209,27 +199,10 @@ windows:
       rtss: [Guru3D.RTSS]
       hw_monitor: [REALiX.HWiNFO, TechPowerUp.GPU-Z]
       peripherals_ctrl: [namazso.PawnIO, Nefarius.HidHide, ViGEm.ViGEmBus]
-      media_stream: []
       media_video: []
-      media_audio: [Audacity.Audacity, Cockos.REAPER]
+      media_audio: [Cockos.REAPER]
       media_image: [Inkscape.Inkscape, KDE.Krita]
       via: [Olivia.VIA]
-
-    {#-
-    Note: Noscope functions as metadata.
-          Only applies to system pkgs.
-    #}
-    noscope:
-      communication: [Vencord.Vesktop]
-      terminal: [Microsoft.PowerShell, Starship.Starship]
-      utilities: [Microsoft.Sysinternals.Suite, TRGamer-tech.FluentTaskScheduler]
-      development: [Microsoft.VCLibs.Desktop.14, NASM.NASM]
-      media: [Ruben2776.PicView, HandBrake.HandBrake]
-      via: [Olivia.VIA]
-      ui_libraries: [Microsoft.UI.Xaml.2.7, Microsoft.UI.Xaml.2.8]
-      vcredist: [Microsoft.DotNet.Runtime.9, Microsoft.DotNet.DesktopRuntime.10]
-      networking: [Insecure.Nmap, Tailscale.Tailscale]
-      xsplit: [SplitmediaLabs.XSplitBroadcaster]
 
 # ============================================================================
 # LANGUAGE-SPECIFIC PACKAGES
