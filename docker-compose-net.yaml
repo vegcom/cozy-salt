@@ -24,6 +24,13 @@ services:
       frontend:
         ipv4_address: ${MONGO_IP:-10.0.0.221}
 
+  winget-manifest:
+    mac_address: ${WINGET_MANIFEST_MAC:-02:42:ac:11:00:12}
+    networks:
+      salt-net:
+      frontend:
+        ipv4_address: ${WINGET_MANIFEST_IP:-10.0.0.229}
+
 networks:
   frontend:
     external: true
