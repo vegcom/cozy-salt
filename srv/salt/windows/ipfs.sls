@@ -3,6 +3,7 @@
 {%- set kubo_version = _pinned or salt['github_release.latest']('ipfs/kubo', fallback='v0.42.0', prerelease=True) %}
 {%- set kubo_path = 'C:/opt/kubo' %}
 {%- set arch = salt['grains.get']('osarch') or 'x86_64' %}
+{%- set arch = 'amd64' if arch == 'x86_64' %}
 {%- set kubo_source = "https://github.com/ipfs/kubo/releases/download/" ~ kubo_version ~ "/kubo_" ~ kubo_version ~ "_windows-" ~ arch ~ ".zip" %}
 {%- set kubo_hash = kubo_source ~ ".sha512" %}
 
