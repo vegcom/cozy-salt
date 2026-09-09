@@ -28,3 +28,8 @@ base:
   'G@kernelrelease:*rpt-rpi*':
     - match: compound
     - linux.hardware.rpi
+
+  # Steam Deck (Valve Galileo/Jupiter) hardware
+  'G@manufacturer:Valve and G@productname:Galileo':
+    - match: compound
+    - linux.hardware.galileo
