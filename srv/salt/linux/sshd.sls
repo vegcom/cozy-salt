@@ -1,6 +1,6 @@
 {%- set is_container = salt['file.file_exists']('/.dockerenv') or
                       salt['file.file_exists']('/run/.containerenv') %}
-{%- set is_ci = salt['environ.get']('SALT_CI', False) %}
+{%- set is_ci = salt['pillar.get']('SALT_CI', False) %}
 {%- set ssh_enabled = salt['pillar.get']('host:capabilities:sshd') %}
 
 {%- if ssh_enabled and not is_ci %}

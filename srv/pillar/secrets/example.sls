@@ -5,6 +5,9 @@
 # global defaults, host pillar can override
 # per-host overrides go in srv/pillar/host/{hostname}.sls:
 
+# Only used in CI
+SALT_CI: True
+
 service_user:
   password: "cozy_1234abcd!"
 
