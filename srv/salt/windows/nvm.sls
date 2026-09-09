@@ -1,25 +1,45 @@
 # Windows Node.js version management via nvm-windows
 # System-wide installation to C:\opt\nvm (consistent with Linux /opt/nvm)
 {%- from "_macros/windows.sls" import win_cmd %}
+
+{#- NVM configuration #}
 {%- set nvm_config = salt['pillar.get']('nvm', {}) %}
 {%- set nvm_version = nvm_config.get('default_version', 'lts') %}
-{%- set _pinned_nvm_win = salt['pillar.get']('versions:nvm_windows:version', '') %}
-{%- set nvm_win_version = _pinned_nvm_win or salt['github_release.latest']('coreybutler/nvm-windows', fallback="1.2.2") %}
-{%- set npm_pkg = "https://github.com/coreybutler/nvm-windows/releases/download/" ~ nvm_win_version ~ "/nvm-noinstall.zip" %}
-{%- set nvm_tmp = "C:/opt/cozy/cache/nvm-noinstall.zip" %}
+
+{#- Github releases #}
+{%- set nvm_win_version = salt['github_release.latest']('nvm-windows/nvm') %}
+{%- set assets = salt['github_release.assets']('nvm-windows/nvm', tag=nvm_win_version) %}
+{%- set patterns = salt['arch_match.patterns_for'](os_family='windows') %}
+{%- set matched_asset = salt['arch_match.pick'](assets, patterns, key='name') %}│
+{%- set installer_url = matched_asset.browser_download_url if matched_asset else none %}
+
 {# Path configuration from pillar with defaults #}
 {%- set nvm_path = salt['pillar.get']('install_paths:nvm:windows', 'C:\\opt\\nvm') %}
-{%- set nvm_bin = nvm_path ~ '\\nvm.exe' %}
+{%- set nvm_bin = nvm_path ~ '/nvm.exe' %}
 {%- set npm_settings = nvm_path ~ '\\settings.txt' %}
-{%- set node_path = nvm_path ~ '\\nodejs' %}
+{%- set node_path = nvm_path ~ '/nodejs' %}
 {%- set env_registry = salt['pillar.get']('windows:env_registry', 'HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment') %}
 
-nvm_install:
-  archive.extracted:
-    - name: {{ nvm_path }}
-    - source: {{ npm_pkg }}
+{%- set nvm_tmp = "C:/opt/cozy/cache/nvm-setup.exe" %}
+
+nvm_installer:
+  file.managed:
+    - name: {{ nvm_tmp }}
+    - source: {{ installer_url }}
     - skip_verify: True
-    - enforce_toplevel: False
+    - mkdirs: True
+
+# DEBUG: nvm_win_version {{ nvm_win_version }}
+# DEBUG: assets {{ assets }}
+# DEBUG: patterns {{ patterns }}
+# DEBUG: installer_url {{ installer_url }}
+
+nvm_install:
+  cmd.run:
+    - name: >
+        & "{{ nvm_tmp }}" /SILENT /DIR={{ nvm_path | replace("/", "\\") }}
+    - require:
+      - file: nvm_installer
 
 nvm_npm_settings:
   file.managed:
@@ -29,16 +49,16 @@ nvm_npm_settings:
       - 'path: {{ node_path }}'
       - 'symlink: {{ node_path }}'
     - require:
-      - archive: nvm_install
+      - cmd: nvm_install
 
 nvm_home:
   reg.present:
     - name: {{ env_registry }}
     - vname: NVM_HOME
-    - vdata: {{ nvm_path }}
+    - vdata: {{ nvm_path | replace("/", "\\") }}
     - vtype: REG_SZ
     - require:
-      - archive: nvm_install
+      - cmd: nvm_install
 
 # NVM_SYMLINK tells nvm-windows where to create the active node symlink/junction
 nvm_symlink:
@@ -48,7 +68,7 @@ nvm_symlink:
     - vdata: {{ node_path }}
     - vtype: REG_SZ
     - require:
-      - archive: nvm_install
+      - cmd: nvm_install
 
 install_default_node_version:
   cmd.run:
@@ -56,7 +76,7 @@ install_default_node_version:
     - shell: pwsh
     - unless: {{ nvm_bin }} list | findstr "{{ nvm_version }}"
     - require:
-      - archive: nvm_install
+      - cmd: nvm_install
       - file: nvm_npm_settings
       - reg: nvm_symlink
 
