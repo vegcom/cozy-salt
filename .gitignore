@@ -18,3 +18,4 @@ REPORT.md
 .favorites.json
 CR.md
 ./*.log
+*.bak*
