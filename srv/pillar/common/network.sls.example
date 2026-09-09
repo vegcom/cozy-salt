@@ -7,24 +7,11 @@ network:
   dns:
     search_domain: local
     nameservers:
-      - 10.0.0.1
       - 1.1.1.1
-      - 1.0.0.1
 
   # Hosts file entries for network services
   # Per-host overrides supported via pillar merge (e.g. localhost for self)
   hosts:
-
-    unifi:
-      comment: UniFi Controller
-      ips:
-        - 10.0.0.1
-      names:
-        - unifi
-        - unifi.local
-        - gw
-        - gw.local
-
     cozy-share:
       comment: SMB / NAS share
       ips:
@@ -32,11 +19,4 @@ network:
       names:
         - cozy-share
         - cozy-share.local
-
-    salt:
-      ips:
-        - 10.0.0.220
-      names:
-        - salt
-        - salt.local
-        - salt.localdomain
+        - cozy-share.localdomain
