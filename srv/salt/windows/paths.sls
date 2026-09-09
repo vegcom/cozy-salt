@@ -76,7 +76,7 @@ opt_path_acl_{{ loop.index }}:
 {%- endif %}
 
 # Merge paths if absent
-{%- set paths = current_path.split(';') %}
+{%- set paths = current_path.split(';') | unique %}
 
 {%- for p in opt_paths + cmd_paths %}
   {%- if p not in paths %}
