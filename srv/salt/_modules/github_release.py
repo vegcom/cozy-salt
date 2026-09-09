@@ -106,3 +106,54 @@ def latest(repo, fallback=None, prerelease=False):
     except Exception as exc:  # noqa: BLE001
         log.warning("github_release.latest(%s) failed: %s", repo, exc)
         return fallback
+
+
+def assets(repo, tag=None, prerelease=False, fallback=None):
+    """
+    List downloadable assets for a GitHub release.
+
+    :param repo: GitHub repo in owner/name format (e.g. 'coreybutler/nvm-windows')
+    :param tag: Specific release tag (e.g. 'v1.2.2'). If omitted, uses the
+        latest release (or latest prerelease-inclusive entry if prerelease=True).
+    :param prerelease: If True and tag is not given, pull from the full
+        releases list (index 0) instead of the /releases/latest endpoint
+    :param fallback: Value to return if the API call fails (default: [])
+    :returns: list of dicts with 'name' and 'browser_download_url' keys
+
+    CLI Example::
+
+        salt '*' github_release.assets coreybutler/nvm-windows
+        salt '*' github_release.assets coreybutler/nvm-windows tag=v1.2.2
+    """
+    if fallback is None:
+        fallback = []
+
+    token = find_valid_token()
+    if tag:
+        url = f"https://api.github.com/repos/{repo}/releases/tags/{tag}"
+    elif prerelease:
+        url = f"https://api.github.com/repos/{repo}/releases"
+    else:
+        url = f"https://api.github.com/repos/{repo}/releases/latest"
+    log.debug(f"url: {url}")
+
+    req = urllib.request.Request(url)
+    req.add_header("Accept", "application/vnd.github+json")
+    if token:
+        req.add_header("Authorization", f"Bearer {token}")
+
+    try:
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            data = json.loads(resp.read())
+            log.debug(f"available assets {data}")
+            if not tag and prerelease:
+                data = data[0]
+            ret =  [
+                {"name": a["name"], "browser_download_url": a["browser_download_url"]}
+                for a in data.get("assets", [])
+            ]
+            log.debug(f"selected asset {ret}")
+            return ret
+    except Exception as exc:  # noqa: BLE001
+        log.warning("github_release.assets(%s) failed: %s", repo, exc)
+        return fallback
