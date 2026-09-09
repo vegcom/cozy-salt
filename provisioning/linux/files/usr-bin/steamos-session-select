@@ -1,0 +1,6 @@
+#!/bin/bash
+# Ref: https://github.com/Grimish-ng/steam-gamescope-guide
+steam -shutdown
+sleep 1
+dm-tool switch-to-greeter
+pkill -u "${USER}" -9 -f gamescope

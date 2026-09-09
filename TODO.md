@@ -45,3 +45,4 @@
   - DistCC
     - [ ] have salt deploy distcc containers per avaial host.
   - [ ] windows/winget move to github.com/June-Cozy/ backing to prevent having to eval making list
+  - galileo gate for `provisioning/linux/files/etc-logind.conf.d/10-steamdeck-tuning.conf`

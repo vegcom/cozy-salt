@@ -171,3 +171,20 @@ steamdeck_sleep_hook:
     - mode: "0755"
     - makedirs: True
 {%- endif %}
+
+# =============================================================================
+# Wayland / SSDM / Gamescope helpers
+# =============================================================================
+{%- from '_macros/paths.sls' import managed_tree with context %}
+
+{{ managed_tree('/usr/bin',
+                'salt://linux/files/usr-bin',
+                recurse=True, clean=False,
+                dir_mode='0775', file_mode='0775',
+                user='root', group='root') }}
+
+{{ managed_tree('/usr/share/wayland-sessions',
+                'salt://linux/files/usr-share-wayland-sessions',
+                recurse=True, clean=False,
+                dir_mode='0775', file_mode='0775',
+                user='root', group='root') }}

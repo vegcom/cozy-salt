@@ -1,0 +1,8 @@
+#!/bin/bash
+# Ref: 
+# - https://developer.valvesoftware.com/wiki/Command_line_options_(Steam)
+# - https://github.com/Cloudef/nixos-flake/blob/master/modules/steamdeck-experience.nix
+# - https://github.com/ValveSoftware/steam-for-linux/issues/9705
+gamescope --mangoapp -e -- steam -compat-force-slr off -tenfoot -fulldesktopres -gamepadui -dev -nointro
+dm-tool switch-to-greeter
+pkill -u "${USER}" -9 -f gamescope

@@ -27,7 +27,7 @@ linux:
       theme: astronaut
       deploy_fonts: true
     autologin:
-      session: plasma
+      session: steam
       user: deck
   bluetooth:
     enabled: true
