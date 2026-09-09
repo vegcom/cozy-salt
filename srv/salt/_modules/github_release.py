@@ -148,7 +148,7 @@ def assets(repo, tag=None, prerelease=False, fallback=None):
             log.debug(f"available assets {data}")
             if not tag and prerelease:
                 data = data[0]
-            ret =  [
+            ret = [
                 {"name": a["name"], "browser_download_url": a["browser_download_url"]}
                 for a in data.get("assets", [])
             ]

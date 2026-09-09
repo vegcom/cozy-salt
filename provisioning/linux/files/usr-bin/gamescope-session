@@ -1,5 +1,5 @@
 #!/bin/bash
-# Ref: 
+# Ref:
 # - https://developer.valvesoftware.com/wiki/Command_line_options_(Steam)
 # - https://github.com/Cloudef/nixos-flake/blob/master/modules/steamdeck-experience.nix
 # - https://github.com/ValveSoftware/steam-for-linux/issues/9705

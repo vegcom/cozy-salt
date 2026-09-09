@@ -43,7 +43,11 @@ def pick(candidates, patterns, key=None, fallback=None):
             log.warning("arch_match.pick: bad pattern %r: %s", pattern, exc)
             continue
         for candidate in candidates:
-            target = candidate.get(key, "") if (key and isinstance(candidate, dict)) else candidate
+            target = (
+                candidate.get(key, "")
+                if (key and isinstance(candidate, dict))
+                else candidate
+            )
             if isinstance(target, str) and rx.search(target):
                 return candidate
     return fallback
@@ -82,5 +86,3 @@ def patterns_for(arch=None, os_family=None):
     arch_key = _ARCH_ALIASES.get((arch or "").lower(), (arch or "").lower())
 
     return __salt__["pillar.get"](f"arch_patterns:{family_key}:{arch_key}", [])  # noqa: F821
-
-
