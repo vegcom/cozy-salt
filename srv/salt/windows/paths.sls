@@ -75,12 +75,16 @@ opt_path_acl_{{ loop.index }}:
 {%- set current_path = '' %}
 {%- endif %}
 
-# Merge paths if absent
-{%- set paths = current_path.split(';') | unique %}
-
+{%- set paths = [] %}
 {%- for p in opt_paths + cmd_paths %}
-  {%- if p not in paths %}
-    {%- do paths.append(p) %}
+  {%- if p not in current_path.split(';') %}
+    {%- do paths.append(p | replace('/', '\\')) %}
+  {%- endif %}
+{%- endfor %}
+
+{%- for current in current_path.split(';') | unique %}
+  {%- if current not in paths %}
+    {%- do paths.append(current) %}
   {%- endif %}
 {%- endfor %}
 
@@ -91,7 +95,7 @@ opt_paths_update:
     - name: HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
     - vname: Path
     - vtype: REG_EXPAND_SZ
-    - vdata: '{{ merged_paths | replace('/', '\\') }}'
+    - vdata: '{{ merged_paths }}'
 
 paths_broadcast_env_change_system:
   cmd.run:
