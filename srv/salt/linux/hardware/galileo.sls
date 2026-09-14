@@ -26,3 +26,19 @@ logind_reload:
     - name: systemd-logind
     - onchanges:
       - file: etc-systemd-logind.conf.d
+
+{%- set users = salt['pillar.get']('users', {}) %}
+{%- for username, userdata in users.items() %}
+  {%- if userdata.get('uid') %}
+    {%- set user_home = userdata.get('home_prefix', '/home') ~ '/' ~ username %}
+
+scopebuddy_config_{{ username }}:
+  file.managed:
+    - name: {{ user_home }}/.config/scopebuddy/scb.conf
+    - source: salt://_templates/scopebuddy_config.jinja
+    - template: jinja
+    - makedirs: True
+    - user_home: {{ user_home }}
+
+  {%- endif %}
+{%- endfor %}
