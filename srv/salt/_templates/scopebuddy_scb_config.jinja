@@ -1,0 +1,22 @@
+{%- if grains.get('cozy_non_root_storage', False) %}
+  {%- set storage_path = grains.get('cozy_storage_path', '/storage') %}
+  {%- if salt['file.directory_exists'](storage_path ~ '/SteamLibrary/steamapps') %}
+    {%- set steam_path = storage_path ~ '/SteamLibrary/steamapps' %}
+  {%- elif salt['file.directory_exists'](storage_path ~ '/steamapps') %}
+    {%- set steam_path = storage_path ~ '/steamapps' %}
+  {%- else %}
+    {%- set steam_path = user_home ~ '/.steam/' %}
+  {%- endif %}
+{%- endif %}
+{%- set steam_compatdata = steam_path ~ '/compatdata' %}
+{%- set steam_compat_unified = steam_compatdata ~ '/1' %}
+
+# Gamescope: https://github.com/ValveSoftware/gamescope
+# Gamescope via deep wiki: https://deepwiki.com/ValveSoftware/gamescope/
+SCB_GAMESCOPE_ARGS="-w 1280 -h 800 -W 1280 -H 800 -f --hdr-enabled --adaptive-sync --force-windows-fullscreen --steam"
+
+# Scopebuddy: https://docs.bazzite.gg/Advanced/scopebuddy/
+SCB_DEBUG=1  # ~/.config/scopebuddy/scopebuddy.log
+
+# Unified compatdata
+export STEAM_COMPAT_DATA_PATH={{ steam_compat_unified }}
