@@ -29,11 +29,6 @@ nvm_installer:
     - skip_verify: True
     - mkdirs: True
 
-# DEBUG: nvm_win_version {{ nvm_win_version }}
-# DEBUG: assets {{ assets }}
-# DEBUG: patterns {{ patterns }}
-# DEBUG: installer_url {{ installer_url }}
-
 nvm_install:
   cmd.run:
     - name: >
