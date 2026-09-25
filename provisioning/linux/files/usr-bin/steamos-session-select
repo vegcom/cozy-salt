@@ -1,4 +1,3 @@
 #!/bin/bash
 # Ref: https://github.com/Grimish-ng/steam-gamescope-guide
-pkill -u "${USER}" -9 -f "steam" || true
-pkill -u "${USER}" -9 -f gamescope || true
+steam -shutdown
