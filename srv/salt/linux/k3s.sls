@@ -86,7 +86,7 @@ k3s_setup_script:
     - hide_output: True
     - output_loglevel: quiet
     - env:
-      - K3S_KUBECONFIG_MODE: "600"
+      - K3S_KUBECONFIG_MODE: "640"
       - K3S_KUBECONFIG_GROUP: "cozyusers"
       - INSTALL_K3S_CHANNEL: "{{ k3s_channel }}"
       - INSTALL_K3S_EXEC: "{{ k3s_exec }}"
@@ -111,15 +111,11 @@ k3s_service_start:
     - watch:
       - cmd: k3s_setup_script
 
-k3s_kubeconfig:
-  file.managed:
-    - name: /etc/rancher/k3s/k3s.yaml
-    - order: 3
-    - contents: {{ kubeconfig | yaml_encode }}
-    - mode: '0640'
-    - group: cozyusers
-    - makedirs: True
-    - show_changes: False
-    - require:
+k3s_notify_cluster_ready:
+  event.send:
+    - name: cozy/linux/k3s/initialized
+    - data:
+        hostname: {{ grains['id'] }}
+    - onchanges:
       - service: k3s_service_start
 {%- endif %}

@@ -9,3 +9,4 @@ include:
   - common.vim
   - common.starship
   - common.ipfs
+  - common.k3s
