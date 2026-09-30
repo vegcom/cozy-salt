@@ -1,6 +1,11 @@
 # Steam Deck (Valve Galileo/Jupiter) hardware tuning
 # Only targeted via top.sls compound match on manufacturer/productname grains
 
+# TODO: add:
+# - provisioning/linux/files/etc-mkinitcpio.d/cozy-galileo.conf
+# - provisioning/linux/files/etc-systemd/zram-generator.conf
+# - provisioning/linux/files/etc-systemd-sleep.conf.d/cozy-galileo.conf
+
 etc-systemd-logind.conf.d_path:
   file.directory:
     - name: /etc/systemd/logind.conf.d
