@@ -3,4 +3,15 @@
 # - https://developer.valvesoftware.com/wiki/Command_line_options_(Steam)
 # - https://github.com/Cloudef/nixos-flake/blob/master/modules/steamdeck-experience.nix
 # - https://github.com/ValveSoftware/steam-for-linux/issues/9705
-gamescope --mangoapp -e -- steam -compat-force-slr off -tenfoot -fulldesktopres -gamepadui -dev -nointro -steamos3
+# - https://reddit.com/r/SteamDeck/s/WnGtFNHTkO
+
+export STEAM_MULTIPLE_XWAYLANDS=1
+export STEAM_GAMESCOPE_FANCY_SCALING_SUPPORT=1
+export STEAM_GAMESCOPE_DYNAMIC_FPSLIMITER=1
+export SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS=0
+
+exec gamescope --mangoapp -e -- steam \
+    -gamepadui \
+    -steamos3 \
+    -no-cef-sandbox \
+    -dev
