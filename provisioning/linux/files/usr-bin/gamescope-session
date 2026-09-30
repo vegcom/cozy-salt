@@ -5,7 +5,7 @@
 # - https://github.com/ValveSoftware/steam-for-linux/issues/9705
 # - https://reddit.com/r/SteamDeck/s/WnGtFNHTkO
 
-export STEAM_MULTIPLE_XWAYLANDS=1
+#export STEAM_MULTIPLE_XWAYLANDS=1
 export STEAM_GAMESCOPE_FANCY_SCALING_SUPPORT=1
 export STEAM_GAMESCOPE_DYNAMIC_FPSLIMITER=1
 export SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS=0
@@ -14,4 +14,5 @@ exec gamescope --mangoapp -e -- steam \
     -gamepadui \
     -steamos3 \
     -no-cef-sandbox \
+    -compat-force-slr off \
     -dev
