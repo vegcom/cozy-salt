@@ -13,6 +13,7 @@ export SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS=0
 exec gamescope --mangoapp -e -- steam \
     -gamepadui \
     -steamos3 \
+    -steeamdeck \
     -no-cef-sandbox \
     -compat-force-slr off \
     -dev
