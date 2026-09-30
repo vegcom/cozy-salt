@@ -158,7 +158,7 @@ arch:
 # ============================================================================
 windows:
 
-  pwsh_modules: [PowerShellGet, Microsoft.PowerShell.PSResourceGet, PackageManagement, PSReadLine, Microsoft.WinGet.Client, powershell-yaml, PSFzf, PSWindowsUpdate, Terminal-Icons, BurntToast]
+  pwsh_modules: [PowerShellGet, Microsoft.PowerShell.PSResourceGet, PackageManagement, PSReadLine, Microsoft.WinGet.Client, powershell-yaml, PSFzf, PSWindowsUpdate, Terminal-Icons, BurntToast, PSScriptAnalyzer]
 
   choco: [chocolatey-compatibility.extension, chocolatey-core.extension, chocolatey-font-helpers.extension, cheatengine, colortool, Cygwin, dive, docker-cli, docker-compose, make,  vim, winbtrfs, ext2fsd, jq, tor, ipfs-mount]
 
