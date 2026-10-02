@@ -212,19 +212,22 @@ pip_base: [pip, setuptools, wheel, pipx, uv, pre-commit, ipython, pytest, mypy, 
 
 npm_global:
   - "@angular/cli"
+  - "@apollo/protobufjs"
   - "@nestjs/cli"
   - "@vue/cli"
   - better-ccflare
   - bun
   - cdk
   - create-react-app
+  - esbuild
   - nodemon
+  - npm-check-updates
   - pm2
   - pnpm
   - serverless
+  - serverless
   - tsx
   - webpack
-  - npm-check-updates
 
 brew:
   formula: [atuin, carapace, pandoc, weasyprint, zoxide, dive, starship, direnv, claude-code, kubecolor, fzf, xdotool, cyme, ripgrep]
