@@ -18,11 +18,11 @@
 
 {# Path configuration from pillar with defaults - platform-specific #}
 {%- if grains['os_family'] == 'Windows' %}
-{%- set nvm_path = salt['pillar.get']('install_paths:nvm:windows', 'C:\\opt\\nvm') %}
-{%- set node_path = nvm_path ~ '\\nodejs' %}
-{%- set npm_bin = node_path ~ '\\npm.cmd' %}
+  {%- set nvm_path = salt['pillar.get']('install_paths:nvm:windows', 'C:\\opt\\nvm') %}
+  {%- set node_path = nvm_path ~ '\\.nodejs' %}
+  {%- set npm_bin = node_path ~ '\\npm.exe' %}
 {%- else %}
-{%- set nvm_path = salt['pillar.get']('install_paths:nvm:linux', '/opt/nvm') %}
+  {%- set nvm_path = salt['pillar.get']('install_paths:nvm:linux', '/opt/nvm') %}
 {%- endif %}
 
 {%- if npm_packages %}
