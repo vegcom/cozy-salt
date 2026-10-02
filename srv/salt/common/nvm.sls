@@ -1,6 +1,7 @@
-# Common Node.js version management orchestration
-# Installs global npm packages (cross-platform)
-# Platform-specific NVM installation delegated to linux.nvm or windows.nvm
+{#- Common Node.js version management orchestration
+  Installs global npm packages (cross-platform)
+  Platform-specific NVM installation delegated to linux.nvm or windows.nvm
+#}
 
 {%- from "_macros/windows.sls" import win_cmd %}
 {%- from '_macros/packages.sls' import get_packages %}
@@ -8,11 +9,11 @@
 {%- set nvm_config = salt['pillar.get']('nvm', {}) %}
 {%- from "_macros/acl.sls" import cozy_acl %}
 
-# nvm on windows does not accept wildcards
+{#- nvm on windows does not accept wildcards #}
 {%- set default_version = nvm_config.get('default_version', 'lts') %}
 
-# Install global npm packages (if defined)
-# All packages installed in single command for efficiency
+{#- Install global npm packages (if defined) #}
+{#- All packages installed in single command for efficiency #}
 {%- set npm_packages = packages.get('npm_global', []) %}
 
 {# Path configuration from pillar with defaults - platform-specific #}
@@ -33,7 +34,7 @@ install_npm_global_packages:
     - require:
       - cmd: nvm_use_default
     {%- else %}
-    - name: NPM_CONFIG_PREFIX={{ nvm_path }} npm install --quiet --prefer-dedupe --foreground-scripts --no-audit --no-fund -g {{ npm_packages | join(' ') }}
+    - name: NPM_CONFIG_PREFIX={{ nvm_path }} npm install --quiet --prefer-dedupe --allow-scripts={{ npm_packages | join(',') }} --foreground-scripts --no-audit --no-fund -g {{ npm_packages | join(' ') }}
     - shell: /bin/bash
     - env:
       - BASH_ENV: /etc/profile.d/nvm.sh
