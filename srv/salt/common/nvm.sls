@@ -42,8 +42,8 @@ install_npm_global_packages:
     - require:
       - cmd: nvm_install_default_version
     {%- endif %}
-    - hide_output: True
-    - output_loglevel: quiet
+    - hide_output: False
+    - output_loglevel: warning
 {%- endif %}
 
 {{ cozy_acl(nvm_path) }}
