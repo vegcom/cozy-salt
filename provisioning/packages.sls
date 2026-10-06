@@ -145,7 +145,7 @@ arch:
   gaming: [waydroid-launcher-git, protontricks, steam, gamescope,  lib32-gamescope-plus, mangohud, moonlight-qt, protonup-qt-bin]
   gui: [plasma-meta, hyprland, plasma-keyboard]
   interpreters: [lua, perl, python, python-pip]
-  kernel: []
+  kernel: [linux-headers]
   kvm: [dnsmasq, edk2-ovmf, libvirt, qemu-desktop, virt-install, virt-manager]
   modern_cli_extras: [bottom, eza, hyperfine, procs, tealdeer, tokei, zoxide]
   security: [ca-certificates, gnupg]

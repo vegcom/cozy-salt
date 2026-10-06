@@ -34,31 +34,13 @@ linux:
 
 packages_absent:
   arch:
-    nodeps:
-      - linux-firmware
-      - linux-firmware-bnx2x
-      - linux-firmware-liquidio
-      - linux-firmware-marvell
-      - linux-firmware-mellanox
-      - linux-firmware-nfp
-      - linux-firmware-qcom
-      - linux-firmware-qlogic
-      - linux-firmware-whence
+    nodeps: []
     normal: []
 
 packages_extra:
   arch:
-    kernel: [linux-bazzite-bin]
-    firmware:
-      - linux-firmware-neptune
-      - linux-firmware-neptune-bnx2x
-      - linux-firmware-neptune-liquidio
-      - linux-firmware-neptune-marvell
-      - linux-firmware-neptune-mellanox
-      - linux-firmware-neptune-nfp
-      - linux-firmware-neptune-qcom
-      - linux-firmware-neptune-qlogic
-      - linux-firmware-neptune-whence
+    kernel: []
+    firmware: []
     deck_tools: [alsa-ucm-conf, amd-ucode, caps, dkms, noise-suppression-for-voice, sof-firmware, steamdeck-dkms, steamdeck-dsp, steamdeck-dsp-debug, upower, vpower, ludusavi-bin, hunspell, hunspell-fr, hunspell-en_gb, hunspell-en_us,hunspell-ja, cyme,xorg-xwininfo, xdotool, yad]
 
 pacman:
