@@ -122,9 +122,9 @@ lint:
 actions:
   disabled:
     - trunk-announce
+    - trunk-check-pre-commit
+    - trunk-fmt-pre-commit
   enabled:
     - git-lfs
-    - trunk-check-pre-commit
     - trunk-check-pre-push
-    - trunk-fmt-pre-commit
     - trunk-upgrade-available
