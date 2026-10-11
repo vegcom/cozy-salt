@@ -26,18 +26,9 @@ repos:
 
   - repo: local
     hooks:
-      - id: trunk-format
-        name: Trunk Format
-        entry: trunk fmt --index
-        language: system
-        stages: [pre-commit]
-        pass_filenames: false
-
-  - repo: local
-    hooks:
       - id: trunk-check
-        name: Trunk Check
-        entry: trunk check --fix --show-existing --index
+        name: Trunk Format & Check
+        entry: trunk fmt --index && trunk check --fix --show-existing --index
         language: system
         stages: [pre-commit]
         pass_filenames: false
