@@ -38,7 +38,7 @@ if [[ -d "${preload_dir}" ]]; then
                 echo "  - Cleared denied key for ${minion_id}"
             fi
             # Always sync accepted key from preload (ensures key matches minion image)
-            cp "${key_file}" "${minions_dir}/${minion_id}"
+            cp -v "${key_file}" "${minions_dir}/${minion_id}"
             echo "  + Pre-accepted ${minion_id}"
         fi
     done
@@ -107,9 +107,6 @@ if [ -f "${preload_dir}/salt.pem" ] && [ ! -f "${pki_dir}/minion.pem" ]; then
 fi
 rm -f "${pki_dir}/minion_master.pub"
 
-salt-minion -d
-echo "  + salt-minion started (id: salt -> localhost)"
-
 echo "[entrypoint] Starting wsdd..."
 wsdd --shortlog &
 
@@ -118,8 +115,6 @@ avahi-daemon --no-drop-root --daemonize --debug &
 
 echo "[entrypoint] Starting Salt API..."
 salt-api -d --log-level=info --log-file-level="${SALT_API_LOG_LEVEL:-warning}"
-
-echo "[entrypoint] Starting Salt Master..."
 
 # After master is up: wait for minions, refresh mine, fire cozy/master/online
 (
@@ -132,4 +127,19 @@ echo "[entrypoint] Starting Salt Master..."
     echo "[entrypoint] cozy/master/online fired"
 ) &
 
-exec salt-master --log-level=info --log-file-level="${SALT_MASTER_LOG_LEVEL:-warning}"
+# After master is up: start local minion service (so master can talk to itself) 
+(
+  sleep 5
+  echo "[entrypoint] Init master minion service.."
+  until salt-minion --log-level=warning --log-file-level="${SALT_MINION_LOG_LEVEL:-warning}"; do 
+    echo "[entrypoint] Reinit master minion key.."
+    salt-key -d "salt" -y || true
+    sleep 5
+    salt-key -a "salt" -y || true
+  done
+) &
+
+echo "  + salt-minion started (id: salt -> localhost)"
+
+echo "[entrypoint] Starting Salt Master..."
+exec salt-master --log-level=warning --log-file-level="${SALT_MASTER_LOG_LEVEL:-warning}"
