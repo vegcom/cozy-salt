@@ -132,10 +132,16 @@ salt-api -d --log-level=info --log-file-level="${SALT_API_LOG_LEVEL:-warning}"
 	sleep 5
 	echo "[entrypoint] Init master minion service.."
 	until salt-minion --log-level=warning --log-file-level="${SALT_MINION_LOG_LEVEL:-warning}"; do
-		echo "[entrypoint] Reinit master minion key.."
-		salt-key -d "salt" -y || true
+		echo "[entrypoint] Reinit master minion key from known local key.."
+		if [[ -f /etc/salt/pki/minion/minion.pub ]]; then
+			mkdir -p /etc/salt/pki/master/minions
+			cp -f /etc/salt/pki/minion/minion.pub /etc/salt/pki/master/minions/salt
+			chown salt:salt /etc/salt/pki/master/minions/salt
+			chmod 644 /etc/salt/pki/master/minions/salt
+		else
+			echo "[entrypoint] WARNING: /etc/salt/pki/minion/minion.pub not found; cannot pin key for id 'salt' yet"
+		fi
 		sleep 5
-		salt-key -a "salt" -y || true
 	done
 ) &
 
