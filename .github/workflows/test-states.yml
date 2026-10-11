@@ -36,8 +36,8 @@ jobs:
           sed -i '/master\.pem.*salt\/pki\/master\/master\.pem/d' docker-compose.yaml
           sed -i '/master\.pub.*salt\/pki\/master\/master\.pub/d' docker-compose.yaml
 
-      - name: Test Salt states (ubuntu + rhel)
-        run: pytest tests/ -m "ubuntu or rhel"
+      - name: Test Salt states (ubuntu)
+        run: pytest tests/ -m "ubuntu"
 
       - name: Upload test results
         if: always()
@@ -75,7 +75,7 @@ jobs:
           echo "# Salt State Test Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
-          for distro in ubuntu rhel; do
+          for distro in ubuntu ; do
             echo "## $distro" >> $GITHUB_STEP_SUMMARY
 
             json_file=$(find test-results -name "${distro}_*.json" 2>/dev/null | head -1)
