@@ -127,11 +127,11 @@ salt-api -d --log-level=info --log-file-level="${SALT_API_LOG_LEVEL:-warning}"
     echo "[entrypoint] cozy/master/online fired"
 ) &
 
-# After master is up: start local minion service (so master can talk to itself) 
+# After master is up: start local minion service (so master can talk to itself)
 (
   sleep 5
   echo "[entrypoint] Init master minion service.."
-  until salt-minion --log-level=warning --log-file-level="${SALT_MINION_LOG_LEVEL:-warning}"; do 
+  until salt-minion --log-level=warning --log-file-level="${SALT_MINION_LOG_LEVEL:-warning}"; do
     echo "[entrypoint] Reinit master minion key.."
     salt-key -d "salt" -y || true
     sleep 5
