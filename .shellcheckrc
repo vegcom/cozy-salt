@@ -26,7 +26,7 @@ disable=SC2269
 # SC2000 - style: See if you can use ${#variable} instead
 disable=SC2000
 
-# SC1071 -  ShellCheck only supports sh/bash/dash/ksh/'busybox sh' scripts. we provide zsh at times as well.
+# SC1071 -  warn: ShellCheck only supports sh/bash/dash/ksh/'busybox sh' scripts. we provide zsh at times as well.
 disable=SC1071
 
 # SC1091 - warn: Can't follow non-constant source. Use a directive to specify location

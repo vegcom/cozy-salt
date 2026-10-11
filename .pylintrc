@@ -1,0 +1,11 @@
+[MAIN]
+max-line-length = 100
+disable =
+    C0114, # missing-module-docstring
+    C0115, # missing-class-docstring
+    C0116  # missing-function-docstring (for test functions)
+ignore-paths =
+
+[DESIGN]
+max-args = 7
+max-locals = 15
