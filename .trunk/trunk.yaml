@@ -2,7 +2,8 @@
 # This file controls the behavior of Trunk: https://docs.trunk.io/cli
 # Further references:
 # - https://github.com/trunk-io/plugins/blob/main/linters/plugin.yaml
-# - or per item: linters/*/plugin.yaml
+#   - or per item: linters/*/plugin.yaml
+# - https://github.com/desktophero/trunk-docs/blob/main/check/reference/trunk-yaml.md
 
 version: 0.1
 cli:
@@ -17,6 +18,7 @@ runtimes:
     - node@22.16.0
     - python@3.14.4
 repo:
+  trunk_branch: develop
   use_branch_upstream: true
 tools:
   enabled:
