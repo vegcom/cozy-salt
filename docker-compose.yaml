@@ -4,7 +4,7 @@
 
 # YAML Anchors - Common service definitions (HIGH-002)
 x-minion-base: &minion-base
-  restart: "no"
+  restart: 'no'
   privileged: true
   dns:
     - 1.1.1.1
@@ -24,10 +24,10 @@ services:
       target: salt-master
     restart: unless-stopped
     expose:
-      - "4505" # Master pub (ZeroMQ)
-      - "4506" # Minion ret (ZeroMQ)
-      - "5353" # Avahi (MDNS)
-      - "3333" # SaltGUI (API interface)
+      - '4505' # Master pub (ZeroMQ)
+      - '4506' # Minion ret (ZeroMQ)
+      - '5353' # Avahi (MDNS)
+      - '3333' # SaltGUI (API interface)
     volumes:
       # Local service discovery
       - /var/run/dbus:/var/run/dbus
@@ -51,10 +51,10 @@ services:
       # Avahi
       - ./srv/avahi:/etc/avahi/services
     environment:
-      SALT_API_ENABLED: "True"
+      SALT_API_ENABLED: 'True'
       SALT_API_USER_PASS: ${SALT_API_USER_PASS:-4wesome-Pass0rd}
-      SALT_MASTER_LOG_LEVEL: "warning"
-      SALT_MINION_LOG_LEVEL: "warning"
+      SALT_MASTER_LOG_LEVEL: 'warning'
+      SALT_MINION_LOG_LEVEL: 'warning'
       _GUI_VERSION: 1.33.0
     networks:
       - salt-net
@@ -77,7 +77,7 @@ services:
       salt:
         condition: service_healthy
     expose:
-      - "27017"
+      - '27017'
     volumes:
       - ./srv/data:/srv/data:ro
       - mongo-data:/data/db
@@ -91,7 +91,7 @@ services:
       cozy.role: salt-mongo
       cozy.project: cozy-salt
     healthcheck:
-      test: [ "CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/27017" ]
+      test: ['CMD', 'bash', '-c', 'exec 3<>/dev/tcp/127.0.0.1/27017']
       interval: 5s
       timeout: 3s
       retries: 16
@@ -110,12 +110,12 @@ services:
       salt:
         condition: service_healthy
     expose:
-      - "8080"
+      - '8080'
     volumes:
       - winget-manifest-data:/data
     environment:
       MANIFEST_REPO_URL: https://github.com/June-Cozy/cozy-winget.git
-      MANIFEST_PULL_INTERVAL: "86400"
+      MANIFEST_PULL_INTERVAL: '86400'
     networks:
       - salt-net
     labels:
@@ -123,7 +123,13 @@ services:
       cozy.role: winget-manifest
       cozy.project: cozy-salt
     healthcheck:
-      test: [ "CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/v1/health', timeout=3)" ]
+      test:
+        [
+          'CMD',
+          'python3',
+          '-c',
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/v1/health', timeout=3)",
+        ]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -179,7 +185,7 @@ services:
   salt-minion-windows:
     container_name: salt-minion-windows-test
     image: dockurr/windows
-    restart: "no"
+    restart: 'no'
     depends_on:
       salt:
         condition: service_healthy
@@ -190,11 +196,11 @@ services:
       - ./scripts:/mnt/scripts:ro # Mount scripts for Salt enrollment
       - ./provisioning/windows/Autounattend.xml:/Autounattend.xml:ro # Unattended install config
     environment:
-      VERSION: "11" # Windows 11 Pro
-      RAM_SIZE: "4G" # 4GB RAM
-      CPU_CORES: "2" # 2 vCPUs
-      DISK_SIZE: "64G" # 64GB virtual disk
-      MANUAL: "N" # Unattended install with Autounattend.xml
+      VERSION: '11' # Windows 11 Pro
+      RAM_SIZE: '4G' # 4GB RAM
+      CPU_CORES: '2' # 2 vCPUs
+      DISK_SIZE: '64G' # 64GB virtual disk
+      MANUAL: 'N' # Unattended install with Autounattend.xml
     networks:
       - salt-net
     labels:
