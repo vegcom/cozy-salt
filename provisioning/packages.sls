@@ -188,7 +188,7 @@ windows:
     shell: [Git.Git, tamasfe.taplo, Google.OSVScanner]
     sync_backup: [Syncthing.Syncthing, Martchus.syncthingtray]
     terminal: [Alacritty.Alacritty, Maximus5.ConEmu, Microsoft.WindowsTerminal, Microsoft.PowerShell, Starship.Starship]
-    utilities: [CodeSector.TeraCopy, AntibodySoftware.WizTree, qBittorrent.qBittorrent, WerWolv.ImHex, Microsoft.Sysinternals.Suite, TRGamer-tech.FluentTaskScheduler, Microsoft.PowerToys, davidegiacometti.VisualStudioForCmdPal, nickknissen.TailscaleCommandPalette,  Rclone.Rclone, Rufus.Rufus]
+    utilities: [CodeSector.TeraCopy, AntibodySoftware.WizTree, qBittorrent.qBittorrent, WerWolv.ImHex, Microsoft.Sysinternals.Suite, TRGamer-tech.FluentTaskScheduler, Microsoft.PowerToys, davidegiacometti.VisualStudioForCmdPal, nickknissen.TailscaleCommandPalette, Rclone.Rclone, Rufus.Rufus, SaltStack.SaltMinion]
 
     gated:
       voicemeter: [VB-Audio.Voicemeeter.Potato]
