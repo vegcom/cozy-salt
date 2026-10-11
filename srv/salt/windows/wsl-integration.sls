@@ -22,3 +22,14 @@ run_configure_docker_wsl_context:
     - success_retcodes:
       - 0
       - 1
+
+# Configure Windows firewall to exclude port range 60000-62000 for WSL Docker TCP access
+run_configure_docker_wsl_context:
+  cmd.run:
+    - names:
+      - netsh int ipv4 add excludedportrange protocol=tcp startport=60000 numberofports=2000 store=persistent
+      - netsh int ipv6 add excludedportrange protocol=tcp startport=60000 numberofports=2000 store=persistent
+    - shell: powershell
+    - success_retcodes:
+      - 0
+      - 1
