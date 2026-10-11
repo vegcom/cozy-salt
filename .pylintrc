@@ -1,10 +1,12 @@
 [MAIN]
-max-line-length = 100
+max-line-length = 125
 disable =
     C0114, # missing-module-docstring
     C0115, # missing-class-docstring
-    C0116  # missing-function-docstring (for test functions)
-ignore-paths =
+    C0116, # missing-function-docstring (for test functions)
+    W1510  # subprocess.run missing check= parameter
+
+ignore-paths=^provisioning/common/dotfiles/.git_template/hooks.*$
 
 [DESIGN]
 max-args = 7

@@ -6,17 +6,17 @@ set -e
 # Note: Docker creates empty directories when bind-mounting non-existent files
 master_pki="/etc/salt/pki/master"
 if [[ ! -f "${master_pki}/master.pem" ]]; then
-    echo "=== Generating master keys ==="
-    mkdir -p "${master_pki}"
-    # Remove empty directories Docker may have created from missing bind mounts
-    [[ -d "${master_pki}/master.pem" ]] && rmdir "${master_pki}/master.pem" 2>/dev/null || true
-    [[ -d "${master_pki}/master.pub" ]] && rmdir "${master_pki}/master.pub" 2>/dev/null || true
-    openssl genrsa -out "${master_pki}/master.pem" 4096 2>/dev/null
-    openssl rsa -in "${master_pki}/master.pem" -pubout -out "${master_pki}/master.pub" 2>/dev/null
-    chmod 600 "${master_pki}/master.pem"
-    chmod 644 "${master_pki}/master.pub"
-    chown -R salt:salt "${master_pki}"
-    echo "  + Generated master.pem and master.pub"
+	echo "=== Generating master keys ==="
+	mkdir -p "${master_pki}"
+	# Remove empty directories Docker may have created from missing bind mounts
+	[[ -d "${master_pki}/master.pem" ]] && rmdir "${master_pki}/master.pem" 2>/dev/null || true
+	[[ -d "${master_pki}/master.pub" ]] && rmdir "${master_pki}/master.pub" 2>/dev/null || true
+	openssl genrsa -out "${master_pki}/master.pem" 4096 2>/dev/null
+	openssl rsa -in "${master_pki}/master.pem" -pubout -out "${master_pki}/master.pub" 2>/dev/null
+	chmod 600 "${master_pki}/master.pem"
+	chmod 644 "${master_pki}/master.pub"
+	chown -R salt:salt "${master_pki}"
+	echo "  + Generated master.pem and master.pub"
 fi
 
 # Pre-accept minion keys from build-time generated keys
@@ -25,47 +25,47 @@ fi
 preload_dir="/etc/salt/pki/master/minions-preload"
 minions_dir="/etc/salt/pki/master/minions"
 
-if [[ -d "${preload_dir}" ]]; then
-    echo "=== Pre-accepting minion keys ==="
-    mkdir -p "${minions_dir}"
-    denied_dir="/etc/salt/pki/master/minions_denied"
-    for key_file in "${preload_dir}"/*.pub; do
-        if [[ -f "${key_file}" ]]; then
-            minion_id=$(basename "${key_file}" .pub)
-            # Remove from denied (stale denied + valid accepted = auth failure)
-            if [[ -f "${denied_dir}/${minion_id}" ]]; then
-                rm -f "${denied_dir}/${minion_id}"
-                echo "  - Cleared denied key for ${minion_id}"
-            fi
-            # Always sync accepted key from preload (ensures key matches minion image)
-            cp -v "${key_file}" "${minions_dir}/${minion_id}"
-            echo "  + Pre-accepted ${minion_id}"
-        fi
-    done
+if [[ -d ${preload_dir} ]]; then
+	echo "=== Pre-accepting minion keys ==="
+	mkdir -p "${minions_dir}"
+	denied_dir="/etc/salt/pki/master/minions_denied"
+	for key_file in "${preload_dir}"/*.pub; do
+		if [[ -f ${key_file} ]]; then
+			minion_id=$(basename "${key_file}" .pub)
+			# Remove from denied (stale denied + valid accepted = auth failure)
+			if [[ -f "${denied_dir}/${minion_id}" ]]; then
+				rm -f "${denied_dir}/${minion_id}"
+				echo "  - Cleared denied key for ${minion_id}"
+			fi
+			# Always sync accepted key from preload (ensures key matches minion image)
+			cp -v "${key_file}" "${minions_dir}/${minion_id}"
+			echo "  + Pre-accepted ${minion_id}"
+		fi
+	done
 fi
 
 # Set cozy-salt-svc password for SaltGUI PAM auth
-if [[ -n "${SALT_API_USER_PASS}" ]]; then
-    echo "cozy-salt-svc:${SALT_API_USER_PASS}" | chpasswd
-    echo "[entrypoint] cozy-salt-svc password set"
+if [[ -n ${SALT_API_USER_PASS} ]]; then
+	echo "cozy-salt-svc:${SALT_API_USER_PASS}" | chpasswd
+	echo "[entrypoint] cozy-salt-svc password set"
 else
-    echo "[entrypoint] WARNING: SALT_API_USER_PASS not set — SaltGUI login will fail"
+	echo "[entrypoint] WARNING: SALT_API_USER_PASS not set — SaltGUI login will fail"
 fi
 
 # minion config
 echo "[entrypoint] Configuring master as local minion..."
 mkdir -p /etc/salt/minion.d
-echo "master: localhost" > /etc/salt/minion.d/master.conf
-echo "id: salt" > /etc/salt/minion.d/id.conf
+echo "master: localhost" >/etc/salt/minion.d/master.conf
+echo "id: salt" >/etc/salt/minion.d/id.conf
 
 # Auth
 autosign_file="/etc/salt/autosign.d/autosign_file.conf"
 autoreject_file="/etc/salt/autosign.d/autoreject_file.conf"
 echo "[entrypoint] Writing master aclAuth config..."
 if [ ! -d /etc/salt/autosign.d ]; then
-    mkdir -p /etc/salt/autosign.d
-    touch ${autosign_file}
-    touch ${autoreject_file}
+	mkdir -p /etc/salt/autosign.d
+	touch ${autosign_file}
+	touch ${autoreject_file}
 fi
 
 # Sqlite
@@ -97,13 +97,13 @@ chown salt:salt /srv/data/sqlite/salt_returns.db 2>/dev/null || true
 preload_dir="/etc/salt/pki/minion-preload"
 pki_dir="/etc/salt/pki/minion"
 if [ -f "${preload_dir}/salt.pem" ] && [ ! -f "${pki_dir}/minion.pem" ]; then
-    echo "  + Loading pre-shared keys for salt minion"
-    mkdir -p "${pki_dir}"
-    cp "${preload_dir}/salt.pem" "${pki_dir}/minion.pem"
-    cp "${preload_dir}/salt.pub" "${pki_dir}/minion.pub"
-    chmod 400 "${pki_dir}/minion.pem"
-    chmod 644 "${pki_dir}/minion.pub"
-    chown -R salt:salt "${pki_dir}"
+	echo "  + Loading pre-shared keys for salt minion"
+	mkdir -p "${pki_dir}"
+	cp "${preload_dir}/salt.pem" "${pki_dir}/minion.pem"
+	cp "${preload_dir}/salt.pub" "${pki_dir}/minion.pub"
+	chmod 400 "${pki_dir}/minion.pem"
+	chmod 644 "${pki_dir}/minion.pub"
+	chown -R salt:salt "${pki_dir}"
 fi
 rm -f "${pki_dir}/minion_master.pub"
 
@@ -118,25 +118,25 @@ salt-api -d --log-level=info --log-file-level="${SALT_API_LOG_LEVEL:-warning}"
 
 # After master is up: wait for minions, refresh mine, fire cozy/master/online
 (
-    sleep 15
-    until salt '*' test.ping --timeout 5 --quiet 2>/dev/null; do
-        sleep 5
-    done
-    salt '*' mine.update --timeout 10 2>/dev/null || true
-    salt-run event.fire '{}' 'cozy/master/online'
-    echo "[entrypoint] cozy/master/online fired"
+	sleep 15
+	until salt '*' test.ping --timeout 5 --quiet 2>/dev/null; do
+		sleep 5
+	done
+	salt '*' mine.update --timeout 10 2>/dev/null || true
+	salt-run event.fire '{}' 'cozy/master/online'
+	echo "[entrypoint] cozy/master/online fired"
 ) &
 
 # After master is up: start local minion service (so master can talk to itself)
 (
-  sleep 5
-  echo "[entrypoint] Init master minion service.."
-  until salt-minion --log-level=warning --log-file-level="${SALT_MINION_LOG_LEVEL:-warning}"; do
-    echo "[entrypoint] Reinit master minion key.."
-    salt-key -d "salt" -y || true
-    sleep 5
-    salt-key -a "salt" -y || true
-  done
+	sleep 5
+	echo "[entrypoint] Init master minion service.."
+	until salt-minion --log-level=warning --log-file-level="${SALT_MINION_LOG_LEVEL:-warning}"; do
+		echo "[entrypoint] Reinit master minion key.."
+		salt-key -d "salt" -y || true
+		sleep 5
+		salt-key -a "salt" -y || true
+	done
 ) &
 
 echo "  + salt-minion started (id: salt -> localhost)"
