@@ -82,6 +82,10 @@ lint:
     - linters: [flake8]
       paths:
         - provisioning/common/dotfiles/.git_template/hooks/*
+    - linters: [shfmt]
+      paths:
+        - .envrc
+        - provisioning/common/files/opt-cozy-bin/presence
   definitions:
     - name: shfmt
       commands:
