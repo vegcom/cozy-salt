@@ -50,3 +50,4 @@
   - [ ] update srv/salt/{linux,winodws}/*.sls where applicable ( whre getting release from github )
     - reference: srv/salt/windows/nvm.sls
     - [ ] identify and update others to match reference scheme.
+  - [ ] Evaluate [RHEL tester failing](https://github.com/vegcom/cozy-salt/actions/runs/38162586655/job/114538428557?pr=33)
