@@ -33,12 +33,12 @@ repos:
         stages: [pre-commit]
         pass_filenames: false
 
-  # Fix permissions (Salt needs specific file modes)
-  - repo: local
-    hooks:
-      - id: fix-permissions
-        name: Fix file permissions
-        entry: ./scripts/fix-permissions.sh
-        language: script
-        pass_filenames: false
-        always_run: true
+  # # Fix permissions (Salt needs specific file modes)
+  # - repo: local
+  #   hooks:
+  #     - id: fix-permissions
+  #       name: Fix file permissions
+  #       entry: ./scripts/fix-permissions.sh
+  #       language: script
+  #       pass_filenames: false
+  #       always_run: true
