@@ -97,6 +97,8 @@ services:
       retries: 16
       start_period: 45s
     hostname: mongo
+    profiles:
+      - mongo
 
   winget-manifest:
     container_name: winget-manifest
