@@ -67,20 +67,22 @@ logind_reload:
 
 {#- systemd - system app-steam-slices.d : limits #}
 
-etc-systemd-system-app-steam.slice.d_path:
+{#
+# FIXME: pending further review, do not enable without checking first
+etc-systemd-system-user-.slice.d_path:
   file.directory:
-    - name: /etc/systemd/system/app-steam.slice.d/
+    - name: /etc/systemd/system/user-.slice.d/
     - user: root
     - group: root
     - mode: "0755"
 
-etc-systemd-system-app-steam.slice.d/limits.conf:
+etc-systemd-system-user-.slice.d/limits.conf:
   file.managed:
-    - name: /etc/systemd/system/app-steam.slice.d/limits.conf
-    - source: salt://linux/files/etc-systemd-system-app-steam.slice.d/limits.conf
+    - name: /etc/systemd/system/user-.slice.d/limits.conf
+    - source: salt://linux/files/etc-systemd-system-user-.slice.d/limits.conf
     - makedirs: True
     - require:
-      - file: etc-systemd-system-app-steam.slice.d_path
+      - file: etc-systemd-system-user-.slice.d_path #}
 
 {#- mkinitcpio #}
 
