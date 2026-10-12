@@ -3,35 +3,6 @@
 # Run manually: pre-commit run --all-files
 
 repos:
-  # Shell script linting
-  - repo: https://github.com/shellcheck-py/shellcheck-py
-    rev: v0.11.0.1
-    hooks:
-      - id: shellcheck
-        args: ['--severity=warning', '--shell=bash']
-        exclude: \.zshrc$|zshrc$|zshrc\.machine$
-
-  # YAML linting (catches Salt state syntax issues early)
-  - repo: https://github.com/adrienverge/yamllint
-    rev: v1.38.0
-    hooks:
-      - id: yamllint
-        args:
-          [
-            '--strict',
-            '-d',
-            '{extends: relaxed, rules: {line-length: {max: 200}}}',
-          ]
-        files: \.(yaml|yml|sls)$
-
-  # Python linting (for Salt modules)
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.16.3
-    hooks:
-      - id: ruff
-        args: ['--fix']
-      - id: ruff-format
-
   # General file hygiene
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
@@ -53,8 +24,16 @@ repos:
       - id: salt-lint
         files: \.(sls)$
 
-  # Fix permissions (Salt needs specific file modes)
-  # FIXME: disabled pending better evaluation of what i broke in repo otherwise regarding perms mgmt.
+  - repo: local
+    hooks:
+      - id: trunk-fmt
+        name: Trunk Format
+        entry: bash -c "trunk fmt --ci --index && trunk check --fix --show-existing --ci --index"
+        language: system
+        stages: [pre-commit]
+        pass_filenames: false
+
+  # # Fix permissions (Salt needs specific file modes)
   # - repo: local
   #   hooks:
   #     - id: fix-permissions

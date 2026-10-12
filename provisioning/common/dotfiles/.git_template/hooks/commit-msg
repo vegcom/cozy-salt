@@ -3,7 +3,7 @@
 # format: type: description
 # valid types based on project conventions
 
-# Managed by Salt - DO NOT EDIT MANUALLY
+# TEMPLATE: https://github.com/vegcom/cozy-salt/tree/develop/provisioning/common/dotfiles/.git_template/commit-msg
 
 import re
 import sys

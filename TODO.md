@@ -46,3 +46,9 @@
     - [ ] have salt deploy distcc containers per avaial host.
   - [ ] windows/winget move to github.com/June-Cozy/ backing to prevent having to eval making list
   - galileo gate for `provisioning/linux/files/etc-logind.conf.d/10-steamdeck-tuning.conf`
+  - [ ] Deck srv/salt/linux/hardware/galileo.sls TODOs
+  - [ ] update srv/salt/{linux,winodws}/*.sls where applicable ( whre getting release from github )
+    - reference: srv/salt/windows/nvm.sls
+    - [ ] identify and update others to match reference scheme.
+  - [ ] Evaluate [RHEL tester failing](https://github.com/vegcom/cozy-salt/actions/runs/38162586655/job/114538428557?pr=33)
+    - [ ] keying timeout until failure.

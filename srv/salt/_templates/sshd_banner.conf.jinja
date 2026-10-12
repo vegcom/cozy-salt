@@ -1,7 +1,6 @@
 PrintMotd no
-PrintLastLog no
 {%- if grains['os_family'] == 'Windows' %}
-Banner "C:\ProgramData\ssh\motd.txt"
+Banner "C:\ProgramData\ssh\baanner"
 {%- else %}
-Banner /etc/motd
+Banner /etc/baanner
 {%- endif %}

@@ -1,0 +1,8 @@
+[flake8]
+max-line-length = 125
+indent-size = 2
+exclude = setup.py
+per-file-ignores =
+    tests/*:S101,D103,D100,ANN201,ANN001
+    # Ignore long lines and naming conventions strictly in git hook templates:
+    provisioning/common/dotfiles/.git_template/hooks/*:E501,N802,N806
