@@ -1,15 +1,21 @@
 {
   "[css]": {
     "editor.defaultFormatter": "Jota0222.multi-formatter",
-    "multiFormatter.formatterList": ["vscode.css-language-features"]
+    "multiFormatter.formatterList": [
+      "vscode.css-language-features"
+    ]
   },
   "[dockercompose]": {
     "editor.defaultFormatter": "Jota0222.multi-formatter",
-    "multiFormatter.formatterList": ["SashaBusinaro.yaml-compose-sorter"]
+    "multiFormatter.formatterList": [
+      "SashaBusinaro.yaml-compose-sorter"
+    ]
   },
   "[dockerfile]": {
     "editor.defaultFormatter": "Jota0222.multi-formatter",
-    "multiFormatter.formatterList": ["jeff-hykin.better-dockerfile-syntax"]
+    "multiFormatter.formatterList": [
+      "jeff-hykin.better-dockerfile-syntax"
+    ]
   },
   "[html]": {
     "editor.defaultFormatter": "samuelcolvin.jinjahtml",
@@ -21,17 +27,23 @@
   "[jinja-json]": {
     "editor.defaultFormatter": "samuelcolvin.jinjahtml",
     "editor.formatOnSave": true,
-    "multiFormatter.formatterList": ["akrikun.saltstack-toolkit"]
+    "multiFormatter.formatterList": [
+      "akrikun.saltstack-toolkit"
+    ]
   },
   "[jinja-yaml]": {
     "editor.defaultFormatter": "akrikun.saltstack-toolkit",
     "editor.formatOnSave": true,
-    "multiFormatter.formatterList": ["akrikun.saltstack-toolkit"]
+    "multiFormatter.formatterList": [
+      "akrikun.saltstack-toolkit"
+    ]
   },
   "[jinja]": {
     "editor.defaultFormatter": "akrikun.saltstack-toolkit",
     "editor.formatOnSave": true,
-    "multiFormatter.formatterList": ["akrikun.saltstack-toolkit"]
+    "multiFormatter.formatterList": [
+      "akrikun.saltstack-toolkit"
+    ]
   },
   "[json]": {
     "editor.defaultFormatter": "Jota0222.multi-formatter",
@@ -39,7 +51,9 @@
     "editor.formatOnSave": true,
     "editor.formatOnSaveMode": "file",
     "editor.formatOnType": true,
-    "multiFormatter.formatterList": ["esbenp.prettier-vscode"]
+    "multiFormatter.formatterList": [
+      "esbenp.prettier-vscode"
+    ]
   },
   "[jsonc]": {
     "editor.defaultFormatter": "charliermarsh.ruff",
@@ -52,11 +66,15 @@
   },
   "[less]": {
     "editor.defaultFormatter": "monosans.djlint",
-    "multiFormatter.formatterList": ["monosans.djlint"]
+    "multiFormatter.formatterList": [
+      "monosans.djlint"
+    ]
   },
   "[markdown]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "multiFormatter.formatterList": ["esbenp.prettier-vscode"]
+    "multiFormatter.formatterList": [
+      "esbenp.prettier-vscode"
+    ]
   },
   "[plaintext]": {
     "editor.formatOnPaste": false,
@@ -64,7 +82,9 @@
   },
   "[python]": {
     "editor.defaultFormatter": "Jota0222.multi-formatter",
-    "multiFormatter.formatterList": ["charliermarsh.ruff"]
+    "multiFormatter.formatterList": [
+      "charliermarsh.ruff"
+    ]
   },
   "[scss]": {
     "editor.defaultFormatter": "vscode.css-language-features"
@@ -74,14 +94,18 @@
   },
   "[sql]": {
     "editor.defaultFormatter": "Jota0222.multi-formatter",
-    "multiFormatter.formatterList": ["adpyke.vscode-sql-formatter"]
+    "multiFormatter.formatterList": [
+      "adpyke.vscode-sql-formatter"
+    ]
   },
   "[toml]": {
     "editor.defaultFormatter": "tamasfe.even-better-toml"
   },
   "[xml]": {
     "editor.defaultFormatter": "Jota0222.multi-formatter",
-    "multiFormatter.formatterList": ["redhat.vscode-xml"]
+    "multiFormatter.formatterList": [
+      "redhat.vscode-xml"
+    ]
   },
   "[yaml]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -93,6 +117,7 @@
     "statusBar": true
   },
   "files.associations": {
+    ".bandit": "ini",
     ".env.example": "env",
     ".gitattributes*": "gitconfig",
     ".gitconfig*": "gitconfig",
@@ -102,7 +127,6 @@
     ".salt-lint": "yaml",
     ".shellcheckrc": "shellscript",
     ".vscode/settings.json": "json",
-    "*.bandit": "ini",
     "*.json": "json",
     "*.sls": "jinja",
     "*.sls.example": "jinja",
@@ -118,7 +142,9 @@
   "python-envs.defaultPackageManager": "ms-python.python:conda",
   "python.analysis.diagnosticMode": "workspace",
   "python.terminal.useEnvFile": true,
-  "python.testing.pytestArgs": ["tests"],
+  "python.testing.pytestArgs": [
+    "tests"
+  ],
   "python.testing.pytestEnabled": true,
   "python.testing.unittestEnabled": true,
   "ruff.configurationPreference": "filesystemFirst",
@@ -136,7 +162,9 @@
   "saltstack.lint.jinjaBlocks": false,
   "saltstack.lint.tabs": true,
   "saltstack.lint.trailingWhitespace": true,
-  "saltstack.pillarRoots": ["srv/pillar"],
+  "saltstack.pillarRoots": [
+    "srv/pillar"
+  ],
   "saltstack.stateRoots": [
     "${workspaceFolder}/srv/salt",
     "${workspaceFolder}/provisioning"
