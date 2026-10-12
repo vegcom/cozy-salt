@@ -185,10 +185,10 @@ windows:
     media_video: [Gyan.FFmpeg, HandBrake.HandBrake, yt-dlp.yt-dlp]
     networking: [Apple.Bonjour, WiresharkFoundation.Wireshark, Tailscale.Tailscale, Insecure.Nmap, Microsoft.OpenSSH.Preview]
     ricing: [Rainmeter.Rainmeter, MicaForEveryone.MicaForEveryone]
-    shell: [Git.Git, tamasfe.taplo, Google.OSVScanner]
+    shell: [Git.Git, tamasfe.taplo, Google.OSVScanner, GitHub.GitLFS]
     sync_backup: [Syncthing.Syncthing, Martchus.syncthingtray]
     terminal: [Alacritty.Alacritty, Maximus5.ConEmu, Microsoft.WindowsTerminal, Microsoft.PowerShell, Starship.Starship]
-    utilities: [CodeSector.TeraCopy, AntibodySoftware.WizTree, qBittorrent.qBittorrent, WerWolv.ImHex, Microsoft.Sysinternals.Suite, TRGamer-tech.FluentTaskScheduler, Microsoft.PowerToys, davidegiacometti.VisualStudioForCmdPal, nickknissen.TailscaleCommandPalette, Rclone.Rclone, Rufus.Rufus, SaltStack.SaltMinion]
+    utilities: [CodeSector.TeraCopy, AntibodySoftware.WizTree, qBittorrent.qBittorrent, WerWolv.ImHex, Microsoft.Sysinternals.Suite, TRGamer-tech.FluentTaskScheduler, Microsoft.PowerToys, davidegiacometti.VisualStudioForCmdPal, nickknissen.TailscaleCommandPalette, Rclone.Rclone, Rufus.Rufus, SaltStack.SaltMinion, Xanashi.Icaros]
 
     gated:
       voicemeter: [VB-Audio.Voicemeeter.Potato]
