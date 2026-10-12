@@ -2,6 +2,7 @@
 # Only targeted via top.sls compound match on manufacturer/productname grains
 
 {#- systemd #}
+
 etc-systemd_path:
   file.directory:
     - name: /etc/systemd
@@ -10,16 +11,17 @@ etc-systemd_path:
     - mode: "0755"
 
 {#- systemd - zram #}
+
 etc-systemd-zram-generator.conf:
   file.managed:
     - name: /etc/systemd/zram-generator.conf
     - source: salt://linux/files/etc-systemd/zram-generator.conf
-    - template: jinja
     - makedirs: True
     - require:
       - file: etc-systemd_path
 
 {#- systemd - sleep.conf #}
+
 etc-systemd-sleep.conf.d_path:
   file.directory:
     - name: /etc/systemd/sleep.conf.d
@@ -31,12 +33,12 @@ etc-systemd-sleep.conf.d-cozy-galileo.conf:
   file.managed:
     - name: /etc/systemd/sleep.conf.d/cozy.conf
     - source: salt://linux/files/etc-systemd-sleep.conf.d/cozy-galileo.conf
-    - template: jinja
     - makedirs: True
     - require:
       - file: etc-systemd-sleep.conf.d_path
 
 {#- systemd - login.d #}
+
 etc-systemd-logind.conf.d_path:
   file.directory:
     - name: /etc/systemd/logind.conf.d
@@ -63,7 +65,25 @@ logind_reload:
     - onchanges:
       - file: etc-systemd-logind.conf.d
 
+{#- systemd - system app-steam-slices.d : limits #}
+
+etc-systemd-system-app-steam.slice.d_path:
+  file.directory:
+    - name: /etc/systemd/system/app-steam.slice.d/
+    - user: root
+    - group: root
+    - mode: "0755"
+
+etc-systemd-system-app-steam.slice.d/limits.conf:
+  file.managed:
+    - name: /etc/systemd/system/app-steam.slice.d/limits.conf
+    - source: salt://linux/files/etc-systemd-system-app-steam.slice.d/limits.conf
+    - makedirs: True
+    - require:
+      - file: etc-systemd-system-app-steam.slice.d_path
+
 {#- mkinitcpio #}
+
 etc-mkinitcpio.d_path:
   file.directory:
     - name: /etc/mkinitcpio.d
@@ -75,31 +95,23 @@ etc-mkinitcpio.d-linux.conf:
   file.managed:
     - name: /etc/mkinitcpio.d/linux.conf
     - source: salt://linux/files/etc-mkinitcpio.d/cozy-galileo.conf
-    - template: jinja
     - makedirs: True
     - require:
       - file: etc-mkinitcpio.d_path
 
-{%- set users = salt['pillar.get']('users', {}) %}
-{%- for username, userdata in users.items() %}
-  {%- if userdata.get('uid') %}
-    {%- set user_home = userdata.get('home_prefix', '/home') ~ '/' ~ username %}
+{#- modprobe.d #}
 
-scopebuddy_scb_{{ username }}:
+etc-modprobe.d_path:
+  file.directory:
+    - name: /etc/modprobe.d
+    - user: root
+    - group: root
+    - mode: "0755"
+
+etc-modprobe.d-cozy-galileo.conf:
   file.managed:
-    - name: {{ user_home }}/.config/scopebuddy/scb.conf
-    - source: salt://_templates/scopebuddy_scb_config.jinja
-    - template: jinja
+    - name: /etc/modprobe.d/cozy-galileo.conf
+    - source: salt://linux/files/etc-modprobe.d/cozy-galileo.conf
     - makedirs: True
-    - user_home: {{ user_home }}
-
-scopebuddy_gamemode_{{ username }}:
-  file.managed:
-    - name: {{ user_home }}/.config/scopebuddy/gamemode.conf
-    - source: salt://_templates/scopebuddy_gamemode_config.jinja
-    - template: jinja
-    - makedirs: True
-    - user_home: {{ user_home }}
-
-  {%- endif %}
-{%- endfor %}
+    - require:
+      - file: etc-modprobe.d_path

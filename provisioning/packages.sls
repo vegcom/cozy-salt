@@ -132,7 +132,7 @@ rhel:
 arch:
   build_tools: {{ (_build_base + ['base-devel']) | tojson }}
   compression: {{ (_compress_base + ['p7zip', 'xz']) | tojson }}
-  core_utils: {{ (_core + ['vim', 'sed', 'glibc', 'glibc-locales', 'man-db', 'python-pyinotify']) | tojson }}
+  core_utils: {{ (_core + ['vim', 'sed', 'glibc', 'glibc-locales', 'man-db', 'python-pyinotify', 'irqbalance']) | tojson }}
   modern_cli: {{ (_modern_cli_base + ['fd']) | tojson }}
   monitoring: {{ (_monitoring_base + ['duf', 'ncdu']) | tojson }}
   networking: {{ (_net_base + ['avahi', 'bind', 'etcd', 'iputils', 'net-tools', 'openbsd-netcat', 'openssh', 'wsdd', 'nss-mdns']) | tojson }}
@@ -142,7 +142,7 @@ arch:
   container: [docker, docker-buildx, docker-compose]
   debugging: [downgrade]
   fonts: [noto-fonts, noto-fonts-emoji, noto-fonts-cjk, ttf-fira-code, ttf-hack, ttf-jetbrains-mono, inter-font]
-  gaming: [waydroid-launcher-git, protontricks, steam, gamescope,  lib32-gamescope-plus, mangohud, moonlight-qt, protonup-qt-bin]
+  gaming: [waydroid-launcher-git, protontricks, steam, gamescope,  lib32-gamescope-plus, mangohud, moonlight-qt, protonup-qt-bin,]
   gui: [plasma-meta, hyprland, plasma-keyboard]
   interpreters: [lua, perl, python, python-pip]
   kernel: [linux-headers]
