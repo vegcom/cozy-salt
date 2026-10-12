@@ -29,7 +29,7 @@ if [[ -d ${preload_dir} ]]; then
 	echo "=== Pre-accepting minion keys ==="
 	mkdir -p "${minions_dir}"
 	denied_dir="/etc/salt/pki/master/minions_denied"
-	for key_file in "${preload_dir}"/*.pub; do
+	for key_file in "${preload_dir}"/*.pub; do  # shellcheck disable=SC2066
 		if [[ -f ${key_file} ]]; then
 			minion_id=$(basename "${key_file}" .pub)
 			# Remove from denied (stale denied + valid accepted = auth failure)
@@ -83,12 +83,12 @@ conn.execute('CREATE TABLE IF NOT EXISTS jids (jid TEXT PRIMARY KEY, load TEXT N
 conn.commit()
 conn.close()
 if not os.path.exists(target):
-    shutil.move(tmp, target)
-    os.chmod(target, 0o664)
-    print('  + salt_returns.db created (WAL mode)')
+		shutil.move(tmp, target)
+		os.chmod(target, 0o664)
+		print('  + salt_returns.db created (WAL mode)')
 else:
-    os.unlink(tmp)
-    print('  + salt_returns.db already exists, skipping')
+		os.unlink(tmp)
+		print('  + salt_returns.db already exists, skipping')
 
 "
 chown salt:salt /srv/data/sqlite/salt_returns.db 2>/dev/null || true
@@ -116,36 +116,30 @@ avahi-daemon --no-drop-root --daemonize --debug &
 echo "[entrypoint] Starting Salt API..."
 salt-api -d --log-level=info --log-file-level="${SALT_API_LOG_LEVEL:-warning}"
 
-# After master is up: wait for minions, refresh mine, fire cozy/master/online
 (
-	sleep 15
-	until salt '*' test.ping --timeout 5 --quiet 2>/dev/null; do
-		sleep 5
+	echo "[entrypoint] Init master minion service.."
+
+	until salt-minion --disable-keepalive --log-level=warning --log-file-level="${SALT_MINION_LOG_LEVEL:-warning}"; do
+		sleep 10
+		pkill -f salt-minion
 	done
+
+	echo "[entrypoint] Reinit master minion key from known local key.."
+
+	if [[ -f /etc/salt/pki/master/minions_pre/salt ]]; then
+		echo "[entrypoint] INFO: copying ${preload_dir}/salt"
+		cp -v /etc/salt/pki/master/minions_pre/salt "${preload_dir}"/salt.pub
+		chown salt:salt /etc/salt/pki/master/minions/salt
+		chmod 644 /etc/salt/pki/master/minions/salt
+	else
+		echo "[entrypoint] WARNING: /etc/salt/pki/master/minions_pre/salt not found; cannot pin key for id 'salt' yet"
+	fi
+
 	salt '*' mine.update --timeout 10 2>/dev/null || true
 	salt-run event.fire '{}' 'cozy/master/online'
 	echo "[entrypoint] cozy/master/online fired"
-) &
 
-# After master is up: start local minion service (so master can talk to itself)
-(
-	sleep 5
-	echo "[entrypoint] Init master minion service.."
-	until salt-minion --log-level=warning --log-file-level="${SALT_MINION_LOG_LEVEL:-warning}"; do
-		echo "[entrypoint] Reinit master minion key from known local key.."
-		if [[ -f /etc/salt/pki/minion/minion.pub ]]; then
-			mkdir -p /etc/salt/pki/master/minions
-			cp -f /etc/salt/pki/minion/minion.pub /etc/salt/pki/master/minions/salt
-			chown salt:salt /etc/salt/pki/master/minions/salt
-			chmod 644 /etc/salt/pki/master/minions/salt
-		else
-			echo "[entrypoint] WARNING: /etc/salt/pki/minion/minion.pub not found; cannot pin key for id 'salt' yet"
-		fi
-		sleep 5
-	done
 ) &
-
-echo "  + salt-minion started (id: salt -> localhost)"
 
 echo "[entrypoint] Starting Salt Master..."
 exec salt-master --log-level=warning --log-file-level="${SALT_MASTER_LOG_LEVEL:-warning}"
