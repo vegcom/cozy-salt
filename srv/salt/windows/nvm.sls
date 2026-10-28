@@ -10,7 +10,7 @@
 {%- set nvm_win_version = salt['github_release.latest']('nvm-windows/nvm') %}
 {%- set assets = salt['github_release.assets']('nvm-windows/nvm', tag=nvm_win_version) %}
 {%- set patterns = salt['arch_match.patterns_for'](os_family='windows') %}
-{%- set matched_asset = salt['arch_match.pick'](assets, patterns, key='name') %}│
+{%- set matched_asset = salt['arch_match.pick'](assets, patterns, key='name') %}
 {%- set installer_url = matched_asset.browser_download_url if matched_asset else none %}
 
 {# Path configuration from pillar with defaults #}
