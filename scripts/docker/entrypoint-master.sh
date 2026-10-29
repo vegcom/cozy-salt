@@ -126,13 +126,33 @@ salt-api -d --log-level=info --log-file-level="${SALT_API_LOG_LEVEL:-warning}"
 
 	echo "[entrypoint] Reinit master minion key from known local key.."
 
-	if [[ -f /etc/salt/pki/master/minions_pre/salt ]]; then
-		echo "[entrypoint] INFO: copying ${preload_dir}/salt"
-		cp -v /etc/salt/pki/master/minions_pre/salt "${preload_dir}"/salt.pub
-		chown salt:salt /etc/salt/pki/master/minions/salt
-		chmod 644 /etc/salt/pki/master/minions/salt
+	known_good_key=""
+	pending_key="/etc/salt/pki/master/minions_pre/salt"
+
+	if [[ -f /etc/salt/pki/minion-preload/salt.pub ]]; then
+		known_good_key="/etc/salt/pki/minion-preload/salt.pub"
+	elif [[ -f /etc/salt/pki/minion/minion.pub ]]; then
+		known_good_key="/etc/salt/pki/minion/minion.pub"
+	fi
+
+	if [[ -n "${known_good_key}" ]]; then
+		echo "[entrypoint] INFO: pinning known-good key from ${known_good_key} to ${preload_dir}/salt.pub"
+		cp -v "${known_good_key}" "${preload_dir}"/salt.pub
+
+		if [[ -f "${pending_key}" ]]; then
+			if cmp -s "${known_good_key}" "${pending_key}"; then
+				echo "[entrypoint] INFO: pending key matches known-good key; accepting for id 'salt'"
+				cp -v "${pending_key}" /etc/salt/pki/master/minions/salt
+				chown salt:salt /etc/salt/pki/master/minions/salt
+				chmod 644 /etc/salt/pki/master/minions/salt
+			else
+				echo "[entrypoint] WARNING: pending key for id 'salt' does not match known-good key; refusing to accept"
+			fi
+		else
+			echo "[entrypoint] WARNING: ${pending_key} not found; cannot accept key for id 'salt' yet"
+		fi
 	else
-		echo "[entrypoint] WARNING: /etc/salt/pki/master/minions_pre/salt not found; cannot pin key for id 'salt' yet"
+		echo "[entrypoint] WARNING: no known-good local key found at /etc/salt/pki/minion-preload/salt.pub or /etc/salt/pki/minion/minion.pub"
 	fi
 
 	salt '*' mine.update --timeout 10 2>/dev/null || true
