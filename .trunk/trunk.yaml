@@ -24,7 +24,7 @@ tools:
   enabled:
     - actionlint@1.7.12
     - bandit@1.9.4
-    - checkov@3.3.30
+    - checkov@3.4.0
     - dotenv-linter@4.0.0
     - grype@0.119.0
     - hadolint@2.15.1
@@ -45,9 +45,9 @@ lint:
   enabled:
     - actionlint@1.7.12
     - bandit@1.9.4
-    - checkov@3.3.30
+    - checkov@3.4.0
     - dotenv-linter@4.0.0
-    - flake8@7.4.1
+    - flake8@7.5.0
     - git-diff-check
     - grype@0.119.0
     - hadolint@2.15.1
