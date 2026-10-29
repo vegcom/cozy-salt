@@ -45,16 +45,23 @@ k3s_user_kubeconfig_{{ username }}_{{ remote_host }}:
     - user: {{ username }}
     - group: cozyusers
     - mode: "0600"
+           {%- else %}
+    - win_owner: {{ username }}
+    - win_inheritance: False
+    - win_perms:
+    - {{ username }}:
+      - perms: full_control
+      - applies_to: this_folder_subfolders_files
+    - Administrators:
+      - perms: full_control
+      - applies_to: this_folder_subfolders_files
+    - SYSTEM:
+      - perms: full_control
+      - applies_to: this_folder_subfolders_files
           {%- endif %}
     - show_changes: False
     - require:
       - file: k3s_user_kube_dir_{{ username }}
-
-{#-
-k3s_user_kubeconfig_{{ username }}_{{ remote_host }}_mutate:
-  cmd.run:
-    - name: kubectl config rename-context default "{{ remote_host }}" --kubeconfig="{{ user_home }}/.kube/configs/{{ remote_host }}.conf"
-#}
 
         {%- endif %}
       {%- endfor %}
