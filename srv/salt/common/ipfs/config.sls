@@ -95,9 +95,9 @@ ipfs_init:
 ipfs_target_config_file:
   file.managed:
 {%- if is_windows %}
-    - name: C:/Windows/Temp/ipfs_custom_config.json
+    - name: C:/opt/cozy/etc/kubo/ipfs_custom_config.json
 {%- else %}
-    - name: /tmp/ipfs_custom_config.json
+    - name: /opt/cozy/etc/kubo/ipfs_custom_config.json
 {%- endif %}
     - source: salt://_templates/ipfs_custom_config.json.jinja
     - template: jinja
