@@ -1,3 +1,3 @@
 winget:
   force: False
-  bg: True
+  bg: False
