@@ -14,7 +14,7 @@
     {%- set usernames = get_users_with_profiles().split(',') | reject('equalto', '') | list %}
   {%- endif %}
   {%- for username in usernames %}
-    {%- set user_pillar = salt['pillar.get']('users:' ~ username, {}) %}
+    {%- set user_pillar = salt['pillar.get']('users:' ~ username, {}, merge=True) %}
     {%- set is_authorized = user_pillar.get('linux_groups', []) | intersect(['cozyusers', 'kubeadmins']) or user_pillar.get('windows_groups', []) | intersect(['cozyusers', 'kubeadmins']) %}
     {%- set user_home = get_user_home(username) | trim %}
     {%- if user_home and is_authorized %}
