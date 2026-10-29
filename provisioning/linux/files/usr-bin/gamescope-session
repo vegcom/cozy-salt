@@ -13,6 +13,5 @@ exec gamescope --mangoapp -e -- steam \
 	-gamepadui \
 	-steamos3 \
 	-steamdeck \
-	-no-cef-sandbox \
 	-compat-force-slr off \
 	-dev
