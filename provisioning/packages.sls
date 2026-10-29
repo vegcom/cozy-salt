@@ -27,7 +27,7 @@
     'core_utils': _core + ['vim'],
     'monitoring': _monitoring_base + ['duf', 'ncdu'],
     'shell_enhancements': _shell,
-    'build_tools': _build_base + ['build-essential', 'pkg-config'],
+    'build_tools': _build_base + ['build-essential', 'pkg-config', 'libatomic1'],
     'networking': _net_base + ['avahi-daemon', 'bind9-dnsutils', 'etcd-client', 'iputils-ping', 'net-tools', 'netcat-openbsd', 'openssh-client', 'openssh-server', 'wsdd-server', 'libnss-mdns'],
     'compression': _compress_base + ['7zip', 'xz-utils'],
     'vcs_extras': _vcs_base + ['gh'],
@@ -115,7 +115,7 @@ ubuntu: {{ _apt | tojson }}
 # ============================================================================
 rhel:
   acl: [acl]
-  build_tools: {{ (_build_base + ['gcc', 'gcc-c++', 'make']) | tojson }}
+  build_tools: {{ (_build_base + ['gcc', 'gcc-c++', 'make', 'libatomic']) | tojson }}
   compression: {{ (_compress_base + ['7zip', 'xz']) | tojson }}
   core_utils: {{ (_core + ['vim-enhanced']) | tojson }}
   kvm: [libvirt, libvirt-client, libvirt-daemon, qemu-img, qemu-kvm, virt-install]
@@ -130,7 +130,7 @@ rhel:
 # ARCH PACKAGES (pacman/yay - different names, extra categories)
 # ============================================================================
 arch:
-  build_tools: {{ (_build_base + ['base-devel']) | tojson }}
+  build_tools: {{ (_build_base + ['base-devel', 'gcc-libs']) | tojson }}
   compression: {{ (_compress_base + ['p7zip', 'xz']) | tojson }}
   core_utils: {{ (_core + ['vim', 'sed', 'glibc', 'glibc-locales', 'man-db', 'python-pyinotify', 'irqbalance']) | tojson }}
   modern_cli: {{ (_modern_cli_base + ['fd']) | tojson }}
