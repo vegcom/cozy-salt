@@ -25,6 +25,19 @@ k3s_user_kube_dir_{{ username }}:
     - user: {{ username }}
     - group: cozyusers
     - mode: "0750"
+     {%- else %}
+    - win_owner: {{ username }}
+    - win_inheritance: False
+    - win_perms:
+      - {{ username }}:
+        - perms: full_control
+        - applies_to: this_folder_subfolders_files
+      - Administrators:
+        - perms: full_control
+        - applies_to: this_folder_subfolders_files
+      - SYSTEM:
+        - perms: full_control
+        - applies_to: this_folder_subfolders_files
     {%- endif %}
     - makedirs: True
 
@@ -49,15 +62,15 @@ k3s_user_kubeconfig_{{ username }}_{{ remote_host }}:
     - win_owner: {{ username }}
     - win_inheritance: False
     - win_perms:
-    - {{ username }}:
-      - perms: full_control
-      - applies_to: this_folder_subfolders_files
-    - Administrators:
-      - perms: full_control
-      - applies_to: this_folder_subfolders_files
-    - SYSTEM:
-      - perms: full_control
-      - applies_to: this_folder_subfolders_files
+      - {{ username }}:
+        - perms: full_control
+        - applies_to: this_folder_subfolders_files
+        - Administrators:
+          - perms: full_control
+          - applies_to: this_folder_subfolders_files
+        - SYSTEM:
+          - perms: full_control
+          - applies_to: this_folder_subfolders_files
           {%- endif %}
     - show_changes: False
     - require:
