@@ -41,22 +41,30 @@ k3s_user_kubeconfig_{{ username }}_{{ remote_host }}:
   file.managed:
     - name: {{ user_home }}/.kube/configs/{{ remote_host }}.conf
     - contents: {{ kubeconfig | yaml_encode }}
-    {%- if not is_windows %}
+          {%- if not is_windows %}
     - user: {{ username }}
     - group: cozyusers
     - mode: "0600"
-    {%- endif %}
+          {%- endif %}
     - show_changes: False
     - require:
       - file: k3s_user_kube_dir_{{ username }}
 
+{#-
+k3s_user_kubeconfig_{{ username }}_{{ remote_host }}_mutate:
+  cmd.run:
+    - name: kubectl config rename-context default "{{ remote_host }}" --kubeconfig="{{ user_home }}/.kube/configs/{{ remote_host }}.conf"
+#}
+
         {%- endif %}
       {%- endfor %}
-
     {%- endif %}
   {%- endfor %}
+
 {%- else %}
+
 k3s_multi_user_configs_skipped:
   test.nop:
     - name: "Skipping cross-platform user configs: No active cluster data found in the Salt Mine."
+
 {%- endif %}
