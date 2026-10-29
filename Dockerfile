@@ -46,8 +46,11 @@ RUN rm -f /etc/apt/sources.list.d/* && \
     echo "deb http://${APT_MIRROR}/ubuntu/ ${DEBIAN_CODENAME}-updates main restricted universe multiverse" >> /etc/apt/sources.list && \
     echo "deb http://${APT_SECURITY_MIRROR}/ubuntu/ ${DEBIAN_CODENAME}-security main restricted universe multiverse" >> /etc/apt/sources.list && \
     apt-get update && \
-    apt-get install -y --no-install-recommends curl ca-certificates git && \
-    echo "deb [arch=amd64 trusted=yes] \
+    apt-get install -y --no-install-recommends curl ca-certificates git gpg && \
+    install -m 0755 -d /etc/apt/keyrings && \
+    curl -fsSL https://packages.broadcom.com/artifactory/api/security/keypair/SaltProjectKey/public \
+    | gpg --dearmor -o /etc/apt/keyrings/salt-archive-keyring.gpg && \
+    echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/salt-archive-keyring.gpg] \
     https://packages.broadcom.com/artifactory/saltproject-deb/ stable main" > \
     /etc/apt/sources.list.d/salt.list && \
     apt-get update && \
