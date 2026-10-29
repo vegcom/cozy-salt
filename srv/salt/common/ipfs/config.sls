@@ -123,9 +123,9 @@ ipfs_bootstrap_clear:
 ipfs_configure_private_networking:
   cmd.run:
 {%- if is_windows %}
-    - name: ipfs config replace C:/Windows/Temp/ipfs_custom_config.json
+    - name: ipfs config replace C:/opt/cozy/etc/kubo/ipfs_custom_config.json
 {%- else %}
-    - name: ipfs config replace /tmp/ipfs_custom_config.json
+    - name: ipfs config replace /opt/cozy/etc/kubo/ipfs_custom_config.json
 {%- endif %}
     - env: {{ kubo_env | json }}
 {%- if is_windows %}
