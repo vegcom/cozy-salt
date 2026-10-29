@@ -93,4 +93,3 @@ done
 
 export KUBECONFIG="${kubeconfig_export}"
 export KUBECONFIG_DISCOVERED=1
-
