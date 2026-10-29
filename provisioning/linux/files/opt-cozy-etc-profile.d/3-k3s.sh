@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# Kube color
-if which kubecolor 1>/dev/null 2>/dev/null; then
-  alias k=kubecolor
-fi
-
 # Kubeconfig agg
 if [ -z "$BASH_VERSION" ] && [ -z "$ZSH_VERSION" ]; then
   return 1 2>/dev/null || exit 1
@@ -14,7 +9,12 @@ if [ ! -z "${KUBECONFIG_DISCOVERED}" ]; then
   return 1 2>/dev/null || exit 1
 fi
 
-setopt local_options RE_MATCH_PCRE
+if [ -n "$ZSH_VERSION" ]; then
+  zmodload zsh/pcre 2>/dev/null
+  setopt local_options REMATCH_PCRE
+else
+  setopt local_options RE_MATCH_PCRE
+fi
 
 unset kubeconfig_discovered_short kubeconfig_discovered \
   kubeconfig_export kubeconfig_short_names
@@ -27,7 +27,7 @@ kubeconfig_default="${HOME}/.kube/config"
 kubeconfig_export=""
 
 kubeconfig_loader_dbg=${kubeconfig_loader_dbg:-false}
-kubeconfig_loader_quiet=${kubeconfig_loader_quiet:-false}
+kubeconfig_loader_quiet=${kubeconfig_loader_quiet:-true}
 kubeconfig_loader_print=${kubeconfig_loader_print:-false}
 
 if [[ "$kubeconfig_loader_dbg" =~ "^(1|(?i)true)$" ]]; then
@@ -48,7 +48,7 @@ while read -r cfg; do
     fi
 
     if [[ "$kubeconfig_loader_dbg" =~ "^([1]|(?i)true)$" ]]; then
-      printf '[%s] %s %s\n' "${emoji}" "${msg}:" "${cfg#${HOME}/.kube/}" 2>/dev/null
+      printf '[%s] %s %s\n' "${emoji}" "${msg}:" "${cfg#"${HOME}"/.kube/}" 2>/dev/null
     fi
 
     if [ "$is_valid" = true ]; then
@@ -74,7 +74,7 @@ for _filtered in "${kubeconfig_discovered[@]}"; do
   } && {
     if [[ -s "${_filtered}" ]]; then
       emoji="👍"
-      kubeconfig_short_names+=("${_filtered#${HOME}/.kube/}")
+      kubeconfig_short_names+=("${_filtered#"${HOME}"/.kube/}")
       _list=$(printf '%s\n' "${kubeconfig_short_names[@]}" | jq -RsCc 'split("\n") | map(select(length > 0)) | reduce .[] as $item ([[], {}]; if ($item | contains("/")) then ($item | split("/")) as $p | .[1][$p[0]] += [$p[1]] else .[0] += [$item] end) | if (.[1] | length > 0) then .[0] + [.[1]] else .[0] end' 2>/dev/null)
       msg="extending: kubeconfig_export:${#kubeconfig_short_names[@]} - ${_list}"
       true
