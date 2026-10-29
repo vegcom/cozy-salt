@@ -103,6 +103,11 @@ ipfs_target_config_file:
     - template: jinja
     - makedirs: True
     - create: True
+{%- if not is_windows %}
+    - user: cozy-salt-svc
+    - group: cozyusers
+    - mode: '0660'
+{%- endif %}
     - _swarm_addrs: {{ _swarm_addrs }}
     - gateway_port: {{ gateway_port }}
     - api_port: {{ api_port }}
