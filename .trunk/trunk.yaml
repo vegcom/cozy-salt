@@ -95,6 +95,7 @@ lint:
       paths:
         - .envrc
         - provisioning/common/files/opt-cozy-bin/presence
+        - provisioning/linux/files/opt-cozy-etc-profile.d/3-k3s.sh
     - linters:
         - ALL
       security: true
