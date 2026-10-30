@@ -17,7 +17,6 @@ repos:
         args: ['--maxkb=500']
       - id: check-merge-conflict
 
-  # Validate SaltStack states
   - repo: https://github.com/warpnet/salt-lint
     rev: v0.9.2
     hooks:
@@ -26,19 +25,9 @@ repos:
 
   - repo: local
     hooks:
-      - id: trunk-fmt
-        name: Trunk Format
-        entry: bash -c "trunk fmt --ci --index && trunk check --fix --show-existing --ci --index"
+      - id: trunk-chk
+        name: Trunk Check & Format
+        entry: trunk check --show-existing --all --fix
         language: system
         stages: [pre-commit]
         pass_filenames: false
-
-  # # Fix permissions (Salt needs specific file modes)
-  # - repo: local
-  #   hooks:
-  #     - id: fix-permissions
-  #       name: Fix file permissions
-  #       entry: ./scripts/fix-permissions.sh
-  #       language: script
-  #       pass_filenames: false
-  #       always_run: true
