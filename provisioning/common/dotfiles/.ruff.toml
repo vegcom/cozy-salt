@@ -38,4 +38,6 @@ per-file-ignores = { "tests/**/*.py" = [
   "E501",
 ], "srv/salt/_grains/*.py" = [
   "E501",
+], "provisioning/common/dotfiles/.git_template/hooks/*" = [
+  "E501",
 ] }
