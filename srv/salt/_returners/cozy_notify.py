@@ -84,7 +84,7 @@ def _parse_body(retdata, sls, success) -> str:
 
     elif isinstance(retdata, list) and retdata:
         flattened = ", ".join(str(item) for item in retdata)
-        body = f"{sls}: {flattened[:60]}" if len(flattened) > 60 else f"{sls}: {flattened}"
+        body = f"{sls}: {flattened[:60]}" if len(flattened) > 60 else f"{sls}: {flattened}"  # pylint: disable=line-too-long # noqa: E501
 
     elif isinstance(retdata, str) and retdata:
         body = f"{sls}: {retdata[:60]}"
