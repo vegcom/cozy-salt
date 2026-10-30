@@ -1,0 +1,61 @@
+#!/opt/miniforge3/python
+# hook-router: cross-platform directory context manager
+# format: reads environment.yml to execute directly via Conda paths
+
+# TEMPLATE: https://github.com/vegcom/cozy-salt/tree/develop/provisioning/common/dotfiles/.git_template/hooks/pre-commit
+
+import subprocess
+import sys
+from pathlib import Path
+
+try:
+    hook_dir = Path(__file__).resolve().parent
+    sys.path.insert(0, str(hook_dir / "lib"))
+    from conda_bootstrap import find_conda_python_binary, get_conda_env_name
+except Exception as e:
+    print(f"❌ [hook-router] Bootstrap failure: {e}", file=sys.stderr)
+    sys.exit(1)
+
+
+def main():
+    hook_type = Path(__file__).name
+
+    line = sys.stdin.readline().strip() if hook_type == "pre-push" else ""
+    if hook_type == "pre-push" and not line:
+        sys.exit(0)
+
+    env_name = get_conda_env_name()
+    target_python = find_conda_python_binary(env_name)
+
+    if hook_type == "pre-push":
+        _, local_sha, _, remote_sha = line.split()
+        if remote_sha == "0000000000000000000000000000000000000000":
+            remote_sha = "4b825dc642cb6eb9a030e54bf8d69288fbee4904"
+
+        cmd = [
+            target_python,
+            "-m",
+            "pre_commit",
+            "run",
+            "--origin",
+            remote_sha,
+            "--source",
+            local_sha,
+        ]
+        sys.exit(subprocess.run(cmd).returncode)
+
+    elif hook_type == "pre-commit":
+        cmd = [target_python, "-m", "pre_commit", "run"]
+        sys.exit(subprocess.run(cmd).returncode)
+
+    elif hook_type == "post-checkout":
+        is_branch = sys.argv[3] if len(sys.argv) == 4 else "0"
+        if is_branch != "1":
+            sys.exit(0)
+
+        result = subprocess.run(["git", "submodule", "update", "--init", "--recursive"])
+        sys.exit(result.returncode)
+
+
+if __name__ == "__main__":
+    main()
