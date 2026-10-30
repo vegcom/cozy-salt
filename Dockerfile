@@ -20,8 +20,8 @@ RUN apt-get update && \
 # Generate RSA keys for test minions (Salt-compatible format)
 WORKDIR /keys
 RUN for minion in salt ubuntu-test rhel-test windows-test; do \
-      openssl genrsa -out ${minion}.pem 4096 2>/dev/null && \
-      openssl rsa -in ${minion}.pem -pubout -out ${minion}.pub 2>/dev/null; \
+    openssl genrsa -out ${minion}.pem 4096 2>/dev/null && \
+    openssl rsa -in ${minion}.pem -pubout -out ${minion}.pub 2>/dev/null; \
     done && \
     chmod 644 /keys/*.pub && \
     chmod 600 /keys/*.pem
@@ -46,10 +46,13 @@ RUN rm -f /etc/apt/sources.list.d/* && \
     echo "deb http://${APT_MIRROR}/ubuntu/ ${DEBIAN_CODENAME}-updates main restricted universe multiverse" >> /etc/apt/sources.list && \
     echo "deb http://${APT_SECURITY_MIRROR}/ubuntu/ ${DEBIAN_CODENAME}-security main restricted universe multiverse" >> /etc/apt/sources.list && \
     apt-get update && \
-    apt-get install -y --no-install-recommends curl ca-certificates git && \
-    echo "deb [arch=amd64 trusted=yes] \
-      https://packages.broadcom.com/artifactory/saltproject-deb/ stable main" > \
-      /etc/apt/sources.list.d/salt.list && \
+    apt-get install -y --no-install-recommends curl ca-certificates git gpg && \
+    install -m 0755 -d /etc/apt/keyrings && \
+    curl -fsSL https://packages.broadcom.com/artifactory/api/security/keypair/SaltProjectKey/public \
+    | gpg --dearmor -o /etc/apt/keyrings/salt-archive-keyring.gpg && \
+    echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/salt-archive-keyring.gpg] \
+    https://packages.broadcom.com/artifactory/saltproject-deb/ stable main" > \
+    /etc/apt/sources.list.d/salt.list && \
     apt-get update && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/*
 
@@ -68,8 +71,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Install Salt Master, Minion, and SSH from pre-configured repos
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-      netcat-openbsd avahi-daemon wsdd-server tini \
-      salt-master salt-minion salt-api salt-ssh python3-cherrypy3 && \
+    netcat-openbsd avahi-daemon wsdd-server tini \
+    salt-master salt-minion salt-api salt-ssh python3-cherrypy3 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/*
 
@@ -105,7 +108,10 @@ RUN mkdir -p /saltgui && \
 # Password set at runtime via SALT_API_PASSWORD env var in entrypoint
 RUN useradd -r -s /usr/sbin/nologin -M cozy-salt-svc
 
-# Note: Healthcheck is defined in docker-compose.yaml (preferred for flexibility)
+# Ensure minion and master services are running
+HEALTHCHECK --interval=5s --timeout=5s --start-period=30s --start-interval=5s --retries=15 \
+  CMD ["bash", "-c", "pgrep -f salt-master > /dev/null && pgrep -f salt-minion > /dev/null"]
+
 ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/entrypoint-master.sh"]
 
 EXPOSE 4505/tcp 4506/tcp 5353/udp 3333/tcp
@@ -132,6 +138,10 @@ RUN mkdir -p /etc/salt/minion.d && \
 # Copy pre-generated keys for test minions
 # Entrypoint selects correct key based on MINION_ID
 COPY --from=keygen /keys/ /etc/salt/pki/minion-preload/
+
+# Ensure minion and master services are running
+HEALTHCHECK --interval=5s --timeout=5s --start-period=90s --start-interval=5s --retries=15 \
+  CMD ["bash", "-c", "pgrep -f salt-minion > /dev/null"]
 
 ENTRYPOINT ["/usr/local/bin/entrypoint-minion.sh"]
 
@@ -180,5 +190,9 @@ RUN mkdir -p /etc/salt/minion.d && \
 # Copy pre-generated keys for test minions
 # Entrypoint selects correct key based on MINION_ID
 COPY --from=keygen /keys/ /etc/salt/pki/minion-preload/
+
+# Ensure minion and master services are running
+HEALTHCHECK --interval=5s --timeout=5s --start-period=90s --start-interval=5s --retries=15 \
+  CMD ["bash", "-c", "pgrep -f salt-minion > /dev/null"]
 
 ENTRYPOINT ["/usr/local/bin/entrypoint-minion.sh"]

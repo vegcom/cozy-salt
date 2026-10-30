@@ -7,7 +7,7 @@ enable_schtask_log:
     - name: wevtutil set-log Microsoft-Windows-TaskScheduler/Operational /enabled:true /maxSize:104857600
     - shell: powershell
 
-{%- set scheduled_tasks = salt['pillar.get']('scheduled_tasks', {}) %}
+{%- set scheduled_tasks = salt['pillar.get']('scheduled_tasks', {}, merge=True) %}
 
 {%- for category, tasks_list in scheduled_tasks.items() %}
 {%- for task in tasks_list %}
@@ -25,7 +25,7 @@ enable_schtask_log:
 
 {{ task_name }}_task:
   cmd.run:
-    - name: schtasks /create /tn "\Cozy\{{ category }}\{{ task_display_name }}" /xml "c:/opt/cozy/tasks/{{ category }}\{{ task_name }}.xml" /f
+    - name: schtasks /create /tn "\Cozy\{{ category }}\{{ task_display_name }}" /xml "/opt/cozy/tasks/{{ category }}/{{ task_name }}.xml" /f
     - onchanges:
       - file: {{ task_name }}_xml
 

@@ -13,3 +13,4 @@ include:
   - windows.schedule
   - windows.tasks
   - windows.versions
+  - windows.winget

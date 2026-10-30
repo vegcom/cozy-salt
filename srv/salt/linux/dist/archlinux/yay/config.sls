@@ -42,7 +42,7 @@ yay_conf_{{ username }}:
         yay.opt.double_confirm = false
         yay.opt.editor = "vim"
         yay.opt.editor_flags = "-u /dev/null"
-        yay.opt.git_flags = "-c core.hooksPath=/dev/null -c init.templateDir=/dev/null -c include.path=/dev/null -c core.attributesfile=/dev/null -c core.excludesfile=/dev/null"
+        yay.opt.git_flags = "-c core.hooksPath=/dev/null -c init.templateDir=/dev/null -c include.path=/dev/null -c core.attributesfile=/dev/null -c core.excludesfile=/dev/null -c protocol.git.allow=always -c protocol.ssh.allow=always -c protocol.https.allow=always -c protocol.http.allow=user"
         yay.opt.keep_src = true
         yay.opt.max_concurrent_downloads = 0
         yay.opt.rebuild = "tree"

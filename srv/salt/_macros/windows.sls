@@ -213,7 +213,7 @@ Output generates:
     {%- if not bg %}
     - hide_output: True
     - output_loglevel: quiet
-    - timeout: 1800
+    - timeout: 300
     - stateful: True
     {%- else %}
     - bg: {{ bg | string | lower }}

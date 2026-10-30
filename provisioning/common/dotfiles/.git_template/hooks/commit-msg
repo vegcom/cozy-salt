@@ -3,7 +3,7 @@
 # format: type: description
 # valid types based on project conventions
 
-# Managed by Salt - DO NOT EDIT MANUALLY
+# TEMPLATE: https://github.com/vegcom/cozy-salt/tree/develop/provisioning/common/dotfiles/.git_template/hooks/commit-msg
 
 import re
 import sys
@@ -12,7 +12,6 @@ msg_file = sys.argv[1]
 with open(msg_file, encoding="utf-8") as f:
     msg = f.read()
 
-# find subject (first non-comment, non-empty line)
 subject = ""
 for line in msg.splitlines():
     stripped = line.strip()
@@ -20,7 +19,6 @@ for line in msg.splitlines():
         subject = stripped
         break
 
-# skip merge commits, fixup/squash
 skip_prefixes = ("Merge ", "Revert ", "fixup!", "squash!")
 if any(subject.startswith(p) for p in skip_prefixes):
     sys.exit(0)
@@ -39,5 +37,7 @@ if not re.match(pattern, subject):
     print()
     print("  valid types: feat fix fixme chore docs tidy")
     print("               refactor test wip security style perf ci build")
+    print()
+    sys.exit(1)
     print()
     sys.exit(1)

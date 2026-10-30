@@ -3,81 +3,83 @@
 
 # Keep Arch's append_path, but rename it
 # so we don't pollute global space later
-safe_append_path () {
-    case ":$PATH:" in
-        *:"$1":*) return ;;  # already there
-        *) PATH="${PATH:+$PATH:}$1" ;;
-    esac
+safe_append_path() {
+	case ":$PATH:" in
+	*:"$1":*) return ;; # already there
+	*) PATH="${PATH:+$PATH:}$1" ;;
+	esac
 }
 
 safe_comp_deprecate_func() {
-    # Must have at least one argument (deprecated function name)
-    if [ $# -lt 1 ]; then
-        return 1
-    fi
+	# Must have at least one argument (deprecated function name)
+	if [ $# -lt 1 ]; then
+		return 1
+	fi
 
-    old="$1"
-    new="$2"
+	old="$1"
+	new="$2"
 
-    # Initialize tracking variable if needed
-    if [ -z "$_comp_deprecate_seen" ]; then
-        _comp_deprecate_seen=""
-    fi
+	# Initialize tracking variable if needed
+	if [ -z "$_comp_deprecate_seen" ]; then
+		_comp_deprecate_seen=""
+	fi
 
-    case " $_comp_deprecate_seen " in
-        *" $old "*) ;;  # already warned
-        *)
-            echo "bash-completion: function '$old' is deprecated; use '$new' instead" >&2
-            _comp_deprecate_seen="$_comp_deprecate_seen $old"
-            ;;
-    esac
+	case " $_comp_deprecate_seen " in
+	*" $old "*) ;; # already warned
+	*)
+		echo "bash-completion: function '$old' is deprecated; use '$new' instead" >&2
+		_comp_deprecate_seen="$_comp_deprecate_seen $old"
+		;;
+	esac
 
-    return 0
+	return 0
 }
 
 safe_comp_deprecate_var() {
-    # NIT: must replicate original function
-    #     * stub is unsafe and untrustworthy
-    :;
+	# NIT: must replicate original function
+	#     * stub is unsafe and untrustworthy
+	:
 }
 
 cozy_render() {
-    _states=$(salt-call -l quiet state.show_states 2>/dev/null |
-              awk '!/^local:/ && /^[[:space:]]*-/ {print $NF}' |
-              sed 's|\.|/|g')
+	_states=$(salt-call -l quiet state.show_states 2>/dev/null |
+		awk '!/^local:/ && /^[[:space:]]*-/ {print $NF}' |
+		sed 's|\.|/|g')
 
-    if [ -z "$_states" ]; then
-        echo "Error: No states found or salt-call failed." >&2
-        return 1
-    fi
+	if [ -z "$_states" ]; then
+		echo "Error: No states found or salt-call failed." >&2
+		return 1
+	fi
 
-    echo "$_states" | while read -r state; do
-        [ -z "$state" ] && continue
-        echo "=== Rendering: salt://${state}.sls ==="
-        salt-call -l quiet slsutil.renderer "salt://${state}.sls" default_renderer=jinja
-    done
+	echo "$_states" | while read -r state; do
+		[ -z "$state" ] && continue
+		echo "=== Rendering: salt://${state}.sls ==="
+		salt-call -l quiet slsutil.renderer "salt://${state}.sls" default_renderer=jinja
+	done
 }
 
-
-cozy_persist_shell(){
+cozy_persist_shell() {
 	# Persist a shell a in a very lazy way
-  if [ -n "$1" ];then
-    _host=${1}
-    _port=${2:-22}
-    while ! ssh "${_host}" ; do sleep 15 ; nc -vzw 5 "${_host}" "${_port}" ; done
-  fi
+	if [ -n "$1" ]; then
+		_host=${1}
+		_port=${2:-22}
+		while ! ssh "${_host}"; do
+			sleep 15
+			nc -vzw 5 "${_host}" "${_port}"
+		done
+	fi
 }
 
 gclean() {
-  # Marker text to stop at; default stays your original
-  __marker="${1}"
+	# Marker text to stop at; default stays your original
+	__marker="${1}"
 
-  if [ -z "${__marker}" ];then
-    echo "Usage: gclean <marker>"
-    return 1
-  fi
+	if [ -z "${__marker}" ]; then
+		echo "Usage: gclean <marker>"
+		return 1
+	fi
 
-  _MARK="$__marker" git filter-repo --force --message-callback '
+	_MARK="$__marker" git filter-repo --force --message-callback '
 import os
 
 marker = os.environ.get("_MARK", "").encode()
@@ -94,16 +96,16 @@ return b"\n".join(cleaned)
 '
 }
 
-cozy_boot(){
-	__cozy_boot_help(){
+cozy_boot() {
+	__cozy_boot_help() {
 		echo "last-boot - time of last boot (epoch)"
 	}
-  __cozy_boot_last_boot(){
-    # uptime - epoch == last boot time
-    awk '{print int(systime() - $1)}' /proc/uptime || return 1
-  }
-  case $1 in
-    last-boot) __cozy_boot_last_boot;;
-		*) __cozy_boot_help;;
-  esac
+	__cozy_boot_last_boot() {
+		# uptime - epoch == last boot time
+		awk '{print int(systime() - $1)}' /proc/uptime || return 1
+	}
+	case $1 in
+	last-boot) __cozy_boot_last_boot ;;
+	*) __cozy_boot_help ;;
+	esac
 }

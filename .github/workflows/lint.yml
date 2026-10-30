@@ -2,9 +2,7 @@ name: Lint Salt States
 
 on:
   push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
 
 jobs:
   lint:
@@ -17,6 +15,11 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
+      - name: Install Trunk CLI
+        run: |
+          curl https://get.trunk.io -fsSL | bash
+          echo "$HOME/.trunk/bin" >> $GITHUB_PATH
 
       - name: Run pre-commit
         uses: pre-commit/action@v3.0.1

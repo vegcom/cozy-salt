@@ -9,23 +9,26 @@
 {%- set distcc_port = salt['pillar.get']('distcc:port', 3632) %}
 {%- set distcc_jobs_per_host = salt['pillar.get']('distcc:jobs_per_host', 2) %}
 {%- set distcc_include_minions = salt['pillar.get']('distcc:include_minions', True) %}
-{%- if distcc_client_enabled and not is_container %}
+
 {%- set distcc_hosts = [] %}
+{%- set distcc_hostnames = [] %}
+{%- set minion_entries = [] %}
+
+{%- if distcc_client_enabled and not is_container %}
   {%- set distcc_hostnames = salt['headscale.get_distcc_hosts'](prefix=distcc_prefix).split() %}
-  {%- set minion_entries = [] %}
+
   {%- if distcc_include_minions %}
-      {%- set minion_ids = salt['mine.get']('*', 'id').keys() | list %}
-      {%- set minion_cpus = salt['mine.get']('*', 'num_cpus') %}
-      {%- for minion_id in minion_ids | sort %}
-        {%- if minion_id not in distcc_hostnames %}
-          {%- set cpus = minion_cpus.get(minion_id) %}
-          {%- set jobs = ((cpus // 2) | int) if cpus and cpus > 1 else distcc_jobs_per_host %}
-          {%- do minion_entries.append(minion_id ~ ':' ~ distcc_port ~ '/' ~ jobs) %}
-        {%- endif %}
-      {%- endfor %}
-    {%- endif %}
-{%- endif %}
-{%- if distcc_hostnames or minion_entries %}
+    {%- set minion_ids = salt['mine.get']('*', 'id').keys() | list %}
+    {%- set minion_cpus = salt['mine.get']('*', 'num_cpus') %}
+    {%- for minion_id in minion_ids | sort %}
+      {%- if minion_id not in distcc_hostnames %}
+        {%- set cpus = minion_cpus.get(minion_id) %}
+        {%- set jobs = ((cpus // 2) | int) if cpus and cpus > 1 else distcc_jobs_per_host %}
+        {%- do minion_entries.append(minion_id ~ ':' ~ distcc_port ~ '/' ~ jobs) %}
+      {%- endif %}
+    {%- endfor %}
+  {%- endif %}
+
   {%- for host in minion_entries %}
     {%- do distcc_hosts.append(host) %}
   {%- endfor %}

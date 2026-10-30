@@ -93,6 +93,7 @@
     "statusBar": true
   },
   "files.associations": {
+    ".bandit": "ini",
     ".env.example": "env",
     ".gitattributes*": "gitconfig",
     ".gitconfig*": "gitconfig",
@@ -102,7 +103,6 @@
     ".salt-lint": "yaml",
     ".shellcheckrc": "shellscript",
     ".vscode/settings.json": "json",
-    "*.bandit": "ini",
     "*.json": "json",
     "*.sls": "jinja",
     "*.sls.example": "jinja",

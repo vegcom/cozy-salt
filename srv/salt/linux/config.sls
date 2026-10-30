@@ -36,6 +36,11 @@
                 recurse=True, clean=True,
                 user='root', group='root',) }}
 
+{{ managed_tree('/etc/login.d',
+                'salt://linux/files/etc-login.d/',
+                recurse=True, clean=False,
+                user='root', group='root',) }}
+
 {#- /opt/cozy #}
 {{ managed_tree('/opt/cozy',
                 'salt://linux/files/opt-cozy',

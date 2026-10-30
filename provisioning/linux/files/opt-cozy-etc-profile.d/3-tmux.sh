@@ -9,13 +9,13 @@ export TMUX_BASE_PATH="${TMUX_TMPDIR}/tmux-${EUID:-$(id -u)}"
 export TMUX_SOCKET="${TMUX_SOCKET:-default}"
 
 if [ ! -d "${TMUX_TMPDIR}" ]; then
-  mkdir -m 0777 -p "${TMUX_TMPDIR}"
+	mkdir -m 0777 -p "${TMUX_TMPDIR}"
 	mkdir -m 0700 "${TMUX_BASE_PATH}"
 fi
 
 # If we're in a persistent session, make sure we use the right socket
 if [ -n "$TMUX" ]; then
-    export TMUX_SOCKET="$TMUX_SOCKET"
+	export TMUX_SOCKET="$TMUX_SOCKET"
 fi
 
 # Helpful aliases

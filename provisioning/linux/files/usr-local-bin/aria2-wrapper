@@ -7,33 +7,32 @@ OUT="$2"
 
 # Try aria2c first if available
 if command -v aria2c >/dev/null 2>&1; then
-    if aria2c \
-        --check-certificate=false \
-        --allow-overwrite=true \
-        --continue=true \
-        --file-allocation=none \
-        --log-level=quiet \
-        --max-tries=8 \
-        --retry-wait=5 \
-        --max-connection-per-server=8 \
-        --max-file-not-found=10 \
-        --min-split-size=1M \
-        --no-conf \
-        --remote-time=true \
-        --summary-interval=120 \
-        --timeout=20 \
-        --connect-timeout=10 \
-        --retry-on-400=true \
-        --retry-on-host-error=true \
-        --dir=/ \
-        --out "$OUT" \
-        "$URL" 2>/dev/null
-    then
-        exit 0
-    fi
+	if aria2c \
+		--check-certificate=false \
+		--allow-overwrite=true \
+		--continue=true \
+		--file-allocation=none \
+		--log-level=quiet \
+		--max-tries=8 \
+		--retry-wait=5 \
+		--max-connection-per-server=8 \
+		--max-file-not-found=10 \
+		--min-split-size=1M \
+		--no-conf \
+		--remote-time=true \
+		--summary-interval=120 \
+		--timeout=20 \
+		--connect-timeout=10 \
+		--retry-on-400=true \
+		--retry-on-host-error=true \
+		--dir=/ \
+		--out "$OUT" \
+		"$URL" 2>/dev/null; then
+		exit 0
+	fi
 fi
 
 # fallback to built-in downloader
 echo "aria2c failed, falling back to curl/wget-style downloader"
-curl -L --fail --retry 5 --retry-delay 5 -o "$OUT" "$URL" \
-  || wget --tries=5 --waitretry=5 -O "$OUT" "$URL"
+curl -L --fail --retry 5 --retry-delay 5 -o "$OUT" "$URL" ||
+	wget --tries=5 --waitretry=5 -O "$OUT" "$URL"

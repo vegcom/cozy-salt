@@ -5,8 +5,6 @@
 # Manages environment for all users to use system-wide /opt/nvm installation
 # NPM packages are installed with NPM_CONFIG_PREFIX=/opt/nvm, placing binaries in /opt/nvm/bin
 
-
-
 # Set NVM directory
 export NVM_DIR="/opt/nvm"
 
