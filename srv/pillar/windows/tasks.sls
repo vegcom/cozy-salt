@@ -37,3 +37,7 @@ scheduled_tasks:
     - name: winget_update
       file: windows/tasks/update/winget.xml
       enabled: true
+  gaming:
+    - name: steam
+      file: windows/tasks/gaming/steam.xml
+      enabled: true
