@@ -12,7 +12,7 @@ plugins:
   sources:
     - id: trunk
       ref: v1.11.0
-      uri: https://github.com/trunk-io/plugins
+      uri: 'https://github.com/trunk-io/plugins'
 runtimes:
   enabled:
     - node@22.16.0
@@ -63,33 +63,44 @@ lint:
     - taplo@0.10.0
     - trufflehog@3.97.9
     - yamllint@1.38.0
-
   disabled:
     - black
   ignore:
-    - linters: [yamllint]
+    - linters:
+        - yamllint
       paths:
         - .github/workflows/*.yml
-    - linters: [pinact]
+    - linters:
+        - pinact
       paths:
         - .github/workflows/*.yml
-    - linters: [markdownlint]
+    - linters:
+        - markdownlint
       paths:
         - .github/PULL_REQUEST_TEMPLATE/*.md
         - .github/ISSUE_TEMPLATE/*.md
         - CODE_OF_CONDUCT.md
         - CONTRIBUTING.md
         - SECURITY.md
-    - linters: [pylint]
+    - linters:
+        - pylint
       paths:
         - provisioning/common/dotfiles/.git_template/hooks/*
-    - linters: [flake8]
+    - linters:
+        - flake8
       paths:
         - provisioning/common/dotfiles/.git_template/hooks/*
-    - linters: [shfmt]
+    - linters:
+        - shfmt
       paths:
         - .envrc
         - provisioning/common/files/opt-cozy-bin/presence
+    - linters:
+        - ALL
+      security: true
+      paths:
+        - package-lock.json
+        - package.json
   definitions:
     - name: shfmt
       commands:
@@ -100,23 +111,34 @@ lint:
           formatter: true
           in_place: true
           output: shfmt
-          run: shfmt --apply-ignore -w -s ${target}
-          success_codes: [0, 1]
-      tools: [shfmt]
+          run: 'shfmt --apply-ignore -w -s ${target}'
+          success_codes:
+            - 0
+            - 1
+      tools:
+        - shfmt
       suggest_if: files_present
-      affects_cache: [.editorconfig]
+      affects_cache:
+        - .editorconfig
       version_command:
-        parse_regex: ${semver}
+        parse_regex: '${semver}'
         run: shfmt --version
     - name: osv-scanner
-      files: [lockfile]
-      tools: [osv-scanner]
+      files:
+        - lockfile
+      tools:
+        - osv-scanner
       description: Checks for known vulnerabilities in your dependencies
       commands:
         - name: scan
           output: sarif
-          run: osv-scanner --config=${workspace}/osv-scanner.toml --format=json --lockfile=${target}
-          success_codes: [0, 1, 128]
+          run: >-
+            osv-scanner --config=${workspace}/osv-scanner.toml --format=json
+            --lockfile=${target}
+          success_codes:
+            - 0
+            - 1
+            - 128
           read_output_from: stdout
           is_security: true
 actions:
