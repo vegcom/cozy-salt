@@ -1,4 +1,5 @@
 scheduled_tasks:
+
   wsl:
     - name: wsl_autostart
       file: windows/tasks/wsl/wsl_autostart.xml
@@ -23,6 +24,15 @@ scheduled_tasks:
     - name: ipfs
       file: windows/tasks/net/ipfs.xml
       enabled: True
+  update:
+    - name: winget_update
+      file: windows/tasks/update/winget.xml
+      enabled: True
+  gaming:
+    - name: steam
+      file: windows/tasks/gaming/steam.xml
+      enabled: True
+
   kubernetes:
     - name: docker_registry_port_forward
       file: windows/tasks/kubernetes/docker_registry_port_forward.xml
@@ -33,11 +43,3 @@ scheduled_tasks:
     - name: open_webui_port_forward
       file: windows/tasks/kubernetes/open_webui_port_forward.xml
       enabled: False
-  update:
-    - name: winget_update
-      file: windows/tasks/update/winget.xml
-      enabled: true
-  gaming:
-    - name: steam
-      file: windows/tasks/gaming/steam.xml
-      enabled: true
