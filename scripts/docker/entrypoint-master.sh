@@ -29,7 +29,7 @@ if [[ -d ${preload_dir} ]]; then
 	echo "=== Pre-accepting minion keys ==="
 	mkdir -p "${minions_dir}"
 	denied_dir="/etc/salt/pki/master/minions_denied"
-	for key_file in "${preload_dir}"/*.pub; do  # shellcheck disable=SC2066
+	for key_file in "${preload_dir}"/*.pub; do # shellcheck disable=SC2066
 		if [[ -f ${key_file} ]]; then
 			minion_id=$(basename "${key_file}" .pub)
 			# Remove from denied (stale denied + valid accepted = auth failure)
@@ -135,11 +135,11 @@ salt-api -d --log-level=info --log-file-level="${SALT_API_LOG_LEVEL:-warning}"
 		known_good_key="/etc/salt/pki/minion/minion.pub"
 	fi
 
-	if [[ -n "${known_good_key}" ]]; then
+	if [[ -n ${known_good_key} ]]; then
 		echo "[entrypoint] INFO: pinning known-good key from ${known_good_key} to ${preload_dir}/salt.pub"
 		cp -v "${known_good_key}" "${preload_dir}"/salt.pub
 
-		if [[ -f "${pending_key}" ]]; then
+		if [[ -f ${pending_key} ]]; then
 			if cmp -s "${known_good_key}" "${pending_key}"; then
 				echo "[entrypoint] INFO: pending key matches known-good key; accepting for id 'salt'"
 				cp -v "${pending_key}" /etc/salt/pki/master/minions/salt
