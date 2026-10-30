@@ -26,11 +26,11 @@ $steamProc = Get-Process -Name "steam" -ErrorAction SilentlyContinue
 
 if ($steamProc) {
     Write-Host "Steam is running. Attempting graceful shutdown..."
-    
+
     $steamProc | ForEach-Object { $_.CloseMainWindow() } | Out-Null
-    
+
     $null = Wait-Process -Name "steam" -Timeout 3 -ErrorAction SilentlyContinue
-    
+
     if (Get-Process -Name "steam" -ErrorAction SilentlyContinue) {
         Write-Warning "Steam didn't close gracefully. Force killing..."
         Stop-Process -Name "steam" -Force -ErrorAction SilentlyContinue
@@ -38,8 +38,8 @@ if ($steamProc) {
     }
 }
 
-if ($mode -match '^(m|s|mini|small)$') { 
-    $arguments += "steam://open/minigameslist" 
+if ($mode -match '^(m|s|mini|small)$') {
+    $arguments += "steam://open/minigameslist"
 }
 
 Write-Host "Launching Steam with custom parameters..."

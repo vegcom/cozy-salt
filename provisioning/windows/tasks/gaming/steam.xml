@@ -15,7 +15,7 @@
   <Principals>
     <Principal id="Author">
       <LogonType>InteractiveToken</LogonType>
-      <RunLevel>HighestAvailable</RunLevel>
+      <RunLevel>LeastPrivilege</RunLevel>
     </Principal>
   </Principals>
   <Settings>
@@ -45,8 +45,8 @@
   </Settings>
   <Actions Context="Author">
     <Exec>
-      <Command>cozy-steam</Command>
-      <Arguments>daemon</Arguments>
+      <Command>pwsh</Command>
+      <Arguments>-NoProfile -WindowStyle Hidden -Command C:/opt/cozy/bin/cozy-steam.ps1</Arguments>
     </Exec>
   </Actions>
 </Task>
