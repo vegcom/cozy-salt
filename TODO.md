@@ -37,18 +37,18 @@
             gap: `salt_minion.sls`, `sshd.sls` (already handled differently via `require_in`
         - `context`, probably fine), `tor.sls` (`.shadowsocks` include, check),
           `windhawk.sls`
-  - [ ] acl enforcement and default envs_dir to /opt/miniforge3/envs
+  - [x] acl enforcement and default envs_dir to /opt/miniforge3/envs
   - [ ] install/config sysmon on windows (e.g. `sysmon -accepteula -i`)
-  - [ ] incorrect naming `file.directory` accepts `makedirs` not `mkdirs` [salt.states.file](https://docs.saltproject.io/en/3006/ref/states/all/salt.states.file.html)
+  - [x] incorrect naming `file.directory` accepts `makedirs` not `mkdirs` [salt.states.file](https://docs.saltproject.io/en/3006/ref/states/all/salt.states.file.html)
     - [ ] identify all instances of `file.directory` and `mkdirs` and adjust.
     - peace be with you 🙏
   - DistCC
     - [ ] have salt deploy distcc containers per avaial host.
-  - [ ] windows/winget move to github.com/June-Cozy/ backing to prevent having to eval making list
+  - [x] windows/winget move to github.com/June-Cozy/ backing to prevent having to eval making list
   - galileo gate for `provisioning/linux/files/etc-logind.conf.d/10-steamdeck-tuning.conf`
-  - [ ] Deck srv/salt/linux/hardware/galileo.sls TODOs
-  - [ ] update srv/salt/{linux,winodws}/*.sls where applicable ( whre getting release from github )
+  - [x] Deck srv/salt/linux/hardware/galileo.sls TODOs
+  - [x] update srv/salt/{linux,winodws}/*.sls where applicable ( whre getting release from github )
     - reference: srv/salt/windows/nvm.sls
-    - [ ] identify and update others to match reference scheme.
+    - [x] identify and update others to match reference scheme.
   - [ ] Evaluate [RHEL tester failing](https://github.com/vegcom/cozy-salt/actions/runs/38162586655/job/114538428557?pr=33)
     - [ ] keying timeout until failure.
