@@ -10,11 +10,10 @@ scripts/
 │   ├── entrypoint-master.sh
 │   └── entrypoint-minion.sh
 ├── enrollment/           Manual system provisioning scripts
-│   ├── install-linux-minion.sh
-│   ├── install-windows-minion.ps1
-│   └── entrypoint-minion.ps1
-├── fix-permissions.sh    Permission management utility
-├── generate-windows-keys.sh & .ps1  Key generation utilities
+│   ├── enroll.ps1
+│   └── enroll.sh
+├── util/
+│   └── fix-permissions.sh    Permission management utility
 └── pki/                  Generated at runtime (see below)
 ```
 
@@ -52,7 +51,7 @@ These scripts enroll existing systems (not in containers) as Salt minions.
 - Usage:
 
   ```bash
-  curl https://your-repo/scripts/enrollment/install-linux-minion.sh | sudo bash
+  curl https://your-repo/scripts/enrollment/enroll.sh | sudo bash
   ```
 
 - Requirements: Sudo access, internet connectivity
