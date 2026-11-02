@@ -115,6 +115,7 @@ services:
     environment:
       MANIFEST_REPO_URL: https://github.com/June-Cozy/cozy-winget.git
       MANIFEST_PULL_INTERVAL: '86400'
+      MANIFEST_DEBUG: ${MANIFEST_DEBUG:-1}
     networks:
       - salt-net
     labels:
