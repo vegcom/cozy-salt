@@ -1,4 +1,4 @@
-#!/opt/miniforge3/python
+#!/usr/bin/env python
 # commit-msg: enforce conventional commit style
 # format: type: description
 # valid types based on project conventions

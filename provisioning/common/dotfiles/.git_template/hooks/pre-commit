@@ -1,4 +1,4 @@
-#!/opt/miniforge3/python
+#!/usr/bin/env python
 # hook-router: cross-platform directory context manager
 # format: reads environment.yml to execute directly via Conda paths
 

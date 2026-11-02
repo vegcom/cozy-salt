@@ -1,4 +1,4 @@
-#!/opt/miniforge3/python
+#!/usr/bin/env python
 
 import os
 import sys

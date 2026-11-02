@@ -1,4 +1,4 @@
-#!/opt/miniforge3/python
+#!/usr/bin/env python
 # prepare-commit-msg: prepend branch name hint to commit message
 # skips merge commits, amends, and squash/fixup
 
