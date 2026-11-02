@@ -1,8 +1,9 @@
 #!/usr/bin/env python
+
+# pylint: disable=C0103 disable=W0101 disable=E0401 disable=W0718
+
 # hook-router: cross-platform directory context manager
 # format: reads environment.yml to execute directly via Conda paths
-
-# TEMPLATE: https://github.com/vegcom/cozy-salt/tree/develop/provisioning/common/dotfiles/.git_template/hooks/pre-commit
 
 import subprocess
 import sys

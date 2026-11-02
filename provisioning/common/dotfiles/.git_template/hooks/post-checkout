@@ -1,8 +1,9 @@
 #!/usr/bin/env python
+
+# pylint: disable=C0103 disable=W0101 disable=E0401 disable=W0718
+
 # post-checkout: update submodules after branch switch
 # args: prev_head new_head is_branch_checkout (1=branch, 0=file)
-
-# TEMPLATE: https://github.com/vegcom/cozy-salt/tree/develop/provisioning/common/dotfiles/.git_template/hooks/post-checkout
 
 import subprocess
 import sys
