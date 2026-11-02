@@ -8,7 +8,6 @@ OUT="$2"
 # Try aria2c first if available
 if command -v aria2c >/dev/null 2>&1; then
 	if aria2c \
-		--check-certificate=false \
 		--allow-overwrite=true \
 		--continue=true \
 		--file-allocation=none \
