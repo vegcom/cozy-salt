@@ -1,0 +1,35 @@
+#!/usr/bin/env python
+
+# pylint: disable=C0103 disable=W0101 disable=E0401 disable=W0718
+
+# post-checkout: update submodules after branch switch
+# args: prev_head new_head is_branch_checkout (1=branch, 0=file)
+
+import subprocess
+import sys
+
+HAS_GIT_PYTHON = True
+try:
+    from git import Repo
+except ImportError:
+    HAS_GIT_PYTHON = False
+
+is_branch_checkout = sys.argv[3] if len(sys.argv) == 4 else "0"
+if is_branch_checkout != "1":
+    sys.exit(0)
+
+if HAS_GIT_PYTHON:
+    try:
+        repo = Repo(".")
+        for submodule in repo.submodules:
+            submodule.update(init=True, recursive=True)
+        sys.exit(0)
+    except Exception:
+        HAS_GIT_PYTHON = False
+
+if not HAS_GIT_PYTHON:
+    try:
+        result = subprocess.run(["git", "submodule", "update", "--init", "--recursive"])
+        sys.exit(result.returncode)
+    except FileNotFoundError:
+        pass

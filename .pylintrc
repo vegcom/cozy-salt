@@ -6,7 +6,9 @@ disable =
     C0116, # missing-function-docstring (for test functions)
     W1510  # subprocess.run missing check= parameter
 
-ignore-paths=^provisioning/common/dotfiles/.git_template/hooks.*$
+ignore-paths=
+    ^provisioning/common/dotfiles/.git_template/hooks.*$
+    ^.githooks.*$
 
 [DESIGN]
 max-args = 7
