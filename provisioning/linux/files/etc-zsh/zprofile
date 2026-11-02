@@ -2,13 +2,7 @@
 # Managed by Salt - DO NOT EDIT MANUALLY
 
 # shellcheck disable=SC1009
-if [ -d /etc/profile.d ]; then
-  # shellcheck  disable=SC1072 disable=SC1073
-  for i in $(find /etc/profile.d/*.sh 2>/dev/null|sort) ; do
-    if [ -r "$i" ]; then
-      # shellcheck disable=SC1090
-      . "$i"
-    fi
-  done
-  unset i
+if [ -s /etc/profile ]; then
+  # shellcheck disable=SC1090
+  . /etc/profile
 fi

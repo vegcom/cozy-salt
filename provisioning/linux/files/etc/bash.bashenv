@@ -7,6 +7,15 @@ if [ -d /etc/environment ]; then
   . /etc/environment
 fi
 
+if [ -d /etc/environment.d/ ]; then
+  for i in $(find /etc/environment.d/*.conf 2>/dev/null|sort) ; do
+    if [ -r "$i" ]; then
+      . "$i"
+    fi
+  done
+  unset i
+fi
+
 if [ -d /opt/cozy/etc/environment.d ]; then
   for i in $(find /opt/cozy/etc/environment.d/*.sh 2>/dev/null|sort) ; do
     if [ -r "$i" ]; then
