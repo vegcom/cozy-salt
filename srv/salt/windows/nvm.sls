@@ -1,5 +1,6 @@
 # Windows Node.js version management via nvm-windows
 # System-wide installation to C:\opt\nvm (consistent with Linux /opt/nvm)
+# https://docs.nvm-windows.com/install/installers/
 {%- from "_macros/windows.sls" import win_cmd %}
 
 {#- NVM configuration #}
@@ -22,19 +23,19 @@
 
 {%- set nvm_tmp = "C:/opt/cozy/cache/nvm-setup.exe" %}
 
-nvm_installer:
-  file.managed:
-    - name: {{ nvm_tmp }}
-    - source: {{ installer_url }}
-    - skip_verify: True
-    - mkdirs: True
+{%- from '_macros/windows.sls' import get_users_with_profiles, get_winget_system_path, get_user_winget_info, winget_batch_install with context %}
 
-nvm_install:
-  cmd.run:
-    - name: >
-        & "{{ nvm_tmp }}" /SILENT /DIR={{ nvm_path | replace("/", "\\") }}
-    - require:
-      - file: nvm_installer
+{%- set users_with_profiles = get_users_with_profiles().split(',') | reject('equalto', '') | list %}
+{%- set winget_path = get_winget_system_path() | trim %}
+{%- set user_info = {} %}
+{%- set winget_users = [] %}
+
+{%- for user in users_with_profiles %}
+  {%- set info = get_user_winget_info(user) | load_json %}
+  {%- if info %}
+    {%- do user_info.update({user: info}) %}
+  {%- endif %}
+{%- endfor %}
 
 nvm_npm_settings:
   file.managed:
@@ -43,8 +44,6 @@ nvm_npm_settings:
       - 'root: {{ nvm_path }}'
       - 'path: {{ node_path }}'
       - 'symlink: {{ node_path }}'
-    - require:
-      - cmd: nvm_install
 
 nvm_home:
   reg.present:
@@ -52,8 +51,6 @@ nvm_home:
     - vname: NVM_HOME
     - vdata: {{ nvm_path | replace("/", "\\") }}
     - vtype: REG_SZ
-    - require:
-      - cmd: nvm_install
 
 # NVM_SYMLINK tells nvm-windows where to create the active node symlink/junction
 nvm_symlink:
@@ -62,8 +59,16 @@ nvm_symlink:
     - vname: NVM_SYMLINK
     - vdata: {{ node_path }}
     - vtype: REG_SZ
-    - require:
-      - cmd: nvm_install
+
+{%- for user in users_with_profiles %}
+  {%- set winget_user = user_info.get(user, {}).get("UserName", false) %}
+  {%- set winget_uri = user_info.get(user, {}).get("winget_uri", false) %}
+  {%- if winget_uri and winget_user and salt['file.file_exists'](winget_uri) %}
+    {%- set pkgs = ['AuthorSoftware.NVMWindows'] %}
+    {%- do winget_users.append(winget_user) %}
+{{ winget_batch_install('nvm_install_' ~ winget_user, pkgs, winget_user, winget_uri) }}
+  {%- endif %}
+{%- endfor %}
 
 install_default_node_version:
   cmd.run:
@@ -71,9 +76,13 @@ install_default_node_version:
     - shell: pwsh
     - unless: {{ nvm_bin }} list | findstr "{{ nvm_version }}"
     - require:
-      - cmd: nvm_install
       - file: nvm_npm_settings
       - reg: nvm_symlink
+{%- for winget_user in winget_users %}
+  {%- if winget_user %}
+      - cmd: nvm_install_{{ winget_user }}
+  {%- endif %}
+{%- endfor %}
 
 # Remove nodejs directory if it exists as real directory (not symlink)
 # nvm use needs to create this as a junction/symlink

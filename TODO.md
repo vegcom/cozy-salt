@@ -37,5 +37,8 @@
             gap: `salt_minion.sls`, `sshd.sls` (already handled differently via `require_in`
         - `context`, probably fine), `tor.sls` (`.shadowsocks` include, check),
           `windhawk.sls`
-
-  - [ ] install/config sysmon on windows (e.g. `sysmon -accepteula -i`)
+  - [ ] chore:windows-sysmon
+    - install/config sysmon on windows (e.g. `sysmon -accepteula -i`)
+  - [ ] refactor:windows-nvm
+    - presently the installer leveraged in windows/nvm.sls no longer supports a custom path
+    - this should be addressed in part by having windows common.nvm branch facilitate per user node installs
