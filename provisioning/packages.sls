@@ -172,7 +172,7 @@ windows:
     communication: [Telegram.TelegramDesktop, Vencord.Vesktop]
     compression: [Giorgiotani.Peazip]
     desktop_customization: [AutoHotkey.AutoHotkey, File-New-Project.EarTrumpet]
-    development: [GitHub.GitHubDesktop, GitHub.cli, Gitleaks.Gitleaks, JetBrains.IntelliJIDEA.Community, Microsoft.VisualStudio.BuildTools, Microsoft.VisualStudio.Community, Microsoft.VisualStudioCode, Microsoft.VisualStudioCode.CLI, Microsoft.VisualStudioCode.Insiders, Microsoft.VisualStudioCode.Insiders.CLI, MSYS2.MSYS2, NSIS.NSIS, Kitware.CMake, Anthropic.ClaudeCode, BurntSushi.ripgrep.MSVC, hoppscotch.Hoppscotch, Microsoft.VCLibs.Desktop.14, NASM.NASM, DenoLand.Deno, direnv.direnv, Hashicorp.Terraform, Hashicorp.TerraformLanguageServer, nektos.act, waterlan.dos2unix]
+    development: [GitHub.GitHubDesktop, GitHub.cli, Gitleaks.Gitleaks, JetBrains.IntelliJIDEA.Community, Microsoft.VisualStudio.BuildTools, Microsoft.VisualStudio.Community, Microsoft.VisualStudioCode, Microsoft.VisualStudioCode.CLI, Microsoft.VisualStudioCode.Insiders, Microsoft.VisualStudioCode.Insiders.CLI, MSYS2.MSYS2, NSIS.NSIS, Kitware.CMake, Anthropic.ClaudeCode, BurntSushi.ripgrep.MSVC, hoppscotch.Hoppscotch, Microsoft.VCLibs.Desktop.14, NASM.NASM, DenoLand.Deno, direnv.direnv, Hashicorp.Terraform, Hashicorp.TerraformLanguageServer, nektos.act, waterlan.dos2unix, BurntSushi.ripgrep.GNU]
     editor: [Obsidian.Obsidian]
     file_management: [7zip.7zip, WinSCP.WinSCP, voidtools.Everything.Cli, voidtools.Everything]
     games: [Valve.Steam, derrod.legendary, ItchIo.Itch, mtkennerly.ludusavi, Playnite.Playnite, SpecialK.SpecialK]
@@ -208,7 +208,7 @@ windows:
 # LANGUAGE-SPECIFIC PACKAGES
 # ============================================================================
 
-pip_base: [pip, setuptools, wheel, pipx, uv, pre-commit, ipython, pytest, mypy, ruff, pipenv, pixi, poetry, gitpython, djlint]
+pip_base: [pip, setuptools, wheel, pipx, uv, pre-commit, ipython, pytest, mypy, ruff, pipenv, pixi, poetry, gitpython, djlint, pylint]
 
 npm_global:
   - "@angular/cli"
