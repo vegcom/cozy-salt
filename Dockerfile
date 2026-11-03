@@ -82,7 +82,7 @@ RUN mkdir -p /srv/salt/files /srv/pillar /srv/data /var/cache/salt /var/log/salt
     chown -R salt:salt /srv /var/cache/salt /var/log/salt /etc/salt
 
 # Copy pre-generated public keys for test minions (pre-acceptance)
-# Entrypoint copies these to /etc/salt/pki/master/minions/ on startup
+# Entrypoint copies these to /etc/salt/pki/minion/minions_preload/ on startup
 COPY --from=keygen /keys/*.pub /etc/salt/pki/minion/minions_preload/
 
 # Enable master.d config drop-in directory
