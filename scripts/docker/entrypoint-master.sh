@@ -123,10 +123,8 @@ conn.close()
 if not os.path.exists(target):
 		shutil.move(tmp, target)
 		os.chmod(target, 0o664)
-		print('  + salt_returns.db created (WAL mode)')
 else:
 		os.unlink(tmp)
-		print('  + salt_returns.db already exists, skipping')
 
 "
 chown salt:salt /srv/data/sqlite/salt_returns.db 2>/dev/null || true
@@ -200,89 +198,102 @@ avahi-daemon --no-drop-root --daemonize --debug &
 		echo "[entrypoint:${__l_name}] WARNING: no known-good local key found at ${known_good_key}"
 	fi
 
-	salt '*' mine.update --timeout 10 1>/dev/null 2>/dev/null --output quiet || true
-	salt-run event.fire '{}' 'cozy/master/online'
-	echo "[entrypoint:${__l_name}] INFO: cozy/master/online fired"
-
 ) &
 
 # salt key handler
 
 (
   __l_name='key'
-	echo "[entrypoint:${__l_name}] INFO: prep minion keys"
+  echo "[entrypoint:${__l_name}] INFO: prep minion keys"
 
-  if ! cmp -s "${preload_dir}/salt" "${preauth_dir}/salt" ; then
-  printf '[entrypoint:%s] WARNING: keys differ %s %s\n' "${__l_name}" "${preload_dir}/salt" "${preauth_dir}/salt"
-  printf '[entrypoint:%s] INFO: removing %s..\n' "${preload_dir}/salt"
-  rm "${preload_dir}/salt" 
-else
-  printf '[entrypoint:%s] INFO: keys do not differ %s %s\n' "${__l_name}" "${preload_dir}/salt" "${preauth_dir}/salt"
-fi
-echo "[entrypoint:${__l_name}] INFO: copying ${preload_dir}/salt -> ${minions_dir}/salt"
-cp "${preload_dir}/salt"  "${minions_dir}/salt"
-sleep 10
+  candidates=(
+      "${preload_dir}/salt"
+      "${preauth_dir}/salt"
+      "${minion_pki}/minion.pub"
+  )
 
-	until (salt-call test.ping --hard-crash --output='json' --timeout=5 --log-level='quiet' 2>/dev/null 1>/dev/null) ; do
-		printf '[entrypoint:${__l_name}] DEBUG: Checking keys %s %s\n' "${preload_dir}/salt" "${preauth_dir}/salt"
-    sleep 1
-	done
+  valid_key=""
 
-	find "${minions_dir}" -mindepth 1 -maxdepth 1 -type f 2>/dev/null | while read -r key_file; do
+  # Keep trying candidates until we find one that actually works
+  # (this will naturally wait for the master to come up)
+  while [[ -z "$valid_key" ]]; do
+      for candidate in "${candidates[@]}"; do
+          if [[ -f "$candidate" ]]; then
+              echo "[entrypoint:${__l_name}] DEBUG: Testing candidate $candidate"
 
-		_id="$(basename ${key_file})"
+              cp -f "$candidate" "${minions_dir}/salt" 2>/dev/null || true
+              chown salt:salt "${minions_dir}/salt" 2>/dev/null || true
+              chmod 644 "${minions_dir}/salt" 2>/dev/null || true
 
-		# denied keys
-		if [ -f "${denied_dir}/${_id}" ]; then
-			echo "[entrypoint:${__l_name}] DEBUG: Cleared denied key for ${_id}"
-			rm -f "${denied_dir}/${_id}"
-		else
-			echo "[entrypoint:${__l_name}] DEBUG: Did not identify denied key for ${denied_dir}/${_id}'"
-		fi
+              if salt-call test.ping --hard-crash --output=quiet --timeout=5 &>/dev/null; then
+                  echo "[entrypoint:${__l_name}] INFO: Candidate works: $candidate"
+                  valid_key="$candidate"
+                  break 2
+              else
+                  echo "[entrypoint:${__l_name}] DEBUG: Candidate failed: $candidate"
+              fi
+          fi
+      done
 
-		# pending keyss
-		if [ -f "${preauth_dir}/${_id}" ]; then
-			echo "[entrypoint:${__l_name}] DEBUG: Identified pending key for ${_id}"
-      rm -f "${preauth_dir}/${_id}"
-		else
-			echo "[entrypoint:${__l_name}] DEBUG: Did not identify pending key '${preauth_dir}/${_id}'"
-		fi
+      sleep 8
+  done
 
-		# preload keys
-		if [ -f "${preload_dir}/${_id}" ]; then
-			echo "[entrypoint:${__l_name}] DEBUG: Identified preauth key for ${_id}"
-			cp -vf "${key_file}" "${minions_dir}/${_id}"
-		else
-			echo "[entrypoint:${__l_name}] DEBUG: Did not identify preauth key '${preload_dir}/${_id}'"
-		fi
+  if [[ -n "$valid_key" ]]; then
+      echo "[entrypoint:${__l_name}] INFO: Using valid key from $valid_key"
+      cp -f "$valid_key" "${minions_dir}/salt"
+      chown salt:salt "${minions_dir}/salt" 2>/dev/null || true
+      chmod 644 "${minions_dir}/salt" 2>/dev/null || true
 
-	done
+      rm -f "${preauth_dir}/salt" "${denied_dir}/salt" 2>/dev/null || true
+  else
+      echo "[entrypoint:${__l_name}] WARNING: No working key found for 'salt'"
+  fi
+
+  # Wait for local minion to be happy, then do general cleanup
+  until (salt-call test.ping --hard-crash --output='json' --timeout=5 --log-level='quiet' 2>/dev/null 1>/dev/null); do
+      sleep 10
+  done
+
+  find "${minions_dir}" -mindepth 1 -maxdepth 1 -type f 2>/dev/null | while read -r key_file; do
+      _id="$(basename "${key_file}")"
+
+      # Clean denied
+      [[ -f "${denied_dir}/${_id}" ]] && rm -f "${denied_dir}/${_id}"
+
+      # Clean pending/preauth
+      [[ -f "${preauth_dir}/${_id}" ]] && rm -f "${preauth_dir}/${_id}"
+
+      # If we have a version in preload, prefer it in minions
+      if [[ -f "${preload_dir}/${_id}" ]]; then
+          cp -vf "${preload_dir}/${_id}" "${minions_dir}/${_id}"
+      fi
+  done
+
+	salt '*' mine.update --timeout 10 1>/dev/null 2>/dev/null --output quiet || true
+	salt-run event.fire '{}' 'cozy/master/online'
+	echo "[entrypoint:${__l_name}] INFO: cozy/master/online fired"
+
+  # salt bus
+  (
+    __l_name='bus'
+    until (salt-run state.event | while read -r tag data ; do printf '[entrypoint:%s] DEBUG: "%s" %s..\n' "${__l_name}" "${tag}" "${data}"; done) ; do
+      echo "[entrypoint:${__l_name}] WARNING: Waiting for 'state.event' to attach"
+      sleep 10
+    done
+    echo "[entrypoint:${__l_name}] DEBUG: Attached to 'state.event'"
+  ) &
 
 ) &
-
-
-# salt bus
-
-(
-  __l_name='bus'
-	until (salt-run state.event | while read -r tag data ; do printf '[entrypoint:%s] DEBUG: "%s" %s..\n' "${__l_name}" "${tag}" "${data}"; done) ; do
-		echo "[entrypoint:${__l_name}] WARNING: Waiting for 'state.event' to attach"
-		sleep 10
-	done
-	echo "[entrypoint:${__l_name}] DEBUG: Attached to 'state.event'"
-) &
-
 
 # salt-api
-
 (
   __l_name='api'
- until (test -f ${__s_cert}); do
-  sleep 15
-  echo "[entrypoint:${__l_name}] WARNING: API Startup holding, pending ${__s_cert}"
-done
-echo "[entrypoint:${__l_name}] INFO: Attached to 'state.event'.."
-salt-api --log-level="${SALT_API_LOG_LEVEL:-warning}" --log-file-level="${SALT_API_LOG_LEVEL_FILE:-warning}"
+  until (test -f ${__s_cert}); do
+    sleep 15
+    echo "[entrypoint:${__l_name}] WARNING: API Startup holding, pending ${__s_cert}"
+  done
+  echo "[entrypoint:${__l_name}] INFO: Attached to 'state.event'.."
+  salt-api --log-level="${SALT_API_LOG_LEVEL:-warning}" --log-file-level="${SALT_API_LOG_LEVEL_FILE:-warning}"
 ) &
 
 # salt master
