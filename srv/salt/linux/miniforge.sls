@@ -35,9 +35,10 @@ miniforge_download:
   file.managed:
     - name: /tmp/miniforge-init.sh
     - source: {{ miniforge_source }}
-    - skip_verify: True
+    - source_hash: {{ miniforge_source }}.sha256
     - mkdirs: True
     - provides: /tmp/miniforge-init.sh
+    - show_changes: False
 
 # Remove stale _conda symlink so -u reinstall doesn't fail on ln conflict
 miniforge_clean_conda_symlink:
