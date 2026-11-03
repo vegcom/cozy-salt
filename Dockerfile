@@ -83,10 +83,7 @@ RUN mkdir -p /srv/salt/files /srv/pillar /srv/data /var/cache/salt /var/log/salt
 
 # Copy pre-generated public keys for test minions (pre-acceptance)
 # Entrypoint copies these to /etc/salt/pki/master/minions/ on startup
-COPY --from=keygen /keys/*.pub /etc/salt/pki/master/minions-preload/
-
-# Copy full keypair for master-as-minion (salt minion needs its own .pem)
-COPY --from=keygen /keys/salt.pem /keys/salt.pub /etc/salt/pki/minion-preload/
+COPY --from=keygen /keys/*.pub /etc/salt/pki/minion/minions_preload/
 
 # Enable master.d config drop-in directory
 RUN sed -i 's/^#default_include: master.d\/\*.conf$/default_include: master.d\/*.conf/' /etc/salt/master
@@ -137,7 +134,8 @@ RUN mkdir -p /etc/salt/minion.d && \
 
 # Copy pre-generated keys for test minions
 # Entrypoint selects correct key based on MINION_ID
-COPY --from=keygen /keys/ /etc/salt/pki/minion-preload/
+COPY --from=keygen /keys/ /etc/salt/pki/minion/minions_preload/
+
 
 # Ensure minion and master services are running
 HEALTHCHECK --interval=5s --timeout=5s --start-period=90s --start-interval=5s --retries=15 \
@@ -189,7 +187,7 @@ RUN mkdir -p /etc/salt/minion.d && \
 
 # Copy pre-generated keys for test minions
 # Entrypoint selects correct key based on MINION_ID
-COPY --from=keygen /keys/ /etc/salt/pki/minion-preload/
+COPY --from=keygen /keys/ /etc/salt/pki/minion/minions_preload/
 
 # Ensure minion and master services are running
 HEALTHCHECK --interval=5s --timeout=5s --start-period=90s --start-interval=5s --retries=15 \

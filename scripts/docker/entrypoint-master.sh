@@ -1,13 +1,72 @@
 #!/usr/bin/env bash
-set -e
 
 # Generate master keys if they don't exist (CI environment)
 # Local dev bind-mounts keys from host, so this only runs in CI
 # Note: Docker creates empty directories when bind-mounting non-existent files
+
+set -e
+
+minion_id="salt"
+
+known_good_key=""
+pending_key=""
+
 master_pki="/etc/salt/pki/master"
+minion_pki="/etc/salt/pki/minion"
+
+minion_conf="/etc/salt/minion"
+minion_conf_d="/etc/salt/minion.d"
+
+autoreject_file="/etc/salt/autosign.d/autoreject_file.conf"
+autosign_file="/etc/salt/autosign.d/autosign_file.conf"
+
+minions_dir="${master_pki}/minions"
+preauth_dir="${master_pki}/minions_pre"
+preload_dir="${master_pki}/minions_preload"
+
+denied_dir="${master_pki}/minions_denied"
+autosign_dir="${master_pki}/minions_autosign"
+
+__l_name='main'
+__s_cert='/etc/salt/pki/api/salt.crt'
+
+# Path management
+
+__master_paths=(
+	"${autosign_dir}"
+	"${denied_dir}"
+	"${minions_dir}"
+	"${preauth_dir}"
+	"${preload_dir}"
+)
+
+__minion_paths=(
+	"${minion_pki}"
+	"${minion_conf_d}"
+)
+
+(
+  __l_name='path_prep'
+  for _path in ${__master_paths[@]} ${__minion_paths[@]}; do
+    if [ -n ${_path} ]; then
+      if [ -f "${_path}" ] || [ ! -d "${_path}" ]; then
+        echo "[entrypoint:${__l_name}] DEBUG: Path cleaned '${_path}'"
+        rm "${_path}" 2>/dev/null || true
+      fi
+      if [ ! -d "${_path}" ]; then
+        echo "[entrypoint:${__l_name}] DEBUG: Creating path '${_path}'"
+        mkdir -p ${_path} || true
+      else
+        echo "[entrypoint:${__l_name}] DEBUG: Okay path '${_path}'"
+      fi
+    fi
+  done
+)
+
+# Generate master key
+
 if [[ ! -f "${master_pki}/master.pem" ]]; then
-	echo "=== Generating master keys ==="
-	mkdir -p "${master_pki}"
+	echo "[entrypoint:${__l_name}] INFO: Generating master keys"
 	# Remove empty directories Docker may have created from missing bind mounts
 	[[ -d "${master_pki}/master.pem" ]] && rmdir "${master_pki}/master.pem" 2>/dev/null || true
 	[[ -d "${master_pki}/master.pub" ]] && rmdir "${master_pki}/master.pub" 2>/dev/null || true
@@ -17,51 +76,29 @@ if [[ ! -f "${master_pki}/master.pem" ]]; then
 	chmod 644 "${master_pki}/master.pub"
 	chown -R salt:salt "${master_pki}"
 	echo "  + Generated master.pem and master.pub"
-fi
-
-# Pre-accept minion keys from build-time generated keys
-# Keys are baked into image at /etc/salt/pki/master/minions-preload/
-# This ensures test minions are ready immediately without manual acceptance
-preload_dir="/etc/salt/pki/master/minions-preload"
-minions_dir="/etc/salt/pki/master/minions"
-
-if [[ -d ${preload_dir} ]]; then
-	echo "=== Pre-accepting minion keys ==="
-	mkdir -p "${minions_dir}"
-	denied_dir="/etc/salt/pki/master/minions_denied"
-	for key_file in "${preload_dir}"/*.pub; do # shellcheck disable=SC2066
-		if [[ -f ${key_file} ]]; then
-			minion_id=$(basename "${key_file}" .pub)
-			# Remove from denied (stale denied + valid accepted = auth failure)
-			if [[ -f "${denied_dir}/${minion_id}" ]]; then
-				rm -f "${denied_dir}/${minion_id}"
-				echo "  - Cleared denied key for ${minion_id}"
-			fi
-			# Always sync accepted key from preload (ensures key matches minion image)
-			cp -v "${key_file}" "${minions_dir}/${minion_id}"
-			echo "  + Pre-accepted ${minion_id}"
-		fi
-	done
+else
+	echo "[entrypoint:${__l_name}] DEBUG: Skipping generating master keys"
 fi
 
 # Set cozy-salt-svc password for SaltGUI PAM auth
-if [[ -n ${SALT_API_USER_PASS} ]]; then
-	echo "cozy-salt-svc:${SALT_API_USER_PASS}" | chpasswd
-	echo "[entrypoint] cozy-salt-svc password set"
+
+if [[ -n ${SALT_API_SVC_PASS} ]]; then
+	echo "cozy-salt-svc:${SALT_API_SVC_PASS}" | chpasswd
+	echo "[entrypoint:${__l_name}] INFO: cozy-salt-svc password set"
 else
-	echo "[entrypoint] WARNING: SALT_API_USER_PASS not set — SaltGUI login will fail"
+	echo "[entrypoint:${__l_name}] WARNING: SALT_API_SVC_PASS not set — SaltGUI login will fail"
 fi
 
 # minion config
-echo "[entrypoint] Configuring master as local minion..."
+
+echo "[entrypoint:${__l_name}] INFO: Configuring master as local minion..."
 mkdir -p /etc/salt/minion.d
 echo "master: localhost" >/etc/salt/minion.d/master.conf
 echo "id: salt" >/etc/salt/minion.d/id.conf
 
 # Auth
-autosign_file="/etc/salt/autosign.d/autosign_file.conf"
-autoreject_file="/etc/salt/autosign.d/autoreject_file.conf"
-echo "[entrypoint] Writing master aclAuth config..."
+
+echo "[entrypoint:${__l_name}] INFO: Writing master aclAuth config..."
 if [ ! -d /etc/salt/autosign.d ]; then
 	mkdir -p /etc/salt/autosign.d
 	touch ${autosign_file}
@@ -69,8 +106,9 @@ if [ ! -d /etc/salt/autosign.d ]; then
 fi
 
 # Sqlite
+# TODO: addapt for respective returner schema, present state broken
 
-echo "[entrypoint] Initialising sqlite3 returner schema..."
+echo "[entrypoint:${__l_name}] DEBUG: Initialising sqlite3 returner schema..."
 mkdir -p /srv/data/sqlite || true
 python3 -c "
 import sqlite3, os, shutil
@@ -93,73 +131,161 @@ else:
 "
 chown salt:salt /srv/data/sqlite/salt_returns.db 2>/dev/null || true
 
-# Load pre-shared key so master's pre-accepted pub matches what minion presents
-preload_dir="/etc/salt/pki/minion-preload"
-pki_dir="/etc/salt/pki/minion"
-if [ -f "${preload_dir}/salt.pem" ] && [ ! -f "${pki_dir}/minion.pem" ]; then
-	echo "  + Loading pre-shared keys for salt minion"
-	mkdir -p "${pki_dir}"
-	cp "${preload_dir}/salt.pem" "${pki_dir}/minion.pem"
-	cp "${preload_dir}/salt.pub" "${pki_dir}/minion.pub"
-	chmod 400 "${pki_dir}/minion.pem"
-	chmod 644 "${pki_dir}/minion.pub"
-	chown -R salt:salt "${pki_dir}"
-fi
-rm -f "${pki_dir}/minion_master.pub"
+# network discovery
 
-echo "[entrypoint] Starting wsdd..."
+echo "[entrypoint:${__l_name}] INFO: Starting wsdd..."
 wsdd --shortlog &
 
-echo "[entrypoint] Starting avahi-daemon..."
+echo "[entrypoint:${__l_name}] INFO: Starting avahi-daemon..."
 avahi-daemon --no-drop-root --daemonize --debug &
 
-echo "[entrypoint] Starting Salt API..."
-salt-api -d --log-level=info --log-file-level="${SALT_API_LOG_LEVEL:-warning}"
+# salt-minion
 
 (
-	echo "[entrypoint] Init master minion service.."
 
-	until salt-minion --disable-keepalive --log-level=warning --log-file-level="${SALT_MINION_LOG_LEVEL:-warning}"; do
+  __l_name='client'
+
+	echo "[entrypoint:${__l_name}] INFO: Starting Salt Ninion service.."  
+	until salt-minion --disable-keepalive --log-level="${SALT_MINION_LOG_LEVEL:-warning}" --log-file-level="${SALT_MINION_LOG_FILE_LEVEL:-warning}" 2>/dev/null; do
 		sleep 10
+		echo "[entrypoint:${__l_name}] INFO: Restarting salt-minion.."
 		pkill -f salt-minion
 	done
 
-	echo "[entrypoint] Reinit master minion key from known local key.."
+	echo "[entrypoint:${__l_name}] INFO: Reinit master minion key from known local key.."
 
-	known_good_key=""
-	pending_key="/etc/salt/pki/master/minions_pre/salt"
-
-	if [[ -f /etc/salt/pki/minion-preload/salt.pub ]]; then
-		known_good_key="/etc/salt/pki/minion-preload/salt.pub"
-	elif [[ -f /etc/salt/pki/minion/minion.pub ]]; then
-		known_good_key="/etc/salt/pki/minion/minion.pub"
+	# Evaluate for existing valid keys
+	if [ -f "${preauth_dir}/${minion_id}" ];then
+		pending_key="${preauth_dir}/${minion_id}"
+	else
+		echo "[entrypoint:${__l_name}] INFO: ${preauth_dir}/${minion_id} missing: ${pending_key}.."
 	fi
+	echo "[entrypoint:${__l_name}] DEBUG: pending_key '${pending_key}'.."
 
-	if [[ -n ${known_good_key} ]]; then
-		echo "[entrypoint] INFO: pinning known-good key from ${known_good_key} to ${preload_dir}/salt.pub"
-		cp -v "${known_good_key}" "${preload_dir}"/salt.pub
+  if [ -f "${preload_dir}/${minion_id}" ]; then
+    known_good_key="${preload_dir}/${minion_id}"
+	else
+    if [ -f "${minion_pki}/minion.pub" ]; then
+      known_good_key="${minion_pki}/minion.pub"
+    fi
+  fi
 
+	echo "[entrypoint:${__l_name}] INFO: Selected key '${known_good_key}'.."
+
+	# Copy ${minion_pki}/minion.pub to ${preauth_dir}/${minion_id}
+	if [ -f "${known_good_key}" ]; then
+
+		# Copy ${minion_pki}/minion.pub to ${preload_dir}/${minion_id}
+		if ! cmp -s "${known_good_key}" "${pending_key}" 2>/dev/null; then
+			echo "[entrypoint:${__l_name}] INFO: pinning known-good key from ${known_good_key} to ${preload_dir}/"
+			cp -v ${known_good_key} "${pending_key}"
+		else
+			echo "[entrypoint:${__l_name}] INFO: not pinning key from ${known_good_key} to ${preload_dir}/"
+		fi
+
+		# Copy ${minion_pki}/minion.pub to ${preauth_dir}/${minion_id}
 		if [[ -f ${pending_key} ]]; then
-			if cmp -s "${known_good_key}" "${pending_key}"; then
-				echo "[entrypoint] INFO: pending key matches known-good key; accepting for id 'salt'"
-				cp -v "${pending_key}" /etc/salt/pki/master/minions/salt
-				chown salt:salt /etc/salt/pki/master/minions/salt
-				chmod 644 /etc/salt/pki/master/minions/salt
+			if cmp -s "${known_good_key}" "${pending_key}" 2>/dev/null; then
+				echo "[entrypoint:${__l_name}] INFO: pending key matches known-good key; accepting for id 'salt'"
+				cp -v "${pending_key}" ${master_pki}/minions/salt
+				chown salt:salt ${master_pki}/minions/salt
+				chmod 644 ${master_pki}/minions/salt
 			else
-				echo "[entrypoint] WARNING: pending key for id 'salt' does not match known-good key; refusing to accept"
+				echo "[entrypoint:${__l_name}] WARNING: pending key for id '${minion_id}' does not match known-good key; refusing to accept"
 			fi
 		else
-			echo "[entrypoint] WARNING: ${pending_key} not found; cannot accept key for id 'salt' yet"
+			echo "[entrypoint:${__l_name}] WARNING: ${pending_key} not found; cannot accept key for id '${minion_id}' yet"
 		fi
 	else
-		echo "[entrypoint] WARNING: no known-good local key found at /etc/salt/pki/minion-preload/salt.pub or /etc/salt/pki/minion/minion.pub"
+		echo "[entrypoint:${__l_name}] WARNING: no known-good local key found at ${known_good_key}"
 	fi
 
-	salt '*' mine.update --timeout 10 2>/dev/null || true
+	salt '*' mine.update --timeout 10 1>/dev/null 2>/dev/null --output quiet || true
 	salt-run event.fire '{}' 'cozy/master/online'
-	echo "[entrypoint] cozy/master/online fired"
+	echo "[entrypoint:${__l_name}] INFO: cozy/master/online fired"
 
 ) &
 
-echo "[entrypoint] Starting Salt Master..."
-exec salt-master --log-level=warning --log-file-level="${SALT_MASTER_LOG_LEVEL:-warning}"
+# salt key handler
+
+(
+  __l_name='key'
+	echo "[entrypoint:${__l_name}] INFO: prep minion keys"
+
+  if ! cmp -s "${preload_dir}/salt" "${preauth_dir}/salt" ; then
+  printf '[entrypoint:%s] WARNING: keys differ %s %s\n' "${__l_name}" "${preload_dir}/salt" "${preauth_dir}/salt"
+  printf '[entrypoint:%s] INFO: removing %s..\n' "${preload_dir}/salt"
+  rm "${preload_dir}/salt" 
+else
+  printf '[entrypoint:%s] INFO: keys do not differ %s %s\n' "${__l_name}" "${preload_dir}/salt" "${preauth_dir}/salt"
+fi
+echo "[entrypoint:${__l_name}] INFO: copying ${preload_dir}/salt -> ${minions_dir}/salt"
+cp "${preload_dir}/salt"  "${minions_dir}/salt"
+sleep 10
+
+	until (salt-call test.ping --hard-crash --output='json' --timeout=5 --log-level='quiet' 2>/dev/null 1>/dev/null) ; do
+		printf '[entrypoint:${__l_name}] DEBUG: Checking keys %s %s\n' "${preload_dir}/salt" "${preauth_dir}/salt"
+    sleep 1
+	done
+
+	find "${minions_dir}" -mindepth 1 -maxdepth 1 -type f 2>/dev/null | while read -r key_file; do
+
+		_id="$(basename ${key_file})"
+
+		# denied keys
+		if [ -f "${denied_dir}/${_id}" ]; then
+			echo "[entrypoint:${__l_name}] DEBUG: Cleared denied key for ${_id}"
+			rm -f "${denied_dir}/${_id}"
+		else
+			echo "[entrypoint:${__l_name}] DEBUG: Did not identify denied key for ${denied_dir}/${_id}'"
+		fi
+
+		# pending keyss
+		if [ -f "${preauth_dir}/${_id}" ]; then
+			echo "[entrypoint:${__l_name}] DEBUG: Identified pending key for ${_id}"
+      rm -f "${preauth_dir}/${_id}"
+		else
+			echo "[entrypoint:${__l_name}] DEBUG: Did not identify pending key '${preauth_dir}/${_id}'"
+		fi
+
+		# preload keys
+		if [ -f "${preload_dir}/${_id}" ]; then
+			echo "[entrypoint:${__l_name}] DEBUG: Identified preauth key for ${_id}"
+			cp -vf "${key_file}" "${minions_dir}/${_id}"
+		else
+			echo "[entrypoint:${__l_name}] DEBUG: Did not identify preauth key '${preload_dir}/${_id}'"
+		fi
+
+	done
+
+) &
+
+
+# salt bus
+
+(
+  __l_name='bus'
+	until (salt-run state.event | while read -r tag data ; do printf '[entrypoint:%s] DEBUG: "%s" %s..\n' "${__l_name}" "${tag}" "${data}"; done) ; do
+		echo "[entrypoint:${__l_name}] WARNING: Waiting for 'state.event' to attach"
+		sleep 10
+	done
+	echo "[entrypoint:${__l_name}] DEBUG: Attached to 'state.event'"
+) &
+
+
+# salt-api
+
+(
+  __l_name='api'
+ until (test -f ${__s_cert}); do
+  sleep 15
+  echo "[entrypoint:${__l_name}] WARNING: API Startup holding, pending ${__s_cert}"
+done
+echo "[entrypoint:${__l_name}] INFO: Attached to 'state.event'.."
+salt-api --log-level="${SALT_API_LOG_LEVEL:-warning}" --log-file-level="${SALT_API_LOG_LEVEL_FILE:-warning}"
+) &
+
+# salt master
+
+echo "[entrypoint:${__l_name}] INFO: Starting Salt Master..."
+exec salt-master --log-level="${SALT_MASTER_LOG_LEVEL:-warning}" --log-file-level="${SALT_MASTER_LOG_FILE_LEVEL:-warning}"

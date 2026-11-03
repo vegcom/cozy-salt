@@ -51,10 +51,14 @@ services:
       - ./srv/avahi:/etc/avahi/services
     environment:
       SALT_API_ENABLED: 'True'
-      SALT_API_USER_PASS: ${SALT_API_USER_PASS:-4wesome-Pass0rd}
-      SALT_MASTER_LOG_LEVEL: 'warning'
-      SALT_MINION_LOG_LEVEL: 'warning'
-      _GUI_VERSION: 1.33.0
+      SALT_API_LOG_LEVEL: ${SALT_API_LOG_LEVEL:-warning}
+      SALT_API_LOG_FILE_LEVEL: ${SALT_API_LOG_LEVEL:-warning}
+      SALT_API_SVC_PASS: ${SALT_API_SVC_PASS:-4wesome-Pass0rd}
+      SALT_MASTER_LOG_FILE_LEVEL: ${SALT_MASTER_LOG_FILE_LEVEL:-warning}
+      SALT_MASTER_LOG_LEVEL: ${SALT_MASTER_LOG_LEVEL:-warning}
+      SALT_MINION_LOG_LEVEL: ${SALT_MINION_LOG_LEVEL:-warning}
+      SALT_MINION_LOG_FILE_LEVEL: ${SALT_MINION_LOG_FILE_LEVEL:-warning}
+      _GUI_VERSION: 1.34.0
     networks:
       - salt-net
     labels:
@@ -115,7 +119,7 @@ services:
     environment:
       MANIFEST_REPO_URL: https://github.com/June-Cozy/cozy-winget.git
       MANIFEST_PULL_INTERVAL: '86400'
-      MANIFEST_DEBUG: ${MANIFEST_DEBUG:-1}
+      MANIFEST_DEBUG: ${MANIFEST_DEBUG:-0}
     networks:
       - salt-net
     labels:

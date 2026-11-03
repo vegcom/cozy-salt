@@ -8,7 +8,7 @@ echo "id: ${MINION_ID}" >/etc/salt/minion.d/id.conf
 
 # Load pre-shared keys if available for this minion ID
 # Keys are baked into image at build time for test minions
-preload_dir="/etc/salt/pki/minion-preload"
+preload_dir="/etc/salt/pki/minion/minions_preload"
 pki_dir="/etc/salt/pki/minion"
 
 if [ -f "$preload_dir/${MINION_ID}.pem" ] && [ ! -f "$pki_dir/minion.pem" ]; then
@@ -24,7 +24,8 @@ fi
 rm -f /etc/salt/pki/minion/minion_master.pub
 
 echo "=== Starting Salt Minion ==="
-salt-minion -d
+
+salt-minion --disable-keepalive --log-level="${SALT_MINION_LOG_LEVEL:-warning}" --log-file-level="${SALT_MINION_LOG_FILE_LEVEL:-warning}" -d
 
 echo "=== Waiting for master to be ready (15s) ==="
 sleep 15
