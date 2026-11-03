@@ -1,6 +1,5 @@
 $steamPath = "C:\Program Files (x86)\Steam\steam.exe"
 $arguments = @(
-    "-cef-enable-debugging",
     "-cef-force-gpu",
     "-cef-full-memory-crash-report",
     "-cef-in-process-gpu",
@@ -9,17 +8,13 @@ $arguments = @(
     "-cef-verbose-js-logging",
     "-cef-verbose-logging",
     "-console",
-    "-debug_steamapi",
-    "-debugbutton",
-    "-dev",
     "-enable-keyring",
     "-fasthtml",
     "-fulldesktopres",
     "-oldtraymenu",
     "-silent",
     "-single_core",
-    "-system-composer",
-    "-websocket"
+    "-system-composer"
 )
 
 $steamProc = Get-Process -Name "steam" -ErrorAction SilentlyContinue
