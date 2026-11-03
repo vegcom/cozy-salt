@@ -5,7 +5,7 @@
 #   - or per item: linters/*/plugin.yaml
 # - https://github.com/desktophero/trunk-docs/blob/main/check/reference/trunk-yaml.md
 
-version: 1.29.0
+version: 0.1
 cli:
   version: 1.25.0
 plugins:
