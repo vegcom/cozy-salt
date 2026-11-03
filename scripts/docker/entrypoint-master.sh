@@ -181,19 +181,18 @@ avahi-daemon --no-drop-root --daemonize --debug &
 
   # Evaluate for existing valid keys
   if [ -f "${preauth_dir}/${minion_id}" ]; then
-    pending_key="${preauth_dir}/${minion_id}"
+      pending_key="${preauth_dir}/${minion_id}"
+  elif [ -f "${preload_dir}/${minion_id}" ]; then
+      pending_key="${preload_dir}/${minion_id}"
   else
-    echo "[entrypoint:${__l_name}] INFO: ${preauth_dir}/${minion_id} missing: ${pending_key}.."
+      echo "[entrypoint:${__l_name}] INFO: ${preauth_dir}/${minion_id} missing (no preload fallback either)"
+      pending_key=""
   fi
   echo "[entrypoint:${__l_name}] DEBUG: pending_key '${pending_key}'.."
-
-  if [ -f "${preload_dir}/${minion_id}" ]; then
-    known_good_key="${preload_dir}/${minion_id}"
-  else
-    if [ -f "${minion_pki}/minion.pub" ]; then
-      known_good_key="${minion_pki}/minion.pub"
-    fi
+  if [ -z "${pending_key}" ]; then
+      echo "[entrypoint:${__l_name}] WARNING: No valid pending/preload target for ${minion_id}, skipping pin"
   fi
+
 
   echo "[entrypoint:${__l_name}] INFO: Selected key '${known_good_key}'.."
 
@@ -203,7 +202,11 @@ avahi-daemon --no-drop-root --daemonize --debug &
     # Copy ${minion_pki}/minion.pub to ${preload_dir}/${minion_id}
     if ! cmp -s "${known_good_key}" "${pending_key}" 2>/dev/null; then
       echo "[entrypoint:${__l_name}] INFO: pinning known-good key from ${known_good_key} to ${preload_dir}/"
-      cp -v ${known_good_key} "${pending_key}"
+      if [ -f "${preauth_dir}/${minion_id}" ]; then
+          pending_key="${preauth_dir}/${minion_id}"
+      else
+          echo "... missing: ${pending_key}.."   # still empty
+      fi
     else
       echo "[entrypoint:${__l_name}] INFO: not pinning key from ${known_good_key} to ${preload_dir}/"
     fi
