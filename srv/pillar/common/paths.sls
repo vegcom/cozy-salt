@@ -43,10 +43,10 @@ install_paths:
   homebrew:
     linux: /home/linuxbrew/.linuxbrew
 
-cache_paths:
+{# cache_paths:
   pip:
     windows: C:/opt/cozy/cache/miniforge
-    linux: /opt/cozy/cache/miniforge
+    linux: /opt/cozy/cache/miniforge #}
 
 config_paths:
   pip:
