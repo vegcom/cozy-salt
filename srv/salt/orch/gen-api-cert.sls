@@ -26,6 +26,21 @@ create_private_key:
     - require:
         - salt: ensure_api_dir
 
+enforce_private_key_permissions:
+  salt.function:
+    - name: state.single
+    - tgt: salt
+    - arg:
+        - file.managed
+    - kwarg:
+        name: /etc/salt/pki/api/salt.key
+        user: salt
+        group: salt
+        mode: "0600"
+        replace: false
+    - require:
+        - salt: create_private_key
+
 gen_api_cert:
   salt.function:
     - name: x509.create_certificate
@@ -36,7 +51,7 @@ gen_api_cert:
         days_valid: 3650
         signing_private_key: /etc/salt/pki/api/salt.key
     - require:
-        - salt: create_private_key
+        - salt: enforce_private_key_permissions
 
 store_cert_in_mine:
   salt.function:

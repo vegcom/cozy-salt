@@ -65,30 +65,6 @@ __minion_paths=(
   done
 )
 
-# --- Special handling for the master's own minion ("salt") ---
-if [ "$minion_id" = "salt" ]; then
-  echo "[entrypoint] INFO: Ensuring clean key state for master's own minion (id: salt)"
-
-  # Remove any bad state that causes it to get stuck in denied/pre
-  rm -f "${minions_dir}/salt" \
-    "${preauth_dir}/salt" \
-    "${denied_dir}/salt" \
-    2>/dev/null || true
-
-  # If we have a known good key in preload, use that.
-  # Otherwise fall back to whatever the minion currently has.
-  if [ -f "${preload_dir}/salt" ]; then
-    echo "[entrypoint] INFO: Seeding salt key from preload"
-    cp -f "${preload_dir}/salt" "${minions_dir}/salt"
-    chown salt:salt "${minions_dir}/salt" 2>/dev/null || true
-    chmod 644 "${minions_dir}/salt" 2>/dev/null || true
-  elif [ -f "${minion_pki}/minion.pub" ]; then
-    echo "[entrypoint] INFO: Seeding salt key from current minion key"
-    cp -f "${minion_pki}/minion.pub" "${minions_dir}/salt"
-    chown salt:salt "${minions_dir}/salt" 2>/dev/null || true
-    chmod 644 "${minions_dir}/salt" 2>/dev/null || true
-  fi
-fi
 
 # Generate master key
 
@@ -190,7 +166,7 @@ avahi-daemon --no-drop-root --daemonize --debug &
   fi
   echo "[entrypoint:${__l_name}] DEBUG: pending_key '${pending_key}'.."
   if [ -z "${pending_key}" ]; then
-      echo "[entrypoint:${__l_name}] WARNING: No valid pending/preload target for ${minion_id}, skipping pin"
+      echo "[entrypoint:${__l_name}] WARNING: No valid pending/preload target for '${minion_id}', skipping pin"
   fi
 
 
@@ -228,6 +204,10 @@ avahi-daemon --no-drop-root --daemonize --debug &
     echo "[entrypoint:${__l_name}] WARNING: no known-good local key found at ${known_good_key}"
   fi
 
+  echo "[entrypoint:${__l_name}] INFO: restarting salt-minion..."
+  pkill -f salt-minion || true
+  salt-minion --disable-keepalive --log-level="${SALT_MINION_LOG_LEVEL:-warning}" --log-file-level="${SALT_MINION_LOG_FILE_LEVEL:-warning}" 2>/dev/null
+
 ) &
 
 # salt key handler
@@ -237,88 +217,77 @@ avahi-daemon --no-drop-root --daemonize --debug &
   echo "[entrypoint:${__l_name}] INFO: prep minion keys"
 
   candidates=(
-    "${preload_dir}/salt"
-    "${preauth_dir}/salt"
-    "${minion_pki}/minion.pub"
+      "${preload_dir}/salt"
+      "${preauth_dir}/salt"
+      "${minion_pki}/minion.pub"
   )
 
   valid_key=""
+  attempt=0
+  max_attempts=12   # ~2 minutes of retries
 
-  # Keep trying candidates until we find one that actually works
-  # (this will naturally wait for the master to come up)
-  while [[ -z $valid_key ]]; do
-    for candidate in "${candidates[@]}"; do
-      if [[ -f $candidate ]]; then
-        echo "[entrypoint:${__l_name}] DEBUG: Testing candidate $candidate"
+  while [[ -z "$valid_key" && $attempt -lt $max_attempts ]]; do
+      for candidate in "${candidates[@]}"; do
+          if [[ -f "$candidate" ]]; then
+              echo "[entrypoint:${__l_name}] DEBUG: Testing candidate $candidate (attempt $((attempt+1)))"
 
-        cp -f "$candidate" "${minions_dir}/salt" 2>/dev/null || true
-        chown salt:salt "${minions_dir}/salt" 2>/dev/null || true
-        chmod 644 "${minions_dir}/salt" 2>/dev/null || true
+              cp -f "$candidate" "${minions_dir}/salt" 2>/dev/null || true
+              chown salt:salt "${minions_dir}/salt" 2>/dev/null || true
+              chmod 644 "${minions_dir}/salt" 2>/dev/null || true
 
-        if salt-call test.ping --hard-crash --output=quiet --timeout=5 &>/dev/null; then
-          echo "[entrypoint:${__l_name}] INFO: Candidate works: $candidate"
-          valid_key="$candidate"
-          break 2
-        else
-          echo "[entrypoint:${__l_name}] DEBUG: Candidate failed: $candidate"
-        fi
-      fi
-    done
+              if salt-call test.ping --hard-crash --output=quiet --timeout=5 &>/dev/null; then
+                  echo "[entrypoint:${__l_name}] INFO: Candidate works: $candidate"
+                  valid_key="$candidate"
+                  break 2
+              else
+                  echo "[entrypoint:${__l_name}] DEBUG: Candidate failed: $candidate"
+              fi
+          fi
+      done
 
-    sleep 8
+      attempt=$((attempt + 1))
+      sleep 10
   done
 
-  if [[ -n $valid_key ]]; then
-    echo "[entrypoint:${__l_name}] INFO: Using valid key from $valid_key"
-    cp -f "$valid_key" "${minions_dir}/salt"
-    chown salt:salt "${minions_dir}/salt" 2>/dev/null || true
-    chmod 644 "${minions_dir}/salt" 2>/dev/null || true
+  if [[ -n "$valid_key" ]]; then
+      echo "[entrypoint:${__l_name}] INFO: Using valid key from $valid_key"
+      cp -f "$valid_key" "${minions_dir}/salt"
+      chown salt:salt "${minions_dir}/salt" 2>/dev/null || true
+      chmod 644 "${minions_dir}/salt" 2>/dev/null || true
 
-    rm -f "${preauth_dir}/salt" "${denied_dir}/salt" 2>/dev/null || true
+      # Clean up the other locations for "salt"
+      rm -f "${preauth_dir}/salt" "${denied_dir}/salt" 2>/dev/null || true
   else
-    echo "[entrypoint:${__l_name}] WARNING: No working key found for 'salt'"
+      echo "[entrypoint:${__l_name}] WARNING: No working key found for 'salt' after $max_attempts attempts"
   fi
 
-  # Wait for local minion to be happy, then do general cleanup
+  # Wait until the local minion is happy
   until (salt-call test.ping --hard-crash --output='json' --timeout=5 --log-level='quiet' 2>/dev/null 1>/dev/null); do
-    sleep 10
+      printf '[entrypoint:%s] DEBUG: Waiting for local minion to be happy...\n' "${__l_name}"
+      sleep 5
   done
 
-  # Import any pre-generated keys that were shipped in the minion's own preload dir
-  # (files named like "salt.pub", "rhel-test.pub", etc.)
-  if [ -d "${minion_preload_dir}" ]; then
-    find "${minion_preload_dir}" -mindepth 1 -maxdepth 1 -type f -name '*.pub' 2>/dev/null | while read -r pub_file; do
-      _id="$(basename "${pub_file}" .pub)"
-      dest="${preload_dir}/${_id}"
-
-      if [ ! -f "${dest}" ]; then
-        echo "[entrypoint:${__l_name}] INFO: Importing pre-generated key for ${_id} from minion preload"
-        cp -vf "${pub_file}" "${dest}"
-      else
-        echo "[entrypoint:${__l_name}] DEBUG: ${_id} already exists in preload, skipping minion preload import"
-      fi
-    done
-  fi
-
+  # Final cleanup + prefer preload where appropriate
   find "${minions_dir}" -mindepth 1 -maxdepth 1 -type f 2>/dev/null | while read -r key_file; do
+      _id="$(basename "${key_file}")"
 
-    _id="$(basename "${key_file}")"
+      [[ -f "${denied_dir}/${_id}" ]] && rm -f "${denied_dir}/${_id}"
+      [[ -f "${preauth_dir}/${_id}" ]] && rm -f "${preauth_dir}/${_id}"
 
-    # Clean denied
-    [[ -f "${denied_dir}/${_id}" ]] && rm -f "${denied_dir}/${_id}"
-
-    # Clean pending/preauth
-    [[ -f "${preauth_dir}/${_id}" ]] && rm -f "${preauth_dir}/${_id}"
-
-    # If we have a version in preload, prefer it in minions
-    if [[ -f "${preload_dir}/${_id}" ]]; then
-      cp -vf "${preload_dir}/${_id}" "${minions_dir}/${_id}"
-    fi
+      # Only overwrite from preload if we don't already have a working key
+      # (for "salt" we are especially careful)
+      if [[ -f "${preload_dir}/${_id}" ]]; then
+          if [[ "$_id" != "salt" ]] || [[ -z "$valid_key" ]]; then
+              echo "[entrypoint:${__l_name}] DEBUG: Preferring preload version for ${_id}"
+              cp -vf "${preload_dir}/${_id}" "${minions_dir}/${_id}"
+          fi
+      fi
   done
 
   salt '*' mine.update --timeout 10 --output quiet 1>/dev/null 2>/dev/null || true
-  salt-run event.fire '{}' 'cozy/master/online'
+  salt-run event.fire '{}' 'cozy/master/online' 2>/dev/null || salt-run state.orchestrate orch.gen-api-cert
   echo "[entrypoint:${__l_name}] INFO: cozy/master/online fired"
+
 
   # salt bus
   (
