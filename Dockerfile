@@ -71,7 +71,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Install Salt Master, Minion, and SSH from pre-configured repos
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    netcat-openbsd avahi-daemon wsdd-server tini \
+    netcat-openbsd avahi-daemon wsdd-server tini libatomic1 \
     salt-master salt-minion salt-api salt-ssh python3-cherrypy3 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/*
@@ -124,7 +124,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Install Salt Minion from pre-configured repos
 # git required for git.latest states (common.vim etc) on first highstate run
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends salt-minion git iproute2 procps && \
+    apt-get install -y --no-install-recommends salt-minion git iproute2 procps libatomic1 && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/*
 
 # Pre-configure minion (master hostname will be set at runtime)
@@ -177,7 +177,7 @@ FROM salt-base-rpm AS salt-minion-rpm
 
 # Install Salt Minion from pre-configured repos
 # git required for git.latest states (common.vim etc) on first highstate run
-RUN dnf install -y salt-minion git iproute procps-ng && \
+RUN dnf install -y salt-minion git iproute procps-ng libatomic && \
     dnf clean all && rm -rf /var/cache/dnf /tmp/*
 
 # Pre-configure minion (master hostname will be set at runtime)
