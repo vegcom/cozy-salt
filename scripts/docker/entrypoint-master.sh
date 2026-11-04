@@ -63,8 +63,35 @@ __minion_paths=(
       fi
     fi
   done
+
+# Sync baked-in minion preload keys (ephemeral, refreshed every image build)
+# into the master's volumed preload dir (persistent across container recreate).
+# Without this, master_pki/minions_preload rots with stale keys from the
+# first-ever boot of the volume, while minion_pki/minions_preload always
+# reflects the current image. CI rebuilds would then pin minions to keys
+# that no longer match what's actually baked into the minion images.
+
+(
+  __l_name='preload_sync'
+  if [ -d "${minion_preload_dir}" ]; then
+    for _pub in "${minion_preload_dir}"/*.pub; do
+      [ -f "${_pub}" ] || continue
+      _id="$(basename "${_pub}" .pub)"
+      _dest="${preload_dir}/${_id}"
+      if ! cmp -s "${_pub}" "${_dest}" 2>/dev/null; then
+        echo "[entrypoint:${__l_name}] INFO: refreshing stale preload key for '${_id}'"
+        cp -f "${_pub}" "${_dest}"
+        chmod 644 "${_dest}"
+      else
+        echo "[entrypoint:${__l_name}] DEBUG: preload key for '${_id}' already current"
+      fi
+    done
+  else
+    echo "[entrypoint:${__l_name}] WARNING: ${minion_preload_dir} missing, nothing to sync"
+  fi
 )
 
+)
 
 # Generate master key
 
@@ -94,14 +121,14 @@ fi
 
 # minion config
 
-echo "[entrypoint:${__l_name}] INFO: Configuring master as local minion..."
+echo "[entrypoint:${__l_name}] INFO: Configuring master as local minion"
 mkdir -p /etc/salt/minion.d
 echo "master: localhost" >/etc/salt/minion.d/master.conf
 echo "id: salt" >/etc/salt/minion.d/id.conf
 
 # Auth
 
-echo "[entrypoint:${__l_name}] INFO: Writing master aclAuth config..."
+echo "[entrypoint:${__l_name}] INFO: Writing master aclAuth config"
 if [ ! -d /etc/salt/autosign.d ]; then
   mkdir -p /etc/salt/autosign.d
   touch ${autosign_file}
@@ -111,7 +138,7 @@ fi
 # Sqlite
 # TODO: addapt for respective returner schema, present state broken
 
-echo "[entrypoint:${__l_name}] DEBUG: Initialising sqlite3 returner schema..."
+echo "[entrypoint:${__l_name}] DEBUG: Initialising sqlite3 returner schema"
 mkdir -p /srv/data/sqlite || true
 python3 -c "
 import sqlite3, os, shutil
@@ -134,10 +161,10 @@ chown salt:salt /srv/data/sqlite/salt_returns.db 2>/dev/null || true
 
 # network discovery
 
-echo "[entrypoint:${__l_name}] INFO: Starting wsdd..."
+echo "[entrypoint:${__l_name}] INFO: Starting wsdd"
 wsdd --shortlog &
 
-echo "[entrypoint:${__l_name}] INFO: Starting avahi-daemon..."
+echo "[entrypoint:${__l_name}] INFO: Starting avahi-daemon"
 avahi-daemon --no-drop-root --daemonize --debug &
 
 # salt-minion
@@ -146,14 +173,14 @@ avahi-daemon --no-drop-root --daemonize --debug &
 
   __l_name='client'
 
-  echo "[entrypoint:${__l_name}] INFO: Starting Salt Ninion service.."
+  echo "[entrypoint:${__l_name}] INFO: Starting Salt Ninion service"
   until salt-minion --disable-keepalive --log-level="${SALT_MINION_LOG_LEVEL:-warning}" --log-file-level="${SALT_MINION_LOG_FILE_LEVEL:-warning}" 2>/dev/null; do
     sleep 10
-    echo "[entrypoint:${__l_name}] INFO: Restarting salt-minion.."
+    echo "[entrypoint:${__l_name}] INFO: Restarting salt-minion"
     pkill -f salt-minion
   done
 
-  echo "[entrypoint:${__l_name}] INFO: Reinit master minion key from known local key.."
+  echo "[entrypoint:${__l_name}] INFO: Reinit master minion key from known local key"
 
   # Evaluate for existing valid keys
   if [ -f "${preauth_dir}/${minion_id}" ]; then
@@ -164,13 +191,13 @@ avahi-daemon --no-drop-root --daemonize --debug &
       echo "[entrypoint:${__l_name}] INFO: ${preauth_dir}/${minion_id} missing (no preload fallback either)"
       pending_key=""
   fi
-  echo "[entrypoint:${__l_name}] DEBUG: pending_key '${pending_key}'.."
+  echo "[entrypoint:${__l_name}] DEBUG: pending_key '${pending_key}'"
   if [ -z "${pending_key}" ]; then
       echo "[entrypoint:${__l_name}] WARNING: No valid pending/preload target for '${minion_id}', skipping pin"
   fi
 
 
-  echo "[entrypoint:${__l_name}] INFO: Selected key '${known_good_key}'.."
+  echo "[entrypoint:${__l_name}] INFO: Selected key '${known_good_key}'"
 
   # Copy ${minion_pki}/minion.pub to ${preauth_dir}/${minion_id}
   if [ -f "${known_good_key}" ]; then
@@ -181,7 +208,7 @@ avahi-daemon --no-drop-root --daemonize --debug &
       if [ -f "${preauth_dir}/${minion_id}" ]; then
           pending_key="${preauth_dir}/${minion_id}"
       else
-          echo "... missing: ${pending_key}.."   # still empty
+          echo "[entrypoint:${__l_name}] WARNING: missing ${pending_key}"   # still empty
       fi
     else
       echo "[entrypoint:${__l_name}] INFO: not pinning key from ${known_good_key} to ${preload_dir}/"
@@ -204,7 +231,7 @@ avahi-daemon --no-drop-root --daemonize --debug &
     echo "[entrypoint:${__l_name}] WARNING: no known-good local key found at ${known_good_key}"
   fi
 
-  echo "[entrypoint:${__l_name}] INFO: restarting salt-minion..."
+  echo "[entrypoint:${__l_name}] INFO: restarting salt-minion"
   pkill -f salt-minion || true
   salt-minion --disable-keepalive --log-level="${SALT_MINION_LOG_LEVEL:-warning}" --log-file-level="${SALT_MINION_LOG_FILE_LEVEL:-warning}" 2>/dev/null
 
@@ -263,7 +290,7 @@ avahi-daemon --no-drop-root --daemonize --debug &
 
   # Wait until the local minion is happy
   until (salt-call test.ping --hard-crash --output='json' --timeout=5 --log-level='quiet' 2>/dev/null 1>/dev/null); do
-      printf '[entrypoint:%s] DEBUG: Waiting for local minion to be happy...\n' "${__l_name}"
+      printf '[entrypoint:%s] DEBUG: Waiting for local minion to be happy\n' "${__l_name}"
       sleep 5
   done
 
@@ -292,7 +319,7 @@ avahi-daemon --no-drop-root --daemonize --debug &
   # salt bus
   (
     __l_name='bus'
-    until (salt-run state.event | while read -r tag data; do printf '[entrypoint:%s] DEBUG: "%s" %s..\n' "${__l_name}" "${tag}" "${data}"; done); do
+    until (salt-run state.event | while read -r tag data; do printf '[entrypoint:%s] DEBUG: "%s" %s\n' "${__l_name}" "${tag}" "${data}"; done); do
       echo "[entrypoint:${__l_name}] WARNING: Waiting for 'state.event' to attach"
       sleep 10
     done
@@ -308,11 +335,11 @@ avahi-daemon --no-drop-root --daemonize --debug &
     sleep 15
     echo "[entrypoint:${__l_name}] WARNING: API Startup holding, pending ${__s_cert}"
   done
-  echo "[entrypoint:${__l_name}] INFO: Attached to 'state.event'.."
+  echo "[entrypoint:${__l_name}] INFO: Attached to 'state.event'"
   salt-api --log-level="${SALT_API_LOG_LEVEL:-warning}" --log-file-level="${SALT_API_LOG_LEVEL_FILE:-warning}"
 ) &
 
 # salt master
 
-echo "[entrypoint:${__l_name}] INFO: Starting Salt Master..."
+echo "[entrypoint:${__l_name}] INFO: Starting Salt Master"
 exec salt-master --log-level="${SALT_MASTER_LOG_LEVEL:-warning}" --log-file-level="${SALT_MASTER_LOG_FILE_LEVEL:-warning}"
