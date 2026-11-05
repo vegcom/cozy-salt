@@ -1,41 +1,40 @@
-$steamPath = "C:\Program Files (x86)\Steam\steam.exe"
-$arguments = @(
-    "-cef-force-gpu",
-    "-cef-full-memory-crash-report",
-    "-cef-in-process-gpu",
-    "-cef-single-process",
-    "-cef-use-shell-exec=pwsh",
-    "-cef-verbose-js-logging",
-    "-cef-verbose-logging",
-    "-console",
-    "-enable-keyring",
-    "-fasthtml",
-    "-fulldesktopres",
-    "-oldtraymenu",
-    "-silent",
-    "-single_core",
-    "-system-composer"
-)
+#!/usr/bin/env pwsh
 
-$steamProc = Get-Process -Name "steam" -ErrorAction SilentlyContinue
+$steamBin = "/Program Files (x86)/Steam/steam.exe"
 
-if ($steamProc) {
-    Write-Host "Steam is running. Attempting graceful shutdown..."
+try {
+    $steamArguments = @(
+        "-cef-enable-debugging",
+        "-cef-enable-gpu-debugging",
+        "-cef-force-gpu",
+        "-cef-force-sandbox",
+        "-cef-full-memory-crash-report",
+        "-cef-in-process-gpu",
+        "-cef-single-process='pwsh'"
+        "-cef-use-shell-exec",
+        "-cef-verbose-js-logging",
+        "-cef-verbose-logging",
+        "-console",
+        "-debug_steamapi",
+        "-debugbutton",
+        "-disable-winh264",
+        "-fasthtml",
+        "-forcedeckcontroller"
+        "-fs_log",
+        "-fs_logbins",
+        "-fs_target"
+        "-fulldesktopres",
+        "-lognetapi",
+        "-oldtraymenu",
+        "-silent",
+        "-single_core",
+        "-system-composer"
+    )
 
-    $steamProc | ForEach-Object { $_.CloseMainWindow() } | Out-Null
-
-    $null = Wait-Process -Name "steam" -Timeout 3 -ErrorAction SilentlyContinue
-
-    if (Get-Process -Name "steam" -ErrorAction SilentlyContinue) {
-        Write-Warning "Steam didn't close gracefully. Force killing..."
-        Stop-Process -Name "steam" -Force -ErrorAction SilentlyContinue
-        Start-Sleep -Seconds 1
+    if ($mode -match '^(m|s|mini|small)$') {
+        $steamArguments += "steam://open/minigameslist"
     }
+    Start-Process -LoadUserProfile -NoNewWindow -FilePath $SteamBin -ArgumentList $steamArguments
+} catch {
+    throw "Failed: $_"
 }
-
-if ($mode -match '^(m|s|mini|small)$') {
-    $arguments += "steam://open/minigameslist"
-}
-
-Write-Host "Launching Steam with custom parameters..."
-Start-Process -FilePath $steamPath -ArgumentList $arguments
