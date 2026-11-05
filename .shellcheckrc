@@ -31,3 +31,9 @@ disable=SC1071
 
 # SC1091 - warn: Can't follow non-constant source. Use a directive to specify location
 disable=SC1091
+
+# SC2068 - Double quote array expansions to avoid re-splitting elements
+disable=SC2068
+
+# SC2030 - Modification of var is local (to subshell caused by pipeline)
+disable=SC2030
