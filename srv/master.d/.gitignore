@@ -1,2 +1,3 @@
-mongo-returner-generated.conf
 gitfs.conf
+metrics.conf
+tracing.conf

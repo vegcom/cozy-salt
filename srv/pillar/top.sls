@@ -14,7 +14,6 @@ base:
     - common.paths
     - common.versions
     - common.scheduler
-    - common.mongo
     - common.pip
     - common.arch_patterns
     - common.mine

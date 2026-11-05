@@ -3,12 +3,10 @@
 # docker compose -f docker-compose.yaml  -f docker-compose-net.yml  config
 
 # YAML Anchors - Common service definitions (HIGH-002)
+
 x-minion-base: &minion-base
   restart: 'no'
   privileged: true
-  dns:
-    - 1.1.1.1
-    - 1.0.0.1
   networks:
     - salt-net
   depends_on:
@@ -59,52 +57,64 @@ services:
       SALT_MINION_LOG_LEVEL: ${SALT_MINION_LOG_LEVEL:-warning}
       SALT_MINION_LOG_FILE_LEVEL: ${SALT_MINION_LOG_FILE_LEVEL:-warning}
       _GUI_VERSION: 1.34.0
+      TZ: ${TZ:-America/New_York}
     networks:
       - salt-net
     labels:
       cozy.service: salt
       cozy.role: salt-master
-    dns:
-      - 1.1.1.1
-      - 1.0.0.1
-    dns_search:
-      - local
-      - localdomain
     hostname: salt
 
-  mongo:
-    container_name: mongo
-    image: mongo:7
+  openobserve:
+    container_name: openobserve
+    image: public.ecr.aws/zinclabs/openobserve:latest
     restart: unless-stopped
-    depends_on:
-      salt:
-        condition: service_healthy
     expose:
-      - '27017'
-    volumes:
-      - ./srv/data:/srv/data:ro
-      - mongo-data:/data/db
+      - '5080'
+    ports:
+      - '5080:5080'  # UI + REST API + OTLP-http ingest
     environment:
-      MONGO_INITDB_ROOT_USERNAME: salt
-      MONGO_INITDB_ROOT_PASSWORD_FILE: /srv/data/mongo/password
+      ZO_ROOT_USER_EMAIL: ${ZO_ROOT_USER_EMAIL:-admin@cozy.local}
+      ZO_ROOT_USER_PASSWORD: ${ZO_ROOT_USER_PASSWORD:-changeme}
+      ZO_ROOT_USER_TOKEN: ${ZO_ROOT_USER_TOKEN:?set a static root token, e.g. openssl rand -hex 16}
+      ZO_DATA_DIR: /data
+      TZ: ${TZ:-America/New_York}
+    volumes:
+      - openobserve-data:/data
     networks:
       - salt-net
     labels:
-      cozy.service: mongo
-      cozy.role: salt-mongo
+      cozy.service: openobserve
       cozy.project: cozy-salt
-    healthcheck:
-      test: ['CMD', 'bash', '-c', 'exec 3<>/dev/tcp/127.0.0.1/27017']
-      interval: 5s
-      timeout: 3s
-      retries: 16
-      start_period: 45s
-    hostname: mongo
-    profiles:
-      - mongo
+
+  fluent-bit:
+    container_name: fluent-bit
+    image: cr.fluentbit.io/fluent/fluent-bit:latest
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ:-America/New_York}
+      ZO_ROOT_USER_EMAIL: ${ZO_ROOT_USER_EMAIL:-admin@cozy.local}
+      ZO_ROOT_USER_TOKEN: ${ZO_ROOT_USER_TOKEN:?set a static root token, e.g. openssl rand -hex 16}
+    volumes:
+      - ./srv/fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
+      - ./srv/fluent-bit/parsers.conf:/fluent-bit/etc/parsers.conf:ro
+      - ${DOCKER_DATA_PATH:-/var/lib/docker}/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/log/containers:/var/log/containers:ro
+      - /var/log/pods:/var/log/pods:ro
+
+    networks:
+      - salt-net
+    depends_on:
+      - openobserve
+    labels:
+      cozy.service: fluent-bit
+      cozy.project: cozy-salt
+
 
   winget-manifest:
     container_name: winget-manifest
+
     build:
       context: https://github.com/June-Cozy/cozy-winget.git
       dockerfile: Dockerfile
@@ -120,6 +130,7 @@ services:
       MANIFEST_REPO_URL: https://github.com/June-Cozy/cozy-winget.git
       MANIFEST_PULL_INTERVAL: '86400'
       MANIFEST_DEBUG: ${MANIFEST_DEBUG:-0}
+      TZ: ${TZ:-America/New_York}
     networks:
       - salt-net
     labels:
@@ -150,6 +161,7 @@ services:
     environment:
       SALT_MASTER: salt
       MINION_ID: ubuntu-test
+      TZ: ${TZ:-America/New_York}
     labels:
       cozy.service: salt-minion
       cozy.dist: ubuntu
@@ -171,6 +183,7 @@ services:
     environment:
       SALT_MASTER: salt
       MINION_ID: rhel-test
+      TZ: ${TZ:-America/New_York}
     labels:
       cozy.service: salt-minion
       cozy.dist: rhel
@@ -205,6 +218,7 @@ services:
       CPU_CORES: '2' # 2 vCPUs
       DISK_SIZE: '64G' # 64GB virtual disk
       MANUAL: 'N' # Unattended install with Autounattend.xml
+      TZ: ${TZ:-America/New_York}
     networks:
       - salt-net
     labels:
@@ -224,8 +238,9 @@ volumes:
   salt-cache:
   salt-logs:
   salt-pki:
-  mongo-data:
+  openobserve-data:
   winget-manifest-data:
+
 
 networks:
   salt-net:
