@@ -54,11 +54,11 @@ Sets `NVM_HOME`, `NVM_SYMLINK`, `CONDA_HOME` automatically.
 
 Pillar template files (committed) show structure and defaults. Copy templates to create instance files:
 
-| Template                       | Purpose                  | Instance                           | Notes                                  |
-| ------------------------------ | ------------------------ | ---------------------------------- | -------------------------------------- |
-| `srv/pillar/host/example.sls`  | Per-host config template | `srv/pillar/host/{hostname}.sls`   | Loaded if exists, never tracked        |
-| `srv/pillar/class/example.sls` | Hardware class template  | `srv/pillar/class/{classname}.sls` | Reference for structure                |
-| `srv/pillar/users/demo.sls`    | User config template     | `srv/pillar/users/{username}.sls`  | Local files only, demo.sls tracked     |
+| Template                         | Purpose                  | Instance                           | Notes                                  |
+| -------------------------------- | ------------------------ | ---------------------------------- | -------------------------------------- |
+| `srv/pillar/host/example.sls`    | Per-host config template | `srv/pillar/host/{hostname}.sls`   | Loaded if exists, never tracked        |
+| `srv/pillar/class/example.sls`   | Hardware class template  | `srv/pillar/class/{classname}.sls` | Reference for structure                |
+| `srv/pillar/users/demo.sls`      | User config template     | `srv/pillar/users/{username}.sls`  | Local files only, demo.sls tracked     |
 | `srv/pillar/common/example.sls`  | User metadata template   | `srv/pillar/common/users.sls`      | Shows structure (tracked)              |
 | `srv/pillar/secrets/example.sls` | Secrets template         | `srv/pillar/secrets/init.sls`      | reference for includes, create locally |
 

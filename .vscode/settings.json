@@ -1,90 +1,100 @@
 {
   "[css]": {
-    "editor.defaultFormatter": "Jota0222.multi-formatter",
-    "multiFormatter.formatterList": ["vscode.css-language-features"]
+    "editor.defaultFormatter": "trunk.io"
   },
   "[dockercompose]": {
     "editor.defaultFormatter": "Jota0222.multi-formatter",
-    "multiFormatter.formatterList": ["SashaBusinaro.yaml-compose-sorter"]
+    "multiFormatter.formatterList": [
+      "SashaBusinaro.yaml-compose-sorter",
+      "trunk.io"
+    ]
   },
   "[dockerfile]": {
     "editor.defaultFormatter": "Jota0222.multi-formatter",
-    "multiFormatter.formatterList": ["jeff-hykin.better-dockerfile-syntax"]
-  },
-  "[html]": {
-    "editor.defaultFormatter": "samuelcolvin.jinjahtml",
     "multiFormatter.formatterList": [
-      "vscode.html-language-features",
-      "samuelcolvin.jinjahtml"
+      "jeff-hykin.better-dockerfile-syntax",
+      "trunk.io"
     ]
   },
+  "[html]": {
+    "editor.defaultFormatter": "trunk.io"
+  },
   "[jinja-json]": {
-    "editor.defaultFormatter": "samuelcolvin.jinjahtml",
+    "editor.defaultFormatter": "Jota0222.multi-formatter",
     "editor.formatOnSave": true,
-    "multiFormatter.formatterList": ["akrikun.saltstack-toolkit"]
+    "multiFormatter.formatterList": ["akrikun.saltstack-toolkit", "trunk.io"]
   },
   "[jinja-yaml]": {
-    "editor.defaultFormatter": "akrikun.saltstack-toolkit",
+    "editor.defaultFormatter": "Jota0222.multi-formatter",
     "editor.formatOnSave": true,
-    "multiFormatter.formatterList": ["akrikun.saltstack-toolkit"]
+    "multiFormatter.formatterList": ["akrikun.saltstack-toolkit", "trunk.io"]
   },
   "[jinja]": {
     "editor.defaultFormatter": "akrikun.saltstack-toolkit",
     "editor.formatOnSave": true,
-    "multiFormatter.formatterList": ["akrikun.saltstack-toolkit"]
-  },
-  "[json]": {
-    "editor.defaultFormatter": "Jota0222.multi-formatter",
-    "editor.formatOnPaste": true,
-    "editor.formatOnSave": true,
-    "editor.formatOnSaveMode": "file",
-    "editor.formatOnType": true,
-    "multiFormatter.formatterList": ["esbenp.prettier-vscode"]
-  },
-  "[jsonc]": {
-    "editor.defaultFormatter": "charliermarsh.ruff",
-    "editor.formatOnPaste": true,
-    "editor.formatOnSave": true
+    "multiFormatter.formatterList": ["akrikun.saltstack-toolkit", "trunk.io"]
   },
   "[jsonl]": {
     "editor.formatOnPaste": false,
     "editor.formatOnSave": false
   },
+  "[json]": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll.sortJSON": "explicit"
+    },
+    "editor.defaultFormatter": "trunk.io",
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true,
+    "editor.formatOnSaveMode": "file",
+    "editor.formatOnType": true,
+    "editor.tabSize": 2
+  },
+  "[jsonc]": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll.sortJSON": "explicit"
+    },
+    "editor.defaultFormatter": "trunk.io",
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true,
+    "editor.formatOnSaveMode": "file",
+    "editor.formatOnType": true,
+    "editor.tabSize": 2
+  },
   "[less]": {
-    "editor.defaultFormatter": "monosans.djlint",
-    "multiFormatter.formatterList": ["monosans.djlint"]
+    "editor.defaultFormatter": "trunk.io"
   },
   "[markdown]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "multiFormatter.formatterList": ["esbenp.prettier-vscode"]
+    "editor.defaultFormatter": "trunk.io"
   },
   "[plaintext]": {
+    "editor.defaultFormatter": "trunk.io",
     "editor.formatOnPaste": false,
     "editor.formatOnSave": false
   },
   "[python]": {
-    "editor.defaultFormatter": "Jota0222.multi-formatter",
-    "multiFormatter.formatterList": ["charliermarsh.ruff"]
+    "editor.defaultFormatter": "trunk.io"
   },
   "[scss]": {
-    "editor.defaultFormatter": "vscode.css-language-features"
+    "editor.defaultFormatter": "trunk.io"
   },
   "[shellscript]": {
-    "editor.defaultFormatter": "foxundermoon.shell-format"
+    "editor.defaultFormatter": "trunk.io"
   },
   "[sql]": {
     "editor.defaultFormatter": "Jota0222.multi-formatter",
-    "multiFormatter.formatterList": ["adpyke.vscode-sql-formatter"]
+    "multiFormatter.formatterList": ["adpyke.vscode-sql-formatter", "trunk.io"]
   },
   "[toml]": {
-    "editor.defaultFormatter": "tamasfe.even-better-toml"
+    "editor.defaultFormatter": "Jota0222.multi-formatter",
+    "multiFormatter.formatterList": ["tamasfe.even-better-toml", "trunk.io"]
   },
   "[xml]": {
     "editor.defaultFormatter": "Jota0222.multi-formatter",
-    "multiFormatter.formatterList": ["redhat.vscode-xml"]
+    "multiFormatter.formatterList": ["redhat.vscode-xml", "trunk.io"]
   },
   "[yaml]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "Jota0222.multi-formatter",
+    "multiFormatter.formatterList": ["trunk.io"]
   },
   "direnv.restart.automatic": true,
   "djlint.enableLinting": false,
@@ -93,6 +103,7 @@
     "statusBar": true
   },
   "files.associations": {
+    ".bandit": "ini",
     ".env.example": "env",
     ".gitattributes*": "gitconfig",
     ".gitconfig*": "gitconfig",
@@ -102,7 +113,6 @@
     ".salt-lint": "yaml",
     ".shellcheckrc": "shellscript",
     ".vscode/settings.json": "json",
-    "*.bandit": "ini",
     "*.json": "json",
     "*.sls": "jinja",
     "*.sls.example": "jinja",
@@ -114,10 +124,17 @@
   "json.validate.enable": true,
   "problems.autoReveal": true,
   "problems.showCurrentInStatus": true,
-  "python-envs.defaultEnvManager": "ms-python.python:conda",
-  "python-envs.defaultPackageManager": "ms-python.python:conda",
   "python.analysis.diagnosticMode": "workspace",
-  "python.terminal.useEnvFile": true,
+  "python.analysis.extraPaths": [
+    "/opt/saltstack/salt/lib/python3.11/site-packages",
+    "/opt/saltstack/salt/lib/python3.10/site-packages",
+    "/opt/saltstack/salt/lib/python3.14/site-packages"
+  ],
+  "python.autoComplete.extraPaths": [
+    "/opt/saltstack/salt/lib/python3.11/site-packages",
+    "/opt/saltstack/salt/lib/python3.10/site-packages",
+    "/opt/saltstack/salt/lib/python3.14/site-packages"
+  ],
   "python.testing.pytestArgs": ["tests"],
   "python.testing.pytestEnabled": true,
   "python.testing.unittestEnabled": true,

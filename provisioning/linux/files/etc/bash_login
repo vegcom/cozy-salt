@@ -3,12 +3,12 @@
 
 # shellcheck disable=SC1009
 if [ -d /etc/login.d ]; then
-  # shellcheck  disable=SC1072 disable=SC1073
-  for i in $(find /etc/login.d/*.sh 2>/dev/null|sort) ; do
-    if [ -r "$i" ]; then
-      # shellcheck disable=SC1090
-      . "$i"
-    fi
-  done
-  unset i
+	# shellcheck  disable=SC1072 disable=SC1073
+	for i in $(find /etc/login.d/*.sh 2>/dev/null | sort); do
+		if [ -r "$i" ]; then
+			# shellcheck disable=SC1090
+			. "$i"
+		fi
+	done
+	unset i
 fi

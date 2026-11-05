@@ -1,0 +1,35 @@
+{
+  "Addresses": {
+    "Swarm": {{ _swarm_addrs | tojson }},
+    "API": "/ip4/127.0.0.1/tcp/{{ api_port }}",
+    "Gateway": "/ip4/127.0.0.1/tcp/{{ gateway_port }}"
+  },
+  "Routing": {
+    "Type": "dhtclient",
+    "DelegatedRouters": []
+  },
+  "Reprovider": null,
+  "Swarm": {
+    "AddrFilters": [],
+    "Transports": {
+      "Network": {
+        "Websocket": false
+      }
+    }
+  },
+  "Ipns": {
+    "DelegatedPublishers": [],
+    "UsePubsub": true
+  },
+  "DNS": {
+    "Resolvers": {}
+  },
+  "Discovery": {
+    "MDNS": {
+      "Enabled": true
+    }
+  },
+  "AutoConf": {
+    "Enabled": false
+  }
+}

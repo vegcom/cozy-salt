@@ -92,27 +92,50 @@ ipfs_init:
   {%- do _swarm_addrs.append('/ip4/' ~ lan_ip ~ '/udp/4001/quic-v1') %}
 {%- endif %}
 
-ipfs_configure_private_networking:
+ipfs_target_config_file:
+  file.managed:
+{%- if is_windows %}
+    - name: C:/opt/cozy/etc/kubo/ipfs_custom_config.json
+{%- else %}
+    - name: /opt/cozy/etc/kubo/ipfs_custom_config.json
+{%- endif %}
+    - source: salt://_templates/ipfs_custom_config.json.jinja
+    - template: jinja
+    - makedirs: True
+    - create: True
+{%- if not is_windows %}
+    - user: cozy-salt-svc
+    - group: cozyusers
+    - mode: '0660'
+{%- endif %}
+    - _swarm_addrs: {{ _swarm_addrs }}
+    - gateway_port: {{ gateway_port }}
+    - api_port: {{ api_port }}
+
+ipfs_bootstrap_clear:
   cmd.run:
-    - names:
-      - ipfs bootstrap rm --all
-      - ipfs config Addresses.Swarm --json '{{ _swarm_addrs | tojson }}'
-      - ipfs config Addresses.API "/ip4/127.0.0.1/tcp/{{ api_port }}"
-      - ipfs config Addresses.Gateway "/ip4/127.0.0.1/tcp/{{ gateway_port }}"
-      - ipfs config Routing.Type "dhtclient"
-      - ipfs config --json Reprovider null
-      - ipfs config --json Swarm.AddrFilters '[]'
-      - ipfs config --json Routing.DelegatedRouters '[]'
-      - ipfs config --json Ipns.DelegatedPublishers '[]'
-      - ipfs config --json DNS.Resolvers '{}'
-      - ipfs config --bool Discovery.MDNS.Enabled true
-      - ipfs config --bool Ipns.UsePubsub true
-      - ipfs config --bool Swarm.Transports.Network.Websocket false
-      - ipfs config --bool AutoConf.Enabled false
+    - name: ipfs bootstrap rm --all
     - env: {{ kubo_env | json }}
 {%- if is_windows %}
     - shell: powershell
 {%- endif %}
+
+ipfs_configure_private_networking:
+  cmd.run:
+{%- if is_windows %}
+    - name: ipfs config replace C:/opt/cozy/etc/kubo/ipfs_custom_config.json
+{%- else %}
+    - name: ipfs config replace /opt/cozy/etc/kubo/ipfs_custom_config.json
+{%- endif %}
+    - env: {{ kubo_env | json }}
+{%- if is_windows %}
+    - shell: powershell
+{%- endif %}
+    - require:
+      - file: ipfs_target_config_file
+      - cmd: ipfs_bootstrap_clear
+    - onchanges:
+      - file: ipfs_target_config_file
 
 {%- if not is_windows %}
 ipfs_service:

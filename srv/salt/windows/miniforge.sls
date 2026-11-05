@@ -4,6 +4,16 @@
 
 {%- set _pinned = salt['pillar.get']('versions:miniforge:version', '') %}
 {%- set miniforge_version = _pinned or salt['github_release.latest']('conda-forge/miniforge', fallback="26.3.2-3") %}
+{%- set miniforge_assets = salt['github_release.assets']('conda-forge/miniforge', tag=miniforge_version) %}
+{%- set _miniforge_candidates = [] %}
+{%- for a in miniforge_assets %}
+  {%- if 'windows' in a.name|lower and a.name.endswith('.exe') %}
+    {%- do _miniforge_candidates.append(a) %}
+  {%- endif %}
+{%- endfor %}
+{%- set miniforge_patterns = salt['arch_match.patterns_for'](os_family='windows') %}
+{%- set _miniforge_asset = salt['arch_match.pick'](_miniforge_candidates, miniforge_patterns, key='name') %}
+{%- set miniforge_source = _miniforge_asset.browser_download_url if _miniforge_asset else none %}
 {# Path configuration from pillar with defaults #}
 {%- set miniforge_path = salt['pillar.get']('install_paths:miniforge:windows', 'C:/opt/miniforge3') %}
 {%- set miniforge_tmp = 'C:/opt/cozy/cache/miniforge-install.exe' %}
@@ -35,7 +45,7 @@ miniforge_directory:
 miniforge_download:
   file.managed:
     - name: {{ miniforge_tmp }}
-    - source: https://github.com/conda-forge/miniforge/releases/download/{{ miniforge_version }}/Miniforge3-Windows-x86_64.exe
+    - source: {{ miniforge_source }}
     - skip_verify: True
     - mkdirs: True
 

@@ -1,11 +1,18 @@
 {#- docs: https://ipfs.tech #}
 {%- set _pinned = salt['pillar.get']('versions:kubo:version', '') %}
 {%- set kubo_version = _pinned or salt['github_release.latest']('ipfs/kubo', fallback='v0.40.0', prerelease=True) %}
+{%- set kubo_assets = salt['github_release.assets']('ipfs/kubo', tag=kubo_version, prerelease=True) %}
+{%- set _kubo_candidates = [] %}
+{%- for a in kubo_assets %}
+  {%- if 'linux' in a.name|lower and not a.name.endswith('.cid') and not a.name.endswith('.sha512') %}
+    {%- do _kubo_candidates.append(a) %}
+  {%- endif %}
+{%- endfor %}
+{%- set kubo_patterns = salt['arch_match.patterns_for'](os_family='linux') %}
+{%- set _kubo_asset = salt['arch_match.pick'](_kubo_candidates, kubo_patterns, key='name') %}
+{%- set kubo_source = _kubo_asset.browser_download_url if _kubo_asset else none %}
+{%- set kubo_hash = kubo_source ~ ".sha512" if kubo_source else none %}
 {%- set kubo_path = '/opt/kubo' %}
-{%- set arch = salt['grains.get']('osarch') or 'x86_64' %}
-{%- set arch = 'amd64' if arch == 'x86_64' %}
-{%- set kubo_source = "https://github.com/ipfs/kubo/releases/download/" ~ kubo_version ~ "/kubo_" ~ kubo_version ~ "_linux-" ~ arch ~ ".tar.gz" %}
-{%- set kubo_hash = kubo_source ~ ".sha512" %}
 
 {%- set is_container = salt['file.file_exists']('/.dockerenv') or
                        salt['file.file_exists']('/run/.containerenv') -%}

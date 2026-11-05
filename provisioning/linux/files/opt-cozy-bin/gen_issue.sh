@@ -2,7 +2,7 @@
 # Generate /etc/issue.net (SSH pre-login banner)
 # pastel goth aesthetic - twilite theme
 
-cat << 'EOF' | tee /etc/issue.net &>/dev/null
+cat <<'EOF' | tee /etc/issue.net &>/dev/null
 
 \033[38;2;217;96;168m       .  *  .    *   .  *  .    *   .  *  .    *   .  *  .
 \033[38;2;232;120;192m   *       .    *        .    *       .    *        .

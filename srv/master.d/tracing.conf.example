@@ -1,0 +1,11 @@
+tracing:
+  enabled: true
+  exporter: otlp-http # otlp-http | otlp-grpc | console
+  endpoint: "" # OTel SDK default endpoint when empty
+  service_name: "" # auto-derived when empty
+  sampler: parent_based # parent_based | always_on | always_off | trace_id_ratio
+  sampler_arg: 1.0
+  resource_attributes: {}
+  insecure: true # gRPC TLS disabled (ignored for HTTP)
+  headers: # OTLP auth headers
+    Authorization: "Basic abcd1234" 

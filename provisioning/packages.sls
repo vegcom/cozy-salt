@@ -27,7 +27,7 @@
     'core_utils': _core + ['vim'],
     'monitoring': _monitoring_base + ['duf', 'ncdu'],
     'shell_enhancements': _shell,
-    'build_tools': _build_base + ['build-essential', 'pkg-config'],
+    'build_tools': _build_base + ['build-essential', 'pkg-config', 'libatomic1'],
     'networking': _net_base + ['avahi-daemon', 'bind9-dnsutils', 'etcd-client', 'iputils-ping', 'net-tools', 'netcat-openbsd', 'openssh-client', 'openssh-server', 'wsdd-server', 'libnss-mdns'],
     'compression': _compress_base + ['7zip', 'xz-utils'],
     'vcs_extras': _vcs_base + ['gh'],
@@ -115,7 +115,7 @@ ubuntu: {{ _apt | tojson }}
 # ============================================================================
 rhel:
   acl: [acl]
-  build_tools: {{ (_build_base + ['gcc', 'gcc-c++', 'make']) | tojson }}
+  build_tools: {{ (_build_base + ['gcc', 'gcc-c++', 'make', 'libatomic']) | tojson }}
   compression: {{ (_compress_base + ['7zip', 'xz']) | tojson }}
   core_utils: {{ (_core + ['vim-enhanced']) | tojson }}
   kvm: [libvirt, libvirt-client, libvirt-daemon, qemu-img, qemu-kvm, virt-install]
@@ -130,9 +130,9 @@ rhel:
 # ARCH PACKAGES (pacman/yay - different names, extra categories)
 # ============================================================================
 arch:
-  build_tools: {{ (_build_base + ['base-devel']) | tojson }}
+  build_tools: {{ (_build_base + ['base-devel', 'gcc-libs']) | tojson }}
   compression: {{ (_compress_base + ['p7zip', 'xz']) | tojson }}
-  core_utils: {{ (_core + ['vim', 'sed', 'glibc', 'glibc-locales', 'man-db', 'python-pyinotify']) | tojson }}
+  core_utils: {{ (_core + ['vim', 'sed', 'glibc', 'glibc-locales', 'man-db', 'python-pyinotify', 'irqbalance']) | tojson }}
   modern_cli: {{ (_modern_cli_base + ['fd']) | tojson }}
   monitoring: {{ (_monitoring_base + ['duf', 'ncdu']) | tojson }}
   networking: {{ (_net_base + ['avahi', 'bind', 'etcd', 'iputils', 'net-tools', 'openbsd-netcat', 'openssh', 'wsdd', 'nss-mdns']) | tojson }}
@@ -142,10 +142,10 @@ arch:
   container: [docker, docker-buildx, docker-compose]
   debugging: [downgrade]
   fonts: [noto-fonts, noto-fonts-emoji, noto-fonts-cjk, ttf-fira-code, ttf-hack, ttf-jetbrains-mono, inter-font]
-  gaming: [waydroid-launcher-git, protontricks, steam, gamescope,  lib32-gamescope-plus, mangohud, moonlight-qt, protonup-qt-bin]
+  gaming: [waydroid-launcher-git, protontricks, steam, gamescope,  lib32-gamescope-plus, mangohud, moonlight-qt, protonup-qt-bin,]
   gui: [plasma-meta, hyprland, plasma-keyboard]
   interpreters: [lua, perl, python, python-pip]
-  kernel: []
+  kernel: [linux-headers]
   kvm: [dnsmasq, edk2-ovmf, libvirt, qemu-desktop, virt-install, virt-manager]
   modern_cli_extras: [bottom, eza, hyperfine, procs, tealdeer, tokei, zoxide]
   security: [ca-certificates, gnupg]
@@ -158,7 +158,7 @@ arch:
 # ============================================================================
 windows:
 
-  pwsh_modules: [PowerShellGet, Microsoft.PowerShell.PSResourceGet, PackageManagement, PSReadLine, Microsoft.WinGet.Client, powershell-yaml, PSFzf, PSWindowsUpdate, Terminal-Icons, BurntToast]
+  pwsh_modules: [PowerShellGet, Microsoft.PowerShell.PSResourceGet, PackageManagement, PSReadLine, Microsoft.WinGet.Client, powershell-yaml, PSFzf, PSWindowsUpdate, Terminal-Icons, BurntToast, PSScriptAnalyzer]
 
   choco: [chocolatey-compatibility.extension, chocolatey-core.extension, chocolatey-font-helpers.extension, cheatengine, colortool, Cygwin, dive, docker-cli, docker-compose, make,  vim, winbtrfs, ext2fsd, jq, tor, ipfs-mount]
 
@@ -172,7 +172,7 @@ windows:
     communication: [Telegram.TelegramDesktop, Vencord.Vesktop]
     compression: [Giorgiotani.Peazip]
     desktop_customization: [AutoHotkey.AutoHotkey, File-New-Project.EarTrumpet]
-    development: [GitHub.GitHubDesktop, GitHub.cli, Gitleaks.Gitleaks, JetBrains.IntelliJIDEA.Community, Microsoft.VisualStudio.BuildTools, Microsoft.VisualStudio.Community, Microsoft.VisualStudioCode, Microsoft.VisualStudioCode.CLI, Microsoft.VisualStudioCode.Insiders, Microsoft.VisualStudioCode.Insiders.CLI, MSYS2.MSYS2, NSIS.NSIS, Kitware.CMake, Anthropic.ClaudeCode, BurntSushi.ripgrep.MSVC, hoppscotch.Hoppscotch, Microsoft.VCLibs.Desktop.14, NASM.NASM, DenoLand.Deno, direnv.direnv, Hashicorp.Terraform, Hashicorp.TerraformLanguageServer, nektos.act, waterlan.dos2unix]
+    development: [GitHub.GitHubDesktop, GitHub.cli, Gitleaks.Gitleaks, JetBrains.IntelliJIDEA.Community, Microsoft.VisualStudio.BuildTools, Microsoft.VisualStudio.Community, Microsoft.VisualStudioCode, Microsoft.VisualStudioCode.CLI, Microsoft.VisualStudioCode.Insiders, Microsoft.VisualStudioCode.Insiders.CLI, MSYS2.MSYS2, NSIS.NSIS, Kitware.CMake, Anthropic.ClaudeCode, BurntSushi.ripgrep.MSVC, hoppscotch.Hoppscotch, Microsoft.VCLibs.Desktop.14, NASM.NASM, DenoLand.Deno, direnv.direnv, Hashicorp.Terraform, Hashicorp.TerraformLanguageServer, nektos.act, waterlan.dos2unix, BurntSushi.ripgrep.GNU]
     editor: [Obsidian.Obsidian]
     file_management: [7zip.7zip, WinSCP.WinSCP, voidtools.Everything.Cli, voidtools.Everything]
     games: [Valve.Steam, derrod.legendary, ItchIo.Itch, mtkennerly.ludusavi, Playnite.Playnite, SpecialK.SpecialK]
@@ -185,10 +185,10 @@ windows:
     media_video: [Gyan.FFmpeg, HandBrake.HandBrake, yt-dlp.yt-dlp]
     networking: [Apple.Bonjour, WiresharkFoundation.Wireshark, Tailscale.Tailscale, Insecure.Nmap, Microsoft.OpenSSH.Preview]
     ricing: [Rainmeter.Rainmeter, MicaForEveryone.MicaForEveryone]
-    shell: [Git.Git]
+    shell: [Git.Git, tamasfe.taplo, Google.OSVScanner, GitHub.GitLFS]
     sync_backup: [Syncthing.Syncthing, Martchus.syncthingtray]
     terminal: [Alacritty.Alacritty, Maximus5.ConEmu, Microsoft.WindowsTerminal, Microsoft.PowerShell, Starship.Starship]
-    utilities: [CodeSector.TeraCopy, AntibodySoftware.WizTree, qBittorrent.qBittorrent, WerWolv.ImHex, Microsoft.Sysinternals.Suite, TRGamer-tech.FluentTaskScheduler, Microsoft.PowerToys, davidegiacometti.VisualStudioForCmdPal, nickknissen.TailscaleCommandPalette,  Rclone.Rclone, Rufus.Rufus]
+    utilities: [CodeSector.TeraCopy, AntibodySoftware.WizTree, qBittorrent.qBittorrent, WerWolv.ImHex, Microsoft.Sysinternals.Suite, TRGamer-tech.FluentTaskScheduler, Microsoft.PowerToys, davidegiacometti.VisualStudioForCmdPal, nickknissen.TailscaleCommandPalette, Rclone.Rclone, Rufus.Rufus, SaltStack.SaltMinion, Xanashi.Icaros]
 
     gated:
       voicemeter: [VB-Audio.Voicemeeter.Potato]
@@ -208,23 +208,26 @@ windows:
 # LANGUAGE-SPECIFIC PACKAGES
 # ============================================================================
 
-pip_base: [pip, setuptools, wheel, pipx, uv, pre-commit, ipython, pytest, mypy, ruff, pipenv, pixi, poetry, gitpython, djlint]
+pip_base: [pip, setuptools, wheel, pipx, uv, pre-commit, ipython, pytest, mypy, ruff, pipenv, pixi, poetry, gitpython, djlint, pylint]
 
 npm_global:
   - "@angular/cli"
+  - "@apollo/protobufjs"
   - "@nestjs/cli"
   - "@vue/cli"
   - better-ccflare
   - bun
   - cdk
   - create-react-app
+  - esbuild
   - nodemon
+  - npm-check-updates
   - pm2
   - pnpm
   - serverless
+  - serverless
   - tsx
   - webpack
-  - npm-check-updates
 
 brew:
   formula: [atuin, carapace, pandoc, weasyprint, zoxide, dive, starship, direnv, claude-code, kubecolor, fzf, xdotool, cyme, ripgrep]

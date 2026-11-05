@@ -26,4 +26,4 @@ this is a small project maintained by humans. if someone's being genuinely harmf
 
 ---
 
-*be excellent to each other* 🌿
+_be excellent to each other_ 🌿

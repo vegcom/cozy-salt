@@ -1,30 +1,15 @@
 * text=auto eol=lf
-
 .aliases text eol=lf
-.bash_logout text eol=lf
-.bash_profile text eol=lf
-.bashrc text eol=lf
-.config/* text eol=lf
-.env text eol=lf
-.envrc text eol=lf
-.exports text eol=lf
-.functions text eol=lf
 .gitattributes text eol=lf
 .gitignore text eol=lf
-.inputrc text eol=lf
-.profile text eol=lf
-.screenrc text eol=lf
-.tmux.conf text eol=lf
-.vim/* text eol=lf
-.vimrc text eol=lf
-.zsh_logout text eol=lf
-.zsh_profile text eol=lf
-.zshrc text eol=lf
 *.bash text eol=lf
 *.bat text eol=crlf
 *.cfg text eol=lf
 *.cmd text eol=crlf
 *.conf text eol=lf
+*.json text eol=lf
+*.jsonl text eol=lf
+*.jsonc text eol=lf
 *.md text eol=lf
 *.ps1 text eol=crlf
 *.py text eol=lf
@@ -35,7 +20,6 @@
 *.yaml text eol=lf
 *.yml text eol=lf
 *.zsh text eol=lf
-Dockerfile* text eol=lf
 
 *.gif binary
 *.gz binary
@@ -45,8 +29,8 @@ Dockerfile* text eol=lf
 *.tar binary
 *.zip binary
 
-*.jsonl* filter=lfs diff=lfs merge=lfs -text
-*.log* filter=lfs diff=lfs merge=lfs -text
+*.jsonl filter=lfs diff=lfs merge=lfs -text
+*.log filter=lfs diff=lfs merge=lfs -text
 *.gz filter=lfs diff=lfs merge=lfs -text
 *.tar filter=lfs diff=lfs merge=lfs -text
 *.zip filter=lfs diff=lfs merge=lfs -text
@@ -58,9 +42,6 @@ Dockerfile* text eol=lf
 *.sh core.fileMode=true
 *.bash core.fileMode=true
 *.zsh core.fileMode=true
-*.zshrc core.fileMode=true
-*.bashrc core.fileMode=true
-*.sls core.fileMode=true
-*.y*ml core.fileMode=true
+*.yaml core.fileMode=true
+*.yml core.fileMode=true
 *.py core.fileMode=true
-*.service core.fileMode=true

@@ -4,6 +4,8 @@ include:
   - linux.dist.archlinux.makepkg
   - linux.dist.archlinux.yay
   - linux.dist.archlinux.install
+  - linux.scopebuddy
+  - linux.dist.archlinux.services
 {%- else %}
 # Not an Arch-based system, skipping pacman configuration
 archlinux_config_skipped:

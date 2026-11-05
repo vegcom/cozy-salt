@@ -87,8 +87,8 @@ pacman_install_reflector:
 
 {%- from '_macros/paths.sls' import managed_tree with context %}
 {{ managed_tree(
-  '/etc/systemd/system/reflector.d',
-  'salt://linux/files/etc-systemd-system-reflector.d',
+  '/etc/systemd/system/reflector.service.d',
+  'salt://linux/files/etc-systemd-system-reflector.service.d',
   recurse=True, clean=True,
   user='root', group='root'
 ) }}

@@ -14,14 +14,14 @@ MEM_USED=$(free -h 2>/dev/null | awk '/^Mem:/{print $3}' || echo "?")
 DISK_ROOT=$(df -h / 2>/dev/null | awk 'NR==2{print $3"/"$2" ("$5")"}' || echo "?")
 
 # Twilite palette - true color ANSI
-PURPLE=$'\e[38;2;217;96;168m'       # #d960a8 - main accent
-BRIGHT_PURPLE=$'\e[38;2;232;120;192m'  # #e878c0 - highlights
-CYAN=$'\e[38;2;112;201;221m'        # #70c9dd - info
-HOTPINK=$'\e[38;2;255;121;198m'     # #ff79c6 - special
-FG=$'\e[38;2;216;216;216m'          # #d8d8d8 - text
-X=$'\e[0m'                          # reset
+PURPLE=$'\e[38;2;217;96;168m'         # #d960a8 - main accent
+BRIGHT_PURPLE=$'\e[38;2;232;120;192m' # #e878c0 - highlights
+CYAN=$'\e[38;2;112;201;221m'          # #70c9dd - info
+HOTPINK=$'\e[38;2;255;121;198m'       # #ff79c6 - special
+FG=$'\e[38;2;216;216;216m'            # #d8d8d8 - text
+X=$'\e[0m'                            # reset
 
-cat << EOF | tee /etc/motd &>/dev/null
+cat <<EOF | tee /etc/motd &>/dev/null
 
 ${PURPLE}        .  *  .       *    .        *       .    *
 ${BRIGHT_PURPLE}    *        .    ${HOTPINK}~ welcome home ~${BRIGHT_PURPLE}    .        *

@@ -127,10 +127,10 @@ require-%:
 # =========================================================================== #
 
 mamba-create:
-	mamba env create -f environment.yml
+	mamba env create -f environment.yml  --use-uv --quiet --yes
 
 mamba-update:
-	mamba env update --prune -f environment.yml
+	mamba env update --prune -f environment.yml --use-uv --quiet --yes
 
 mamba-remove:
 	mamba env remove -yn cozy-salt
