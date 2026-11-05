@@ -32,3 +32,6 @@ enable_schtask_log:
     {%- endif %}
   {%- endfor %}
 {%- endfor %}
+
+include:
+  - windows.scripts

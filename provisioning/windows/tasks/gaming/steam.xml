@@ -46,7 +46,7 @@
   <Actions Context="Author">
     <Exec>
       <Command>pwsh</Command>
-      <Arguments>-WindowStyle Hidden -File C:/opt/cozy/bin/cozy-steam.ps1</Arguments>
+      <Arguments>-NoProfile -NoLogo -Command 'C:/opt/cozy/bin/cozy-steam.ps1 m'</Arguments>
     </Exec>
   </Actions>
 </Task>
