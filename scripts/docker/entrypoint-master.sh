@@ -112,13 +112,13 @@ else
   echo "[entrypoint:${__l_name}] DEBUG: Skipping generating master keys"
 fi
 
-# Set cozy-salt-svc password for SaltGUI PAM auth
+# Set cozy-salt-svc password for PAM auth
 
 if [[ -n ${SALT_API_SVC_PASS} ]]; then
   echo "cozy-salt-svc:${SALT_API_SVC_PASS}" | chpasswd
   echo "[entrypoint:${__l_name}] INFO: cozy-salt-svc password set"
 else
-  echo "[entrypoint:${__l_name}] WARNING: SALT_API_SVC_PASS not set — SaltGUI login will fail"
+  echo "[entrypoint:${__l_name}] WARNING: SALT_API_SVC_PASS not set — salt-api login will fail"
 fi
 
 # minion config
@@ -162,30 +162,6 @@ if [ ! -d /etc/salt/autosign.d ]; then
   touch ${autoreject_file}
 fi
 
-# Sqlite
-# TODO: addapt for respective returner schema, present state broken
-
-echo "[entrypoint:${__l_name}] DEBUG: Initialising sqlite3 returner schema"
-mkdir -p /srv/data/sqlite || true
-python3 -c "
-import sqlite3, os, shutil
-target = '/srv/data/sqlite/salt_returns.db'
-tmp    = '/tmp/salt_returns_init.db'
-conn = sqlite3.connect(tmp)
-conn.execute('PRAGMA journal_mode=WAL')
-conn.execute('CREATE TABLE IF NOT EXISTS salt_returns (fun TEXT KEY, jid TEXT KEY, id TEXT KEY, fun_args TEXT, date TEXT NOT NULL, full_ret TEXT NOT NULL, success TEXT NOT NULL)')
-conn.execute('CREATE TABLE IF NOT EXISTS jids (jid TEXT PRIMARY KEY, load TEXT NOT NULL)')
-conn.commit()
-conn.close()
-if not os.path.exists(target):
-    shutil.move(tmp, target)
-    os.chmod(target, 0o664)
-else:
-    os.unlink(tmp)
-
-"
-chown salt:salt /srv/data/sqlite/salt_returns.db 2>/dev/null || true
-
 # network discovery
 (
   __l_name='net'
@@ -205,16 +181,8 @@ chown salt:salt /srv/data/sqlite/salt_returns.db 2>/dev/null || true
     echo "[entrypoint:${__l_name}] WARNING: salt-minion restarting"
     sleep 5
   done
-(
-  # fires after minion ready
-  __l_name='client:event'
-  sleep 10
-  salt-run state.orchestrate orch.gen-api-cert
-  salt '*' mine.update --timeout 10 --output quiet 1>/dev/null 2>/dev/null || true
-  echo "[entrypoint:${__l_name}] INFO: state.orchestrate orch.gen-api-cert submitted"
-) &
-
-  salt-minion --log-level="${SALT_MINION_LOG_LEVEL:-warning}" --log-file-level="${SALT_MINION_LOG_FILE_LEVEL:-warning}" 2>/dev/null
+  salt-call --local state.disable highstate 2>/dev/null 1>/dev/null
+  salt-minion 2>/dev/null
 
 ) &
 
@@ -245,31 +213,83 @@ chown salt:salt /srv/data/sqlite/salt_returns.db 2>/dev/null || true
 
 ) &
 
-# salt-api
+#------------------------------------------------------------------------------
+
+# build cert
 (
-  # wait until cert has landed
-  # depends on: event
-  __l_name='api'
-  until (test -f ${__s_cert}); do
+  __l_name='cert'
+
+  until (pgrep -af 'salt-minion'|grep -q 'MinionProcessManager' 1>/dev/null 2>/dev/null); do
+    echo "[entrypoint:${__l_name}] DEBUG: backing off pending minion up"
     sleep 15
-    echo "[entrypoint:${__l_name}] WARNING: API Startup holding, pending ${__s_cert}"
   done
-  echo "[entrypoint:${__l_name}] INFO: Attached to 'state.event'"
-  # log-level: depr notice
-  salt-api --log-level="${SALT_API_LOG_LEVEL:-warning}" --log-file-level="${SALT_API_LOG_LEVEL_FILE:-warning}"
 ) &
+
+# build cert
+(
+  __l_name='cert'
+
+  until (pgrep -af 'salt-minion'|grep -q 'MinionProcessManager' 1>/dev/null 2>/dev/null); do
+    echo "[entrypoint:${__l_name}] DEBUG: backing off pending minion up"
+    sleep 15
+  done
+
+  echo "[entrypoint:${__l_name}] INFO: running state.orchestrate orch.gen-api-cert"
+  until (salt-run state.orchestrate orch.gen-api-cert --quiet --timeout 60 2>/dev/null); do
+      printf '[entrypoint:%s] DEBUG: Waiting for orch.gen-api-cert\n' "${__l_name}"
+      sleep 10
+  done
+) &
+
+# share mine
+(
+  __l_name='mine'
+
+  until (pgrep -af 'salt-master'|grep -q 'MainProcess' 1>/dev/null 2>/dev/null); do
+    echo "[entrypoint:${__l_name}] DEBUG: backing off pending master up"
+    sleep 15
+  done
+
+  salt '*' mine.update --timeout 10 --output quiet 1>/dev/null 2>/dev/null || true
+  echo "[entrypoint:${__l_name}] INFO: mine.update submitted to all minions"
+) &
+
+# start api
+(
+  __l_name='api'
+
+  echo "[entrypoint:${__l_name}] INFO: starting salt-api"
+
+  # evaluate cert is present
+  until (test -f ${__s_cert}); do
+    echo "[entrypoint:${__l_name}] WARNING: API Startup holding, pending ${__s_cert}"
+    sleep 5
+  done
+
+  salt-api
+) &
+
+#------------------------------------------------------------------------------
 
 # salt bus
 (
   __l_name='bus'
+
+  until (pgrep -af 'salt-master'|grep -q 'MainProcess' 1>/dev/null 2>/dev/null); do
+    echo "[entrypoint:${__l_name}] DEBUG: backing off pending master up"
+    sleep 15
+  done
+
   until (salt-run state.event | while read -r tag data; do printf '[entrypoint:%s] DEBUG: "%s" %s\n' "${__l_name}" "${tag}" "${data}"; done); do
     echo "[entrypoint:${__l_name}] WARNING: Waiting for 'state.event' to attach"
     sleep 10
   done
+
   echo "[entrypoint:${__l_name}] DEBUG: Attached to 'state.event'"
 ) &
 
-# salt master
+#------------------------------------------------------------------------------
 
+# salt master
 echo "[entrypoint:${__l_name}] INFO: Starting Salt Master"
-exec salt-master --log-level="${SALT_MASTER_LOG_LEVEL:-warning}" --log-file-level="${SALT_MASTER_LOG_FILE_LEVEL:-warning}"
+exec salt-master
