@@ -46,7 +46,8 @@ RUN rm -f /etc/apt/sources.list.d/* && \
     echo "deb http://${APT_MIRROR}/ubuntu/ ${DEBIAN_CODENAME}-updates main restricted universe multiverse" >> /etc/apt/sources.list && \
     echo "deb http://${APT_SECURITY_MIRROR}/ubuntu/ ${DEBIAN_CODENAME}-security main restricted universe multiverse" >> /etc/apt/sources.list && \
     apt-get update && \
-    apt-get install -y --no-install-recommends curl ca-certificates git gpg && \
+    apt-get install -y --no-install-recommends curl ca-certificates git gpg \
+    iproute2 sysstat lshw dmidecode inotify-tools pciutils lshw lsof && \
     install -m 0755 -d /etc/apt/keyrings && \
     curl -fsSL https://packages.broadcom.com/artifactory/api/security/keypair/SaltProjectKey/public \
     | gpg --dearmor -o /etc/apt/keyrings/salt-archive-keyring.gpg && \
@@ -72,7 +73,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     netcat-openbsd avahi-daemon wsdd-server tini libatomic1 \
-    salt-master salt-minion salt-api salt-ssh python3-cherrypy3 && \
+    salt-master salt-minion salt-api salt-ssh && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/*
 
@@ -95,13 +96,7 @@ RUN chmod +x /usr/local/bin/entrypoint-master.sh
 # Copy avahi service files
 COPY srv/avahi/*.service /etc/avahi/services/
 
-# Setup SaltGUI
-ENV _GUI_VERSION=1.33.0
-RUN mkdir -p /saltgui && \
-    curl -fsSL https://github.com/erwindon/SaltGUI/archive/refs/tags/${_GUI_VERSION}.tar.gz | \
-    tar -xz --strip-components=2 -C /saltgui SaltGUI-${_GUI_VERSION}/saltgui
-
-# Create service account for SaltGUI PAM auth
+# Create service account for svc PAM auth
 # Password set at runtime via SALT_API_PASSWORD env var in entrypoint
 RUN useradd -r -s /usr/sbin/nologin -M cozy-salt-svc
 
