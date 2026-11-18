@@ -1,5 +1,5 @@
 # Configures salt-minion returner (cozy_notify desktop toasts)
-# Master-side job cache handled via master_job_cache: mongo in master conf
+# Master-side job cache handled via master_job_cache
 
 {%- set is_windows = grains['os'] == 'Windows' %}
 

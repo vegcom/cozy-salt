@@ -37,12 +37,8 @@
             gap: `salt_minion.sls`, `sshd.sls` (already handled differently via `require_in`
         - `context`, probably fine), `tor.sls` (`.shadowsocks` include, check),
           `windhawk.sls`
-  - [ ] acl enforcement and default envs_dir to /opt/miniforge3/envs
-  - [ ] install/config sysmon on windows (e.g. `sysmon -accepteula -i`)
-  - [ ] incorrect naming `file.directory` accepts `makedirs` not `mkdirs` [salt.states.file](https://docs.saltproject.io/en/3006/ref/states/all/salt.states.file.html)
-    - [ ] identify all instances of `file.directory` and `mkdirs` and adjust.
-    - peace be with you 🙏
-  - DistCC
-    - [ ] have salt deploy distcc containers per avaial host.
-  - [ ] windows/winget move to github.com/June-Cozy/ backing to prevent having to eval making list
-  - galileo gate for `provisioning/linux/files/etc-logind.conf.d/10-steamdeck-tuning.conf`
+  - [ ] chore:windows-sysmon
+    - install/config sysmon on windows (e.g. `sysmon -accepteula -i`)
+  - [ ] refactor:windows-nvm
+    - presently the installer leveraged in windows/nvm.sls no longer supports a custom path
+    - this should be addressed in part by having windows common.nvm branch facilitate per user node installs

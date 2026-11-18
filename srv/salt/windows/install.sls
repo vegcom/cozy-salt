@@ -1,16 +1,16 @@
 {%- from '_macros/windows.sls' import get_users_with_profiles, get_winget_system_path, get_user_winget_info, winget_batch_install with context %}
 {%- from '_macros/packages.sls' import get_packages %}
 {%- from '_macros/winget.sls' import classify_winget_scopes with context %}
+
 {%- set packages = get_packages() | load_json %}
 
+{%- set winget_force = salt['pillar.get']('winget:force', False) %}
+{%- set winget_bg = salt['pillar.get']('winget:bg', False) %}
+{%- set winget_prerelease = salt['pillar.get']('winget:prerelease', False) %}
+
 {%- set service_user = salt['pillar.get']('service_user', {}) %}
-
-{%- set winget_force = salt['pillar.get']('windows:winget:force', False) %}
-{%- set winget_bg = salt['pillar.get']('windows:winget:bg', False) %}
-{%- set winget_prerelease = salt['pillar.get']('windows:winget:prerelease', False) %}
-
 {%- set svc_name = service_user.get('name', 'cozy-salt-svc') %}
-# TODO: move to grains to reduce render time
+
 {%- set users_with_profiles = get_users_with_profiles().split(',') | reject('equalto', '') | list %}
 {%- set winget_path = get_winget_system_path() | trim %}
 {%- set user_info = {} %}
@@ -84,7 +84,30 @@ winget_bootstrap:
   cmd.run:
     - name: Repair-WinGetPackageManager -AllUsers -IncludePrerelease -Force -Verbose
     - shell: powershell
-    - onlyif: winget settings export --disable-interactivity | Out-Null
+    - onlyif: -|
+        winget settings export --disable-interactivity | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+          exit 1
+        }
+        exit 0
+
+{%- for user in users_with_profiles %}
+  {%- set UserName = user_info.get(user, {}).get("UserName", false) %}
+winget_bootstrap_user_{{ UserName }}:
+  cmd.run:
+    - names:
+      - Invoke-WebRequest -Uri "https://aka.ms/getwinget" -OutFile "$env:TEMP/Winget.msixbundle"
+      - Add-AppxPackage -Path "$env:TEMP/Winget.msixbundle" -ForceUpdateFromAnyVersion
+      - Repair-WinGetPackageManager -IncludePrerelease -Force -Verbose
+    - shell: powershell
+    - runas: {{ UserName }}
+    - onlyif: -|
+        winget settings export --disable-interactivity | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+          exit 1
+        }
+        exit 0
+{%- endfor %}
 
 # Winget features
 winget_features_enable:

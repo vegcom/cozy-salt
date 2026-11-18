@@ -2,26 +2,34 @@
 name: cozy-salt
 channels:
   - conda-forge
-  - defaults
 dependencies:
-  - python=3.11
-  - pip
-  - pyyaml
+  - python=3.14
+  - bandit
+  - djlint
+  - dlint
+  - flake8-bugbear
+  - flake8-comprehensions
+  - flake8-pyproject
+  - gitpython
+  - ipython
+  - ipython
+  - isort
+  - jinja2
   - jq
-  - shellcheck
+  - pip
   - pip-tools
+  - pre-commit
+  - pylint
+  - pytest
+  - pytest-cov
+  - pytest-mock
+  - pyyaml
+  - ruff
+  - shellcheck
+  - types-python-dateutil
+  - types-requests
+  - yamllint
   - pip:
       - salt
       - salt-lint
-      - yamllint
-      - pylint
-      - ruff
-      - isort
-      - pytest
-      - pytest-cov
-      - jinja2
-      - pre-commit
-      - djlint
-      - gitpython
-      - checkov
-      - bandit
+      - SaltPyLint

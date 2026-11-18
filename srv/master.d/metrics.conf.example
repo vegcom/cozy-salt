@@ -1,0 +1,20 @@
+# https://docs.saltproject.io/en/master/topics/metrics/index.html
+
+metrics:
+  enabled: true
+  endpoint: "http://openobserve:5080/api/default/v1/metrics"
+  export_interval_seconds: 60
+  exporter: otlp-http # otlp-http | otlp-grpc | prometheus | console
+  headers: # OTLP auth headers
+    Authorization: "Basic abcd1234" 
+  insecure: true # gRPC TLS off (ignored for non-grpc)
+  resource_attributes: {} # extra OTel Resource attributes
+  service_name: "" # empty = auto-derived from process role
+  prometheus:
+    host: 127.0.0.1
+    port: 9464
+  histogram_boundaries:
+    salt.job.duration: [1, 5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 30000, 60000]
+    salt.minion.exec.duration: [1, 5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000]
+    salt.master.requests.duration: [1, 5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000]
+    

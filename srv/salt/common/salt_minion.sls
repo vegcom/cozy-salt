@@ -116,19 +116,44 @@ salt_minion_conf_logging:
           'salt.utils.schedule': 'error'
           'salt.beacons': 'error'
 
-# NOTE: restarting salt-minion during salt-call interrupts the run
-# apply via master: salt '*' state.sls common.salt_minion
+# NOTE: restarting salt-minion synchronously during salt-call interrupts the
+# run (the process restarting is the process running the state). Instead of
+# `service.running` + `watch` (which restarts inline and kills the in-flight
+# highstate), schedule a detached restart that fires a few seconds after this
+# state finishes, once the current salt-call/job has already exited and
+# reported back to master.
 {%- set is_container = salt['file.file_exists']('/.dockerenv') or
                       salt['file.file_exists']('/run/.containerenv') %}
 {%- if not is_container %}
-salt_minion_service:
-  service.running:
-    - name: salt-minion
-    - enable: True
-    - watch:
+  {%- if grains['os_family'] == 'Windows' %}
+salt_minion_deferred_restart:
+  cmd.run:
+    - name: >-
+        powershell -NonInteractive -ExecutionPolicy Bypass -Command
+        "Start-Process powershell -WindowStyle Hidden -ArgumentList
+        '-NonInteractive -ExecutionPolicy Bypass -Command
+        Start-Sleep -Seconds 15; Restart-Service -Name salt-minion -Force'"
+    - onchanges:
+      - file: salt_minion_conf
+      - file: salt_minion_conf_opt
+      - file: salt_minion_conf_timeout
+      - file: salt_minion_conf_logging
+  {%- else %}
+salt_minion_deferred_restart:
+  cmd.run:
+    - name: >-
+        systemd-run --on-active=15 --unit=cozy-salt-minion-restart
+        --description="Deferred salt-minion restart (cozy-salt)"
+        systemctl restart salt-minion
+    - onchanges:
       - file: salt_minion_conf
       - file: salt_minion_conf_opt
       - file: salt_minion_conf_timeout
       - file: salt_minion_conf_logging
 
+salt_minion_service:
+  service.running:
+    - name: salt-minion
+    - enable: True
+  {%- endif %}
 {%- endif %}

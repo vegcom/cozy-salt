@@ -4,7 +4,16 @@
 
 {%- set _pinned = salt['pillar.get']('versions:miniforge:version', '') %}
 {%- set miniforge_version = _pinned or salt['github_release.latest']('conda-forge/miniforge') %}
-{%- set cpu_arch = salt['grains.get']('cpuarch', 'x86_64') %}
+{%- set miniforge_assets = salt['github_release.assets']('conda-forge/miniforge', tag=miniforge_version) %}
+{%- set _miniforge_candidates = [] %}
+{%- for a in miniforge_assets %}
+  {%- if 'linux' in a.name|lower and a.name.endswith('.sh') %}
+    {%- do _miniforge_candidates.append(a) %}
+  {%- endif %}
+{%- endfor %}
+{%- set miniforge_patterns = salt['arch_match.patterns_for'](os_family='linux') %}
+{%- set _miniforge_asset = salt['arch_match.pick'](_miniforge_candidates, miniforge_patterns, key='name') %}
+{%- set miniforge_source = _miniforge_asset.browser_download_url if _miniforge_asset else none %}
 {# Path configuration from pillar with defaults #}
 {%- set miniforge_path = salt['pillar.get']('install_paths:miniforge:linux', '/opt/miniforge3') %}
 {%- set service_user = salt['pillar.get']('service_user:name', 'cozy-salt-svc') %}
@@ -25,10 +34,11 @@ miniforge_directory:
 miniforge_download:
   file.managed:
     - name: /tmp/miniforge-init.sh
-    - source: https://github.com/conda-forge/miniforge/releases/download/{{ miniforge_version }}/Miniforge3-Linux-{{ cpu_arch }}.sh
-    - skip_verify: True
+    - source: {{ miniforge_source }}
+    - source_hash: {{ miniforge_source }}.sha256
     - mkdirs: True
     - provides: /tmp/miniforge-init.sh
+    - show_changes: False
 
 # Remove stale _conda symlink so -u reinstall doesn't fail on ln conflict
 miniforge_clean_conda_symlink:

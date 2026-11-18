@@ -73,7 +73,7 @@ def patterns_for(arch=None, os_family=None):
         salt '*' arch_match.patterns_for
         salt '*' arch_match.patterns_for arch=arm64 os_family=windows
     """
-    _ARCH_ALIASES = {
+    _ARCH_ALIASES = {  # pylint: ignore=C0103
         "x86_64": "amd64",
         "amd64": "amd64",
         "aarch64": "arm64",
@@ -85,4 +85,4 @@ def patterns_for(arch=None, os_family=None):
     family_key = "windows" if os_family == "windows" else "linux"
     arch_key = _ARCH_ALIASES.get((arch or "").lower(), (arch or "").lower())
 
-    return __salt__["pillar.get"](f"arch_patterns:{family_key}:{arch_key}", [])  # noqa: F821
+    return __salt__["pillar.get"](f"arch_patterns:{family_key}:{arch_key}", [], unmask=True)  # noqa: F821

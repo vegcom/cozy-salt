@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 
 __virtualname__ = "github_release"
 
-_token_cache = None
+_token_cache = None  # pylint: disable=C0103
 
 
 def __virtual__():
@@ -25,11 +25,11 @@ def _collect_tokens():
     """Gather all github tokens from pillar — global + per-user; and env"""
     tokens = []
     try:
-        tokens.extend(__salt__["pillar.get"]("github:tokens", []))  # noqa: F821
-        users = __salt__["pillar.get"]("users", {})  # noqa: F821
+        tokens.extend(__salt__["pillar.get"]("github:tokens", [], unmask=True))  # pylint: disable=E0602 # noqa: F821
+        users = __salt__["pillar.get"]("users", {}, unmask=True)  # pylint: disable=E0602 # noqa: F821
         for _username, userdata in users.items():
             tokens.extend(userdata.get("github", {}).get("tokens", []))
-    except Exception:  # noqa: BLE001
+    except Exception:  # pylint: disable=W0718 # noqa: BLE001
         pass
 
     for env_var in ("GH_TOKEN", "GITHUB_TOKEN"):
@@ -52,7 +52,7 @@ def find_valid_token():
 
         salt '*' github_release.find_valid_token
     """
-    global _token_cache
+    global _token_cache  # pylint: disable=W0603
     if _token_cache is not None:
         return _token_cache
 
@@ -67,7 +67,7 @@ def find_valid_token():
                 if resp.status == 200:
                     _token_cache = candidate
                     return _token_cache
-        except Exception:  # noqa: BLE001
+        except Exception:  # pylint: disable=W0718 # noqa: BLE001
             continue
     _token_cache = ""
     return _token_cache
@@ -103,7 +103,7 @@ def latest(repo, fallback=None, prerelease=False):
             if prerelease:
                 return data[0]["tag_name"]
             return data["tag_name"]
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:  # pylint: disable=W0718 # noqa: BLE001
         log.warning("github_release.latest(%s) failed: %s", repo, exc)
         return fallback
 
@@ -135,7 +135,7 @@ def assets(repo, tag=None, prerelease=False, fallback=None):
         url = f"https://api.github.com/repos/{repo}/releases"
     else:
         url = f"https://api.github.com/repos/{repo}/releases/latest"
-    log.debug(f"url: {url}")
+    log.debug("url: %s", url)
 
     req = urllib.request.Request(url)
     req.add_header("Accept", "application/vnd.github+json")
@@ -154,6 +154,6 @@ def assets(repo, tag=None, prerelease=False, fallback=None):
             ]
             log.debug(f"selected asset {ret}")
             return ret
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:  # pylint: disable=W0718 # noqa: BLE001
         log.warning("github_release.assets(%s) failed: %s", repo, exc)
         return fallback

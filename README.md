@@ -113,7 +113,8 @@ OneDir install is proper install
 [salt/install-guide](https://docs.saltproject.io/salt/install-guide)
 
 ```pwsh
-# Windows option
+# Windows option - or install via winget
+# winget install --scope machine SaltStack.SaltMinion
 scripts/enroll.ps1
 ```
 

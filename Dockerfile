@@ -20,8 +20,8 @@ RUN apt-get update && \
 # Generate RSA keys for test minions (Salt-compatible format)
 WORKDIR /keys
 RUN for minion in salt ubuntu-test rhel-test windows-test; do \
-      openssl genrsa -out ${minion}.pem 4096 2>/dev/null && \
-      openssl rsa -in ${minion}.pem -pubout -out ${minion}.pub 2>/dev/null; \
+    openssl genrsa -out ${minion}.pem 4096 2>/dev/null && \
+    openssl rsa -in ${minion}.pem -pubout -out ${minion}.pub 2>/dev/null; \
     done && \
     chmod 644 /keys/*.pub && \
     chmod 600 /keys/*.pem
@@ -46,10 +46,14 @@ RUN rm -f /etc/apt/sources.list.d/* && \
     echo "deb http://${APT_MIRROR}/ubuntu/ ${DEBIAN_CODENAME}-updates main restricted universe multiverse" >> /etc/apt/sources.list && \
     echo "deb http://${APT_SECURITY_MIRROR}/ubuntu/ ${DEBIAN_CODENAME}-security main restricted universe multiverse" >> /etc/apt/sources.list && \
     apt-get update && \
-    apt-get install -y --no-install-recommends curl ca-certificates git && \
-    echo "deb [arch=amd64 trusted=yes] \
-      https://packages.broadcom.com/artifactory/saltproject-deb/ stable main" > \
-      /etc/apt/sources.list.d/salt.list && \
+    apt-get install -y --no-install-recommends curl ca-certificates git gpg \
+    iproute2 sysstat lshw dmidecode inotify-tools pciutils lshw lsof && \
+    install -m 0755 -d /etc/apt/keyrings && \
+    curl -fsSL https://packages.broadcom.com/artifactory/api/security/keypair/SaltProjectKey/public \
+    | gpg --dearmor -o /etc/apt/keyrings/salt-archive-keyring.gpg && \
+    echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/salt-archive-keyring.gpg] \
+    https://packages.broadcom.com/artifactory/saltproject-deb/ stable main" > \
+    /etc/apt/sources.list.d/salt.list && \
     apt-get update && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/*
 
@@ -68,8 +72,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Install Salt Master, Minion, and SSH from pre-configured repos
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-      netcat-openbsd avahi-daemon wsdd-server tini \
-      salt-master salt-minion salt-api salt-ssh python3-cherrypy3 && \
+    netcat-openbsd avahi-daemon wsdd-server tini libatomic1 \
+    salt-master salt-minion salt-api salt-ssh && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/*
 
@@ -79,11 +83,8 @@ RUN mkdir -p /srv/salt/files /srv/pillar /srv/data /var/cache/salt /var/log/salt
     chown -R salt:salt /srv /var/cache/salt /var/log/salt /etc/salt
 
 # Copy pre-generated public keys for test minions (pre-acceptance)
-# Entrypoint copies these to /etc/salt/pki/master/minions/ on startup
-COPY --from=keygen /keys/*.pub /etc/salt/pki/master/minions-preload/
-
-# Copy full keypair for master-as-minion (salt minion needs its own .pem)
-COPY --from=keygen /keys/salt.pem /keys/salt.pub /etc/salt/pki/minion-preload/
+# Entrypoint copies these to /etc/salt/pki/minion/minions_preload/ on startup
+COPY --from=keygen /keys/*.pub /etc/salt/pki/minion/minions_preload/
 
 # Enable master.d config drop-in directory
 RUN sed -i 's/^#default_include: master.d\/\*.conf$/default_include: master.d\/*.conf/' /etc/salt/master
@@ -95,17 +96,14 @@ RUN chmod +x /usr/local/bin/entrypoint-master.sh
 # Copy avahi service files
 COPY srv/avahi/*.service /etc/avahi/services/
 
-# Setup SaltGUI
-ENV _GUI_VERSION=1.33.0
-RUN mkdir -p /saltgui && \
-    curl -fsSL https://github.com/erwindon/SaltGUI/archive/refs/tags/${_GUI_VERSION}.tar.gz | \
-    tar -xz --strip-components=2 -C /saltgui SaltGUI-${_GUI_VERSION}/saltgui
-
-# Create service account for SaltGUI PAM auth
+# Create service account for svc PAM auth
 # Password set at runtime via SALT_API_PASSWORD env var in entrypoint
 RUN useradd -r -s /usr/sbin/nologin -M cozy-salt-svc
 
-# Note: Healthcheck is defined in docker-compose.yaml (preferred for flexibility)
+# Ensure minion and master services are running
+HEALTHCHECK --interval=5s --timeout=5s --start-period=30s --start-interval=5s --retries=15 \
+  CMD ["bash", "-c", "pgrep -f salt-master > /dev/null && pgrep -f salt-minion > /dev/null"]
+
 ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/entrypoint-master.sh"]
 
 EXPOSE 4505/tcp 4506/tcp 5353/udp 3333/tcp
@@ -121,7 +119,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Install Salt Minion from pre-configured repos
 # git required for git.latest states (common.vim etc) on first highstate run
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends salt-minion git iproute2 procps && \
+    apt-get install -y --no-install-recommends salt-minion git iproute2 procps libatomic1 && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/*
 
 # Pre-configure minion (master hostname will be set at runtime)
@@ -131,7 +129,12 @@ RUN mkdir -p /etc/salt/minion.d && \
 
 # Copy pre-generated keys for test minions
 # Entrypoint selects correct key based on MINION_ID
-COPY --from=keygen /keys/ /etc/salt/pki/minion-preload/
+COPY --from=keygen /keys/ /etc/salt/pki/minion/minions_preload/
+
+
+# Ensure minion and master services are running
+HEALTHCHECK --interval=5s --timeout=5s --start-period=90s --start-interval=5s --retries=15 \
+  CMD ["bash", "-c", "pgrep -f salt-minion > /dev/null"]
 
 ENTRYPOINT ["/usr/local/bin/entrypoint-minion.sh"]
 
@@ -169,7 +172,7 @@ FROM salt-base-rpm AS salt-minion-rpm
 
 # Install Salt Minion from pre-configured repos
 # git required for git.latest states (common.vim etc) on first highstate run
-RUN dnf install -y salt-minion git iproute procps-ng && \
+RUN dnf install -y salt-minion git iproute procps-ng libatomic && \
     dnf clean all && rm -rf /var/cache/dnf /tmp/*
 
 # Pre-configure minion (master hostname will be set at runtime)
@@ -179,6 +182,10 @@ RUN mkdir -p /etc/salt/minion.d && \
 
 # Copy pre-generated keys for test minions
 # Entrypoint selects correct key based on MINION_ID
-COPY --from=keygen /keys/ /etc/salt/pki/minion-preload/
+COPY --from=keygen /keys/ /etc/salt/pki/minion/minions_preload/
+
+# Ensure minion and master services are running
+HEALTHCHECK --interval=5s --timeout=5s --start-period=90s --start-interval=5s --retries=15 \
+  CMD ["bash", "-c", "pgrep -f salt-minion > /dev/null"]
 
 ENTRYPOINT ["/usr/local/bin/entrypoint-minion.sh"]

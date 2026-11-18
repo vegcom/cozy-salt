@@ -1,0 +1,30 @@
+[MASTER]
+source-roots = "/opt/saltstack/salt/lib/python3.14/site-packages,/opt/saltstack/salt/lib/python3.10/site-packages, /opt/saltstack/salt/lib/python3.11/site-packages"
+
+[MAIN]
+disable =
+    C0114, # missing-module-docstring
+    C0115, # missing-class-docstring
+    C0116, # missing-function-docstring (for test functions)
+    W1510, # subprocess.run missing check= parameter
+    W1203  # logging-fstring-interpolation
+
+ignore-paths =
+    ^provisioning/common/dotfiles/.git_template/hooks.*$,
+    ^.githooks.*$
+
+load-plugins =
+    saltpylint.pep8,  # https://github.com/saltstack/salt-pylint
+    saltpylint.pep263,
+    saltpylint.strings,
+    saltpylint.fileperms,
+    saltpylint.py3modernize,
+    saltpylint.smartup,
+    saltpylint.minpyver
+
+[FORMAT]
+max-line-length = 125
+
+[DESIGN]
+max-args = 7
+max-locals = 15

@@ -5,8 +5,8 @@
 
 {%- if not is_container or not is_ci %}
 {{ managed_tree(
-  '/etc/systemd/system/salt-minion.d',
-  'salt://linux/files/etc-systemd-system-salt-minion.d',
+  '/etc/systemd/system/salt-minion.service.d',
+  'salt://linux/files/etc-systemd-system-salt-minion.service.d',
   recurse=True, clean=True,
   user='root', group='root'
 ) }}

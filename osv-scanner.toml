@@ -1,3 +1,53 @@
 [[IgnoredVulns]]
 id = "GHSA-c9gm-7rf7-4v5h"
 reason = "Not applicable to production build"
+
+[[IgnoredVulns]]
+id = "GHSA-2883-xcg3-v3hh"
+reason = "maxTotalMergeKeys does not limit CPU use for empty merge sources."
+ignoreUntil = 2027-01-01
+
+[[IgnoredVulns]]
+id = "GHSA-52cp-r559-cp3m"
+reason = "YAML merge-key chains can force quadratic CPU consumption."
+ignoreUntil = 2027-01-01
+
+[[IgnoredVulns]]
+id = "GHSA-5p4m-2wfm-xmqj"
+reason = "Quadratic CPU consumption in !!omap resolution."
+ignoreUntil = 2027-01-01
+
+[[IgnoredVulns]]
+id = "GHSA-h67p-54hq-rp68"
+reason = "Quadratic-complexity DoS in merge key handling via repeated aliases."
+ignoreUntil = 2027-01-01
+
+[[IgnoredVulns]]
+id = "GHSA-23c5-xmqv-rm74"
+reason = "ReDoS: nested *() extglobs generate catastrophically backtracking regular expressions."
+ignoreUntil = 2027-01-01
+
+[[IgnoredVulns]]
+id = "GHSA-3ppc-4f35-3m26"
+reason = "'minimatch' has a ReDoS via repeated wildcards with non-matching literal in pattern."
+ignoreUntil = 2027-01-01
+
+[[IgnoredVulns]]
+id = "GHSA-7r86-cg39-jmmj"
+reason = "'minimatch' has ReDoS: matchOne() combinatorial backtracking via multiple non-adjacent GLOBSTAR segments."
+ignoreUntil = 2027-01-01
+
+[[IgnoredVulns]]
+id = "GHSA-6v5v-wf23-fmfq"
+reason = "smol-toml: Denial of Service via TOML documents containing thousands of consecutive commented lines."
+ignoreUntil = 2027-01-01
+
+[[IgnoredVulns]]
+id = "GHSA-7w5x-hrqm-74c2"
+reason = "smol-toml: Denial of Service via malformed TOML documents."
+ignoreUntil = 2027-01-01
+
+[[IgnoredVulns]]
+id = "GHSA-v3rj-xjv7-4jmq"
+reason = "smol-toml: Denial of Service via TOML documents containing thousands of consecutive commented lines"
+ignoreUntil = 2027-01-01

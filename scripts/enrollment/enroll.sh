@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 read -r -p "Salt Master Master : " salt_master
 read -r -p "Minion ID: " minion_id

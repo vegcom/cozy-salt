@@ -9,4 +9,3 @@ if [ "${EUID:-$(id -u)}" -ne 0 ] && [ ! -b "${SUDO_USER}" ]; then
 fi
 
 export PATH="/opt/kubo:$PATH"
-export IPFS_PATH="/opt/cozy/etc/kubo"

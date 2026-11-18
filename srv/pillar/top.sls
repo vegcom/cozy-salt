@@ -14,10 +14,10 @@ base:
     - common.paths
     - common.versions
     - common.scheduler
-    - common.mongo
     - common.pip
     - common.arch_patterns
     - common.mine
+    - common.tailscale
 
   # Layer 2: OS-family
   'G@os_family:Windows':

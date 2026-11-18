@@ -18,11 +18,11 @@ def __virtual__():
 
 
 def _api_key():
-    return __pillar__.get("headscale", {}).get("api-key", "")
+    return __salt__["pillar.get"]("headscale", {}, unmask=True).get("api-key", "")  # pylint: disable=E0602 # noqa: F821
 
 
 def _base_url():
-    return __pillar__.get("headscale", {}).get("login-server", "").rstrip("/")
+    return __salt__["pillar.get"]("headscale", {}, unmask=True).get("login-server", "").rstrip("/")  # pylint: disable=E0602 # noqa: F821 E501
 
 
 def _get(path):
